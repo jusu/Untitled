@@ -93,7 +93,7 @@ public class NoteList extends BackgroundPanel {
 	}
 
 	public void changeSelection(int delta) {
-		int len = main.getComponentCount();
+		int len = noteItems.size();
 		int select = -1;
 
 		if (selectedNote == null) {
@@ -123,6 +123,7 @@ public class NoteList extends BackgroundPanel {
 		for (NoteItem i : noteItems) {
 			i.setSelected(false);
 		}
+		selectedNote = null;
 	}
 
 	private void selectNote(Note n) {

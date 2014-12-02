@@ -59,6 +59,7 @@ public class ElephantWindow extends JFrame {
 		manager.addKeyEventDispatcher(new KeyDispatcher());
 	}
 
+	// XXX this will bite me eventually
 	private class KeyDispatcher implements KeyEventDispatcher {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
@@ -76,6 +77,23 @@ public class ElephantWindow extends JFrame {
 						if (!noteEditor.hasFocus()) {
 							noteList.changeSelection(1);
 						}
+						break;
+					}
+					break;
+				}
+				break;
+			case notebooks:
+				switch (e.getID()) {
+				case KeyEvent.KEY_PRESSED:
+					switch (e.getKeyCode()) {
+					case KeyEvent.VK_UP:
+						notebooks.changeSelection(-1);
+						break;
+					case KeyEvent.VK_DOWN:
+						notebooks.changeSelection(1);
+						break;
+					case KeyEvent.VK_ENTER:
+						notebooks.openSelected();
 						break;
 					}
 					break;

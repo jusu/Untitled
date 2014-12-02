@@ -7,6 +7,7 @@ import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -15,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import com.pinktwins.elephant.NoteList.NoteItem;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
 
@@ -25,6 +27,8 @@ public class Notebooks extends BackgroundPanel {
 
 	private ElephantWindow window;
 	private NotebookItem selectedNotebook;
+
+	private ArrayList<NotebookItem> notebookItems = new ArrayList<NotebookItem>();
 
 	static {
 		try {
@@ -78,6 +82,7 @@ public class Notebooks extends BackgroundPanel {
 
 	private void update() {
 		main.removeAll();
+		notebookItems.clear();
 
 		Insets insets = main.getInsets();
 		Dimension size;
@@ -88,6 +93,7 @@ public class Notebooks extends BackgroundPanel {
 		for (Notebook nb : list) {
 			NotebookItem item = new NotebookItem(nb);
 			main.add(item);
+			notebookItems.add(item);
 
 			size = item.getPreferredSize();
 			item.setBounds(12 + insets.left, y + insets.top, size.width, size.height);
@@ -104,11 +110,40 @@ public class Notebooks extends BackgroundPanel {
 	private void deselectAll() {
 		if (selectedNotebook != null) {
 			selectedNotebook.setSelected(false);
+			selectedNotebook = null;
 		}
-		// for (int n = 0, len = main.getComponentCount(); n < len; n++) {
-		// NotebookItem i = (NotebookItem) main.getComponent(n);
-		// i.setSelected(false);
-		// }
+	}
+
+	public void changeSelection(int delta) {
+		int len = notebookItems.size();
+		int select = -1;
+
+		if (selectedNotebook == null) {
+			if (len > 0) {
+				if (delta < 0) {
+					select = len - 1;
+				} else {
+					select = 0;
+				}
+			}
+		} else {
+			int currentIndex = notebookItems.indexOf(selectedNotebook);
+			select = currentIndex + delta;
+		}
+
+		if (select >= 0 && select < len) {
+			deselectAll();
+
+			NotebookItem item = notebookItems.get(select);
+			item.setSelected(true);
+			selectedNotebook = item;
+		}
+	}
+
+	public void openSelected() {
+		if (selectedNotebook != null) {
+			window.showNotebook(selectedNotebook.notebook);
+		}
 	}
 
 	class NotebookItem extends BackgroundPanel implements MouseListener {
@@ -195,5 +230,4 @@ public class Notebooks extends BackgroundPanel {
 		public void mouseExited(MouseEvent e) {
 		}
 	}
-
 }

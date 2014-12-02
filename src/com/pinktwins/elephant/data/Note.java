@@ -47,7 +47,7 @@ public class Note {
 	public String contents() {
 		try {
 			contents = IOUtil.readFile(file);
-			return new String(contents);
+			return new String(contents, "UTF-8");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -66,7 +66,7 @@ public class Note {
 
 	public Map<String, String> getMetaMap() {
 		try {
-			String json = new String(IOUtil.readFile(meta));
+			String json = new String(IOUtil.readFile(meta), "UTF-8");
 			if (json == null || json.isEmpty()) {
 				return emptyMap;
 			}
@@ -93,7 +93,7 @@ public class Note {
 
 	private void setMeta(String key, String value) {
 		try {
-			String json = new String(IOUtil.readFile(meta));
+			String json = new String(IOUtil.readFile(meta), "UTF-8");
 			if (json == null || json.isEmpty()) {
 				json = "{}";
 			}
