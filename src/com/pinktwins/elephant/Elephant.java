@@ -10,7 +10,7 @@ public class Elephant {
 	public static void main(String args[]) {
 		try {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Test");
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Elephant");
 			System.setProperty("awt.useSystemAAFontSettings", "on");
 			System.setProperty("swing.aatext", "true");
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -1,6 +1,7 @@
 package com.pinktwins.elephant.data;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,10 @@ public class Notebook {
 	private void populate() {
 		notes.clear();
 		for (File f : folder.listFiles()) {
-			notes.add(new Note(f));
+			String name = f.getName();
+			if (name.charAt(0) != '.' && !name.endsWith("~")) {
+				notes.add(new Note(f));
+			}
 		}
 	}
 
@@ -34,5 +38,18 @@ public class Notebook {
 	
 	public int count() {
 		return notes.size();
+	}
+
+	public Note newNote() throws IOException {
+		String fullPath = this.folder.getAbsolutePath() + File.separator + System.currentTimeMillis();
+		File f = new File(fullPath);
+
+		f.createNewFile();
+		Note n = new Note(f);
+		n.getMeta().title("Untitled");
+		
+		notes.add(0, n);
+
+		return n;
 	}
 }

@@ -145,6 +145,10 @@ public class BackgroundPanel extends JPanel
 		super.add(component, constraints);
 	}
 
+	public void addOpaque(JComponent component, Object constraints) {
+		super.add(component, constraints);
+	}
+	
 	/*
 	 *  Controls whether components added to this panel should automatically
 	 *  be made transparent. That is, setOpaque(false) will be invoked.
