@@ -68,29 +68,6 @@ public class NoteList extends BackgroundPanel {
 				window.onNoteListClicked(e);
 			}
 		});
-
-		main.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_UP:
-					changeSelection(-1);
-					break;
-				case KeyEvent.VK_DOWN:
-					changeSelection(1);
-					break;
-				}
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				System.out.println("keyPressed " + e.toString());
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-		});
 	}
 
 	public void load(Notebook notebook) {
@@ -148,6 +125,17 @@ public class NoteList extends BackgroundPanel {
 		}
 	}
 
+	private void selectNote(Note n) {
+		deselectAll();
+		for (NoteItem i : noteItems) {
+			if (i.note == n) {
+				i.setSelected(true);
+				selectedNote = i;
+				return;
+			}
+		}
+	}
+
 	class NoteItem extends JPanel implements MouseListener {
 
 		private static final long serialVersionUID = -4080651728730225105L;
@@ -182,7 +170,7 @@ public class NoteList extends BackgroundPanel {
 			previewPane.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
 			previewPane.setLayout(new GridLayout(1, 1));
 			previewPane.setBackground(Color.WHITE);
-			
+
 			preview = new JTextArea();
 			preview.setEditable(false);
 			preview.setFont(ElephantWindow.fontSmall);
@@ -190,7 +178,7 @@ public class NoteList extends BackgroundPanel {
 			preview.setBackground(Color.WHITE);
 
 			previewPane.add(preview);
-			
+
 			p.add(previewPane, BorderLayout.CENTER);
 
 			root.addOpaque(p, BorderLayout.CENTER);
@@ -245,8 +233,6 @@ public class NoteList extends BackgroundPanel {
 			if (e.getClickCount() == 1) {
 				selectedNote = NoteItem.this;
 				window.showNote(note);
-				
-				System.out.println("B " + preview.getBounds());
 			}
 
 			if (e.getClickCount() == 2) {
@@ -281,6 +267,7 @@ public class NoteList extends BackgroundPanel {
 		try {
 			Note newNote = notebook.newNote();
 			load(notebook);
+			selectNote(newNote);
 			window.showNote(newNote);
 		} catch (IOException e) {
 			e.printStackTrace();

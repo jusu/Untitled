@@ -20,9 +20,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.text.BadLocationException;
 
+import com.pinktwins.elephant.CustomEditor.EditorEventListener;
 import com.pinktwins.elephant.data.Note;
 
-public class NoteEditor extends BackgroundPanel {
+public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private static final long serialVersionUID = 5649274177360148568L;
 	private static Image tile;
@@ -63,6 +64,7 @@ public class NoteEditor extends BackgroundPanel {
 		area.setBackground(Color.WHITE);
 
 		editor = new CustomEditor();
+		editor.setEditorEventListener(this);
 		area.add(editor);
 		area.setBounds(kBorder, 65 + kBorder, 200, 288);
 
@@ -111,7 +113,6 @@ public class NoteEditor extends BackgroundPanel {
 	}
 
 	public void unfocus() {
-		saveChanges();
 		window.unfocusEditor();
 	}
 
@@ -141,5 +142,14 @@ public class NoteEditor extends BackgroundPanel {
 				window.updateThumb(currentNote);
 			}
 		}
+	}
+
+	public void focusTitle() {
+		editor.focusTitle();
+	}
+
+	@Override
+	public void editingFocusLost() {
+		saveChanges();
 	}
 }

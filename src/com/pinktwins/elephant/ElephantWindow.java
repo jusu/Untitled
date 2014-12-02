@@ -114,12 +114,17 @@ public class ElephantWindow extends JFrame {
 		noteEditor.load(note);
 	}
 
+	public void focusEditor() {
+		noteEditor.focusTitle();
+	}
+
 	public void unfocusEditor() {
 		noteList.unfocusEditor();
 	}
 
 	public void newNote() {
 		noteList.newNote();
+		focusEditor();
 	}
 
 	ActionListener newNoteAction = new ActionListener() {
