@@ -31,9 +31,9 @@ public class ElephantWindow extends JFrame {
 
 	final public static Font fontH1 = Font.decode("Arial-BOLD-16");
 	final public static Font fontSmall = Font.decode("Arial-10");
-	
+
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
-	
+
 	JSplitPane splitLeft, splitRight;
 
 	private Sidebar sideBar = new Sidebar();
@@ -68,31 +68,28 @@ public class ElephantWindow extends JFrame {
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			switch (uiMode) {
 			case notes:
-				switch (e.getID()) {
-				case KeyEvent.KEY_PRESSED:
-					switch (e.getKeyCode()) {
-					case KeyEvent.VK_UP:
-						if (!noteEditor.hasFocus()) {
+				if (!noteEditor.hasFocus()) {
+					switch (e.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						switch (e.getKeyCode()) {
+						case KeyEvent.VK_UP:
 							noteList.changeSelection(-1, e.getKeyCode());
-						}
-						break;
-					case KeyEvent.VK_DOWN:
-						if (!noteEditor.hasFocus()) {
+							break;
+						case KeyEvent.VK_DOWN:
 							noteList.changeSelection(1, e.getKeyCode());
-						}
-						break;
-					case KeyEvent.VK_LEFT:
-						if (!noteEditor.hasFocus()) {
+							break;
+						case KeyEvent.VK_LEFT:
 							noteList.changeSelection(-1, e.getKeyCode());
-						}
-						break;
-					case KeyEvent.VK_RIGHT:
-						if (!noteEditor.hasFocus()) {
+							break;
+						case KeyEvent.VK_RIGHT:
 							noteList.changeSelection(1, e.getKeyCode());
+							break;
+						case KeyEvent.VK_BACK_SPACE:
+							noteEditor.clear();
+							noteList.deleteSelected();
 						}
 						break;
 					}
-					break;
 				}
 				break;
 			case notebooks:

@@ -72,6 +72,7 @@ public class NoteList extends BackgroundPanel {
 		scroll = new JScrollPane(main);
 		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBorder(ElephantWindow.emptyBorder);
+		scroll.getVerticalScrollBar().setUnitIncrement(5);
 
 		add(scroll);
 
@@ -117,6 +118,7 @@ public class NoteList extends BackgroundPanel {
 		Rectangle mainBounds = main.getBounds();
 
 		int itemAtRow = 0;
+		int lastOffset = 0;
 		for (NoteItem item : noteItems) {
 			size = item.getPreferredSize();
 
@@ -134,17 +136,17 @@ public class NoteList extends BackgroundPanel {
 
 			if (itemAtRow < itemsPerRow - 1) {
 				itemAtRow++;
+				lastOffset = size.height;
 			} else {
 				y += size.height;
 				itemAtRow = 0;
+				lastOffset = 0;
 			}
 		}
 
 		Dimension d = main.getPreferredSize();
-		d.height = y + 12;
-		main.setPreferredSize(d); // new Dimension(mainBounds.width, y +
-									// size.height));
-
+		d.height = y + 12 + lastOffset;
+		main.setPreferredSize(d);
 	}
 
 	private void selectNote(NoteItem item) {
@@ -163,12 +165,7 @@ public class NoteList extends BackgroundPanel {
 			} else {
 				itemY -= scrollHeight - b.height - 12;
 			}
-			/*
-			 * int index = noteItems.indexOf(item); if (index < itemsPerRow) {
-			 * itemY = 0; }
-			 * 
-			 * if (index >= noteItems.size() - itemsPerRow) { itemY += 12; }
-			 */
+
 			JScrollBar bar = scroll.getVerticalScrollBar();
 			Timeline timeline = new Timeline(bar);
 			timeline.addPropertyToInterpolate("value", bar.getValue(), itemY);
@@ -362,10 +359,28 @@ public class NoteList extends BackgroundPanel {
 		}
 	}
 
+	public void deleteSelected() {
+		if (selectedNote != null) {
+			int index = noteItems.indexOf(selectedNote);
+			notebook.deleteNote(selectedNote.note);
+			load(notebook);
+
+			if (index >= 0 && index < noteItems.size()) {
+				NoteItem item = noteItems.get(index);
+				window.showNote(item.note);
+				selectNote(item);
+			}
+		}
+	}
+
 	public void updateThumb(Note note) {
 		for (NoteItem item : noteItems) {
 			if (item.note == note) {
 				item.updateThumb();
+				notebook.sortNotes();
+				load(notebook);
+				selectNote(item);
+				return;
 			}
 		}
 	}

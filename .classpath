@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/android-json.jar"/>
 	<classpathentry kind="lib" path="libs/trident.jar"/>
+	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

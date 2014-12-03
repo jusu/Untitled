@@ -22,20 +22,34 @@ public class Vault {
 	// XXX locate HOME
 	private final String HOME = "/Users/jusu/Desktop/elephant";
 
+	private File home;
+	private File trash;
+
 	private static ArrayList<Notebook> notebooks = new ArrayList<Notebook>();
 
 	private Vault() {
 		populate();
 	}
 	
+	public File getHome() {
+		return home;
+	}
+	
+	public File getTrash() {
+		return trash;
+	}
+	
 	private void populate() {
-		File home = new File(HOME);
+		home = new File(HOME);
 		for (File f : home.listFiles()) {
 			if (Files.isDirectory(f.toPath())) {
 				notebooks.add(new Notebook(f));
 			}
 			
 		}
+
+		trash = new File(home.getAbsolutePath() + File.separator + "Trash");
+		trash.mkdirs();
 
 		Collections.sort(notebooks, new Comparator<Notebook>(){
 			@Override

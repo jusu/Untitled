@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +18,7 @@ public class Note {
 
 	public interface Meta {
 		public String title();
+
 		public void title(String newTitle);
 	}
 
@@ -40,6 +42,12 @@ public class Note {
 
 	public String name() {
 		return fileName;
+	}
+
+	public long lastModified() {
+		long l1 = file.lastModified();
+		long l2 = meta.lastModified();
+		return l1 > l2 ? l1 : l2;
 	}
 
 	private byte[] contents;
@@ -70,7 +78,7 @@ public class Note {
 			if (json == null || json.isEmpty()) {
 				return emptyMap;
 			}
-			
+
 			JSONObject o = new JSONObject(json);
 			HashMap<String, String> map = new HashMap<String, String>();
 
@@ -137,6 +145,15 @@ public class Note {
 
 		private void reload() {
 			map = getMetaMap();
+		}
+	}
+
+	public void moveTo(File dest) {
+		try {
+			FileUtils.moveFileToDirectory(file, dest, false);
+			FileUtils.moveFileToDirectory(meta, dest, false);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
