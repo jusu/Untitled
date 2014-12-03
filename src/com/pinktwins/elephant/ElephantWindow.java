@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.border.Border;
 
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
@@ -30,6 +31,8 @@ public class ElephantWindow extends JFrame {
 
 	final public static Font fontH1 = Font.decode("Arial-BOLD-16");
 	final public static Font fontSmall = Font.decode("Arial-10");
+	
+	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 	
 	JSplitPane splitLeft, splitRight;
 
@@ -70,12 +73,22 @@ public class ElephantWindow extends JFrame {
 					switch (e.getKeyCode()) {
 					case KeyEvent.VK_UP:
 						if (!noteEditor.hasFocus()) {
-							noteList.changeSelection(-1);
+							noteList.changeSelection(-1, e.getKeyCode());
 						}
 						break;
 					case KeyEvent.VK_DOWN:
 						if (!noteEditor.hasFocus()) {
-							noteList.changeSelection(1);
+							noteList.changeSelection(1, e.getKeyCode());
+						}
+						break;
+					case KeyEvent.VK_LEFT:
+						if (!noteEditor.hasFocus()) {
+							noteList.changeSelection(-1, e.getKeyCode());
+						}
+						break;
+					case KeyEvent.VK_RIGHT:
+						if (!noteEditor.hasFocus()) {
+							noteList.changeSelection(1, e.getKeyCode());
 						}
 						break;
 					}
@@ -122,7 +135,7 @@ public class ElephantWindow extends JFrame {
 		showNotes();
 		noteEditor.clear();
 		noteList.load(notebook);
-		noteList.changeSelection(1);
+		noteList.changeSelection(1, 0);
 		noteList.unfocusEditor();
 	}
 
