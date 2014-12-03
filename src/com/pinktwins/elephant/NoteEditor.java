@@ -91,7 +91,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void clear() {
-		saveChanges();
+		// saveChanges();
 		currentNote = null;
 		editor.clear();
 		visible(false);
@@ -107,7 +107,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private void visible(boolean b) {
 		main.setVisible(b);
 	}
-	
+
 	public boolean hasFocus() {
 		return editor.hasFocus();
 	}
@@ -119,6 +119,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private void saveChanges() {
 		if (currentNote != null) {
 			boolean changed = false;
+			boolean contentChanged = false;
 
 			try {
 				String fileTitle = currentNote.getMeta().title();
@@ -133,6 +134,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				if (!fileText.equals(editedText)) {
 					currentNote.save(editedText);
 					changed = true;
+					contentChanged = true;
 				}
 			} catch (BadLocationException e) {
 				e.printStackTrace();
@@ -140,6 +142,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 			if (changed) {
 				window.updateThumb(currentNote);
+				if (contentChanged) {
+					window.sortAndUpdate();
+				}
 			}
 		}
 	}

@@ -269,4 +269,8 @@ public class ElephantWindow extends JFrame {
 		noteList.updateThumb(note);
 	}
 
+	public void sortAndUpdate() {
+		noteList.sortAndUpdate();
+	}
+
 }
