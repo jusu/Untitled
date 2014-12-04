@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -29,8 +30,10 @@ import com.pinktwins.elephant.data.Vault;
 public class ElephantWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	final public static Font fontH1 = Font.decode("Arial-BOLD-16");
-	final public static Font fontSmall = Font.decode("Arial-10");
+	final public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
+	final public static Font fontSmall = Font.decode("Helvetica-10");
+	final public static Font fontEditor = Font.decode("Arial-13");
+	final public static Font fontBoldNormal = Font.decode("Helvetica-BOLD-14");
 
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
@@ -66,6 +69,14 @@ public class ElephantWindow extends JFrame {
 	private class KeyDispatcher implements KeyEventDispatcher {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
+			switch (e.getID()) {
+			case KeyEvent.KEY_PRESSED:
+				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
+					String target = sideBar.shortcuts.getTarget(e.getKeyCode() - KeyEvent.VK_1);
+					openShortcut(target);
+				}
+				break;
+			}
 			switch (uiMode) {
 			case notes:
 				if (!noteEditor.hasFocus()) {
@@ -112,6 +123,30 @@ public class ElephantWindow extends JFrame {
 			}
 			return false;
 		}
+	}
+
+	private void openShortcut(String target) {
+		File f = new File(target);
+		if (f.exists()) {
+			if (f.isDirectory()) {
+				Notebook notebook = Vault.getInstance().findNotebook(f);
+				if (notebook != null) {
+					showNotebook(notebook);
+				}
+			} else {
+				File folder = f.getParentFile();
+				Notebook notebook = Vault.getInstance().findNotebook(folder);
+				if (notebook != null) {
+					Note note = notebook.find(f.getName());
+					if (note != null) {
+						showNotebook(notebook);
+						noteList.selectNote(note);
+						showNote(note);
+					}
+				}
+			}
+		}
+		
 	}
 
 	private void showNotes() {

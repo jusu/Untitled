@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class IOUtil {
 
 	public static byte[] readFile(String file) throws IOException {
@@ -36,5 +39,29 @@ public class IOUtil {
 		} finally {
 			f.close();
 		}
+	}
+
+	final static private JSONObject emptyJson = new JSONObject();
+
+	public static JSONObject loadJson(File file) {
+		try {
+			String json = null;
+
+			if (file.exists()) {
+				json = new String(IOUtil.readFile(file), "UTF-8");
+			}
+
+			if (json == null || json.isEmpty()) {
+				json = "{}";
+			}
+
+			return new JSONObject(json);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return emptyJson;
 	}
 }

@@ -11,6 +11,10 @@ public class Notebook {
 	private String name = "";
 	private File folder;
 
+	public boolean equals(File f) {
+		return folder.equals(f);
+	}
+
 	public ArrayList<Note> notes = new ArrayList<Note>();
 
 	public Notebook(File folder) {
@@ -70,5 +74,15 @@ public class Notebook {
 	public void deleteNote(Note note) {
 		note.moveTo(Vault.getInstance().getTrash());
 		notes.remove(note);
+	}
+
+	public Note find(String name) {
+		File note = new File(folder + File.separator + name);
+		for (Note n : notes) {
+			if (n.equals(note)) {
+				return n;
+			}
+		}
+		return null;
 	}
 }

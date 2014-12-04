@@ -22,6 +22,10 @@ public class Note {
 		public void title(String newTitle);
 	}
 
+	public boolean equals(File f) {
+		return file.equals(f);
+	}
+	
 	public Note(File f) {
 		file = f;
 		meta = new File(f.getParentFile().getAbsolutePath() + File.separator + "." + file.getName() + ".meta");

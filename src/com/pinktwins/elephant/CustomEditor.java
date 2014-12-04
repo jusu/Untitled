@@ -64,6 +64,7 @@ public class CustomEditor extends JPanel {
 		note = new JTextPane();
 		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 		note.addFocusListener(editorFocusListener);
+		note.setFont(ElephantWindow.fontEditor);
 
 		title.setText("");
 

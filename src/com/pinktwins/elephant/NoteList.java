@@ -212,7 +212,7 @@ public class NoteList extends BackgroundPanel {
 		selectedNote = null;
 	}
 
-	private void selectNote(Note n) {
+	public void selectNote(Note n) {
 		deselectAll();
 		for (NoteItem item : noteItems) {
 			if (item.note == n) {

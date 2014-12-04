@@ -1,9 +1,13 @@
 package com.pinktwins.elephant;
 
+import java.awt.BorderLayout;
 import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import com.pinktwins.elephant.data.Vault;
 
 public class Sidebar extends BackgroundPanel {
 
@@ -19,8 +23,16 @@ public class Sidebar extends BackgroundPanel {
 		}
 	}
 
+	SideBarList shortcuts;
+
 	public Sidebar() {
 		super(tile);
+
+		shortcuts = new SideBarList();
+		shortcuts.load(new File(Vault.getInstance().getHome() + File.separator + ".shortcuts"));
+
+		shortcuts.setOpaque(false);
+		add(shortcuts, BorderLayout.NORTH);
 	}
 
 

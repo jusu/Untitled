@@ -63,5 +63,14 @@ public class Vault {
 		return notebooks;
 	}
 
+	public Notebook findNotebook(File f) {
+		for (Notebook n: notebooks) {
+			if (n.equals(f)) {
+				return n;
+			}
+		}
+		return null;
+	}
+
 }
 
