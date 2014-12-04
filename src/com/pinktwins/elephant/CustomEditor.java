@@ -2,9 +2,12 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -61,6 +64,26 @@ public class CustomEditor extends RoundPanel {
 		title = new JTextField();
 		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
 		title.addFocusListener(editorFocusListener);
+
+		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+
+		title.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					manager.focusNextComponent();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+		});
 
 		titlePanel.add(title, BorderLayout.CENTER);
 

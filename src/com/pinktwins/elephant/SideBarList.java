@@ -2,6 +2,8 @@ package com.pinktwins.elephant;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -19,7 +21,10 @@ public class SideBarList extends JPanel {
 
 	ArrayList<SideBarListItem> items = new ArrayList<SideBarListItem>();
 
-	public SideBarList() {
+	private ElephantWindow window;
+	
+	public SideBarList(ElephantWindow w) {
+		window = w;
 	}
 
 	public String getTarget(int n) {
@@ -71,10 +76,10 @@ public class SideBarList extends JPanel {
 		String label;
 		String target;
 
-		public SideBarListItem(String target) {
+		public SideBarListItem(String targetFileName) {
 			setOpaque(false);
 
-			String path = Vault.getInstance().getHome() + File.separator + target;
+			String path = Vault.getInstance().getHome() + File.separator + targetFileName;
 
 			File f = new File(path);
 			if (f.isDirectory()) {
@@ -83,13 +88,38 @@ public class SideBarList extends JPanel {
 				icon = Icon.noteSmall;
 			}
 
-			this.target = f.getAbsolutePath();
+			target = f.getAbsolutePath();
 			label = f.getName();
 
-			JLabel l = new JLabel(label);
+			final JLabel l = new JLabel(label);
 			l.setForeground(Color.LIGHT_GRAY);
 			l.setFont(ElephantWindow.fontBoldNormal);
 			add(l);
+
+			addMouseListener(new MouseListener() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					window.openShortcut(target);
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					l.setForeground(Color.WHITE);
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					l.setForeground(Color.LIGHT_GRAY);
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+				}
+			});
 		}
 	}
 }

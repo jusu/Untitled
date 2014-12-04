@@ -13,6 +13,7 @@ public class Sidebar extends BackgroundPanel {
 
 	private static final long serialVersionUID = 5100779924945307084L;
 
+	private ElephantWindow window;
 	private static Image tile;
 
 	static {
@@ -25,10 +26,12 @@ public class Sidebar extends BackgroundPanel {
 
 	SideBarList shortcuts;
 
-	public Sidebar() {
+	public Sidebar(ElephantWindow w) {
 		super(tile);
+		
+		window = w;
 
-		shortcuts = new SideBarList();
+		shortcuts = new SideBarList(window);
 		shortcuts.load(new File(Vault.getInstance().getHome() + File.separator + ".shortcuts"));
 
 		shortcuts.setOpaque(false);

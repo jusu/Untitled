@@ -39,7 +39,7 @@ public class ElephantWindow extends JFrame {
 
 	JSplitPane splitLeft, splitRight;
 
-	private Sidebar sideBar = new Sidebar();
+	private Sidebar sideBar = new Sidebar(this);
 	private NoteList noteList = new NoteList(this);
 	private NoteEditor noteEditor = new NoteEditor(this);
 	private Notebooks notebooks = new Notebooks(this);
@@ -69,14 +69,6 @@ public class ElephantWindow extends JFrame {
 	private class KeyDispatcher implements KeyEventDispatcher {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
-			switch (e.getID()) {
-			case KeyEvent.KEY_PRESSED:
-				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
-					String target = sideBar.shortcuts.getTarget(e.getKeyCode() - KeyEvent.VK_1);
-					openShortcut(target);
-				}
-				break;
-			}
 			switch (uiMode) {
 			case notes:
 				if (!noteEditor.hasFocus()) {
@@ -121,11 +113,23 @@ public class ElephantWindow extends JFrame {
 				}
 				break;
 			}
+
+			switch (e.getID()) {
+			case KeyEvent.KEY_PRESSED:
+				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
+					if ((e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
+						String target = sideBar.shortcuts.getTarget(e.getKeyCode() - KeyEvent.VK_1);
+						openShortcut(target);
+					}
+				}
+				break;
+			}
+
 			return false;
 		}
 	}
 
-	private void openShortcut(String target) {
+	public void openShortcut(String target) {
 		File f = new File(target);
 		if (f.exists()) {
 			if (f.isDirectory()) {
@@ -146,7 +150,7 @@ public class ElephantWindow extends JFrame {
 				}
 			}
 		}
-		
+
 	}
 
 	private void showNotes() {
@@ -199,6 +203,13 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener saveNoteAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			unfocusEditor();
+		}
+	};
+
 	ActionListener newNotebookAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -241,6 +252,13 @@ public class ElephantWindow extends JFrame {
 		newNotebook.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK));
 		newNotebook.addActionListener(newNotebookAction);
 		file.add(newNotebook);
+
+		file.addSeparator();
+
+		JMenuItem saveNote = new JMenuItem("Save");
+		saveNote.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.META_MASK));
+		saveNote.addActionListener(saveNoteAction);
+		file.add(saveNote);
 
 		JMenu edit = new JMenu("Edit");
 
