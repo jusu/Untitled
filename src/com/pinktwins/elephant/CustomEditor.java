@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
@@ -12,7 +13,9 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-public class CustomEditor extends JPanel {
+import com.apple.mrj.macos.carbon.Timer;
+
+public class CustomEditor extends RoundPanel {
 
 	private static final long serialVersionUID = -6604641427725747091L;
 
@@ -47,7 +50,7 @@ public class CustomEditor extends JPanel {
 	public CustomEditor() {
 		super();
 		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createEmptyBorder(14, 14, 14, 14));
+		setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		setLayout(new BorderLayout());
 
 		JPanel titlePanel = new JPanel();

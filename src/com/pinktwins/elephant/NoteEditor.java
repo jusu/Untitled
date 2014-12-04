@@ -2,21 +2,16 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.text.BadLocationException;
 
@@ -79,6 +74,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				Rectangle ab = area.getBounds();
 				ab.width = mb.width - kBorder * 2;
 				area.setBounds(ab);
+
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						NoteEditor.this.editor.revalidate();
+					}
+				});
 			}
 		});
 

@@ -2,9 +2,20 @@ package com.pinktwins.elephant;
 
 // XXX add source web link and credits
 
-import java.awt.*;
-import java.awt.image.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Paint;
+import java.awt.Rectangle;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
 /*
  *  Support custom painting on a panel in the form of
@@ -17,6 +28,8 @@ import javax.swing.*;
  */
 public class BackgroundPanel extends JPanel
 {
+	private static final long serialVersionUID = 1828379725167286010L;
+
 	public static final int SCALED = 0;
 	public static final int TILED = 1;
 	public static final int ACTUAL = 2;
