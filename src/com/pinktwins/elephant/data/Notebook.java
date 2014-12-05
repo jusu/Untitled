@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.data.NotebookEvent.Kind;
+
 public class Notebook {
 	private String name = "";
 	private File folder;
@@ -67,13 +70,15 @@ public class Notebook {
 
 		notes.add(0, n);
 
+		Elephant.eventBus.post(new NotebookEvent(Kind.noteCreated));
+		
 		return n;
 	}
 
 	// XXX before moving to trash, make filename unique
 	public void deleteNote(Note note) {
-		note.moveTo(Vault.getInstance().getTrash());
 		notes.remove(note);
+		note.moveTo(Vault.getInstance().getTrash());
 	}
 
 	public Note find(String name) {
@@ -84,5 +89,9 @@ public class Notebook {
 			}
 		}
 		return null;
+	}
+
+	public void refresh() {
+		populate();
 	}
 }

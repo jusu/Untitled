@@ -10,7 +10,9 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.IOUtil;
+import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
 public class Note {
 	private File file, meta;
@@ -156,6 +158,13 @@ public class Note {
 		try {
 			FileUtils.moveFileToDirectory(file, dest, false);
 			FileUtils.moveFileToDirectory(meta, dest, false);
+
+			Notebook nb = Vault.getInstance().findNotebook(dest);
+			if (nb != null) {
+				nb.refresh();
+				Elephant.eventBus.post(new NotebookEvent(Kind.noteMoved));
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

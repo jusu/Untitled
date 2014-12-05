@@ -16,8 +16,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-import com.pinktwins.elephant.NoteList.NoteItem;
+import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.NotebookEvent;
 import com.pinktwins.elephant.data.Vault;
 
 public class Notebooks extends BackgroundPanel {
@@ -44,8 +45,16 @@ public class Notebooks extends BackgroundPanel {
 		super(tile);
 
 		window = w;
+
+		Elephant.eventBus.register(this);
+
 		createComponents();
 		update();
+	}
+
+	@Subscribe
+	public void handleNotebookEvent(NotebookEvent event) {
+		refresh();
 	}
 
 	JPanel main;
@@ -78,6 +87,10 @@ public class Notebooks extends BackgroundPanel {
 			public void mouseExited(MouseEvent e) {
 			}
 		});
+	}
+
+	public void refresh() {
+		update();
 	}
 
 	private void update() {

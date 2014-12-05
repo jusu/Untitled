@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 
 import com.pinktwins.elephant.CustomEditor.EditorEventListener;
@@ -24,6 +27,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private static Image tile;
 
 	private ElephantWindow window;
+
+	private final int kNoteOffset = 65;
+	private final int kMinNoteSize = 288;
 	private final int kBorder = 14;
 
 	static {
@@ -41,7 +47,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private Note currentNote;
-	JPanel main;
+	JPanel main, area;
 	CustomEditor editor;
 
 	private void createComponents() {
@@ -54,14 +60,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		tools.setBounds(0, 0, 1920, 65);
 		main.add(tools);
 
-		final JPanel area = new JPanel();
+		area = new JPanel();
 		area.setLayout(new GridLayout(1, 1));
 		area.setBackground(Color.WHITE);
 
 		editor = new CustomEditor();
 		editor.setEditorEventListener(this);
 		area.add(editor);
-		area.setBounds(kBorder, 65 + kBorder, 200, 288);
+		area.setBounds(kBorder, kNoteOffset + kBorder, 200, kMinNoteSize);
 
 		main.add(area);
 
@@ -117,7 +123,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		window.unfocusEditor();
 	}
 
-	private void saveChanges() {
+	public void saveChanges() {
 		if (currentNote != null) {
 			boolean changed = false;
 			boolean contentChanged = false;
@@ -157,5 +163,27 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	@Override
 	public void editingFocusLost() {
 		saveChanges();
+	}
+
+	@Override
+	public void caretChanged(final JTextPane text) {
+		// Expand/shrink JTextPane to content height
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Rectangle y = text.modelToView(text.getDocument().getLength());
+					if (y != null) {
+						int height = y.y + y.height + kNoteOffset;
+						if (height < kMinNoteSize) {
+							height = kMinNoteSize;
+						}
+						Rectangle b = area.getBounds();
+						area.setBounds(b.x, b.y, b.width, height);
+						area.revalidate();
+					}
+				} catch (BadLocationException e) {
+				}
+			}
+		});
 	}
 }

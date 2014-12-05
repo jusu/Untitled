@@ -117,7 +117,7 @@ public class ElephantWindow extends JFrame {
 			switch (e.getID()) {
 			case KeyEvent.KEY_PRESSED:
 				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
-					if ((e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
+					if ((e.getModifiers() & KeyEvent.META_MASK) == KeyEvent.META_MASK && (e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
 						String target = sideBar.shortcuts.getTarget(e.getKeyCode() - KeyEvent.VK_1);
 						openShortcut(target);
 					}
@@ -132,6 +132,9 @@ public class ElephantWindow extends JFrame {
 	public void openShortcut(String target) {
 		File f = new File(target);
 		if (f.exists()) {
+
+			noteEditor.saveChanges();
+
 			if (f.isDirectory()) {
 				Notebook notebook = Vault.getInstance().findNotebook(f);
 				if (notebook != null) {

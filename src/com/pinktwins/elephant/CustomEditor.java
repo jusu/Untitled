@@ -2,8 +2,10 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -11,8 +13,12 @@ import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
@@ -29,6 +35,8 @@ public class CustomEditor extends RoundPanel {
 
 	public interface EditorEventListener {
 		public void editingFocusLost();
+
+		public void caretChanged(JTextPane text);
 	}
 
 	EditorEventListener eeListener;
@@ -88,9 +96,18 @@ public class CustomEditor extends RoundPanel {
 		titlePanel.add(title, BorderLayout.CENTER);
 
 		note = new JTextPane();
-		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 		note.addFocusListener(editorFocusListener);
 		note.setFont(ElephantWindow.fontEditor);
+		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+
+		note.addCaretListener(new CaretListener() {
+			@Override
+			public void caretUpdate(CaretEvent e) {
+				if (eeListener != null) {
+					eeListener.caretChanged(note);
+				}
+			}
+		});
 
 		title.setText("");
 
