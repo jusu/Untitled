@@ -105,6 +105,7 @@ public class NoteList extends BackgroundPanel {
 		}
 
 		layoutItems();
+		revalidate();
 	}
 
 	int itemsPerRow;
@@ -369,6 +370,9 @@ public class NoteList extends BackgroundPanel {
 				NoteItem item = noteItems.get(index);
 				window.showNote(item.note);
 				selectNote(item);
+			} else {
+				selectedNote = null;
+				window.showNotebook(notebook);
 			}
 		}
 	}
