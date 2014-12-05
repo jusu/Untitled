@@ -23,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 
+import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
@@ -54,6 +55,8 @@ public class ElephantWindow extends JFrame {
 		setTitle("Elephant Premium");
 		setSize(1080, 1050);
 
+		Elephant.eventBus.register(this);
+		
 		createMenu();
 		createSplit();
 		createToolbar();
@@ -321,8 +324,9 @@ public class ElephantWindow extends JFrame {
 		noteEditor.unfocus();
 	}
 
-	public void updateThumb(Note note) {
-		noteList.updateThumb(note);
+	@Subscribe
+	public void handleNoteChanged(NoteChangedEvent event) {
+		noteList.updateThumb(event.note);
 	}
 
 	public void sortAndUpdate() {

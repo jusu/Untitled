@@ -148,7 +148,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 
 			if (changed) {
-				window.updateThumb(currentNote);
+				Elephant.eventBus.post(new NoteChangedEvent(currentNote));
 				if (contentChanged) {
 					window.sortAndUpdate();
 				}

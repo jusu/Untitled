@@ -61,7 +61,7 @@ public class Notebook {
 	}
 
 	public Note newNote() throws IOException {
-		String fullPath = this.folder.getAbsolutePath() + File.separator + Long.toString(System.currentTimeMillis(), 36);
+		String fullPath = this.folder.getAbsolutePath() + File.separator + Long.toString(System.currentTimeMillis(), 36) + ".txt";
 		File f = new File(fullPath);
 
 		f.createNewFile();

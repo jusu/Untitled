@@ -14,6 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Vault;
 
 public class SideBarList extends JPanel {
@@ -72,29 +74,45 @@ public class SideBarList extends JPanel {
 	class SideBarListItem extends JPanel {
 		private static final long serialVersionUID = 4837771971000290113L;
 
+		File file;
 		Icon icon;
-		String label;
 		String target;
+		JLabel label;
+		
+		@Subscribe
+		public void handleNoteChanged(NoteChangedEvent event) {
+			if (event.note.equals(file)) {
+				refresh();
+			}
+		}
 
+		public void refresh() {
+			if (file.isDirectory()) {
+				icon = Icon.notebookSmall;
+				label.setText(file.getName());
+			} else {
+				icon = Icon.noteSmall;
+				Note note = new Note(file);
+				label.setText(note.getMeta().title());
+			}
+		}
+		
 		public SideBarListItem(String targetFileName) {
 			setOpaque(false);
 
+			Elephant.eventBus.register(this);
+			
 			String path = Vault.getInstance().getHome() + File.separator + targetFileName;
 
-			File f = new File(path);
-			if (f.isDirectory()) {
-				icon = Icon.notebookSmall;
-			} else {
-				icon = Icon.noteSmall;
-			}
+			file = new File(path);
+			target = file.getAbsolutePath();
 
-			target = f.getAbsolutePath();
-			label = f.getName();
+			label = new JLabel("");
+			label.setForeground(Color.LIGHT_GRAY);
+			label.setFont(ElephantWindow.fontBoldNormal);
+			add(label);
 
-			final JLabel l = new JLabel(label);
-			l.setForeground(Color.LIGHT_GRAY);
-			l.setFont(ElephantWindow.fontBoldNormal);
-			add(l);
+			refresh();
 
 			addMouseListener(new MouseListener() {
 				@Override
@@ -104,12 +122,12 @@ public class SideBarList extends JPanel {
 
 				@Override
 				public void mousePressed(MouseEvent e) {
-					l.setForeground(Color.WHITE);
+					label.setForeground(Color.WHITE);
 				}
 
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					l.setForeground(Color.LIGHT_GRAY);
+					label.setForeground(Color.LIGHT_GRAY);
 				}
 
 				@Override
