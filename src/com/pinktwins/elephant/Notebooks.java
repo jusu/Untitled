@@ -1,5 +1,6 @@
 package com.pinktwins.elephant;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -172,24 +173,18 @@ public class Notebooks extends BackgroundPanel {
 
 			notebook = nb;
 
-			JSplitPane p = new JSplitPane();
-			p.setResizeWeight(0.82);
-			p.setDividerSize(0);
-			p.setBorder(null);
-
 			name = new JLabel(nb.name());
 			name.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
 			name.setForeground(Color.DARK_GRAY);
-			p.setLeftComponent(name);
 
 			count = new JLabel(String.valueOf(nb.count()));
-			count.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
+			count.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
 			count.setForeground(Color.LIGHT_GRAY);
-			p.setRightComponent(count);
 
-			add(p);
+			add(name, BorderLayout.WEST);
+			add(count, BorderLayout.EAST);
 
-			p.addMouseListener(this);
+			addMouseListener(this);
 		}
 
 		public void setSelected(boolean b) {
