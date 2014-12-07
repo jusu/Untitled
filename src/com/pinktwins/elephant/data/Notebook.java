@@ -21,7 +21,7 @@ public class Notebook {
 	public File folder() {
 		return folder;
 	}
-	
+
 	public ArrayList<Note> notes = new ArrayList<Note>();
 
 	public Notebook(File folder) {
@@ -52,7 +52,13 @@ public class Notebook {
 		for (File f : folder.listFiles()) {
 			String name = f.getName();
 			if (name.charAt(0) != '.' && !name.endsWith("~")) {
-				notes.add(new Note(f));
+				try {
+					if (f.isFile()) {
+						notes.add(new Note(f));
+					}
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

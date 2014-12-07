@@ -2,7 +2,6 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -14,10 +13,10 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 
+import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.EditorEventListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.NoteChangedEvent;
@@ -28,6 +27,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private static Image tile;
 
 	private ElephantWindow window;
+
+	private boolean isDirty;
 
 	private final int kNoteOffset = 65;
 	private final int kMinNoteSize = 288;
@@ -44,6 +45,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public NoteEditor(ElephantWindow w) {
 		super(tile);
 		window = w;
+
+		Elephant.eventBus.register(this);
+
 		createComponents();
 	}
 
@@ -99,7 +103,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void clear() {
-		// saveChanges();
 		currentNote = null;
 		editor.clear();
 		visible(false);
@@ -124,7 +127,22 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		window.unfocusEditor();
 	}
 
+	@Subscribe
+	public void handleUIEvent(UIEvent event) {
+		if (event.kind == UIEvent.Kind.editorWillChangeNote) {
+			saveChanges();
+		}
+	}
+
+	//int saveCount;
+
 	public void saveChanges() {
+		if (!isDirty) {
+			return;
+		}
+
+		//System.out.println("saveChanges: " + saveCount++);
+
 		if (currentNote != null) {
 			boolean changed = false;
 			boolean contentChanged = false;
@@ -155,10 +173,17 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				}
 			}
 		}
+
+		isDirty = false;
 	}
 
 	public void focusTitle() {
 		editor.focusTitle();
+	}
+
+	@Override
+	public void editingFocusGained() {
+		isDirty = true;
 	}
 
 	@Override

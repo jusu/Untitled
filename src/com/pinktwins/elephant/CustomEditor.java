@@ -34,6 +34,7 @@ public class CustomEditor extends RoundPanel {
 	final Color kDividerColor = Color.decode("#dbdbdb");
 
 	public interface EditorEventListener {
+		public void editingFocusGained();
 		public void editingFocusLost();
 
 		public void caretChanged(JTextPane text);
@@ -48,6 +49,9 @@ public class CustomEditor extends RoundPanel {
 	FocusListener editorFocusListener = new FocusListener() {
 		@Override
 		public void focusGained(FocusEvent e) {
+			if (eeListener != null) {
+				eeListener.editingFocusGained();
+			}
 		}
 
 		@Override

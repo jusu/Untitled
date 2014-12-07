@@ -79,6 +79,7 @@ public class NoteList extends BackgroundPanel {
 		main.addMouseListener(new CustomMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
 				window.onNoteListClicked(e);
 			}
 		});
@@ -321,12 +322,10 @@ public class NoteList extends BackgroundPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			deselectAll();
-
-			if (e.getClickCount() == 1) {
-				selectNote(NoteItem.this);
-				window.showNote(note);
-			}
+			Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
+			selectNote(NoteItem.this.note);
+			window.showNote(note);
+			unfocusEditor();
 		}
 
 		@Override
@@ -387,7 +386,19 @@ public class NoteList extends BackgroundPanel {
 
 	public void sortAndUpdate() {
 		notebook.sortNotes();
-		window.showNotebook(notebook);
+
+		// XXX animate position changes to notes
+		
+		Note n = null;
+		if (selectedNote != null) {
+			n = selectedNote.note;
+		}
+
+		load(notebook);
+
+		if (n != null) {
+			selectNote(n);
+		}
 	}
 
 }
