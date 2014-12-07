@@ -30,7 +30,7 @@ public class BackgroundPanel extends JPanel
 {
 	private static final long serialVersionUID = 1828379725167286010L;
 
-	public static final int SCALED = 0;
+	public static final int SCALED_X = 0;
 	public static final int TILED = 1;
 	public static final int ACTUAL = 2;
 
@@ -220,7 +220,7 @@ public class BackgroundPanel extends JPanel
 
 		switch (style)
 		{
-			case SCALED :
+			case SCALED_X :
 				drawScaled(g);
 				break;
 
@@ -243,7 +243,7 @@ public class BackgroundPanel extends JPanel
 	private void drawScaled(Graphics g)
 	{
 		Dimension d = getSize();
-		g.drawImage(image, 0, 0, d.width, d.height, null);
+		g.drawImage(image, 0, 0, d.width, image.getHeight(null), null);
 	}
 
 	/*

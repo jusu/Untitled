@@ -1,12 +1,19 @@
 package com.pinktwins.elephant;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -25,9 +32,41 @@ public class SideBarList extends JPanel {
 	ArrayList<SideBarListItem> items = new ArrayList<SideBarListItem>();
 
 	private ElephantWindow window;
-	
-	public SideBarList(ElephantWindow w) {
+	private String header;
+
+	private static int NUM_IMAGES = 5;
+
+	enum Images {
+		sidebarNote, sidebarNotebook, sidebarNotesLarge, sidebarNotebooksLarge, sidebarTagsLarge
+	};
+
+	private static String[] imageFiles = { "sidebarNote", "sidebarNotebook", "sidebarNotesLarge", "sidebarNotebooksLarge", "sidebarTagsLarge" };
+	private static ImageIcon[] imageIcons = new ImageIcon[NUM_IMAGES];
+	private static Image sidebarTile, largeHighlight;
+
+	static {
+		try {
+			int n = 0;
+			for (String fileName : imageFiles) {
+				Image i = ImageIO.read(Sidebar.class.getClass().getResourceAsStream(String.format("/images/%s.png", fileName)));
+				imageIcons[n] = new ImageIcon(i);
+				n++;
+			}
+
+			sidebarTile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/sidebar.png"));
+			largeHighlight = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/sidebarLargeHilight.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private ImageIcon getImageIcon(Images kind) {
+		return imageIcons[kind.ordinal()];
+	}
+
+	public SideBarList(ElephantWindow w, String header) {
 		window = w;
+		this.header = header;
 	}
 
 	public String getTarget(int n) {
@@ -56,30 +95,62 @@ public class SideBarList extends JPanel {
 			}
 		}
 
-		createComponents();
+		createComponents(true);
 	}
 
-	private void createComponents() {
+	public void addNavigation() {
+		items.clear();
+
+		SideBarListItem i;
+		i = new SideBarListItem("Notes", Images.sidebarNotesLarge, Sidebar.ACTION_NOTES);
+		items.add(i);
+		i = new SideBarListItem("Notebooks", Images.sidebarNotebooksLarge, Sidebar.ACTION_NOTEBOOKS);
+		items.add(i);
+		i = new SideBarListItem("Tags", Images.sidebarTagsLarge, Sidebar.ACTION_TAGS);
+		items.add(i);
+
+		createComponents(false);
+	}
+
+	private void createComponents(boolean useHeader) {
 		removeAll();
 		setLayout(new GridLayout(0, 1));
+
+		if (useHeader) {
+			JLabel lHeader = new JLabel(header);
+			lHeader.setForeground(Color.decode("#93989d"));
+			lHeader.setBorder(BorderFactory.createEmptyBorder(6, 10, 0, 0));
+
+			add(lHeader);
+		}
 
 		for (SideBarListItem item : items) {
 			add(item);
 		}
 	}
 
-	enum Icon {
-		none, notebookSmall, notebookLarge, noteSmall, noteLarge
-	};
+	protected void deselectAll() {
+		for (SideBarListItem item : items) {
+			item.setImage(sidebarTile);
+		}
+	}
+	
+	public void select(int idx) {
+		deselectAll();
+		if (idx >= 0 && idx < items.size()) {
+			SideBarListItem item = items.get(idx);
+			item.setImage(largeHighlight);
+		}
+	}
 
-	class SideBarListItem extends JPanel {
+	class SideBarListItem extends BackgroundPanel {
 		private static final long serialVersionUID = 4837771971000290113L;
 
 		File file;
-		Icon icon;
 		String target;
-		JLabel label;
-		
+		JButton icon = new JButton();
+		JLabel label = new JLabel("");
+
 		@Subscribe
 		public void handleNoteChanged(NoteChangedEvent event) {
 			if (event.note.equals(file)) {
@@ -89,33 +160,35 @@ public class SideBarList extends JPanel {
 
 		public void refresh() {
 			if (file.isDirectory()) {
-				icon = Icon.notebookSmall;
+				icon.setIcon(getImageIcon(Images.sidebarNotebook));
+				icon.setPressedIcon(getImageIcon(Images.sidebarNotebook));
 				label.setText(file.getName());
 			} else {
-				icon = Icon.noteSmall;
+				icon.setIcon(getImageIcon(Images.sidebarNote));
+				icon.setPressedIcon(getImageIcon(Images.sidebarNote));
 				Note note = new Note(file);
 				label.setText(note.getMeta().title());
 			}
 		}
-		
-		public SideBarListItem(String targetFileName) {
+
+		public void init() {
+			Elephant.eventBus.register(this);
+
 			setOpaque(false);
 
-			Elephant.eventBus.register(this);
-			
-			String path = Vault.getInstance().getHome() + File.separator + targetFileName;
+			setLayout(new BorderLayout());
+			setBorder(BorderFactory.createEmptyBorder(2, 12, 0, 12));
 
-			file = new File(path);
-			target = file.getAbsolutePath();
+			icon.setBorder(ElephantWindow.emptyBorder);
 
-			label = new JLabel("");
 			label.setForeground(Color.LIGHT_GRAY);
 			label.setFont(ElephantWindow.fontBoldNormal);
-			add(label);
+			label.setBorder(BorderFactory.createEmptyBorder(1, 6, 0, 0));
 
-			refresh();
+			add(icon, BorderLayout.WEST);
+			add(label, BorderLayout.CENTER);
 
-			addMouseListener(new MouseListener() {
+			MouseListener ml = new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					window.openShortcut(target);
@@ -138,7 +211,36 @@ public class SideBarList extends JPanel {
 				@Override
 				public void mouseExited(MouseEvent e) {
 				}
-			});
+			};
+
+			addMouseListener(ml);
+			icon.addMouseListener(ml);
+		}
+
+		public SideBarListItem(Image image) {
+			super(image);
+		}
+
+		public SideBarListItem(String targetFileName) {
+			super(sidebarTile);
+			init();
+
+			String path = Vault.getInstance().getHome() + File.separator + targetFileName;
+
+			file = new File(path);
+			target = file.getAbsolutePath();
+
+			refresh();
+		}
+
+		public SideBarListItem(String title, Images imageIcon, String targetAction) {
+			super(sidebarTile);
+			init();
+
+			target = targetAction;
+			label.setText(title);
+			icon.setIcon(getImageIcon(imageIcon));
+			icon.setBorder(BorderFactory.createEmptyBorder(5, 0, 4, 0));
 		}
 	}
 }

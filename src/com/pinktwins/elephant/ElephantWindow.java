@@ -4,14 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -41,7 +48,8 @@ public class ElephantWindow extends JFrame {
 
 	JSplitPane splitLeft, splitRight;
 
-	private Sidebar sideBar = new Sidebar(this);
+	private Toolbar toolBar = new Toolbar(this);
+	private Sidebar sideBar = new Sidebar(this, "SHORTCUTS");
 	private NoteList noteList = new NoteList(this);
 	private NoteEditor noteEditor = new NoteEditor(this);
 	private Notebooks notebooks = new Notebooks(this);
@@ -67,6 +75,16 @@ public class ElephantWindow extends JFrame {
 
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		manager.addKeyEventDispatcher(new KeyDispatcher());
+
+		addWindowListener(new WindowAdapter() {
+			public void windowActivated(WindowEvent e) {
+				toolBar.focusGained();
+			}
+
+			public void windowDeactivated(WindowEvent e) {
+				toolBar.focusLost();
+			}
+		});
 	}
 
 	// XXX this will bite me eventually
@@ -138,6 +156,21 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void openShortcut(String target) {
+		if (Sidebar.ACTION_NOTES.equals(target)) {
+			showNotes();
+			return;
+		}
+
+		if (Sidebar.ACTION_NOTEBOOKS.equals(target)) {
+			showNotebooks();
+			return;
+		}
+
+		if (Sidebar.ACTION_TAGS.equals(target)) {
+			showTags();
+			return;
+		}
+
 		File f = new File(target);
 		if (f.exists()) {
 
@@ -167,15 +200,18 @@ public class ElephantWindow extends JFrame {
 	private void showNotes() {
 		splitLeft.setRightComponent(splitRight);
 		uiMode = UiModes.notes;
+		sideBar.selectNavigation(0);
 	}
 
 	private void showNotebooks() {
 		splitLeft.setRightComponent(notebooks);
 		uiMode = UiModes.notebooks;
+		sideBar.selectNavigation(1);
 	}
 
 	private void showTags() {
 		uiMode = UiModes.tags;
+		sideBar.selectNavigation(2);
 	}
 
 	public void showNotebook(Notebook notebook) {
@@ -318,11 +354,8 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void createToolbar() {
-		JPanel tools = new JPanel();
-		tools.setBackground(Color.decode("#b6b6b6"));
-		tools.setPreferredSize(new Dimension(1920, 40));
-
-		add(tools, BorderLayout.NORTH);
+		toolBar.setPreferredSize(new Dimension(1920, 40));
+		add(toolBar, BorderLayout.NORTH);
 	}
 
 	public void onNoteListClicked(MouseEvent e) {
