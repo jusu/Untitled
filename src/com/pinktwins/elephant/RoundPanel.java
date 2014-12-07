@@ -1,11 +1,9 @@
 package com.pinktwins.elephant;
 
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.ComponentEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;

@@ -1,9 +1,7 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;

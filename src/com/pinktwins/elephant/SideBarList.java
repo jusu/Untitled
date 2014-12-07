@@ -33,6 +33,7 @@ public class SideBarList extends JPanel {
 
 	private ElephantWindow window;
 	private String header;
+	public boolean highlightSelection = false;
 
 	private static int NUM_IMAGES = 5;
 
@@ -130,16 +131,20 @@ public class SideBarList extends JPanel {
 	}
 
 	protected void deselectAll() {
-		for (SideBarListItem item : items) {
-			item.setImage(sidebarTile);
+		if (highlightSelection) {
+			for (SideBarListItem item : items) {
+				item.setImage(sidebarTile);
+			}
 		}
 	}
-	
+
 	public void select(int idx) {
-		deselectAll();
-		if (idx >= 0 && idx < items.size()) {
-			SideBarListItem item = items.get(idx);
-			item.setImage(largeHighlight);
+		if (highlightSelection) {
+			deselectAll();
+			if (idx >= 0 && idx < items.size()) {
+				SideBarListItem item = items.get(idx);
+				item.setImage(largeHighlight);
+			}
 		}
 	}
 
@@ -222,7 +227,6 @@ public class SideBarList extends JPanel {
 		}
 
 		public SideBarListItem(String targetFileName) {
-			super(sidebarTile);
 			init();
 
 			String path = Vault.getInstance().getHome() + File.separator + targetFileName;

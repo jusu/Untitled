@@ -1,15 +1,13 @@
 package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import com.pinktwins.elephant.data.Vault;
@@ -38,32 +36,37 @@ public class Sidebar extends BackgroundPanel {
 
 	public Sidebar(ElephantWindow w, String header) {
 		super(tile);
-
 		window = w;
 
 		shortcuts = new SideBarList(window, header);
 		shortcuts.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
-
 		shortcuts.load(new File(Vault.getInstance().getHome() + File.separator + ".shortcuts"));
-		add(shortcuts, BorderLayout.NORTH);
 
 		BackgroundPanel div = new BackgroundPanel(sidebarDivider);
 		div.setOpaque(false);
 		div.setStyle(BackgroundPanel.SCALED_X);
 		div.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
-		add(div);
-
-		JPanel p = new JPanel();
-		p.setLayout(new BorderLayout());
+		div.setMaximumSize(new Dimension(1920, 2));
 
 		navigation = new SideBarList(window, "");
 		navigation.addNavigation();
 		navigation.setOpaque(false);
+		navigation.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+		navigation.highlightSelection = true;
 
-		p.add(navigation, BorderLayout.NORTH);
-		div.add(p, BorderLayout.CENTER);
+		JPanel p1 = new JPanel(new BorderLayout());
+		JPanel p2 = new JPanel(new BorderLayout());
+		p1.setOpaque(false);
+		p2.setOpaque(false);
+
+		add(shortcuts, BorderLayout.NORTH);
+		p1.add(div, BorderLayout.NORTH);
+		p2.add(navigation, BorderLayout.NORTH);
+
+		add(p1, BorderLayout.CENTER);
+		p1.add(p2, BorderLayout.CENTER);
 	}
-	
+
 	public void selectNavigation(int n) {
 		navigation.select(n);
 	}

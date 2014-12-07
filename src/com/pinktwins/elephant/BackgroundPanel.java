@@ -41,6 +41,10 @@ public class BackgroundPanel extends JPanel
 	private float alignmentY = 0.5f;
 	private boolean isTransparentAdd = true;
 
+	public BackgroundPanel() {
+		this(null, TILED);
+	}
+
 	/*
 	 *  Set image as the background with the SCALED style
 	 */
