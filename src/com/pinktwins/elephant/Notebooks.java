@@ -3,8 +3,15 @@ package com.pinktwins.elephant;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -15,12 +22,15 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.NotebookEvent;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.data.VaultEvent;
 
 public class Notebooks extends BackgroundPanel {
 
@@ -42,6 +52,8 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
+	boolean isEditing = false;
+
 	public Notebooks(ElephantWindow w) {
 		super(tile);
 
@@ -51,11 +63,19 @@ public class Notebooks extends BackgroundPanel {
 
 		createComponents();
 		update();
+
+		addComponentListener(new ResizeListener() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				layoutItems();
+			}
+		});
 	}
 
 	@Subscribe
 	public void handleNotebookEvent(NotebookEvent event) {
 		refresh();
+		revalidate();
 	}
 
 	JPanel main;
@@ -63,7 +83,12 @@ public class Notebooks extends BackgroundPanel {
 	private void createComponents() {
 		main = new JPanel();
 		main.setLayout(null);
-		add(main);
+
+		JScrollPane scroll = new JScrollPane(main);
+		scroll.setBorder(ElephantWindow.emptyBorder);
+		scroll.getHorizontalScrollBar().setUnitIncrement(5);
+
+		add(scroll);
 
 		main.addMouseListener(new MouseListener() {
 
@@ -92,33 +117,50 @@ public class Notebooks extends BackgroundPanel {
 
 	public void refresh() {
 		update();
+		layoutItems();
 	}
 
 	private void update() {
 		main.removeAll();
 		notebookItems.clear();
 
-		Insets insets = main.getInsets();
-		Dimension size;
-		int y = 12;
-
 		List<Notebook> list = Vault.getInstance().getNotebooks();
-		int n = 0, len = list.size();
 		for (Notebook nb : list) {
 			NotebookItem item = new NotebookItem(nb);
 			main.add(item);
 			notebookItems.add(item);
+		}
+	}
 
+	private void layoutItems() {
+		Insets insets = main.getInsets();
+		Dimension size = new Dimension();
+
+		int xOff = 12 + insets.left;
+		int x = 0;
+		int y = 12;
+
+		Rectangle b = main.getBounds();
+
+		for (NotebookItem item : notebookItems) {
 			size = item.getPreferredSize();
-			item.setBounds(12 + insets.left, y + insets.top, size.width, size.height);
+			itemsPerRow = b.height / size.height;
+
+			item.setBounds(xOff + x, y + insets.top, size.width, size.height);
+
 			y += size.height;
 
-			if (n < len - 1) {
-				// y--;
+			if (y + size.height > b.height) {
+				x += size.width + xOff;
+				y = 12;
 			}
-
-			n++;
 		}
+
+		Dimension d = main.getPreferredSize();
+		d.width = x + size.width + xOff * 2;
+		main.setPreferredSize(d);
+
+		revalidate();
 	}
 
 	private void deselectAll() {
@@ -128,10 +170,16 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
-	public void changeSelection(int delta) {
+	int itemsPerRow;
+
+	public void changeSelection(int delta, int keyCode) {
 		int len = notebookItems.size();
 		int select = -1;
 
+		if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
+			delta *= itemsPerRow;
+		}
+		
 		if (selectedNotebook == null) {
 			if (len > 0) {
 				if (delta < 0) {
@@ -151,6 +199,8 @@ public class Notebooks extends BackgroundPanel {
 			NotebookItem item = notebookItems.get(select);
 			item.setSelected(true);
 			selectedNotebook = item;
+			
+			// XXX impl selectNote(), apply scroll to make item visible
 		}
 	}
 
@@ -160,6 +210,27 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
+	public void newNotebook() {
+		try {
+			Notebook nb = Notebook.newNotebook();
+			NotebookItem newItem = new NotebookItem(nb);
+			newItem.setEditable();
+			notebookItems.add(0, newItem);
+			main.add(newItem, 0);
+			layoutItems();
+
+			deselectAll();
+			newItem.edit.requestFocusInWindow();
+			isEditing = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean isEditing() {
+		return isEditing;
+	}
+
 	class NotebookItem extends BackgroundPanel implements MouseListener {
 		private static final long serialVersionUID = -7285867977183764620L;
 
@@ -167,9 +238,12 @@ public class Notebooks extends BackgroundPanel {
 		private Dimension size = new Dimension(252, 51);
 		private JLabel name;
 		private JLabel count;
+		private JTextField edit;
 
 		public NotebookItem(Notebook nb) {
 			super(notebookBg);
+
+			setLayout(null);
 
 			notebook = nb;
 
@@ -177,14 +251,83 @@ public class Notebooks extends BackgroundPanel {
 			name.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
 			name.setForeground(Color.DARK_GRAY);
 
-			count = new JLabel(String.valueOf(nb.count()));
+			count = new JLabel(String.valueOf(nb.count()), SwingConstants.CENTER);
 			count.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
 			count.setForeground(Color.LIGHT_GRAY);
 
-			add(name, BorderLayout.WEST);
-			add(count, BorderLayout.EAST);
+			add(name);
+			add(count);
+
+			name.setBounds(0, 0, 200, 51);
+			count.setBounds(202, 0, 52, 51);
 
 			addMouseListener(this);
+		}
+
+		public void setEditable() {
+			edit = new JTextField();
+			edit.setText(notebook.name());
+			edit.setSelectionStart(0);
+			edit.setSelectionEnd(notebook.name().length());
+			edit.setMaximumSize(new Dimension(200, 30));
+			remove(name);
+			add(edit);
+
+			edit.setBounds(12, 10, 180, 31);
+
+			edit.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					doneEditing();
+				}
+			});
+
+			edit.addKeyListener(new KeyListener() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+						cancelEditing();
+					}
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+				}
+			});
+		}
+
+		protected void doneEditing() {
+			String s = edit.getText();
+			if (notebook.rename(s)) {
+				isEditing = false;
+				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated));
+				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged));
+
+				for (NotebookItem item : notebookItems) {
+					if (item.notebook.equals(notebook.folder())) {
+						selectedNotebook = item;
+						item.setSelected(true);
+					}
+				}
+
+			} else {
+				// XXX likely nonconforming characters in name. explain it.
+			}
+		}
+
+		protected void cancelEditing() {
+			try {
+				notebook.folder().delete();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			isEditing = false;
+			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged));
 		}
 
 		public void setSelected(boolean b) {
@@ -214,6 +357,10 @@ public class Notebooks extends BackgroundPanel {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			if (isEditing) {
+				return;
+			}
+
 			deselectAll();
 			setSelected(true);
 

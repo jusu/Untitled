@@ -20,6 +20,7 @@ import javax.swing.text.BadLocationException;
 
 import com.pinktwins.elephant.CustomEditor.EditorEventListener;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.NoteChangedEvent;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 

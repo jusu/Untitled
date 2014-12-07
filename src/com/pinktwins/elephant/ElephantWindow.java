@@ -19,14 +19,15 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.data.VaultEvent;
 
 public class ElephantWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -56,7 +57,7 @@ public class ElephantWindow extends JFrame {
 		setSize(1080, 1050);
 
 		Elephant.eventBus.register(this);
-		
+
 		createMenu();
 		createSplit();
 		createToolbar();
@@ -99,20 +100,24 @@ public class ElephantWindow extends JFrame {
 				}
 				break;
 			case notebooks:
-				switch (e.getID()) {
-				case KeyEvent.KEY_PRESSED:
-					switch (e.getKeyCode()) {
-					case KeyEvent.VK_UP:
-						notebooks.changeSelection(-1);
-						break;
-					case KeyEvent.VK_DOWN:
-						notebooks.changeSelection(1);
-						break;
-					case KeyEvent.VK_ENTER:
-						notebooks.openSelected();
+				if (!notebooks.isEditing()) {
+					switch (e.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						switch (e.getKeyCode()) {
+						case KeyEvent.VK_UP:
+						case KeyEvent.VK_LEFT:
+							notebooks.changeSelection(-1, e.getKeyCode());
+							break;
+						case KeyEvent.VK_DOWN:
+						case KeyEvent.VK_RIGHT:
+							notebooks.changeSelection(1, e.getKeyCode());
+							break;
+						case KeyEvent.VK_ENTER:
+							notebooks.openSelected();
+							break;
+						}
 						break;
 					}
-					break;
 				}
 				break;
 			}
@@ -220,7 +225,7 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			showNotebooks();
-			// XXX NEW NOTEBOOK
+			notebooks.newNotebook();
 		}
 	};
 
@@ -333,4 +338,12 @@ public class ElephantWindow extends JFrame {
 		noteList.sortAndUpdate();
 	}
 
+	@Subscribe
+	public void handleVaultEvent(VaultEvent event) {
+		if (event.kind == VaultEvent.Kind.notebookListChanged) {
+			notebooks.refresh();
+		}
+	}
 }
+
+// ;'''( laku

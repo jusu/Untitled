@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Vault;
 
 public class SideBarList extends JPanel {

@@ -18,6 +18,10 @@ public class Notebook {
 		return folder.equals(f);
 	}
 
+	public File folder() {
+		return folder;
+	}
+	
 	public ArrayList<Note> notes = new ArrayList<Note>();
 
 	public Notebook(File folder) {
@@ -25,6 +29,22 @@ public class Notebook {
 		this.folder = folder;
 
 		populate();
+	}
+
+	public static Notebook newNotebook() throws IOException {
+		String baseName = Vault.getInstance().getHome() + File.separator + "New notebook";
+		File f = new File(baseName);
+		int n = 2;
+		while (f.exists()) {
+			f = new File(baseName + " " + n);
+			n++;
+		}
+
+		if (!f.mkdirs()) {
+			throw new IOException();
+		}
+
+		return new Notebook(f);
 	}
 
 	private void populate() {
@@ -71,7 +91,7 @@ public class Notebook {
 		notes.add(0, n);
 
 		Elephant.eventBus.post(new NotebookEvent(Kind.noteCreated));
-		
+
 		return n;
 	}
 
@@ -93,5 +113,18 @@ public class Notebook {
 
 	public void refresh() {
 		populate();
+	}
+
+	public boolean rename(String s) {
+		File newFile = new File(folder.getParentFile() + File.separator + s);
+		try {
+			if (folder.renameTo(newFile)) {
+				folder = newFile;
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

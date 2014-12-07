@@ -1,9 +1,7 @@
-package com.pinktwins.elephant;
-
-import com.pinktwins.elephant.data.Note;
+package com.pinktwins.elephant.data;
 
 public class NoteChangedEvent {
-	Note note;
+	public Note note;
 
 	public NoteChangedEvent(Note note) {
 		this.note = note;
