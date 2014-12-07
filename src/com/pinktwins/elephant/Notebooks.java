@@ -22,9 +22,12 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+
+import org.pushingpixels.trident.Timeline;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
@@ -78,13 +81,14 @@ public class Notebooks extends BackgroundPanel {
 		revalidate();
 	}
 
+	JScrollPane scroll;
 	JPanel main;
 
 	private void createComponents() {
 		main = new JPanel();
 		main.setLayout(null);
 
-		JScrollPane scroll = new JScrollPane(main);
+		scroll = new JScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getHorizontalScrollBar().setUnitIncrement(5);
 
@@ -179,7 +183,7 @@ public class Notebooks extends BackgroundPanel {
 		if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
 			delta *= itemsPerRow;
 		}
-		
+
 		if (selectedNotebook == null) {
 			if (len > 0) {
 				if (delta < 0) {
@@ -194,14 +198,36 @@ public class Notebooks extends BackgroundPanel {
 		}
 
 		if (select >= 0 && select < len) {
-			deselectAll();
-
 			NotebookItem item = notebookItems.get(select);
-			item.setSelected(true);
-			selectedNotebook = item;
-			
-			// XXX impl selectNote(), apply scroll to make item visible
+			selectNotebook(item);
 		}
+	}
+
+	void selectNotebook(NotebookItem item) {
+		deselectAll();
+		item.setSelected(true);
+		selectedNotebook = item;
+
+		Rectangle b = item.getBounds();
+		int itemX = b.x;
+		int x = scroll.getHorizontalScrollBar().getValue();
+		int scrollWidth = scroll.getBounds().width;
+
+		if (itemX < x || itemX + b.height >= x + scrollWidth) {
+
+			if (itemX < x) {
+				itemX -= 12;
+			} else {
+				itemX -= scrollWidth - b.width - 12;
+			}
+
+			JScrollBar bar = scroll.getHorizontalScrollBar();
+			Timeline timeline = new Timeline(bar);
+			timeline.addPropertyToInterpolate("value", bar.getValue(), itemX);
+			timeline.setDuration(100);
+			timeline.play();
+		}
+
 	}
 
 	public void openSelected() {
@@ -309,8 +335,7 @@ public class Notebooks extends BackgroundPanel {
 
 				for (NotebookItem item : notebookItems) {
 					if (item.notebook.equals(notebook.folder())) {
-						selectedNotebook = item;
-						item.setSelected(true);
+						selectNotebook(item);
 					}
 				}
 
@@ -357,13 +382,6 @@ public class Notebooks extends BackgroundPanel {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			if (isEditing) {
-				return;
-			}
-
-			deselectAll();
-			setSelected(true);
-
 			if (e.getClickCount() == 2) {
 				window.showNotebook(notebook);
 			}
@@ -371,6 +389,11 @@ public class Notebooks extends BackgroundPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			if (isEditing) {
+				return;
+			}
+
+			selectNotebook(NotebookItem.this);
 		}
 
 		@Override

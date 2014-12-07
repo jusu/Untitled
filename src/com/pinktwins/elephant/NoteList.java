@@ -314,13 +314,6 @@ public class NoteList extends BackgroundPanel {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			deselectAll();
-
-			if (e.getClickCount() == 1) {
-				selectNote(NoteItem.this);
-				window.showNote(note);
-			}
-
 			if (e.getClickCount() == 2) {
 				// XXX open note in new window
 			}
@@ -328,6 +321,12 @@ public class NoteList extends BackgroundPanel {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			deselectAll();
+
+			if (e.getClickCount() == 1) {
+				selectNote(NoteItem.this);
+				window.showNote(note);
+			}
 		}
 
 		@Override
