@@ -115,18 +115,25 @@ public class SideBarList extends JPanel {
 
 	private void createComponents(boolean useHeader) {
 		removeAll();
-		setLayout(new GridLayout(0, 1));
+
+		setLayout(new BorderLayout());
+
+		JPanel grid = new JPanel();
+		grid.setOpaque(false);
+		grid.setLayout(new GridLayout(0, 1));
 
 		if (useHeader) {
 			JLabel lHeader = new JLabel(header);
 			lHeader.setForeground(Color.decode("#93989d"));
-			lHeader.setBorder(BorderFactory.createEmptyBorder(6, 10, 0, 0));
+			lHeader.setBorder(BorderFactory.createEmptyBorder(6, 10, 3, 0));
 
-			add(lHeader);
+			add(lHeader, BorderLayout.NORTH);
 		}
 
+		add(grid, BorderLayout.CENTER);
+		
 		for (SideBarListItem item : items) {
-			add(item);
+			grid.add(item);
 		}
 	}
 
@@ -182,13 +189,13 @@ public class SideBarList extends JPanel {
 			setOpaque(false);
 
 			setLayout(new BorderLayout());
-			setBorder(BorderFactory.createEmptyBorder(2, 12, 0, 12));
+			setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
 
 			icon.setBorder(ElephantWindow.emptyBorder);
 
 			label.setForeground(Color.LIGHT_GRAY);
 			label.setFont(ElephantWindow.fontBoldNormal);
-			label.setBorder(BorderFactory.createEmptyBorder(1, 6, 0, 0));
+			label.setBorder(BorderFactory.createEmptyBorder(1, 6, 2, 0));
 
 			add(icon, BorderLayout.WEST);
 			add(label, BorderLayout.CENTER);
