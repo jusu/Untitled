@@ -1,6 +1,7 @@
 package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.KeyEventDispatcher;
@@ -32,11 +33,14 @@ import com.pinktwins.elephant.data.VaultEvent;
 public class ElephantWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
+	final public static Font fontTitle = Font.decode("Helvetica-BOLD-18");
 	final public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
 	final public static Font fontSmall = Font.decode("Helvetica-10");
 	final public static Font fontEditor = Font.decode("Arial-13");
 	final public static Font fontBoldNormal = Font.decode("Helvetica-BOLD-14");
 
+	final public static Color colorTitle = Color.decode("#999999");
+	
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
 	JSplitPane splitLeft, splitRight;

@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.pinktwins.elephant.Elephant;
-import com.pinktwins.elephant.IOUtil;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
 public class Note {

@@ -60,8 +60,24 @@ public class NoteList extends BackgroundPanel {
 
 	JScrollPane scroll;
 	JPanel main;
+	JLabel currentName;
 
 	private void createComponents() {
+		// title bar
+		JPanel title = new JPanel(new BorderLayout());
+		currentName = new JLabel("", JLabel.CENTER);
+		currentName.setBorder(BorderFactory.createEmptyBorder(13, 0, 9, 0));
+		currentName.setFont(ElephantWindow.fontTitle);
+		currentName.setForeground(ElephantWindow.colorTitle);
+
+		JPanel sep = new JPanel(null);
+		sep.setBounds(0, 0, 1920, 1);
+		sep.setBackground(Color.decode("#cccccc"));
+
+		title.add(currentName, BorderLayout.CENTER);
+		title.add(sep, BorderLayout.SOUTH);
+
+		// main notes area
 		main = new JPanel();
 		main.setLayout(null);
 
@@ -70,7 +86,8 @@ public class NoteList extends BackgroundPanel {
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
 
-		add(scroll);
+		add(title, BorderLayout.NORTH);
+		add(scroll, BorderLayout.CENTER);
 
 		main.addMouseListener(new CustomMouseListener() {
 			@Override
@@ -90,6 +107,8 @@ public class NoteList extends BackgroundPanel {
 
 	public void load(Notebook notebook) {
 		this.notebook = notebook;
+
+		currentName.setText(notebook.name());
 
 		main.removeAll();
 		noteItems.clear();
@@ -384,7 +403,7 @@ public class NoteList extends BackgroundPanel {
 		notebook.sortNotes();
 
 		// XXX animate position changes to notes
-		
+
 		Note n = null;
 		if (selectedNote != null) {
 			n = selectedNote.note;

@@ -1,4 +1,4 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
