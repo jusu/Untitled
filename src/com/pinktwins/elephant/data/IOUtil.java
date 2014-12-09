@@ -3,9 +3,12 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.common.io.Files;
 
 public class IOUtil {
 
@@ -32,13 +35,7 @@ public class IOUtil {
 	}
 
 	public static void writeFile(File file, String text) throws IOException {
-		RandomAccessFile f = new RandomAccessFile(file, "rw");
-		try {
-			f.writeBytes(text);
-			f.setLength(text.length());
-		} finally {
-			f.close();
-		}
+		Files.write(text, file, Charset.defaultCharset());
 	}
 
 	final static private JSONObject emptyJson = new JSONObject();

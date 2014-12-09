@@ -2,6 +2,7 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class Note {
 	public String contents() {
 		try {
 			contents = IOUtil.readFile(file);
-			return new String(contents, "UTF-8");
+			return new String(contents, Charset.defaultCharset());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -79,7 +80,7 @@ public class Note {
 
 	public Map<String, String> getMetaMap() {
 		try {
-			String json = new String(IOUtil.readFile(meta), "UTF-8");
+			String json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
 			if (json == null || json.isEmpty()) {
 				return emptyMap;
 			}
@@ -106,7 +107,7 @@ public class Note {
 
 	private void setMeta(String key, String value) {
 		try {
-			String json = new String(IOUtil.readFile(meta), "UTF-8");
+			String json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
 			if (json == null || json.isEmpty()) {
 				json = "{}";
 			}
