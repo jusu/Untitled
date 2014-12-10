@@ -11,27 +11,35 @@ import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
 public class Notebook {
+	final static private String NAME_ALLNOTES = "All Notes";
+
 	private String name = "";
 	private File folder;
 
+	public ArrayList<Note> notes = new ArrayList<Note>();
+
 	public boolean equals(File f) {
-		return folder.equals(f);
+		return folder != null && folder.equals(f);
 	}
 
 	public File folder() {
 		return folder;
 	}
 
-	public ArrayList<Note> notes = new ArrayList<Note>();
+	public Notebook() {
+	}
+
+	public void populateFromNotebook(Notebook nb) {
+		notes.addAll(nb.notes);
+	}
 
 	public Notebook(File folder) {
 		name = folder.getName();
 		this.folder = folder;
-
 		populate();
 	}
 
-	public static Notebook newNotebook() throws IOException {
+	public static Notebook createNotebook() throws IOException {
 		String baseName = Vault.getInstance().getHome() + File.separator + "New notebook";
 		File f = new File(baseName);
 		int n = 2;
@@ -45,6 +53,20 @@ public class Notebook {
 		}
 
 		return new Notebook(f);
+	}
+
+	public static Notebook getNotebookWithAllNotes() {
+		Notebook all = new Notebook();
+		all.name = NAME_ALLNOTES;
+
+		for (Notebook nb : Vault.getInstance().getNotebooks()) {
+			if (!nb.isTrash()) {
+				all.populateFromNotebook(nb);
+			}
+		}
+		all.sortNotes();
+
+		return all;
 	}
 
 	private void populate() {
@@ -86,7 +108,19 @@ public class Notebook {
 		return notes.size();
 	}
 
+	public boolean isTrash() {
+		return "Trash".equals(name);
+	}
+
+	public boolean isAllNotes() {
+		return NAME_ALLNOTES.equals(name);
+	}
+
 	public Note newNote() throws IOException {
+		if (folder == null) {
+			throw new IllegalStateException();
+		}
+
 		String fullPath = this.folder.getAbsolutePath() + File.separator + Long.toString(System.currentTimeMillis(), 36) + ".txt";
 		File f = new File(fullPath);
 
@@ -122,6 +156,10 @@ public class Notebook {
 	}
 
 	public boolean rename(String s) {
+		if (folder == null) {
+			throw new IllegalStateException();
+		}
+
 		File newFile = new File(folder.getParentFile() + File.separator + s);
 		try {
 			if (folder.renameTo(newFile)) {

@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -17,10 +19,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
@@ -59,12 +64,32 @@ public class NoteList extends BackgroundPanel {
 	}
 
 	JScrollPane scroll;
-	JPanel main;
+	JPanel main, allNotesPanel, fillerPanel;
 	JLabel currentName;
 
 	private void createComponents() {
 		// title bar
-		JPanel title = new JPanel(new BorderLayout());
+		final JPanel title = new JPanel(new BorderLayout());
+
+		final JButton allNotes = new JButton("All Notes");
+		allNotes.setBorderPainted(true);
+		allNotes.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				window.showAllNotes();
+			}
+		});
+
+		allNotesPanel = new JPanel();
+		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		allNotesPanel.add(allNotes);
+
+		fillerPanel = new JPanel();
+		JButton filler = new JButton("               ");
+		filler.setContentAreaFilled(false);
+		filler.setBorderPainted(false);
+		fillerPanel.add(filler);
+
 		currentName = new JLabel("", JLabel.CENTER);
 		currentName.setBorder(BorderFactory.createEmptyBorder(13, 0, 9, 0));
 		currentName.setFont(ElephantWindow.fontTitle);
@@ -74,7 +99,9 @@ public class NoteList extends BackgroundPanel {
 		sep.setBounds(0, 0, 1920, 1);
 		sep.setBackground(Color.decode("#cccccc"));
 
+		title.add(allNotesPanel, BorderLayout.WEST);
 		title.add(currentName, BorderLayout.CENTER);
+		title.add(fillerPanel, BorderLayout.EAST);
 		title.add(sep, BorderLayout.SOUTH);
 
 		// main notes area
@@ -120,6 +147,9 @@ public class NoteList extends BackgroundPanel {
 			noteItems.add(item);
 		}
 
+		allNotesPanel.setVisible(!notebook.isAllNotes());
+		fillerPanel.setVisible(!notebook.isAllNotes());
+		
 		layoutItems();
 		revalidate();
 	}

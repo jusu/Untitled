@@ -236,7 +236,7 @@ public class Notebooks extends BackgroundPanel {
 
 	public void newNotebook() {
 		try {
-			Notebook nb = Notebook.newNotebook();
+			Notebook nb = Notebook.createNotebook();
 			NotebookItem newItem = new NotebookItem(nb);
 			newItem.setEditable();
 			notebookItems.add(0, newItem);

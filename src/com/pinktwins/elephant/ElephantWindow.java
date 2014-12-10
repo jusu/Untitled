@@ -227,6 +227,11 @@ public class ElephantWindow extends JFrame {
 		noteEditor.load(note);
 	}
 
+	public void showAllNotes() {
+		Notebook nb = Notebook.getNotebookWithAllNotes();
+		showNotebook(nb);
+	}
+
 	public void focusEditor() {
 		noteEditor.focusTitle();
 	}
@@ -285,6 +290,13 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener showAllNotesAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showAllNotes();
+		}
+	};
+
 	private void createMenu() {
 		JMenuBar mb = new JMenuBar();
 		JMenu file = new JMenu("File");
@@ -325,6 +337,13 @@ public class ElephantWindow extends JFrame {
 		iTags.addActionListener(showTagsAction);
 		view.add(iTags);
 
+		view.addSeparator();
+		
+		JMenuItem iAll = new JMenuItem("Show All Notes");
+		iAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK));
+		iAll.addActionListener(showAllNotesAction);
+		view.add(iAll);
+		
 		mb.add(file);
 		mb.add(edit);
 		mb.add(view);
