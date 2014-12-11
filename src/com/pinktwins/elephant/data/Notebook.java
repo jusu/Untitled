@@ -11,15 +11,34 @@ import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
 public class Notebook {
-	final static private String NAME_ALLNOTES = "All Notes";
+	final static public String NAME_ALLNOTES = "All Notes";
+	final static public String NAME_SEARCH = "Search";
 
 	private String name = "";
 	private File folder;
 
 	public ArrayList<Note> notes = new ArrayList<Note>();
 
-	public boolean equals(File f) {
-		return folder != null && folder.equals(f);
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+
+		if (o instanceof File) {
+			return folder != null && folder.equals(o);
+		}
+
+		if (o instanceof Notebook) {
+			Notebook onb = (Notebook) o;
+			if (folder != null && onb.folder != null) {
+				return folder.equals(onb.folder);
+			} else {
+				return name.equals(onb.name);
+			}
+		}
+
+		return false;
 	}
 
 	public File folder() {
@@ -90,7 +109,7 @@ public class Notebook {
 	public void addNote(Note n) {
 		notes.add(n);
 	}
-	
+
 	public void sortNotes() {
 		Collections.sort(notes, new Comparator<Note>() {
 			@Override
@@ -111,7 +130,7 @@ public class Notebook {
 	public void setName(String s) {
 		name = s;
 	}
-	
+
 	public int count() {
 		return notes.size();
 	}

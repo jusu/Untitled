@@ -27,7 +27,6 @@ import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
-import com.pinktwins.elephant.data.RecentNotes;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.data.VaultEvent;
 
@@ -42,6 +41,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontNormal = Font.decode("Arial-14");
 
 	final public static Color colorTitle = Color.decode("#999999");
+	final public static Color colorTitleButton = Color.decode("#666666");
 
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
@@ -70,8 +70,7 @@ public class ElephantWindow extends JFrame {
 		createSplit();
 		createToolbar();
 
-		// XXX show default notebook, create it if none exists
-		showNotebook(Vault.getInstance().getNotebooks().get(1));
+		showNotebook(Vault.getInstance().getDefaultNotebook());
 
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		manager.addKeyEventDispatcher(new KeyDispatcher());

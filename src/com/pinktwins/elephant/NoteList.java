@@ -3,6 +3,7 @@ package com.pinktwins.elephant;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
@@ -21,11 +22,9 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
@@ -44,6 +43,8 @@ public class NoteList extends BackgroundPanel {
 
 	private Notebook notebook;
 	private NoteItem selectedNote;
+	private Notebook previousNotebook;
+	private int initialScrollValue;
 
 	private ArrayList<NoteItem> noteItems = new ArrayList<NoteItem>();
 
@@ -72,6 +73,7 @@ public class NoteList extends BackgroundPanel {
 		final JPanel title = new JPanel(new BorderLayout());
 
 		final JButton allNotes = new JButton("All Notes");
+		allNotes.setForeground(ElephantWindow.colorTitleButton);
 		allNotes.setBorderPainted(true);
 		allNotes.addActionListener(new ActionListener() {
 			@Override
@@ -149,9 +151,17 @@ public class NoteList extends BackgroundPanel {
 
 		allNotesPanel.setVisible(!notebook.isAllNotes());
 		fillerPanel.setVisible(!notebook.isAllNotes());
-		
+
+		if (notebook.equals(previousNotebook)) {
+			initialScrollValue = scroll.getVerticalScrollBar().getValue();
+		} else {
+			initialScrollValue = 0;
+		}
+
 		layoutItems();
-		revalidate();
+		// revalidate();
+
+		previousNotebook = notebook;
 	}
 
 	int itemsPerRow;
@@ -194,6 +204,13 @@ public class NoteList extends BackgroundPanel {
 		Dimension d = main.getPreferredSize();
 		d.height = y + 12 + lastOffset;
 		main.setPreferredSize(d);
+
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				scroll.getVerticalScrollBar().setValue(initialScrollValue);
+			}
+		});
 	}
 
 	private void selectNote(NoteItem item) {
@@ -219,7 +236,6 @@ public class NoteList extends BackgroundPanel {
 			timeline.setDuration(100);
 			timeline.play();
 		}
-
 	}
 
 	public void changeSelection(int delta, int keyCode) {

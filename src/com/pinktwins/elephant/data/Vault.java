@@ -95,23 +95,26 @@ public class Vault {
 		text = text.toLowerCase();
 
 		Notebook found = new Notebook();
-
+		found.setName(Notebook.NAME_SEARCH);
+		
 		for (Notebook nb : getNotebooks()) {
-			for (Note n : nb.notes) {
-				boolean match = false;
+			if (!nb.isTrash()) {
+				for (Note n : nb.notes) {
+					boolean match = false;
 
-				String title = n.getMeta().title();
-				if (title.toLowerCase().indexOf(text) >= 0) {
-					match = true;
-				} else {
-					String contents = n.contents();
-					if (contents.toLowerCase().indexOf(text) >= 0) {
+					String title = n.getMeta().title();
+					if (title.toLowerCase().indexOf(text) >= 0) {
 						match = true;
+					} else {
+						String contents = n.contents();
+						if (contents.toLowerCase().indexOf(text) >= 0) {
+							match = true;
+						}
 					}
-				}
 
-				if (match) {
-					found.addNote(n);
+					if (match) {
+						found.addNote(n);
+					}
 				}
 			}
 		}
