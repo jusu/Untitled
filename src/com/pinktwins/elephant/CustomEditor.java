@@ -36,6 +36,10 @@ public class CustomEditor extends RoundPanel {
 		public void caretChanged(JTextPane text);
 	}
 
+	public JTextPane getTextPane() {
+		return note;
+	}
+	
 	EditorEventListener eeListener;
 
 	public void setEditorEventListener(EditorEventListener l) {

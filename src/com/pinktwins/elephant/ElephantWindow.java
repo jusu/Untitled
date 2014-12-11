@@ -79,14 +79,21 @@ public class ElephantWindow extends JFrame {
 		manager.addKeyEventDispatcher(new KeyDispatcher());
 
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowActivated(WindowEvent e) {
 				hasWindowFocus = true;
 				toolBar.focusGained();
 			}
 
+			@Override
 			public void windowDeactivated(WindowEvent e) {
 				hasWindowFocus = false;
 				toolBar.focusLost();
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				saveChanges();
 			}
 		});
 	}
@@ -182,7 +189,7 @@ public class ElephantWindow extends JFrame {
 		File f = new File(target);
 		if (f.exists()) {
 
-			noteEditor.saveChanges();
+			saveChanges();
 
 			if (f.isDirectory()) {
 				Notebook notebook = Vault.getInstance().findNotebook(f);
@@ -203,6 +210,10 @@ public class ElephantWindow extends JFrame {
 			}
 		}
 
+	}
+
+	public void saveChanges() {
+		noteEditor.saveChanges();
 	}
 
 	public void deleteSelectedNote() {

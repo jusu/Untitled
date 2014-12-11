@@ -9,7 +9,7 @@ import com.google.common.eventbus.EventBus;
 public class Elephant {
 
 	public final static EventBus eventBus = new EventBus();
-	
+
 	public static void main(String args[]) {
 		try {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");

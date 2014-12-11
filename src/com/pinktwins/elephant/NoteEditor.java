@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 
@@ -40,7 +41,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private boolean isDirty;
 
-	private final int kNoteOffset = 65;
+	private final int kNoteOffset = 64;
 	private final int kMinNoteSize = 288;
 	private final int kBorder = 14;
 
@@ -66,13 +67,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private Note currentNote;
-	JPanel main, area;
+	JPanel main, area, areaHolder;
+	BackgroundPanel scrollHolder;
+	JScrollPane scroll;
 	CustomEditor editor;
 	BackgroundPanel topShadow;
 	JButton currNotebook;
 	JLabel noteCreated, noteUpdated;
+	BorderLayout areaHolderLayout;
 
-	class DividedPanel extends BackgroundPanel {
+	private class DividedPanel extends BackgroundPanel {
 		private static final long serialVersionUID = -7285142017724975923L;
 
 		public DividedPanel(Image i) {
@@ -86,8 +90,23 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
+	private class TopShadowPanel extends JPanel {
+		private static final long serialVersionUID = 6626079564069649611L;
+
+		@Override
+		public void paint(Graphics g) {
+			super.paint(g);
+
+			if (scroll.getVerticalScrollBar().getValue() < 4) {
+				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 4, null);
+			} else {
+				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 2, null);
+			}
+		}
+	}
+
 	private void createComponents() {
-		main = new JPanel();
+		main = new TopShadowPanel();
 		main.setLayout(null);
 		main.setBorder(BorderFactory.createEmptyBorder(kBorder, kBorder, kBorder, kBorder));
 
@@ -137,11 +156,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		main.add(tools);
 
-		topShadow = new BackgroundPanel(noteTopShadow);
-		topShadow.setStyle(BackgroundPanel.SCALED_X);
-		topShadow.setBounds(0, 65, 400, 4);
-		main.add(topShadow);
-
 		area = new JPanel();
 		area.setLayout(new GridLayout(1, 1));
 		area.setBackground(Color.WHITE);
@@ -149,11 +163,34 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor = new CustomEditor();
 		editor.setEditorEventListener(this);
 		area.add(editor);
-		area.setBounds(kBorder, kNoteOffset + kBorder, 200, kMinNoteSize);
+		area.setBounds(kBorder, kBorder, 200, kMinNoteSize);
 
-		main.add(area);
+		// Swing when you're winning part #1.
+
+		final int topBorderOffset = 2;
+		areaHolderLayout = new BorderLayout();
+		areaHolder = new JPanel(areaHolderLayout);
+		areaHolder.setBorder(BorderFactory.createEmptyBorder(kBorder - topBorderOffset, kBorder, kBorder, kBorder));
+		areaHolder.setBounds(0, 0, 200, kMinNoteSize);
+		areaHolder.add(area, BorderLayout.NORTH);
+
+		scrollHolder = new BackgroundPanel();
+		scrollHolder.setOpaque(false);
+		scrollHolder.setBounds(0, 0, 200, kMinNoteSize);
+
+		scroll = new JScrollPane(areaHolder);
+		scroll.setOpaque(false);
+		scroll.setBorder(ElephantWindow.emptyBorder);
+		scroll.getVerticalScrollBar().setUnitIncrement(10);
+		scroll.getHorizontalScrollBar().setUnitIncrement(10);
+
+		scrollHolder.add(scroll, BorderLayout.CENTER);
+
+		main.add(scrollHolder);
 
 		add(main, BorderLayout.CENTER);
+
+		caretChanged(editor.getTextPane());
 
 		trash.addActionListener(new ActionListener() {
 			@Override
@@ -167,18 +204,18 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			public void componentResized(ComponentEvent e) {
 				Rectangle mb = main.getBounds();
 				Rectangle ab = area.getBounds();
+
 				ab.width = mb.width - kBorder * 2;
 				area.setBounds(ab);
+
+				scrollHolder.setBounds(0, kNoteOffset + topBorderOffset, getWidth(), getHeight() - kNoteOffset - topBorderOffset);
+				areaHolder.setBounds(0, 0, ab.width, ab.height);
 
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						NoteEditor.this.editor.revalidate();
 
-						Rectangle r = topShadow.getBounds();
-						r.width = getWidth();
-						topShadow.setBounds(r);
-
-						r = tools.getBounds();
+						Rectangle r = tools.getBounds();
 						r.width = getWidth();
 						tools.setBounds(r);
 					}
@@ -197,6 +234,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public void clear() {
 		currentNote = null;
 		editor.clear();
+		isDirty = false;
 		visible(false);
 	}
 
@@ -233,14 +271,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
-	// int saveCount;
-
 	public void saveChanges() {
 		if (!isDirty) {
 			return;
 		}
-
-		// System.out.println("saveChanges: " + saveCount++);
 
 		if (currentNote != null) {
 			boolean changed = false;
@@ -302,9 +336,40 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						if (height < kMinNoteSize) {
 							height = kMinNoteSize;
 						}
+
+						// Swing when you're winning part #2.
+						//
+						// BorderLayout is fine EXCEPT when note should be at
+						// least kMinNoteSize height.
+						//
+						// BorderLayout would make it as small as the real text
+						// height.
+						//
+						// Prevent that by switching with null layout on the go.
+
+						if (height < kMinNoteSize + kBorder) {
+							areaHolder.setLayout(null);
+						} else {
+							areaHolder.setLayout(areaHolderLayout);
+						}
+
+						int pos = text.getCaretPosition();
+						int len = text.getDocument().getLength();
+						if (pos == len) {
+							scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
+						}
+
 						Rectangle b = area.getBounds();
 						area.setBounds(b.x, b.y, b.width, height);
 						area.revalidate();
+
+						b = areaHolder.getBounds();
+						b.height = height + kNoteOffset + kBorder * 2;
+						areaHolder.setBounds(b.x, b.y, getWidth(), b.height);
+
+						// not needed?
+						// areaHolder.revalidate();
+						// scrollHolder.revalidate();
 					}
 				} catch (BadLocationException e) {
 				}
