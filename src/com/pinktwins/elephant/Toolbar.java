@@ -159,4 +159,9 @@ public class Toolbar extends BackgroundPanel {
 		search.setFocusable(true);
 		search.requestFocusInWindow();
 	}
+	
+	public void clearSearch() {
+		search.setText("");
+		search.setFocusable(false);
+	}
 }

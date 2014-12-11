@@ -54,6 +54,8 @@ public class ElephantWindow extends JFrame {
 	private Notebooks notebooks = new Notebooks(this);
 	private Tags tags = new Tags(this);
 
+	private boolean hasWindowFocus;
+
 	enum UiModes {
 		notebooks, notes, tags
 	};
@@ -77,10 +79,12 @@ public class ElephantWindow extends JFrame {
 
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
+				hasWindowFocus = true;
 				toolBar.focusGained();
 			}
 
 			public void windowDeactivated(WindowEvent e) {
+				hasWindowFocus = false;
 				toolBar.focusLost();
 			}
 		});
@@ -90,6 +94,10 @@ public class ElephantWindow extends JFrame {
 	private class KeyDispatcher implements KeyEventDispatcher {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
+			if (!hasWindowFocus) {
+				return false;
+			}
+
 			switch (uiMode) {
 			case notes:
 				if (!noteEditor.hasFocus() && !toolBar.isEditing()) {
@@ -144,6 +152,7 @@ public class ElephantWindow extends JFrame {
 				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
 					if ((e.getModifiers() & KeyEvent.META_MASK) == KeyEvent.META_MASK && (e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
 						String target = sideBar.shortcuts.getTarget(e.getKeyCode() - KeyEvent.VK_1);
+						toolBar.clearSearch();
 						openShortcut(target);
 					}
 				}
@@ -279,6 +288,13 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener newWindowAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			newWindow();
+		}
+	};
+
 	ActionListener showNotesAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -320,6 +336,11 @@ public class ElephantWindow extends JFrame {
 		newNotebook.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK));
 		newNotebook.addActionListener(newNotebookAction);
 		file.add(newNotebook);
+
+		JMenuItem newWindow = new JMenuItem("New Elephant Window");
+		newWindow.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.ALT_MASK));
+		newWindow.addActionListener(newWindowAction);
+		file.add(newWindow);
 
 		file.addSeparator();
 
@@ -364,6 +385,11 @@ public class ElephantWindow extends JFrame {
 		mb.add(view);
 
 		setJMenuBar(mb);
+	}
+
+	protected void newWindow() {
+		ElephantWindow w = new ElephantWindow();
+		w.setVisible(true);
 	}
 
 	private void createSplit() {
