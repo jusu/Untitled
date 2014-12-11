@@ -14,7 +14,9 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 
 public class CustomEditor extends RoundPanel {
@@ -28,6 +30,7 @@ public class CustomEditor extends RoundPanel {
 
 	public interface EditorEventListener {
 		public void editingFocusGained();
+
 		public void editingFocusLost();
 
 		public void caretChanged(JTextPane text);
@@ -54,6 +57,16 @@ public class CustomEditor extends RoundPanel {
 			}
 		}
 	};
+
+	static class CustomDocument extends DefaultStyledDocument {
+		private static final long serialVersionUID = 2807153134148093523L;
+
+		@Override
+		public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+			str = str.replaceAll("\t", "    ");
+			super.insertString(offs, str, a);
+		}
+	}
 
 	public CustomEditor() {
 		super();
@@ -93,6 +106,7 @@ public class CustomEditor extends RoundPanel {
 		titlePanel.add(title, BorderLayout.CENTER);
 
 		note = new JTextPane();
+		note.setDocument(new CustomDocument());
 		note.addFocusListener(editorFocusListener);
 		note.setFont(ElephantWindow.fontEditor);
 		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
