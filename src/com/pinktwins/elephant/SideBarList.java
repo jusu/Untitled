@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -69,6 +70,7 @@ public class SideBarList extends JPanel {
 	public SideBarList(ElephantWindow w, String header) {
 		window = w;
 		this.header = header;
+		setOpaque(false);
 	}
 
 	public String getTarget(int n) {
@@ -95,6 +97,17 @@ public class SideBarList extends JPanel {
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
+		}
+
+		createComponents(true);
+	}
+
+	public void load(List<Note> notes) {
+		items.clear();
+
+		for (Note n : notes) {
+			SideBarListItem item = new SideBarListItem(n);
+			items.add(item);
 		}
 
 		createComponents(true);
@@ -132,7 +145,7 @@ public class SideBarList extends JPanel {
 		}
 
 		add(grid, BorderLayout.CENTER);
-		
+
 		for (SideBarListItem item : items) {
 			grid.add(item);
 		}
@@ -172,16 +185,24 @@ public class SideBarList extends JPanel {
 		}
 
 		public void refresh() {
+			String s;
+
 			if (file.isDirectory()) {
 				icon.setIcon(getImageIcon(Images.sidebarNotebook));
 				icon.setPressedIcon(getImageIcon(Images.sidebarNotebook));
-				label.setText(file.getName());
+				s = file.getName();
 			} else {
 				icon.setIcon(getImageIcon(Images.sidebarNote));
 				icon.setPressedIcon(getImageIcon(Images.sidebarNote));
 				Note note = new Note(file);
-				label.setText(note.getMeta().title());
+				s = note.getMeta().title();
 			}
+
+			if (s.length() > 20) {
+				s = s.substring(0, 20) + "…";
+			}
+
+			label.setText(s);
 		}
 
 		public void init() {
@@ -195,7 +216,7 @@ public class SideBarList extends JPanel {
 			icon.setBorder(ElephantWindow.emptyBorder);
 
 			label.setForeground(Color.LIGHT_GRAY);
-			label.setFont(ElephantWindow.fontBoldNormal);
+			label.setFont(ElephantWindow.fontNormal);
 			label.setBorder(BorderFactory.createEmptyBorder(1, 6, 2, 0));
 
 			add(icon, BorderLayout.WEST);
@@ -240,6 +261,15 @@ public class SideBarList extends JPanel {
 			String path = Vault.getInstance().getHome() + File.separator + targetFileName;
 
 			file = new File(path);
+			target = file.getAbsolutePath();
+
+			refresh();
+		}
+
+		public SideBarListItem(Note note) {
+			init();
+
+			file = note.file();
 			target = file.getAbsolutePath();
 
 			refresh();

@@ -24,8 +24,21 @@ public class Note {
 		public void title(String newTitle);
 	}
 
-	public boolean equals(File f) {
-		return file.equals(f);
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		
+		if (o instanceof File) {
+			return file.equals(o);
+		}
+
+		if (o instanceof Note) {
+			return file.equals(((Note)o).file());
+		}
+
+		return false;
 	}
 
 	public Note(File f) {
@@ -44,6 +57,10 @@ public class Note {
 
 	private void readInfo() {
 		fileName = file.getName();
+	}
+
+	public File file() {
+		return file;
 	}
 
 	public String name() {
@@ -164,7 +181,7 @@ public class Note {
 				nb.refresh();
 				Elephant.eventBus.post(new NotebookEvent(Kind.noteMoved));
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

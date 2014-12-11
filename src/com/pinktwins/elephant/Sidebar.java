@@ -10,6 +10,9 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.data.RecentNotes;
+import com.pinktwins.elephant.data.RecentNotesChangedEvent;
 import com.pinktwins.elephant.data.Vault;
 
 public class Sidebar extends BackgroundPanel {
@@ -23,6 +26,10 @@ public class Sidebar extends BackgroundPanel {
 	private ElephantWindow window;
 	private static Image tile, sidebarDivider;
 
+	private RecentNotes recentNotes = new RecentNotes();
+
+	SideBarList shortcuts, recent, navigation;
+
 	static {
 		try {
 			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/sidebar.png"));
@@ -32,18 +39,21 @@ public class Sidebar extends BackgroundPanel {
 		}
 	}
 
-	SideBarList shortcuts, navigation;
-
-	public Sidebar(ElephantWindow w, String header) {
+	public Sidebar(ElephantWindow w) {
 		super(tile);
 		window = w;
 
-		shortcuts = new SideBarList(window, header);
+		Elephant.eventBus.register(this);
+
+		shortcuts = new SideBarList(window, "SHORTCUTS");
 		shortcuts.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
 		shortcuts.load(new File(Vault.getInstance().getHome() + File.separator + ".shortcuts"));
 
+		recent = new SideBarList(window, "RECENT NOTES");
+		recent.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+		recent.load(recentNotes.list());
+
 		BackgroundPanel div = new BackgroundPanel(sidebarDivider);
-		div.setOpaque(false);
 		div.setStyle(BackgroundPanel.SCALED_X);
 		div.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
 		div.setMaximumSize(new Dimension(1920, 2));
@@ -56,19 +66,28 @@ public class Sidebar extends BackgroundPanel {
 
 		JPanel p1 = new JPanel(new BorderLayout());
 		JPanel p2 = new JPanel(new BorderLayout());
+		JPanel p3 = new JPanel(new BorderLayout());
 		p1.setOpaque(false);
 		p2.setOpaque(false);
+		p3.setOpaque(false);
 
 		add(shortcuts, BorderLayout.NORTH);
-		p1.add(div, BorderLayout.NORTH);
-		p2.add(navigation, BorderLayout.NORTH);
-
+		p1.add(recent, BorderLayout.NORTH);
+		p2.add(div, BorderLayout.NORTH);
+		p3.add(navigation, BorderLayout.NORTH);
+		
 		add(p1, BorderLayout.CENTER);
 		p1.add(p2, BorderLayout.CENTER);
+		p2.add(p3, BorderLayout.CENTER);
 	}
 
 	public void selectNavigation(int n) {
 		navigation.select(n);
 	}
 
+	@Subscribe
+	public void handleRecentNotesChanged(RecentNotesChangedEvent event) {
+		recent.load(recentNotes.list());
+		revalidate();
+	}
 }

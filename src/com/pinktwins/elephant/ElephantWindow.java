@@ -27,6 +27,7 @@ import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.RecentNotes;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.data.VaultEvent;
 
@@ -37,7 +38,8 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
 	final public static Font fontSmall = Font.decode("Helvetica-10");
 	final public static Font fontEditor = Font.decode("Arial-13");
-	final public static Font fontBoldNormal = Font.decode("Helvetica-BOLD-14");
+	final public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
+	final public static Font fontNormal = Font.decode("Arial-14");
 
 	final public static Color colorTitle = Color.decode("#999999");
 
@@ -46,7 +48,7 @@ public class ElephantWindow extends JFrame {
 	JSplitPane splitLeft, splitRight;
 
 	private Toolbar toolBar = new Toolbar(this);
-	private Sidebar sideBar = new Sidebar(this, "SHORTCUTS");
+	private Sidebar sideBar = new Sidebar(this);
 	private NoteList noteList = new NoteList(this);
 	private NoteEditor noteEditor = new NoteEditor(this);
 	private Notebooks notebooks = new Notebooks(this);
