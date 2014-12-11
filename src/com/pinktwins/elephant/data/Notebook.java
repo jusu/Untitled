@@ -87,6 +87,10 @@ public class Notebook {
 		sortNotes();
 	}
 
+	public void addNote(Note n) {
+		notes.add(n);
+	}
+	
 	public void sortNotes() {
 		Collections.sort(notes, new Comparator<Note>() {
 			@Override
@@ -104,6 +108,10 @@ public class Notebook {
 		return name;
 	}
 
+	public void setName(String s) {
+		name = s;
+	}
+	
 	public int count() {
 		return notes.size();
 	}

@@ -40,7 +40,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontBoldNormal = Font.decode("Helvetica-BOLD-14");
 
 	final public static Color colorTitle = Color.decode("#999999");
-	
+
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
 	JSplitPane splitLeft, splitRight;
@@ -51,7 +51,7 @@ public class ElephantWindow extends JFrame {
 	private NoteEditor noteEditor = new NoteEditor(this);
 	private Notebooks notebooks = new Notebooks(this);
 	private Tags tags = new Tags(this);
-	
+
 	enum UiModes {
 		notebooks, notes, tags
 	};
@@ -91,7 +91,7 @@ public class ElephantWindow extends JFrame {
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			switch (uiMode) {
 			case notes:
-				if (!noteEditor.hasFocus()) {
+				if (!noteEditor.hasFocus() && !toolBar.isEditing()) {
 					switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						switch (e.getKeyCode()) {
@@ -116,7 +116,7 @@ public class ElephantWindow extends JFrame {
 				}
 				break;
 			case notebooks:
-				if (!notebooks.isEditing()) {
+				if (!notebooks.isEditing() && !toolBar.isEditing()) {
 					switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						switch (e.getKeyCode()) {
@@ -218,7 +218,9 @@ public class ElephantWindow extends JFrame {
 		noteEditor.clear();
 		noteList.load(notebook);
 		noteList.changeSelection(1, 0);
-		noteList.unfocusEditor();
+
+		// DO I NEED THIS OR NOT?
+		// noteList.unfocusEditor();
 	}
 
 	public void showNote(Note note) {
@@ -258,6 +260,13 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			unfocusEditor();
+		}
+	};
+
+	ActionListener searchAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			toolBar.focusSearch();
 		}
 	};
 
@@ -320,6 +329,11 @@ public class ElephantWindow extends JFrame {
 
 		JMenu edit = new JMenu("Edit");
 
+		JMenuItem iSearch = new JMenuItem("Search Notes...");
+		iSearch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.META_MASK | ActionEvent.ALT_MASK));
+		iSearch.addActionListener(searchAction);
+		edit.add(iSearch);
+
 		JMenu view = new JMenu("View");
 
 		JMenuItem iNotes = new JMenuItem("Notes");
@@ -338,12 +352,12 @@ public class ElephantWindow extends JFrame {
 		view.add(iTags);
 
 		view.addSeparator();
-		
+
 		JMenuItem iAll = new JMenuItem("Show All Notes");
 		iAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK));
 		iAll.addActionListener(showAllNotesAction);
 		view.add(iAll);
-		
+
 		mb.add(file);
 		mb.add(edit);
 		mb.add(view);
@@ -395,6 +409,15 @@ public class ElephantWindow extends JFrame {
 			notebooks.refresh();
 		}
 	}
+
+	public void search(String text) {
+		if (text.length() == 0) {
+			showNotebook(Vault.getInstance().getDefaultNotebook());
+		} else {
+			showNotebook(Vault.getInstance().search(text));
+		}
+	}
 }
 
-// ;'''( laku
+// laku 4ever ;,,,,(
+

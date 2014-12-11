@@ -25,6 +25,9 @@ public class Vault {
 	// XXX locate HOME
 	private final String HOME = "/Users/jusu/Desktop/elephant";
 
+	// XXX make configurable
+	private String defaultNotebook = "Inbox";
+
 	private File home;
 	private File trash;
 
@@ -38,6 +41,11 @@ public class Vault {
 
 	public File getHome() {
 		return home;
+	}
+
+	public Notebook getDefaultNotebook() {
+		File f = new File(home.getAbsolutePath() + File.separator + defaultNotebook);
+		return findNotebook(f);
 	}
 
 	public File getTrash() {
@@ -81,6 +89,45 @@ public class Vault {
 			}
 		}
 		return null;
+	}
+
+	public Notebook search(String text) {
+		text = text.toLowerCase();
+
+		Notebook found = new Notebook();
+
+		for (Notebook nb : getNotebooks()) {
+			for (Note n : nb.notes) {
+				boolean match = false;
+
+				String title = n.getMeta().title();
+				if (title.toLowerCase().indexOf(text) >= 0) {
+					match = true;
+				} else {
+					String contents = n.contents();
+					if (contents.toLowerCase().indexOf(text) >= 0) {
+						match = true;
+					}
+				}
+
+				if (match) {
+					found.addNote(n);
+				}
+			}
+		}
+
+		found.sortNotes();
+
+		int len = found.notes.size();
+		String s = len + " note";
+		if (len != 1) {
+			s += "s";
+		}
+		s += " found";
+
+		found.setName(s);
+
+		return found;
 	}
 
 	@Subscribe
