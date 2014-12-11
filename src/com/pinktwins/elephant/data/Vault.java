@@ -26,7 +26,7 @@ public class Vault {
 	private final String HOME = "/Users/jusu/Desktop/elephant";
 
 	// XXX make configurable
-	private String defaultNotebook = "Inbox";
+	private String defaultNotebook = "INBOX";
 
 	private File home;
 	private File trash;

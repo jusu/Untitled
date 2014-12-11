@@ -39,6 +39,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontEditor = Font.decode("Arial-13");
 	final public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
 	final public static Font fontNormal = Font.decode("Arial-14");
+	final public static Font fontMedium = Font.decode("Arial-11");
 
 	final public static Color colorTitle = Color.decode("#999999");
 	final public static Color colorTitleButton = Color.decode("#666666");
@@ -117,8 +118,7 @@ public class ElephantWindow extends JFrame {
 							noteList.changeSelection(1, e.getKeyCode());
 							break;
 						case KeyEvent.VK_BACK_SPACE:
-							noteEditor.clear();
-							noteList.deleteSelected();
+							deleteSelectedNote();
 						}
 						break;
 					}
@@ -203,6 +203,11 @@ public class ElephantWindow extends JFrame {
 			}
 		}
 
+	}
+
+	public void deleteSelectedNote() {
+		noteEditor.clear();
+		noteList.deleteSelected();
 	}
 
 	private void showNotes() {

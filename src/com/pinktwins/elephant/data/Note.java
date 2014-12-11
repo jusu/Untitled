@@ -3,11 +3,17 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +23,9 @@ import com.pinktwins.elephant.data.NotebookEvent.Kind;
 public class Note {
 	private File file, meta;
 	private String fileName = "";
+
+	private BasicFileAttributes attr;
+	static private DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
 
 	public interface Meta {
 		public String title();
@@ -29,13 +38,13 @@ public class Note {
 		if (o == null) {
 			return false;
 		}
-		
+
 		if (o instanceof File) {
 			return file.equals(o);
 		}
 
 		if (o instanceof Note) {
-			return file.equals(((Note)o).file());
+			return file.equals(((Note) o).file());
 		}
 
 		return false;
@@ -53,6 +62,33 @@ public class Note {
 		}
 
 		readInfo();
+	}
+
+	public String createdStr() {
+		if (attr == null) {
+			try {
+				attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "";
+			}
+		}
+		return df.print(attr.creationTime().toMillis());
+	}
+
+	public String updatedStr() {
+		if (attr == null) {
+			try {
+				attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return df.print(attr.lastModifiedTime().toMillis());
+	}
+
+	public void flushAttrs() {
+		attr = null;
 	}
 
 	private void readInfo() {

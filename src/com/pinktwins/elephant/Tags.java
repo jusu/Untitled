@@ -8,7 +8,7 @@ public class Tags extends BackgroundPanel {
 	public Tags(ElephantWindow w) {
 		this.window = w;
 		
-		JLabel wip = new JLabel("…work in progress…", JLabel.CENTER);
+		JLabel wip = new JLabel("coming soon", JLabel.CENTER);
 		add(wip);
 	}
 }
