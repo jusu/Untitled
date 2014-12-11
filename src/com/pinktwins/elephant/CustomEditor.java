@@ -138,6 +138,7 @@ public class CustomEditor extends RoundPanel {
 
 	public void setText(String s) {
 		note.setText(s);
+		note.setCaretPosition(0);
 	}
 
 	public String getTitle() {

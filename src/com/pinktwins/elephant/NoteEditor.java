@@ -218,6 +218,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						Rectangle r = tools.getBounds();
 						r.width = getWidth();
 						tools.setBounds(r);
+
+						tools.revalidate();
 					}
 				});
 			}
