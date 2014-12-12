@@ -262,6 +262,7 @@ public class Note {
 		// rename can fail on invalid characters or such file already exists.
 		// that's ok.
 
+		// XXX Might try creating the newName file first, before stripping this hars
 		newName = newName.replaceAll("[^a-zA-Z0-9 \\.\\-]", "_");
 
 		File newFile = new File(file.getParentFile().getAbsolutePath() + File.separator + newName);

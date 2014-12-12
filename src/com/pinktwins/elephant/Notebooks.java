@@ -154,6 +154,13 @@ public class Notebooks extends BackgroundPanel {
 			}
 		});
 
+		bNew.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				window.newNotebookAction.actionPerformed(null);
+			}
+		});
+
 		search.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -178,7 +185,7 @@ public class Notebooks extends BackgroundPanel {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				switch(e.getKeyCode()) {
+				switch (e.getKeyCode()) {
 				case KeyEvent.VK_UP:
 					if (search.hasFocus()) {
 						search.setFocusable(false);

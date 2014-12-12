@@ -275,6 +275,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());
 		note.flushAttrs();
+
+		caretChanged(editor.getTextPane());
 	}
 
 	private void visible(boolean b) {
@@ -414,9 +416,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						b.height = height + kNoteOffset + kBorder * 2;
 						areaHolder.setBounds(b.x, b.y, getWidth(), b.height);
 
-						// not needed?
-						// areaHolder.revalidate();
-						// scrollHolder.revalidate();
+						areaHolder.revalidate();
+						scrollHolder.revalidate();
 					}
 				} catch (BadLocationException e) {
 				}
