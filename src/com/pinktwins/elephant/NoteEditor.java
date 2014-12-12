@@ -12,10 +12,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,9 +29,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.CustomEditor.EditorEventListener;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
@@ -67,6 +76,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private Note currentNote;
+	private HashMap<Object, File> currentAttachments = new HashMap<Object, File>();
+
 	JPanel main, area, areaHolder;
 	BackgroundPanel scrollHolder;
 	JScrollPane scroll;
@@ -235,6 +246,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void clear() {
 		currentNote = null;
+		currentAttachments.clear();
 		editor.clear();
 		isDirty = false;
 		visible(false);
@@ -242,8 +254,22 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void load(Note note) {
 		currentNote = note;
-		editor.setTitle(note.getMeta().title());
+		currentAttachments.clear();
+
+		Meta m = note.getMeta();
+		editor.setTitle(m.title());
 		editor.setText(note.contents());
+
+		File[] files = currentNote.getAttachmentList();
+		if (files != null) {
+			for (File f : files) {
+				if (f.getName().charAt(0) != '.' && f.isFile()) {
+					int position = m.getAttachmentPosition(f);
+					insertFileIntoNote(f, position);
+				}
+			}
+		}
+
 		visible(true);
 
 		Notebook nb = Vault.getInstance().findNotebook(note.file().getParentFile());
@@ -287,6 +313,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				String editedTitle = editor.getTitle();
 				if (!fileTitle.equals(editedTitle)) {
 					currentNote.getMeta().title(editedTitle);
+					currentNote.attemptSafeRename(editedTitle + ".txt");
 					changed = true;
 				}
 
@@ -296,6 +323,27 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					currentNote.save(editedText);
 					changed = true;
 					contentChanged = true;
+
+					// update attachment positions
+					Set<Object> remainingAttachments = currentAttachments.keySet();
+					for (AttachmentInfo info : editor.getAttachmentInfo()) {
+						if (info.object instanceof ImageIcon || info.object instanceof FileAttachment) {
+							File f = currentAttachments.get(info.object);
+							if (f != null) {
+								currentNote.getMeta().setAttachmentPosition(f, info.startPosition);
+								remainingAttachments.remove(info.object);
+							}
+						}
+					}
+
+					// remainingAttachments were not found in document anymore.
+					// Move to 'deleted'
+					for (Object o : remainingAttachments) {
+						File f = currentAttachments.get(o);
+						System.out.println("No longer in document: " + f);
+						currentNote.removeAttachment(f);
+						currentAttachments.remove(o);
+					}
 				}
 			} catch (BadLocationException e) {
 				e.printStackTrace();
@@ -377,5 +425,52 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				}
 			}
 		});
+	}
+
+	private void insertFileIntoNote(File f, int position) {
+		JTextPane noteArea = editor.getTextPane();
+
+		int caret = noteArea.getCaretPosition();
+
+		// String ext = FilenameUtils.getExtension(attached.getAbsolutePath());
+		// if ext is image?
+		try {
+			Image i = ImageIO.read(f);
+			if (i != null) {
+				ImageIcon ii = new ImageIcon(i);
+
+				noteArea.setCaretPosition(position);
+				noteArea.insertIcon(ii);
+
+				currentAttachments.put(ii, f);
+			} else {
+				FileAttachment aa = new FileAttachment(f.getName());
+
+				noteArea.setCaretPosition(position);
+				noteArea.insertComponent(aa);
+
+				currentAttachments.put(aa, f);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		noteArea.setCaretPosition(caret);
+	}
+
+	@Override
+	public void filesDropped(List<File> files) {
+		JTextPane noteArea = editor.getTextPane();
+		for (File f : files) {
+			System.out.println("file: " + f.getAbsolutePath());
+			try {
+				File attached = currentNote.importAttachment(f);
+				currentNote.getMeta().setAttachmentPosition(attached, noteArea.getCaretPosition());
+
+				insertFileIntoNote(attached, noteArea.getCaretPosition());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

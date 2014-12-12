@@ -3,25 +3,39 @@ package com.pinktwins.elephant;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.TransferHandler;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.ElementIterator;
+import javax.swing.text.StyleConstants;
 
 public class CustomEditor extends RoundPanel {
 
 	private static final long serialVersionUID = -6604641427725747091L;
+
+	private static final String ELEM = AbstractDocument.ElementNameAttribute;
+	private static final String ICON = StyleConstants.IconElementName;
+	private static final String COMP = StyleConstants.ComponentElementName;
 
 	private JTextField title;
 	private JTextPane note;
@@ -34,12 +48,14 @@ public class CustomEditor extends RoundPanel {
 		public void editingFocusLost();
 
 		public void caretChanged(JTextPane text);
+
+		public void filesDropped(List<File> files);
 	}
 
 	public JTextPane getTextPane() {
 		return note;
 	}
-	
+
 	EditorEventListener eeListener;
 
 	public void setEditorEventListener(EditorEventListener l) {
@@ -72,6 +88,7 @@ public class CustomEditor extends RoundPanel {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	public CustomEditor() {
 		super();
 		setBackground(Color.WHITE);
@@ -114,6 +131,34 @@ public class CustomEditor extends RoundPanel {
 		note.addFocusListener(editorFocusListener);
 		note.setFont(ElephantWindow.fontEditor);
 		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
+		note.setDragEnabled(true);
+		note.setTransferHandler(new TransferHandler() {
+			@Override
+			public boolean canImport(TransferHandler.TransferSupport info) {
+				return true;
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean importData(TransferHandler.TransferSupport info) {
+				if (!info.isDrop()) {
+					return false;
+				}
+
+				Transferable t = info.getTransferable();
+				List<File> data;
+				try {
+					data = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
+				} catch (Exception e) {
+					return false;
+				}
+				if (eeListener != null) {
+					eeListener.filesDropped(data);
+				}
+
+				return true;
+			}
+		});
 
 		note.addCaretListener(new CaretListener() {
 			@Override
@@ -167,5 +212,35 @@ public class CustomEditor extends RoundPanel {
 	public void focusTitle() {
 		title.setCaretPosition(0);
 		title.requestFocusInWindow();
+	}
+
+	class AttachmentInfo {
+		Object object;
+		int startPosition;
+	}
+
+	public List<AttachmentInfo> getAttachmentInfo() {
+		ArrayList<AttachmentInfo> list = new ArrayList<AttachmentInfo>();
+
+		ElementIterator iterator = new ElementIterator(note.getDocument());
+		Element element;
+		while ((element = iterator.next()) != null) {
+			AttributeSet as = element.getAttributes();
+			if (as.containsAttribute(ELEM, ICON)) {
+				AttachmentInfo info = new AttachmentInfo();
+				info.object = StyleConstants.getIcon(as);
+				info.startPosition = element.getStartOffset();
+				list.add(info);
+			}
+
+			if (as.containsAttribute(ELEM, COMP)) {
+				AttachmentInfo info = new AttachmentInfo();
+				info.object = StyleConstants.getComponent(as);
+				info.startPosition = element.getStartOffset();
+				list.add(info);
+			}
+		}
+
+		return list;
 	}
 }

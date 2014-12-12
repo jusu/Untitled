@@ -8,10 +8,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
@@ -31,6 +33,10 @@ public class Note {
 		public String title();
 
 		public void title(String newTitle);
+
+		public int getAttachmentPosition(File attachment);
+
+		public void setAttachmentPosition(File attachment, int position);
 	}
 
 	@Override
@@ -50,9 +56,13 @@ public class Note {
 		return false;
 	}
 
+	private File metaFromFile(File f) {
+		return new File(f.getParentFile().getAbsolutePath() + File.separator + "." + f.getName() + ".meta");
+	}
+
 	public Note(File f) {
 		file = f;
-		meta = new File(f.getParentFile().getAbsolutePath() + File.separator + "." + file.getName() + ".meta");
+		meta = metaFromFile(f);
 
 		try {
 			if (!meta.exists()) {
@@ -205,6 +215,23 @@ public class Note {
 		private void reload() {
 			map = getMetaMap();
 		}
+
+		@Override
+		public int getAttachmentPosition(File attachment) {
+			String key = "attachment:" + attachment.getName() + ":position";
+			String value = map.get(key);
+			if (value == null) {
+				return 0;
+			}
+			return Integer.parseInt(value);
+		}
+
+		@Override
+		public void setAttachmentPosition(File attachment, int position) {
+			setMeta("attachment:" + attachment.getName() + ":position", String.valueOf(position));
+			reload();
+		}
+
 	}
 
 	public void moveTo(File dest) {
@@ -212,6 +239,9 @@ public class Note {
 			FileUtils.moveFileToDirectory(file, dest, false);
 			FileUtils.moveFileToDirectory(meta, dest, false);
 
+			// XXX move attachments directory as well
+			// FileUtils.moveDirectoryToDirectory(src, destDir, createDestDir);
+			
 			Notebook nb = Vault.getInstance().findNotebook(dest);
 			if (nb != null) {
 				nb.refresh();
@@ -222,4 +252,103 @@ public class Note {
 			e.printStackTrace();
 		}
 	}
+
+	public void attemptSafeRename(String newName) {
+		// attempt to rename file to newName, likely the note title.
+		// rename can fail on invalid characters or such file already exists.
+		// that's ok.
+
+		newName = newName.replaceAll("[^a-zA-Z0-9 \\.\\-]", "_");
+
+		File newFile = new File(file.getParentFile().getAbsolutePath() + File.separator + newName);
+		if (newFile.exists()) {
+			return;
+		}
+
+		File newMeta = metaFromFile(newFile);
+
+		if (newMeta.exists()) {
+			return;
+		}
+
+		// XXX ALSO RENAME ATTACHMENTS FOLDER
+
+		boolean metaCopied = false;
+
+		try {
+			// copy metafile as new name, mark copied
+			FileUtils.copyFile(meta, newMeta);
+			metaCopied = true;
+
+			// move note file
+			FileUtils.moveFile(file, newFile);
+
+			// all ok, start using renamed files, delete old copy of meta
+			file = newFile;
+			File oldMeta = meta;
+			meta = newMeta;
+			metaCopied = false;
+			oldMeta.delete();
+		} catch (IOException e) {
+			e.printStackTrace();
+
+			// failing to copy/rename leaves things as they were.
+			if (metaCopied) {
+				newMeta.delete();
+			}
+		}
+	}
+
+	public File importAttachment(File f) throws IOException {
+		File dest = new File(attachmentFolder().getAbsolutePath() + File.separator + f.getName());
+
+		String orgDest = dest.getAbsolutePath();
+
+		int n = 1;
+		while (dest.exists()) {
+			String ext = "." + FilenameUtils.getExtension(orgDest);
+			dest = new File(orgDest.replace(ext, " " + n + ext));
+			n++;
+		}
+
+		FileUtils.copyFile(f, dest);
+		return dest;
+	}
+
+	private String attachmentFolderPath() {
+		return FilenameUtils.getFullPath(file.getAbsolutePath()) + FilenameUtils.getBaseName(file.getAbsolutePath()) + ".attachments";
+	}
+
+	private File attachmentFolder() throws IOException {
+		String s = attachmentFolderPath();
+
+		File f = new File(s);
+		if (!f.exists()) {
+			if (!f.mkdirs()) {
+				throw new IOException();
+			}
+		}
+
+		return f;
+	}
+
+	public File[] getAttachmentList() {
+		File f = new File(attachmentFolderPath());
+		if (f.exists()) {
+			return f.listFiles();
+		} else {
+			return null;
+		}
+	}
+
+	public void removeAttachment(File f) {
+		try {
+			File deletedFolder = new File(attachmentFolder() + File.separator + "deleted");
+			// XXX file may exist in deleted folder already, should rename to unique
+			FileUtils.moveFileToDirectory(f, deletedFolder, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
+
