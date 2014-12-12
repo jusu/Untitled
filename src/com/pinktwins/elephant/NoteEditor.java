@@ -20,7 +20,6 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -28,8 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
-
-import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
@@ -444,7 +441,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 				currentAttachments.put(ii, f);
 			} else {
-				FileAttachment aa = new FileAttachment(f.getName());
+				FileAttachment aa = new FileAttachment(f);
 
 				noteArea.setCaretPosition(position);
 				noteArea.insertComponent(aa);
@@ -462,14 +459,19 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public void filesDropped(List<File> files) {
 		JTextPane noteArea = editor.getTextPane();
 		for (File f : files) {
-			System.out.println("file: " + f.getAbsolutePath());
-			try {
-				File attached = currentNote.importAttachment(f);
-				currentNote.getMeta().setAttachmentPosition(attached, noteArea.getCaretPosition());
+			if (f.isDirectory()) {
+				// XXX directory dropped. what to do? compress and import zip?
+			}
+			if (f.isFile()) {
+				System.out.println("file: " + f.getAbsolutePath());
+				try {
+					File attached = currentNote.importAttachment(f);
+					currentNote.getMeta().setAttachmentPosition(attached, noteArea.getCaretPosition());
 
-				insertFileIntoNote(attached, noteArea.getCaretPosition());
-			} catch (IOException e) {
-				e.printStackTrace();
+					insertFileIntoNote(attached, noteArea.getCaretPosition());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

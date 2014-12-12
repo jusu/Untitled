@@ -10,6 +10,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,12 @@ public class CustomEditor extends RoundPanel {
 
 	private JTextField title;
 	private JTextPane note;
+
+	private boolean isRichText;
+
+	public boolean isRichText() {
+		return isRichText;
+	}
 
 	final Color kDividerColor = Color.decode("#dbdbdb");
 
@@ -126,6 +133,18 @@ public class CustomEditor extends RoundPanel {
 
 		titlePanel.add(title, BorderLayout.CENTER);
 
+		title.setText("");
+		add(titlePanel, BorderLayout.NORTH);
+
+		createNote();
+	}
+	
+	private void createNote() {
+
+		if (note != null) {
+			remove(note);
+		}
+
 		note = new JTextPane();
 		note.setDocument(new CustomDocument());
 		note.addFocusListener(editorFocusListener);
@@ -133,6 +152,8 @@ public class CustomEditor extends RoundPanel {
 		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 		note.setDragEnabled(true);
 		note.setTransferHandler(new TransferHandler() {
+			private static final long serialVersionUID = -4777142447614165019L;
+
 			@Override
 			public boolean canImport(TransferHandler.TransferSupport info) {
 				return true;
@@ -169,9 +190,6 @@ public class CustomEditor extends RoundPanel {
 			}
 		});
 
-		title.setText("");
-
-		add(titlePanel, BorderLayout.NORTH);
 		add(note, BorderLayout.CENTER);
 	}
 
@@ -182,7 +200,32 @@ public class CustomEditor extends RoundPanel {
 	}
 
 	public void setText(String s) {
-		note.setText(s);
+		note.setText("");
+		isRichText = false;
+
+		if (s != null && s.length() > 0) {
+			if (s.indexOf("{\\rtf") == 0) {
+				try {
+					RtfUtil.putRtf(note.getDocument(), s, 0);
+					if (note.getDocument().getLength() == 0) {
+						note.setText(s);
+					} else {
+						isRichText = true;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("no rtf");
+					note.setText(s);
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+					System.out.println("no rtf");
+					note.setText(s);
+				}
+			} else {
+				note.setText(s);
+			}
+		}
+
 		note.setCaretPosition(0);
 	}
 
@@ -192,12 +235,17 @@ public class CustomEditor extends RoundPanel {
 
 	public String getText() throws BadLocationException {
 		Document doc = note.getDocument();
-		return doc.getText(0, doc.getLength());
+		String plain = doc.getText(0, doc.getLength());
+		String rtf = RtfUtil.getRtf(doc);
+
+		return rtf != null && rtf.length() > 0 && isRichText ? rtf : plain;
 	}
 
 	public void clear() {
 		setTitle("");
-		setText("");
+
+		// replace JTextPane with new instance to get rid of old styles.
+		createNote();
 	}
 
 	public boolean hasFocus() {

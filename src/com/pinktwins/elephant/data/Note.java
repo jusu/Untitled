@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -134,6 +132,12 @@ public class Note {
 	public void save(String newText) {
 		try {
 			IOUtil.writeFile(file, newText);
+
+			// XXX if I just wrote rtf rich text to .txt file, might want to
+			// rename that file.
+
+			// XXX after 'make plain text' command, should write .txt file, not .rtf
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -241,7 +245,7 @@ public class Note {
 
 			// XXX move attachments directory as well
 			// FileUtils.moveDirectoryToDirectory(src, destDir, createDestDir);
-			
+
 			Notebook nb = Vault.getInstance().findNotebook(dest);
 			if (nb != null) {
 				nb.refresh();
@@ -344,11 +348,11 @@ public class Note {
 	public void removeAttachment(File f) {
 		try {
 			File deletedFolder = new File(attachmentFolder() + File.separator + "deleted");
-			// XXX file may exist in deleted folder already, should rename to unique
+			// XXX file may exist in deleted folder already, should rename to
+			// unique
 			FileUtils.moveFileToDirectory(f, deletedFolder, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 }
-

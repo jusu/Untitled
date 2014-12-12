@@ -40,12 +40,14 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
 	final public static Font fontSmall = Font.decode("Helvetica-10");
 	final public static Font fontEditor = Font.decode("Arial-13");
+	final public static Font fontBoldEditor = Font.decode("Arial-BOLD-13");
 	final public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
 	final public static Font fontNormal = Font.decode("Arial-14");
 	final public static Font fontMedium = Font.decode("Arial-11");
 
 	final public static Color colorTitle = Color.decode("#999999");
 	final public static Color colorTitleButton = Color.decode("#666666");
+	final public static Color colorGray5 = Color.decode("#555555");
 
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
