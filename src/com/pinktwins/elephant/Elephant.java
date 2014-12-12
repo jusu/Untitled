@@ -5,10 +5,12 @@ import java.awt.EventQueue;
 import javax.swing.UIManager;
 
 import com.google.common.eventbus.EventBus;
+import com.pinktwins.elephant.data.Settings;
 
 public class Elephant {
 
 	public final static EventBus eventBus = new EventBus();
+	public final static Settings settings = new Settings();
 
 	public static void main(String args[]) {
 		try {

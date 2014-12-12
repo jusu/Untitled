@@ -6,8 +6,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -46,7 +49,7 @@ public class ElephantWindow extends JFrame {
 
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
-	JSplitPane splitLeft, splitRight;
+	CustomSplitPane splitLeft, splitRight;
 
 	private Toolbar toolBar = new Toolbar(this);
 	private Sidebar sideBar = new Sidebar(this);
@@ -65,7 +68,8 @@ public class ElephantWindow extends JFrame {
 
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
-		setSize(1080, 1050);
+
+		setBounds(loadBounds());
 
 		Elephant.eventBus.register(this);
 
@@ -96,6 +100,43 @@ public class ElephantWindow extends JFrame {
 				saveChanges();
 			}
 		});
+
+		addComponentListener(new ComponentListener() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				saveBounds(ElephantWindow.this.getBounds());
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				saveBounds(ElephantWindow.this.getBounds());
+			}
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {
+			}
+		});
+	}
+
+	private Rectangle loadBounds() {
+		Rectangle b = new Rectangle();
+		int x = Elephant.settings.getInt("windowX");
+		int y = Elephant.settings.getInt("windowY");
+		int w = Elephant.settings.getInt("windowWidth");
+		int h = Elephant.settings.getInt("windowHeight");
+		b.x = x >= 0 ? x : 0;
+		b.y = y >= 0 ? y : 22;
+		b.width = w > 0 ? w : 1080;
+		b.height = h > 0 ? h : 1050;
+		return b;
+	}
+
+	private void saveBounds(Rectangle r) {
+		Elephant.settings.setChain("windowX", r.x).setChain("windowY", r.y).setChain("windowWidth", r.width).set("windowHeight", r.height);
 	}
 
 	// XXX this will bite me eventually
@@ -409,15 +450,18 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void createSplit() {
-		splitLeft = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitLeft = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitLeft.setResizeWeight(0.2);
 		splitLeft.setContinuousLayout(true);
 		splitLeft.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-		splitRight = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		splitLeft.initLocationWithKey("divider1");
+		splitLeft.limitLocation(250);
+		
+		splitRight = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitRight.setResizeWeight(0.5);
 		splitRight.setContinuousLayout(true);
 		splitRight.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		splitRight.initLocationWithKey("divider2");
 
 		splitLeft.setLeftComponent(sideBar);
 		splitLeft.setRightComponent(splitRight);
