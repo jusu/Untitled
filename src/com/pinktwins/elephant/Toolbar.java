@@ -4,12 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -74,71 +68,6 @@ public class Toolbar extends BackgroundPanel {
 				window.search(search.getText());
 			}
 		});
-
-		search.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				search.setFocusable(true);
-				search.requestFocusInWindow();
-
-				if (e.getX() >= searchWidth - 20) {
-					search.setText("");
-					search.setFocusable(false);
-				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-		});
-
-		search.addFocusListener(new FocusListener() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				search.searchFocusGained();
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				search.searchFocusLost();
-				search.setFocusable(false);
-			}
-		});
-
-		search.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-					if (search.getText().length() > 0) {
-						search.setText("");
-					} else {
-						search.setFocusable(false);
-					}
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-		});
-
 	}
 
 	public void focusGained() {

@@ -14,16 +14,24 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import org.pushingpixels.trident.Timeline;
 
@@ -36,7 +44,7 @@ import com.pinktwins.elephant.data.VaultEvent;
 public class Notebooks extends BackgroundPanel {
 
 	private static final long serialVersionUID = 7129502018764896415L;
-	private static Image tile, notebookBg, notebookBgSelected;
+	private static Image tile, notebookBg, notebookBgSelected, notebooksHLine, newNotebook;
 
 	private ElephantWindow window;
 	private NotebookItem selectedNotebook;
@@ -48,6 +56,8 @@ public class Notebooks extends BackgroundPanel {
 			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooks.png"));
 			notebookBg = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebookBg.png"));
 			notebookBgSelected = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebookBgSelected.png"));
+			notebooksHLine = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooksHLine.png"));
+			newNotebook = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/newNotebook.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -81,15 +91,42 @@ public class Notebooks extends BackgroundPanel {
 
 	JScrollPane scroll;
 	JPanel main;
+	JButton bNew;
+	SearchTextField search;
 
 	private void createComponents() {
 		main = new JPanel();
 		main.setLayout(null);
 
+		BackgroundPanel div = new BackgroundPanel(notebooksHLine);
+		div.setBounds(0, 42, 1920, 44);
+		div.setStyle(BackgroundPanel.SCALED_X);
+
+		JPanel tools = new JPanel(null);
+		tools.setBounds(0, 0, 800, 44);
+
+		bNew = new JButton("");
+		bNew.setIcon(new ImageIcon(newNotebook));
+		bNew.setBorderPainted(false);
+		bNew.setBounds(10, 10, newNotebook.getWidth(null), newNotebook.getHeight(null));
+
+		search = new SearchTextField("Find a notebook");
+		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
+		search.setBounds(134, 8, 160, 26);
+		search.setFont(ElephantWindow.fontMedium);
+		search.setFixedColor(Color.decode("#e9e9e9"));
+		search.useV2();
+		search.windowFocusGained();
+
+		tools.add(bNew);
+		tools.add(search);
+
 		scroll = new JScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getHorizontalScrollBar().setUnitIncrement(5);
 
+		add(tools);
+		add(div);
 		add(scroll);
 
 		main.addMouseListener(new MouseListener() {
@@ -97,6 +134,7 @@ public class Notebooks extends BackgroundPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				deselectAll();
+				search.setFocusable(false);
 			}
 
 			@Override
@@ -115,6 +153,51 @@ public class Notebooks extends BackgroundPanel {
 			public void mouseExited(MouseEvent e) {
 			}
 		});
+
+		search.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				refresh();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				refresh();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				refresh();
+			}
+		});
+
+		search.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch(e.getKeyCode()) {
+				case KeyEvent.VK_UP:
+					if (search.hasFocus()) {
+						search.setFocusable(false);
+						changeSelection(-1, 0);
+					}
+					break;
+				case KeyEvent.VK_DOWN:
+					if (search.hasFocus()) {
+						search.setFocusable(false);
+						changeSelection(1, 0);
+					}
+					break;
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+		});
 	}
 
 	public void refresh() {
@@ -123,10 +206,14 @@ public class Notebooks extends BackgroundPanel {
 	}
 
 	private void update() {
+		for (NotebookItem item : notebookItems) {
+			item.setVisible(false);
+		}
+
 		main.removeAll();
 		notebookItems.clear();
 
-		List<Notebook> list = Vault.getInstance().getNotebooks();
+		Collection<Notebook> list = Vault.getInstance().getNotebooksWithFilter(search.getText());
 		for (Notebook nb : list) {
 			NotebookItem item = new NotebookItem(nb);
 			main.add(item);
@@ -139,30 +226,29 @@ public class Notebooks extends BackgroundPanel {
 		Dimension size = new Dimension();
 
 		int xOff = 12 + insets.left;
+		int yOff = 57;
 		int x = 0;
-		int y = 12;
+		int y = yOff;
 
 		Rectangle b = main.getBounds();
 
 		for (NotebookItem item : notebookItems) {
 			size = item.getPreferredSize();
-			itemsPerRow = b.height / size.height;
+			itemsPerRow = (b.height - yOff) / size.height;
 
 			item.setBounds(xOff + x, y + insets.top, size.width, size.height);
 
-			y += size.height;
+			y += size.height - 1;
 
 			if (y + size.height > b.height) {
 				x += size.width + xOff;
-				y = 12;
+				y = yOff;
 			}
 		}
 
 		Dimension d = main.getPreferredSize();
 		d.width = x + size.width + xOff * 2;
 		main.setPreferredSize(d);
-
-		revalidate();
 	}
 
 	private void deselectAll() {
@@ -252,7 +338,7 @@ public class Notebooks extends BackgroundPanel {
 	}
 
 	public boolean isEditing() {
-		return isEditing;
+		return isEditing || search.hasFocus();
 	}
 
 	class NotebookItem extends BackgroundPanel implements MouseListener {
@@ -277,13 +363,14 @@ public class Notebooks extends BackgroundPanel {
 
 			count = new JLabel(String.valueOf(nb.count()), SwingConstants.CENTER);
 			count.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
-			count.setForeground(Color.LIGHT_GRAY);
+			count.setForeground(Color.DARK_GRAY);
+			count.setFont(ElephantWindow.fontMedium);
 
 			add(name);
 			add(count);
 
 			name.setBounds(0, 0, 200, 51);
-			count.setBounds(202, 0, 52, 51);
+			count.setBounds(202, 0, 60, 51);
 
 			addMouseListener(this);
 		}
@@ -404,6 +491,36 @@ public class Notebooks extends BackgroundPanel {
 
 		@Override
 		public void mouseExited(MouseEvent e) {
+		}
+	}
+
+	public void handleKeyEvent(final KeyEvent e) {
+		if (e.getKeyCode() != KeyEvent.VK_ESCAPE) {
+			if (e.getModifiers() == 0) {
+				if (!search.hasFocus()) {
+					final Document d = search.getDocument();
+					final int pos = search.getCaretPosition();
+
+					// Avoid inserted character to be highlighted and wiped
+					// by succeeding keystrokes
+					Timer t = new Timer();
+					TimerTask tt = new TimerTask() {
+						@Override
+						public void run() {
+							try {
+								d.insertString(pos, String.valueOf(e.getKeyChar()), null);
+								search.setCaretPosition(search.getCaretPosition() + 1);
+							} catch (BadLocationException e1) {
+								e1.printStackTrace();
+							}
+						}
+					};
+
+					t.schedule(tt, 50);
+				}
+				search.setFocusable(true);
+				search.requestFocusInWindow();
+			}
 		}
 	}
 }

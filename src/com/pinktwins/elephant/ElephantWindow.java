@@ -190,6 +190,8 @@ public class ElephantWindow extends JFrame {
 						case KeyEvent.VK_ENTER:
 							notebooks.openSelected();
 							break;
+						default:
+							notebooks.handleKeyEvent(e);
 						}
 						break;
 					}
@@ -458,7 +460,7 @@ public class ElephantWindow extends JFrame {
 		splitLeft.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		splitLeft.initLocationWithKey("divider1");
 		splitLeft.limitLocation(250);
-		
+
 		splitRight = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitRight.setResizeWeight(0.5);
 		splitRight.setContinuousLayout(true);
