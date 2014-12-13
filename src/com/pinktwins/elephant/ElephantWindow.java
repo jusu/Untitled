@@ -161,7 +161,7 @@ public class ElephantWindow extends JFrame {
 				// XXX the windows accumulate. Get rid of them.
 				for (Window w : getWindows()) {
 					if (w instanceof ModalNotebookChooser) {
-						//System.out.println("NotebookChoosers: " + (++n));
+						// System.out.println("NotebookChoosers: " + (++n));
 						if (w.isActive()) {
 							((ModalNotebookChooser) w).handleKeyEvent(e);
 						}
@@ -436,6 +436,13 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener jumpToNotebookAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteList.openNotebookChooserForJumping();
+		}
+	};
+
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
 		mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
@@ -471,6 +478,7 @@ public class ElephantWindow extends JFrame {
 		view.add(menuItem("Tags", KeyEvent.VK_4, ActionEvent.META_MASK | ActionEvent.ALT_MASK, showTagsAction));
 		view.addSeparator();
 		view.add(menuItem("Show All Notes", KeyEvent.VK_A, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK, showAllNotesAction));
+		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, ActionEvent.META_MASK, jumpToNotebookAction));
 
 		JMenu note = new JMenu("Note");
 		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, ActionEvent.META_MASK | ActionEvent.CTRL_MASK, moveNoteAction));

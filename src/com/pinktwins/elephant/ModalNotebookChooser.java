@@ -82,10 +82,15 @@ public class ModalNotebookChooser extends JDialog {
 				close();
 				break;
 			case KeyEvent.VK_UP:
-				notebooks.changeSelection(-1, e.getKeyCode());
+				// arrows move focus away from search anyway, this would be extra.
+				if (!notebooks.search.hasFocus()) {
+					notebooks.changeSelection(-1, e.getKeyCode());
+				}
 				break;
 			case KeyEvent.VK_DOWN:
-				notebooks.changeSelection(1, e.getKeyCode());
+				if (!notebooks.search.hasFocus()) {
+					notebooks.changeSelection(1, e.getKeyCode());
+				}
 				break;
 			default:
 				notebooks.handleKeyEvent(e);

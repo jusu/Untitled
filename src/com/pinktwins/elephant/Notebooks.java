@@ -118,6 +118,8 @@ public class Notebooks extends BackgroundPanel {
 			setBackground(Color.decode("#eaeaea"));
 		}
 
+		boolean isJump = modalHeader.isEmpty(); // gah
+
 		main = new JPanel();
 		main.setLayout(null);
 
@@ -138,7 +140,11 @@ public class Notebooks extends BackgroundPanel {
 		search = new SearchTextField("Find a notebook");
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
 		if (isModal) {
-			search.setBounds(10, 60, 414, 26);
+			if (isJump) {
+				search.setBounds(14, 10, 414, 26);
+			} else {
+				search.setBounds(14, 60, 414, 26);
+			}
 		} else {
 			search.setBounds(134, 8, 160, 26);
 		}
@@ -169,7 +175,11 @@ public class Notebooks extends BackgroundPanel {
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
 		if (isModal) {
 			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1, true));
-			scroll.setBounds(18, 103, 424 - 18, 564 - 103);
+			if (isJump) {
+				scroll.setBounds(18, 40, 424 - 18, 564);
+			} else {
+				scroll.setBounds(18, 103, 424 - 18, 564 - 103);
+			}
 		}
 
 		add(tools);
@@ -186,8 +196,11 @@ public class Notebooks extends BackgroundPanel {
 			JButton bCancel = new JButton("Cancel");
 			bMove = new JButton("Move");
 
-			actions.add(bCancel);
-			actions.add(bMove);
+			if (!isJump) {
+				actions.add(bCancel);
+				actions.add(bMove);
+			}
+
 			actions.setBounds(0, ModalNotebookChooser.fixedHeight - 46, ModalNotebookChooser.fixedWidth - 7, 40);
 			add(actions);
 
@@ -324,7 +337,6 @@ public class Notebooks extends BackgroundPanel {
 		int x = 0;
 		int y = yOff;
 
-		
 		Rectangle b = main.getBounds();
 
 		for (NotebookItem item : notebookItems) {
@@ -627,6 +639,8 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
+	static final Timer t = new Timer();
+
 	public void handleKeyEvent(final KeyEvent e) {
 		switch (e.getID()) {
 		case KeyEvent.KEY_PRESSED:
@@ -636,7 +650,7 @@ public class Notebooks extends BackgroundPanel {
 					naListener.didSelect(selectedNotebook.notebook);
 				}
 				break;
-			case KeyEvent.VK_ESCAPE:
+			default:
 				if (e.getModifiers() == 0) {
 					if (!search.hasFocus()) {
 						final Document d = search.getDocument();
@@ -644,7 +658,6 @@ public class Notebooks extends BackgroundPanel {
 
 						// Avoid inserted character to be highlighted and wiped
 						// by succeeding keystrokes
-						Timer t = new Timer();
 						TimerTask tt = new TimerTask() {
 							@Override
 							public void run() {
@@ -657,11 +670,9 @@ public class Notebooks extends BackgroundPanel {
 							}
 						};
 
-						// hangs? t.schedule(tt, 50);
+						t.schedule(tt, 50);
 					}
 				}
-				break;
-			default:
 				search.setFocusable(true);
 				search.requestFocusInWindow();
 			}

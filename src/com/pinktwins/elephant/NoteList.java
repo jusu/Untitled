@@ -7,6 +7,7 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,7 @@ import javax.swing.ScrollPaneConstants;
 
 import org.pushingpixels.trident.Timeline;
 
+import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 
@@ -462,6 +464,31 @@ public class NoteList extends BackgroundPanel {
 		if (n != null) {
 			selectNote(n);
 		}
+	}
+
+	public void openNotebookChooserForJumping() {
+		ModalNotebookChooser nbc = new ModalNotebookChooser(window, "", false);
+
+		// Center on window
+		Point p = currentName.getLocationOnScreen();
+		Rectangle r = window.getBounds();
+		int x = (p.x + currentName.getWidth() / 2) - ModalNotebookChooser.fixedWidth / 2;
+		nbc.setBounds(x, p.y + currentName.getHeight(), ModalNotebookChooser.fixedWidth, ModalNotebookChooser.fixedHeight);
+
+		nbc.setVisible(true);
+		nbc.requestFocusInWindow();
+		nbc.requestFocus();
+
+		nbc.setNotebookActionListener(new NotebookActionListener() {
+			@Override
+			public void didCancelSelection() {
+			}
+
+			@Override
+			public void didSelect(Notebook nb) {
+				window.showNotebook(nb);
+			}
+		});
 	}
 
 }
