@@ -63,6 +63,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
+	interface NoteEditorStateListener {
+		public void stateChange(boolean hasFocus, boolean hasSelection);
+	}
+
 	public NoteEditor(ElephantWindow w) {
 		super(tile);
 		window = w;
@@ -70,6 +74,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		Elephant.eventBus.register(this);
 
 		createComponents();
+	}
+
+	NoteEditorStateListener stateListener;
+
+	public void addStateListener(NoteEditorStateListener l) {
+		stateListener = l;
 	}
 
 	private Note currentNote;
@@ -423,6 +433,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				}
 			}
 		});
+
+		int len = text.getDocument().getLength();
+		int start = text.getSelectionStart(), end = text.getSelectionEnd();
+		boolean hasSelection = (start >= 0 && start < len && end > start && end <= len);
+		boolean hasFocus = text.hasFocus();
+
+		if (stateListener != null) {
+			stateListener.stateChange(hasFocus, hasSelection);
+		}
 	}
 
 	private void insertFileIntoNote(File f, int position) {
@@ -476,4 +495,17 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 		}
 	}
+
+	public void cutAction() {
+		editor.getTextPane().cut();
+	}
+
+	public void copyAction() {
+		editor.getTextPane().copy();
+	}
+
+	public void pasteAction() {
+		editor.getTextPane().paste();
+	}
+
 }

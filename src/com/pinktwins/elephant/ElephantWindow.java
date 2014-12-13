@@ -27,6 +27,7 @@ import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.NoteEditor.NoteEditorStateListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
@@ -384,68 +385,80 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener cutTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("CUT");
+			noteEditor.cutAction();
+		}
+	};
+
+	ActionListener copyTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("COPY");
+			noteEditor.copyAction();
+		}
+	};
+
+	ActionListener pasteTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("PASTE");
+			noteEditor.pasteAction();
+		}
+	};
+
+	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
+		JMenuItem mi = new JMenuItem(title);
+		mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
+		mi.addActionListener(action);
+		return mi;
+	}
+
 	private void createMenu() {
 		JMenuBar mb = new JMenuBar();
+
 		JMenu file = new JMenu("File");
-
-		JMenuItem newNote = new JMenuItem("New Note");
-		newNote.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK));
-		newNote.addActionListener(newNoteAction);
-		file.add(newNote);
-
-		JMenuItem newNotebook = new JMenuItem("New Notebook");
-		newNotebook.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK));
-		newNotebook.addActionListener(newNotebookAction);
-		file.add(newNotebook);
-
-		JMenuItem newWindow = new JMenuItem("New Elephant Window");
-		newWindow.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.ALT_MASK));
-		newWindow.addActionListener(newWindowAction);
-		file.add(newWindow);
-
+		file.add(menuItem("New Note", KeyEvent.VK_N, ActionEvent.META_MASK, newNoteAction));
+		file.add(menuItem("New Notebook", KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK, newNotebookAction));
+		file.add(menuItem("New Elephant Window", KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.ALT_MASK, newWindowAction));
 		file.addSeparator();
-
-		JMenuItem saveNote = new JMenuItem("Save");
-		saveNote.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.META_MASK));
-		saveNote.addActionListener(saveNoteAction);
-		file.add(saveNote);
+		file.add(menuItem("Save", KeyEvent.VK_S, ActionEvent.META_MASK, saveNoteAction));
 
 		JMenu edit = new JMenu("Edit");
 
-		JMenuItem iSearch = new JMenuItem("Search Notes...");
-		iSearch.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.META_MASK | ActionEvent.ALT_MASK));
-		iSearch.addActionListener(searchAction);
-		edit.add(iSearch);
+		final JMenuItem iCut = menuItem("Cut", KeyEvent.VK_X, KeyEvent.META_DOWN_MASK, cutTextAction);
+		final JMenuItem iCopy = menuItem("Copy", KeyEvent.VK_C, KeyEvent.META_DOWN_MASK, copyTextAction);
+		final JMenuItem iPaste = menuItem("Paste", KeyEvent.VK_V, KeyEvent.META_DOWN_MASK, pasteTextAction);
+		edit.add(iCut);
+		edit.add(iCopy);
+		edit.add(iPaste);
+
+		edit.addSeparator();
+		edit.add(menuItem("Search Notes...", KeyEvent.VK_F, ActionEvent.META_MASK | ActionEvent.ALT_MASK, searchAction));
 
 		JMenu view = new JMenu("View");
-
-		JMenuItem iNotes = new JMenuItem("Notes");
-		iNotes.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2, ActionEvent.META_MASK | ActionEvent.ALT_MASK));
-		iNotes.addActionListener(showNotesAction);
-		view.add(iNotes);
-
-		JMenuItem iNotebooks = new JMenuItem("Notebooks");
-		iNotebooks.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_3, ActionEvent.META_MASK | ActionEvent.ALT_MASK));
-		iNotebooks.addActionListener(showNotebooksAction);
-		view.add(iNotebooks);
-
-		JMenuItem iTags = new JMenuItem("Tags");
-		iTags.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_4, ActionEvent.META_MASK | ActionEvent.ALT_MASK));
-		iTags.addActionListener(showTagsAction);
-		view.add(iTags);
-
+		view.add(menuItem("Notes", KeyEvent.VK_2, ActionEvent.META_MASK | ActionEvent.ALT_MASK, showNotesAction));
+		view.add(menuItem("Notebooks", KeyEvent.VK_3, ActionEvent.META_MASK | ActionEvent.ALT_MASK, showNotebooksAction));
+		view.add(menuItem("Tags", KeyEvent.VK_4, ActionEvent.META_MASK | ActionEvent.ALT_MASK, showTagsAction));
 		view.addSeparator();
-
-		JMenuItem iAll = new JMenuItem("Show All Notes");
-		iAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK));
-		iAll.addActionListener(showAllNotesAction);
-		view.add(iAll);
+		view.add(menuItem("Show All Notes", KeyEvent.VK_A, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK, showAllNotesAction));
 
 		mb.add(file);
 		mb.add(edit);
 		mb.add(view);
 
 		setJMenuBar(mb);
+
+		noteEditor.addStateListener(new NoteEditorStateListener() {
+			@Override
+			public void stateChange(boolean hasFocus, boolean hasSelection) {
+				iCut.setEnabled(hasFocus && hasSelection);
+				iCopy.setEnabled(hasFocus && hasSelection);
+				iPaste.setEnabled(hasFocus);
+			}
+		});
 	}
 
 	protected void newWindow() {

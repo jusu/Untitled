@@ -3,8 +3,13 @@ package com.pinktwins.elephant;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -39,7 +44,7 @@ public class CustomEditor extends RoundPanel {
 	private static final String COMP = StyleConstants.ComponentElementName;
 
 	private JTextField title;
-	private JTextPane note;
+	private CustomTextPane note;
 
 	private boolean isRichText;
 
@@ -138,14 +143,109 @@ public class CustomEditor extends RoundPanel {
 
 		createNote();
 	}
-	
+
+	class CustomTextPane extends JTextPane implements ClipboardOwner {
+
+		private static final long serialVersionUID = -5388021236896195540L;
+
+		// http://www.javapractices.com/topic/TopicAction.do?Id=82
+
+		public void setClipboardContents(String aString) {
+			StringSelection stringSelection = new StringSelection(aString);
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, this);
+		}
+
+		public String getClipboardContents() {
+			String result = "";
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			// odd: the Object param of getContents is not currently used
+			Transferable contents = clipboard.getContents(null);
+			boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+			if (hasTransferableText) {
+				try {
+					result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+				} catch (UnsupportedFlavorException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			return result;
+		}
+
+		private class CPPInfo {
+			Document doc;
+			int pos, len, start, end, selLen, adjust;
+			boolean hasSelection;
+
+			public CPPInfo() {
+				doc = getDocument();
+				pos = getCaretPosition();
+				len = doc.getLength();
+				start = getSelectionStart();
+				end = getSelectionEnd();
+				selLen = end - start;
+				adjust = 0;
+				if (pos >= end) {
+					adjust = end - start;
+				}
+				hasSelection = (start >= 0 && start < len && end > start && end <= len);
+			}
+		}
+
+		@Override
+		public void cut() {
+			copy();
+			CPPInfo i = new CPPInfo();
+			if (i.hasSelection) {
+				try {
+					i.doc.remove(i.start, i.selLen);
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void copy() {
+			String s = getSelectedText();
+			if (s != null && !s.isEmpty()) {
+				setClipboardContents(s);
+			}
+		}
+
+		@Override
+		public void paste() {
+			String s = getClipboardContents();
+			if (!s.isEmpty()) {
+				try {
+					CPPInfo i = new CPPInfo();
+
+					if (i.hasSelection) {
+						i.doc.remove(i.start, i.selLen);
+					}
+
+					i.pos -= i.adjust;
+					i.doc.insertString(i.pos, s, null);
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void lostOwnership(Clipboard clipboard, Transferable contents) {
+		}
+	}
+
 	private void createNote() {
 
 		if (note != null) {
 			remove(note);
 		}
 
-		note = new JTextPane();
+		note = new CustomTextPane();
 		note.setDocument(new CustomDocument());
 		note.addFocusListener(editorFocusListener);
 		note.setFont(ElephantWindow.fontEditor);

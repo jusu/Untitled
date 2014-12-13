@@ -1,8 +1,12 @@
 package com.pinktwins.elephant;
 
 import java.awt.EventQueue;
+import java.awt.event.KeyEvent;
 
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.text.DefaultEditorKit;
 
 import com.google.common.eventbus.EventBus;
 import com.pinktwins.elephant.data.Settings;
