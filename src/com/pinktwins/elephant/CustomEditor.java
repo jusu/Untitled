@@ -46,7 +46,7 @@ public class CustomEditor extends RoundPanel {
 	private JTextField title;
 	private CustomTextPane note;
 
-	private boolean isRichText;
+	public boolean isRichText;
 
 	public boolean isRichText() {
 		return isRichText;
@@ -251,6 +251,7 @@ public class CustomEditor extends RoundPanel {
 		note.setFont(ElephantWindow.fontEditor);
 		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 		note.setDragEnabled(true);
+
 		note.setTransferHandler(new TransferHandler() {
 			private static final long serialVersionUID = -4777142447614165019L;
 

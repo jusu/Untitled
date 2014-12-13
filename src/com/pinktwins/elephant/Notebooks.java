@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -46,6 +47,18 @@ public class Notebooks extends BackgroundPanel {
 	private static final long serialVersionUID = 7129502018764896415L;
 	private static Image tile, notebookBg, notebookBgSelected, notebooksHLine, newNotebook;
 
+	interface NotebookActionListener {
+		public void didCancelSelection();
+
+		public void didSelect(Notebook nb);
+	}
+
+	NotebookActionListener naListener;
+
+	public void setNotebookActionListener(NotebookActionListener l) {
+		naListener = l;
+	}
+
 	private ElephantWindow window;
 	private NotebookItem selectedNotebook;
 
@@ -64,11 +77,15 @@ public class Notebooks extends BackgroundPanel {
 	}
 
 	boolean isEditing = false;
+	boolean isModal;
+	String modalHeader;
 
-	public Notebooks(ElephantWindow w) {
+	public Notebooks(ElephantWindow w, boolean modalChooser, String modalHeader) {
 		super(tile);
 
 		window = w;
+		isModal = modalChooser;
+		this.modalHeader = modalHeader;
 
 		Elephant.eventBus.register(this);
 
@@ -91,19 +108,27 @@ public class Notebooks extends BackgroundPanel {
 
 	JScrollPane scroll;
 	JPanel main;
-	JButton bNew;
+	JButton bNew, bMove;
 	SearchTextField search;
 
 	private void createComponents() {
+		if (isModal) {
+			setLayout(null);
+			setImage(null);
+			setBackground(Color.decode("#eaeaea"));
+		}
+
 		main = new JPanel();
 		main.setLayout(null);
 
+		int divY = isModal ? 86 : 42;
+
 		BackgroundPanel div = new BackgroundPanel(notebooksHLine);
-		div.setBounds(0, 42, 1920, 44);
+		div.setBounds(0, divY, 1920, 2);
 		div.setStyle(BackgroundPanel.SCALED_X);
 
 		JPanel tools = new JPanel(null);
-		tools.setBounds(0, 0, 800, 44);
+		tools.setBounds(0, 0, 800, divY);
 
 		bNew = new JButton("");
 		bNew.setIcon(new ImageIcon(newNotebook));
@@ -112,22 +137,78 @@ public class Notebooks extends BackgroundPanel {
 
 		search = new SearchTextField("Find a notebook");
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
-		search.setBounds(134, 8, 160, 26);
+		if (isModal) {
+			search.setBounds(10, 60, 414, 26);
+		} else {
+			search.setBounds(134, 8, 160, 26);
+		}
+
 		search.setFont(ElephantWindow.fontMedium);
 		search.setFixedColor(Color.decode("#e9e9e9"));
-		search.useV2();
+		if (isModal) {
+			search.useV3();
+			search.setFixedColor(Color.WHITE);
+		} else {
+			search.useV2();
+		}
 		search.windowFocusGained();
 
-		tools.add(bNew);
+		if (isModal) {
+			JLabel title = new JLabel(modalHeader, JLabel.CENTER);
+			title.setFont(ElephantWindow.fontModalHeader);
+			title.setBounds(0, 14, ModalNotebookChooser.fixedWidth, 40);
+			tools.add(title);
+		} else {
+			tools.add(bNew);
+		}
 		tools.add(search);
 
 		scroll = new JScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getHorizontalScrollBar().setUnitIncrement(5);
+		scroll.getVerticalScrollBar().setUnitIncrement(5);
+		if (isModal) {
+			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1, true));
+			scroll.setBounds(18, 103, 424 - 18, 564 - 103);
+		}
 
 		add(tools);
-		add(div);
+		if (!isModal) {
+			add(div);
+		}
 		add(scroll);
+
+		if (isModal) {
+			scroll.setOpaque(true);
+			scroll.setBackground(Color.decode("#e6e6e6"));
+
+			JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			JButton bCancel = new JButton("Cancel");
+			bMove = new JButton("Move");
+
+			actions.add(bCancel);
+			actions.add(bMove);
+			actions.setBounds(0, ModalNotebookChooser.fixedHeight - 46, ModalNotebookChooser.fixedWidth - 7, 40);
+			add(actions);
+
+			bCancel.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (naListener != null) {
+						naListener.didCancelSelection();
+					}
+				}
+			});
+
+			bMove.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (selectedNotebook != null) {
+						naListener.didSelect(selectedNotebook.notebook);
+					}
+				}
+			});
+		}
 
 		main.addMouseListener(new MouseListener() {
 
@@ -234,9 +315,16 @@ public class Notebooks extends BackgroundPanel {
 
 		int xOff = 12 + insets.left;
 		int yOff = 57;
+
+		if (isModal) {
+			xOff += 56;
+			yOff -= 49;
+		}
+
 		int x = 0;
 		int y = yOff;
 
+		
 		Rectangle b = main.getBounds();
 
 		for (NotebookItem item : notebookItems) {
@@ -247,14 +335,19 @@ public class Notebooks extends BackgroundPanel {
 
 			y += size.height - 1;
 
-			if (y + size.height > b.height) {
-				x += size.width + xOff;
-				y = yOff;
+			if (!isModal) {
+				if (y + size.height > b.height) {
+					x += size.width + xOff;
+					y = yOff;
+				}
 			}
 		}
 
 		Dimension d = main.getPreferredSize();
 		d.width = x + size.width + xOff * 2;
+		if (isModal) {
+			d.height = y + size.height + yOff;
+		}
 		main.setPreferredSize(d);
 	}
 
@@ -262,6 +355,9 @@ public class Notebooks extends BackgroundPanel {
 		if (selectedNotebook != null) {
 			selectedNotebook.setSelected(false);
 			selectedNotebook = null;
+		}
+		if (isModal) {
+			bMove.setEnabled(false);
 		}
 	}
 
@@ -299,26 +395,52 @@ public class Notebooks extends BackgroundPanel {
 		item.setSelected(true);
 		selectedNotebook = item;
 
-		Rectangle b = item.getBounds();
-		int itemX = b.x;
-		int x = scroll.getHorizontalScrollBar().getValue();
-		int scrollWidth = scroll.getBounds().width;
-
-		if (itemX < x || itemX + b.height >= x + scrollWidth) {
-
-			if (itemX < x) {
-				itemX -= 12;
-			} else {
-				itemX -= scrollWidth - b.width - 12;
-			}
-
-			JScrollBar bar = scroll.getHorizontalScrollBar();
-			Timeline timeline = new Timeline(bar);
-			timeline.addPropertyToInterpolate("value", bar.getValue(), itemX);
-			timeline.setDuration(100);
-			timeline.play();
+		if (isModal) {
+			bMove.setEnabled(true);
+			bMove.requestFocusInWindow();
 		}
 
+		Rectangle b = item.getBounds();
+
+		if (isModal) {
+			int itemY = b.y;
+			int y = scroll.getVerticalScrollBar().getValue();
+			int scrollHeight = scroll.getBounds().height;
+
+			if (itemY < y || itemY + b.width >= y + scrollHeight) {
+
+				if (itemY < y) {
+					itemY -= 12;
+				} else {
+					itemY -= scrollHeight - b.height - 12;
+				}
+
+				JScrollBar bar = scroll.getVerticalScrollBar();
+				Timeline timeline = new Timeline(bar);
+				timeline.addPropertyToInterpolate("value", bar.getValue(), itemY);
+				timeline.setDuration(100);
+				timeline.play();
+			}
+		} else {
+			int itemX = b.x;
+			int x = scroll.getHorizontalScrollBar().getValue();
+			int scrollWidth = scroll.getBounds().width;
+
+			if (itemX < x || itemX + b.height >= x + scrollWidth) {
+
+				if (itemX < x) {
+					itemX -= 12;
+				} else {
+					itemX -= scrollWidth - b.width - 12;
+				}
+
+				JScrollBar bar = scroll.getHorizontalScrollBar();
+				Timeline timeline = new Timeline(bar);
+				timeline.addPropertyToInterpolate("value", bar.getValue(), itemX);
+				timeline.setDuration(100);
+				timeline.play();
+			}
+		}
 	}
 
 	public void openSelected() {
@@ -475,7 +597,11 @@ public class Notebooks extends BackgroundPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 2) {
-				window.showNotebook(notebook);
+				if (naListener != null) {
+					naListener.didSelect(notebook);
+				} else {
+					window.showNotebook(notebook);
+				}
 			}
 		}
 
@@ -502,32 +628,44 @@ public class Notebooks extends BackgroundPanel {
 	}
 
 	public void handleKeyEvent(final KeyEvent e) {
-		if (e.getKeyCode() != KeyEvent.VK_ESCAPE) {
-			if (e.getModifiers() == 0) {
-				if (!search.hasFocus()) {
-					final Document d = search.getDocument();
-					final int pos = search.getCaretPosition();
-
-					// Avoid inserted character to be highlighted and wiped
-					// by succeeding keystrokes
-					Timer t = new Timer();
-					TimerTask tt = new TimerTask() {
-						@Override
-						public void run() {
-							try {
-								d.insertString(pos, String.valueOf(e.getKeyChar()), null);
-								search.setCaretPosition(search.getCaretPosition() + 1);
-							} catch (BadLocationException e1) {
-								e1.printStackTrace();
-							}
-						}
-					};
-
-					t.schedule(tt, 50);
+		switch (e.getID()) {
+		case KeyEvent.KEY_PRESSED:
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_ENTER:
+				if (selectedNotebook != null && naListener != null) {
+					naListener.didSelect(selectedNotebook.notebook);
 				}
+				break;
+			case KeyEvent.VK_ESCAPE:
+				if (e.getModifiers() == 0) {
+					if (!search.hasFocus()) {
+						final Document d = search.getDocument();
+						final int pos = search.getCaretPosition();
+
+						// Avoid inserted character to be highlighted and wiped
+						// by succeeding keystrokes
+						Timer t = new Timer();
+						TimerTask tt = new TimerTask() {
+							@Override
+							public void run() {
+								try {
+									d.insertString(pos, String.valueOf(e.getKeyChar()), null);
+									search.setCaretPosition(search.getCaretPosition() + 1);
+								} catch (BadLocationException e1) {
+									e1.printStackTrace();
+								}
+							}
+						};
+
+						// hangs? t.schedule(tt, 50);
+					}
+				}
+				break;
+			default:
 				search.setFocusable(true);
 				search.requestFocusInWindow();
 			}
+			break;
 		}
 	}
 }

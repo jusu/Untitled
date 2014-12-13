@@ -142,6 +142,8 @@ public class NoteList extends BackgroundPanel {
 		main.removeAll();
 		noteItems.clear();
 
+		main.repaint();
+
 		List<Note> list = notebook.getNotes();
 		for (Note n : list) {
 			NoteItem item = new NoteItem(n);

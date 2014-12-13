@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -45,6 +46,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
 	final public static Font fontNormal = Font.decode("Arial-14");
 	final public static Font fontMedium = Font.decode("Arial-11");
+	final public static Font fontModalHeader = Font.decode("Arial-BOLD-16");
 
 	final public static Color colorTitle = Color.decode("#999999");
 	final public static Color colorTitleButton = Color.decode("#666666");
@@ -58,7 +60,7 @@ public class ElephantWindow extends JFrame {
 	private Sidebar sideBar = new Sidebar(this);
 	private NoteList noteList = new NoteList(this);
 	private NoteEditor noteEditor = new NoteEditor(this);
-	private Notebooks notebooks = new Notebooks(this);
+	private Notebooks notebooks = new Notebooks(this, false, "");
 	private Tags tags = new Tags(this);
 
 	private boolean hasWindowFocus;
@@ -95,6 +97,13 @@ public class ElephantWindow extends JFrame {
 			@Override
 			public void windowDeactivated(WindowEvent e) {
 				hasWindowFocus = false;
+
+				for (Window w : getWindows()) {
+					if (w instanceof ModalNotebookChooser && w.isActive()) {
+						return;
+					}
+				}
+
 				toolBar.focusLost();
 			}
 
@@ -147,6 +156,17 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			if (!hasWindowFocus) {
+				int n = 0;
+
+				// XXX the windows accumulate. Get rid of them.
+				for (Window w : getWindows()) {
+					if (w instanceof ModalNotebookChooser) {
+						//System.out.println("NotebookChoosers: " + (++n));
+						if (w.isActive()) {
+							((ModalNotebookChooser) w).handleKeyEvent(e);
+						}
+					}
+				}
 				return false;
 			}
 
@@ -409,6 +429,13 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener moveNoteAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.openNotebookChooserForMoving();
+		}
+	};
+
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
 		mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
@@ -445,9 +472,13 @@ public class ElephantWindow extends JFrame {
 		view.addSeparator();
 		view.add(menuItem("Show All Notes", KeyEvent.VK_A, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK, showAllNotesAction));
 
+		JMenu note = new JMenu("Note");
+		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, ActionEvent.META_MASK | ActionEvent.CTRL_MASK, moveNoteAction));
+
 		mb.add(file);
 		mb.add(edit);
 		mb.add(view);
+		mb.add(note);
 
 		setJMenuBar(mb);
 
@@ -505,6 +536,7 @@ public class ElephantWindow extends JFrame {
 
 	public void sortAndUpdate() {
 		noteList.sortAndUpdate();
+		splitLeft.revalidate();
 	}
 
 	@Subscribe

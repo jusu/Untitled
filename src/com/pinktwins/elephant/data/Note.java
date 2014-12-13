@@ -136,8 +136,9 @@ public class Note {
 			// XXX if I just wrote rtf rich text to .txt file, might want to
 			// rename that file.
 
-			// XXX after 'make plain text' command, should write .txt file, not .rtf
-			
+			// XXX after 'make plain text' command, should write .txt file, not
+			// .rtf
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -238,69 +239,81 @@ public class Note {
 
 	}
 
+	private String ts() {
+		return Long.toString(System.currentTimeMillis(), 36);
+	}
+
 	public void moveTo(File dest) {
+
+		File destFile = new File(dest + File.separator + file.getName());
+		File destMeta = new File(dest + File.separator + meta.getName());
+		File destAtts = new File(attachmentFolderPath(destFile));
+
+		if (destFile.exists() || destMeta.exists() || destAtts.exists()) {
+			attemptSafeRename(file.getName());
+			moveTo(dest);
+			return;
+		}
+
 		try {
 			FileUtils.moveFileToDirectory(file, dest, false);
 			FileUtils.moveFileToDirectory(meta, dest, false);
 
-			// XXX move attachments directory as well
-			// FileUtils.moveDirectoryToDirectory(src, destDir, createDestDir);
+			File atts = new File(attachmentFolderPath(file));
+			if (atts.exists() && atts.isDirectory()) {
+				FileUtils.moveDirectoryToDirectory(atts, dest, true);
+			}
+
+			Notebook source = Vault.getInstance().findNotebook(file.getParentFile());
+			if (source != null) {
+				source.refresh();
+			}
 
 			Notebook nb = Vault.getInstance().findNotebook(dest);
 			if (nb != null) {
 				nb.refresh();
-				Elephant.eventBus.post(new NotebookEvent(Kind.noteMoved));
 			}
 
+			Elephant.eventBus.post(new NotebookEvent(Kind.noteMoved));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void attemptSafeRename(String newName) {
-		// attempt to rename file to newName, likely the note title.
-		// rename can fail on invalid characters or such file already exists.
-		// that's ok.
 
-		// XXX Might try creating the newName file first, before stripping this hars
 		newName = newName.replaceAll("[^a-zA-Z0-9 \\.\\-]", "_");
 
 		File newFile = new File(file.getParentFile().getAbsolutePath() + File.separator + newName);
-		if (newFile.exists()) {
-			return;
-		}
-
 		File newMeta = metaFromFile(newFile);
 
-		if (newMeta.exists()) {
+		File atts = new File(attachmentFolderPath(file));
+		File newAtts = null;
+		if (atts.exists() && atts.isDirectory()) {
+			newAtts = new File(attachmentFolderPath(newFile));
+		}
+
+		if (newFile.exists() || newMeta.exists() || (newAtts != null && newAtts.exists())) {
+			// fallback
+			String base = FilenameUtils.getBaseName(newName);
+			String ext = FilenameUtils.getExtension(newName);
+			newName = base + "_" + ts() + "." + ext;
+			attemptSafeRename(newName);
 			return;
 		}
 
-		// XXX ALSO RENAME ATTACHMENTS FOLDER
-
-		boolean metaCopied = false;
-
 		try {
-			// copy metafile as new name, mark copied
-			FileUtils.copyFile(meta, newMeta);
-			metaCopied = true;
-
-			// move note file
+			FileUtils.moveFile(meta, newMeta);
 			FileUtils.moveFile(file, newFile);
 
-			// all ok, start using renamed files, delete old copy of meta
 			file = newFile;
-			File oldMeta = meta;
 			meta = newMeta;
-			metaCopied = false;
-			oldMeta.delete();
+
+			if (newAtts != null) {
+				FileUtils.moveDirectory(atts, newAtts);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
-
-			// failing to copy/rename leaves things as they were.
-			if (metaCopied) {
-				newMeta.delete();
-			}
 		}
 	}
 
@@ -320,12 +333,12 @@ public class Note {
 		return dest;
 	}
 
-	private String attachmentFolderPath() {
-		return FilenameUtils.getFullPath(file.getAbsolutePath()) + FilenameUtils.getBaseName(file.getAbsolutePath()) + ".attachments";
+	private String attachmentFolderPath(File f) {
+		return f.getAbsolutePath() + ".attachments";
 	}
 
 	private File attachmentFolder() throws IOException {
-		String s = attachmentFolderPath();
+		String s = attachmentFolderPath(file);
 
 		File f = new File(s);
 		if (!f.exists()) {
@@ -338,7 +351,7 @@ public class Note {
 	}
 
 	public File[] getAttachmentList() {
-		File f = new File(attachmentFolderPath());
+		File f = new File(attachmentFolderPath(file));
 		if (f.exists()) {
 			return f.listFiles();
 		} else {

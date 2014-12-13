@@ -23,6 +23,8 @@ public class SearchTextField extends HintTextField {
 
 	private static Image searchLeftV2, searchMiddleV2, searchRightV2, searchLeftHiliteV2, searchMiddleHiliteV2, searchRightHiliteV2, searchRightHiliteCrossV2;
 
+	private static Image searchLeftV3, searchMiddleV3, searchRightV3, searchLeftHiliteV3, searchMiddleHiliteV3, searchRightHiliteV3, searchRightHiliteCrossV3;
+
 	boolean hasWindowFocus, hasSearchFocus;
 
 	private Color fixedColor;
@@ -47,6 +49,14 @@ public class SearchTextField extends HintTextField {
 			searchMiddleHiliteV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleHiliteV2.png"));
 			searchRightHiliteV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteV2.png"));
 			searchRightHiliteCrossV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteCrossV2.png"));
+
+			searchLeftV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftV3.png"));
+			searchMiddleV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleV3.png"));
+			searchRightV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightV3.png"));
+			searchLeftHiliteV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftHiliteV3.png"));
+			searchMiddleHiliteV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleHiliteV3.png"));
+			searchRightHiliteV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteV3.png"));
+			searchRightHiliteCrossV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteCrossV3.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -178,6 +188,19 @@ public class SearchTextField extends HintTextField {
 		images[7] = searchMiddleHiliteV2;
 		images[8] = searchRightHiliteV2;
 		images[9] = searchRightHiliteCrossV2;
+	}
+
+	public void useV3() {
+		images[0] = searchLeftV3;
+		images[1] = searchMiddleV3;
+		images[2] = searchRightV3;
+		images[3] = searchLeftInactive;
+		images[4] = searchMiddleInactive;
+		images[5] = searchRightInactive;
+		images[6] = searchLeftHiliteV3;
+		images[7] = searchMiddleHiliteV3;
+		images[8] = searchRightHiliteV3;
+		images[9] = searchRightHiliteCrossV3;
 	}
 
 	@Override

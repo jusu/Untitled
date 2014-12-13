@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +32,7 @@ import javax.swing.text.BadLocationException;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.CustomEditor.EditorEventListener;
+import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.NoteChangedEvent;
@@ -210,6 +212,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		caretChanged(editor.getTextPane());
 
+		currNotebook.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openNotebookChooserForMoving();
+			}
+		});
+
 		trash.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -249,6 +258,50 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				unfocus();
 			}
 		});
+	}
+
+	public void openNotebookChooserForMoving() {
+		if (currentNote != null) {
+			ModalNotebookChooser nbc = new ModalNotebookChooser(window, "Move \"" + editor.getTitle() + "\"", false);
+
+			// Center on window
+			Point p = currNotebook.getLocationOnScreen();
+			Rectangle r = window.getBounds();
+			int x = r.x + r.width / 2 - ModalNotebookChooser.fixedWidth / 2;
+			nbc.setBounds(x, p.y, ModalNotebookChooser.fixedWidth, ModalNotebookChooser.fixedHeight);
+
+			nbc.setVisible(true);
+			nbc.requestFocusInWindow();
+			nbc.requestFocus();
+
+			nbc.setNotebookActionListener(new NotebookActionListener() {
+				@Override
+				public void didCancelSelection() {
+				}
+
+				@Override
+				public void didSelect(Notebook nb) {
+					moveNoteAction(currentNote, nb);
+				}
+			});
+		}
+	}
+
+	protected void moveNoteAction(Note n, Notebook destination) {
+		if (n == null || destination == null) {
+			throw new AssertionError();
+		}
+
+		File source = n.file().getParentFile();
+		if (destination.folder().equals(source)) {
+			return;
+		}
+
+		System.out.println("MOVE " + n.getMeta().title() + " -> " + destination.name() + " (" + destination.folder() + ")");
+
+		n.moveTo(destination.folder());
+		window.sortAndUpdate();
+		clear();
 	}
 
 	public void clear() {
@@ -322,7 +375,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				String editedTitle = editor.getTitle();
 				if (!fileTitle.equals(editedTitle)) {
 					currentNote.getMeta().title(editedTitle);
-					currentNote.attemptSafeRename(editedTitle + ".txt");
+					currentNote.attemptSafeRename(editedTitle + (editor.isRichText ? ".rtf" : ".txt"));
 					changed = true;
 				}
 
