@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
@@ -92,7 +94,9 @@ public class Notebook {
 		notes.clear();
 		for (File f : folder.listFiles()) {
 			String name = f.getName();
-			if (name.charAt(0) != '.' && !name.endsWith("~")) {
+			String ext = FilenameUtils.getExtension(f.getName());
+
+			if (name.charAt(0) != '.' && !name.endsWith("~") && (ext.equals("txt") || ext.equals("rtf"))) {
 				try {
 					if (f.isFile()) {
 						notes.add(new Note(f));

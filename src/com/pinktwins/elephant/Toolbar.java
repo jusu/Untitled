@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.pinktwins.elephant.data.Vault;
+
 public class Toolbar extends BackgroundPanel {
 
 	private static final long serialVersionUID = -8186087241529191436L;
@@ -73,6 +75,8 @@ public class Toolbar extends BackgroundPanel {
 	public void focusGained() {
 		setImage(toolbarBg);
 		search.windowFocusGained();
+
+		search.setVisible(Vault.getInstance().hasLocation());
 	}
 
 	public void focusLost() {

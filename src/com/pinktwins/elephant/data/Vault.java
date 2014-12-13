@@ -17,6 +17,8 @@ import com.pinktwins.elephant.Elephant;
 // 'root' data provider
 public class Vault {
 
+	public static final String vaultFolderSettingName = "noteFolder";
+
 	private static Vault instance = null;
 
 	static public Vault getInstance() {
@@ -26,11 +28,8 @@ public class Vault {
 		return instance;
 	}
 
-	// XXX locate HOME
-	private final String HOME = "/Users/jusu/Desktop/elephant";
-
-	// XXX make configurable
-	private String defaultNotebook = "INBOX";
+	private String HOME = "";
+	private String defaultNotebook = "Inbox";
 
 	private File home;
 	private File trash;
@@ -39,8 +38,6 @@ public class Vault {
 
 	private Vault() {
 		Elephant.eventBus.register(this);
-
-		populate();
 	}
 
 	public File getHome() {
@@ -48,6 +45,9 @@ public class Vault {
 	}
 
 	public Notebook getDefaultNotebook() {
+		if (!hasLocation()) {
+			return null;
+		}
 		File f = new File(home.getAbsolutePath() + File.separator + defaultNotebook);
 		return findNotebook(f);
 	}
@@ -63,7 +63,7 @@ public class Vault {
 		trash.mkdirs();
 
 		for (File f : home.listFiles()) {
-			if (Files.isDirectory(f.toPath())) {
+			if (f.isDirectory()) {
 				if (findNotebook(f) == null) {
 					notebooks.add(new Notebook(f));
 				}
@@ -154,6 +154,18 @@ public class Vault {
 	@Subscribe
 	public void handleVaultEvent(VaultEvent event) {
 		populate();
+	}
+
+	public void setLocation(String vaultPath) {
+		if (new File(vaultPath).exists()) {
+			Elephant.settings.set(vaultFolderSettingName, vaultPath);
+			HOME = vaultPath;
+			populate();
+		}
+	}
+
+	public boolean hasLocation() {
+		return !HOME.isEmpty();
 	}
 
 }

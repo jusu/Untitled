@@ -38,6 +38,7 @@ import com.pinktwins.elephant.data.VaultEvent;
 public class ElephantWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
+	final public static Font fontStart = Font.decode("Arial-ITALIC-18");
 	final public static Font fontTitle = Font.decode("Helvetica-BOLD-18");
 	final public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
 	final public static Font fontSmall = Font.decode("Helvetica-10");
@@ -69,7 +70,7 @@ public class ElephantWindow extends JFrame {
 		notebooks, notes, tags
 	};
 
-	UiModes uiMode;
+	UiModes uiMode = UiModes.notes;
 
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
@@ -82,7 +83,12 @@ public class ElephantWindow extends JFrame {
 		createSplit();
 		createToolbar();
 
-		showNotebook(Vault.getInstance().getDefaultNotebook());
+		if (Vault.getInstance().hasLocation()) {
+			Notebook b = Vault.getInstance().getDefaultNotebook();
+			if (b != null) {
+				showNotebook(b);
+			}
+		}
 
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		manager.addKeyEventDispatcher(new KeyDispatcher());
@@ -525,7 +531,19 @@ public class ElephantWindow extends JFrame {
 		splitRight.setLeftComponent(noteList);
 		splitRight.setRightComponent(noteEditor);
 
-		add(splitLeft, BorderLayout.CENTER);
+		if (!Vault.getInstance().hasLocation()) {
+			Start start = new Start(new Runnable() {
+				@Override
+				public void run() {
+					ElephantWindow.this.setVisible(false);
+					ElephantWindow.this.dispose();
+					newWindow();
+				}
+			});
+			add(start);
+		} else {
+			add(splitLeft, BorderLayout.CENTER);
+		}
 	}
 
 	private void createToolbar() {

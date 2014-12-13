@@ -1,15 +1,12 @@
 package com.pinktwins.elephant;
 
 import java.awt.EventQueue;
-import java.awt.event.KeyEvent;
 
-import javax.swing.InputMap;
-import javax.swing.KeyStroke;
 import javax.swing.UIManager;
-import javax.swing.text.DefaultEditorKit;
 
 import com.google.common.eventbus.EventBus;
 import com.pinktwins.elephant.data.Settings;
+import com.pinktwins.elephant.data.Vault;
 
 public class Elephant {
 
@@ -26,6 +23,9 @@ public class Elephant {
 		} catch (Exception e) {
 			// irrelevant // e.printStackTrace();
 		}
+
+		String vaultPath = settings.getString(Vault.vaultFolderSettingName);
+		Vault.getInstance().setLocation(vaultPath);
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

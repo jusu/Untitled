@@ -23,6 +23,8 @@ import com.pinktwins.elephant.data.NotebookEvent.Kind;
 public class Note {
 	private File file, meta;
 	private String fileName = "";
+	
+	private boolean saveLocked = false;
 
 	private BasicFileAttributes attr;
 	static private DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
@@ -61,6 +63,11 @@ public class Note {
 	public Note(File f) {
 		file = f;
 		meta = metaFromFile(f);
+
+		String ext = FilenameUtils.getExtension(f.getName());
+		if (!"txt".equals(ext) && !"rtf".equals(ext)) {
+			saveLocked = true;
+		}
 
 		try {
 			if (!meta.exists()) {
@@ -120,16 +127,25 @@ public class Note {
 	private byte[] contents;
 
 	public String contents() {
+		if (saveLocked) {
+			return "(binary)";
+		}
+
 		try {
 			contents = IOUtil.readFile(file);
 			return new String(contents, Charset.defaultCharset());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 		return "";
 	}
 
 	public void save(String newText) {
+		if (saveLocked) {
+			return;
+		}
+
 		try {
 			IOUtil.writeFile(file, newText);
 
@@ -206,7 +222,12 @@ public class Note {
 		public String title() {
 			String s = map.get("title");
 			if (s == null) {
-				s = "Untitled";
+				if (file.exists()) {
+					s = file.getName();
+					s = s.replace("." + FilenameUtils.getExtension(s),  "");
+				} else {
+					s = "Untitled";
+				}
 			}
 			return s;
 		}

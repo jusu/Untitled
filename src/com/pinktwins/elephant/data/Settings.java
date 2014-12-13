@@ -7,13 +7,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Settings {
+	private String homeDir;
 	private JSONObject map;
 
 	private File settingsFile() {
-		return new File(Vault.getInstance().getHome() + File.separator + ".settings");
+		return new File(homeDir + File.separator + ".com.pinktwins.elephant.settings");
 	}
 
 	public Settings() {
+		homeDir = System.getProperty("user.home");
+		System.out.println("home: " + homeDir);
 		map = load();
 	}
 

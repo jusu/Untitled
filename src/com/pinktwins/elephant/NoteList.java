@@ -134,6 +134,13 @@ public class NoteList extends BackgroundPanel {
 				layoutItems();
 			}
 		});
+
+		currentName.addMouseListener(new CustomMouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				window.jumpToNotebookAction.actionPerformed(null);
+			}
+		});
 	}
 
 	public void load(Notebook notebook) {
