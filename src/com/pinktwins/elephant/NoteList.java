@@ -23,7 +23,9 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -123,8 +125,10 @@ public class NoteList extends BackgroundPanel {
 		main.addMouseListener(new CustomMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
-				window.onNoteListClicked(e);
+				if (!e.isPopupTrigger()) {
+					Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
+					window.onNoteListClicked(e);
+				}
 			}
 		});
 
@@ -156,6 +160,7 @@ public class NoteList extends BackgroundPanel {
 		List<Note> list = notebook.getNotes();
 		for (Note n : list) {
 			NoteItem item = new NoteItem(n);
+
 			main.add(item);
 			noteItems.add(item);
 		}

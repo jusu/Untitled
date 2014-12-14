@@ -242,20 +242,20 @@ public class ElephantWindow extends JFrame {
 		}
 	}
 
-	public void openShortcut(String target) {
+	public boolean openShortcut(String target) {
 		if (Sidebar.ACTION_NOTES.equals(target)) {
 			showNotes();
-			return;
+			return true;
 		}
 
 		if (Sidebar.ACTION_NOTEBOOKS.equals(target)) {
 			showNotebooks();
-			return;
+			return true;
 		}
 
 		if (Sidebar.ACTION_TAGS.equals(target)) {
 			showTags();
-			return;
+			return true;
 		}
 
 		File f = new File(target);
@@ -280,6 +280,10 @@ public class ElephantWindow extends JFrame {
 					}
 				}
 			}
+			
+			return true;
+		} else {
+			return false;
 		}
 
 	}

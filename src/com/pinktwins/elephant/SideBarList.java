@@ -38,6 +38,7 @@ public class SideBarList extends JPanel {
 	public boolean highlightSelection = false;
 
 	private static int NUM_IMAGES = 5;
+	private final String fileMovedStr = "(file moved)";
 
 	enum Images {
 		sidebarNote, sidebarNotebook, sidebarNotesLarge, sidebarNotebooksLarge, sidebarTagsLarge
@@ -187,19 +188,23 @@ public class SideBarList extends JPanel {
 		public void refresh() {
 			String s;
 
-			if (file.isDirectory()) {
-				icon.setIcon(getImageIcon(Images.sidebarNotebook));
-				icon.setPressedIcon(getImageIcon(Images.sidebarNotebook));
-				s = file.getName();
-			} else {
-				icon.setIcon(getImageIcon(Images.sidebarNote));
-				icon.setPressedIcon(getImageIcon(Images.sidebarNote));
-				Note note = new Note(file);
-				s = note.getMeta().title();
-			}
+			if (file.exists()) {
+				if (file.isDirectory()) {
+					icon.setIcon(getImageIcon(Images.sidebarNotebook));
+					icon.setPressedIcon(getImageIcon(Images.sidebarNotebook));
+					s = file.getName();
+				} else {
+					icon.setIcon(getImageIcon(Images.sidebarNote));
+					icon.setPressedIcon(getImageIcon(Images.sidebarNote));
+					Note note = new Note(file);
+					s = note.getMeta().title();
+				}
 
-			if (s.length() > 20) {
-				s = s.substring(0, 20) + "…";
+				if (s.length() > 20) {
+					s = s.substring(0, 20) + "…";
+				}
+			} else {
+				s = fileMovedStr;
 			}
 
 			label.setText(s);
@@ -225,7 +230,9 @@ public class SideBarList extends JPanel {
 			MouseListener ml = new MouseListener() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					window.openShortcut(target);
+					if (!window.openShortcut(target)) {
+						label.setText(fileMovedStr);
+					}
 				}
 
 				@Override
