@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -10,16 +11,19 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -45,6 +49,7 @@ public class CustomEditor extends RoundPanel {
 
 	private JTextField title;
 	private CustomTextPane note;
+	private JPanel padding;
 
 	public boolean isRichText;
 
@@ -103,6 +108,9 @@ public class CustomEditor extends RoundPanel {
 	@SuppressWarnings("serial")
 	public CustomEditor() {
 		super();
+		
+		this.setDoubleBuffered(true);
+
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		setLayout(new BorderLayout());
@@ -142,7 +150,46 @@ public class CustomEditor extends RoundPanel {
 		add(titlePanel, BorderLayout.NORTH);
 
 		createNote();
+
+		// resize padding so note is at least kMinNoteSize height
+		addComponentListener(new ResizeListener() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				int h = getHeight();
+				int needed = NoteEditor.kMinNoteSize - h;
+				int preferred = h + needed - (padding.getLocation().y + 12);
+
+				if (needed > 0) {
+					if (preferred < 0) {
+						createPadding();
+						preferred = 10;
+					}
+					revalidate();
+				} else {
+					padding.setVisible(false);
+
+					if (preferred > 0) {
+						createPadding();
+					}
+				}
+
+				if (preferred > 0) {
+					padding.setVisible(true);
+					padding.setPreferredSize(new Dimension(10, preferred));
+				} else {
+					padding.setVisible(false);
+				}
+			}
+		});
+
 	}
+
+	CustomMouseListener paddingClick = new CustomMouseListener() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			note.requestFocusInWindow();
+		}
+	};
 
 	class CustomTextPane extends JTextPane implements ClipboardOwner {
 
@@ -292,6 +339,21 @@ public class CustomEditor extends RoundPanel {
 		});
 
 		add(note, BorderLayout.CENTER);
+
+		createPadding();
+	}
+
+	private void createPadding() {
+		if (padding != null) {
+			padding.setVisible(false);
+			remove(padding);
+		}
+
+		padding = new JPanel(null);
+		padding.setBackground(Color.WHITE);
+		padding.addMouseListener(paddingClick);
+		padding.setPreferredSize(new Dimension(0, 0));
+		add(padding, BorderLayout.SOUTH);
 	}
 
 	public void setTitle(String s) {

@@ -46,6 +46,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private static final long serialVersionUID = 5649274177360148568L;
 
+	static public final int kMinNoteSize = 288;
+
 	private static Image tile, noteTopShadow, noteToolsNotebook, noteToolsTrash, noteToolsDivider;
 
 	private ElephantWindow window;
@@ -53,7 +55,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private boolean isDirty;
 
 	private final int kNoteOffset = 64;
-	private final int kMinNoteSize = 288;
 	private final int kBorder = 14;
 
 	static {
@@ -271,7 +272,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						NoteEditor.this.editor.revalidate();
+						//NoteEditor.this.editor.revalidate();
 
 						Rectangle r = tools.getBounds();
 						r.width = getWidth();
@@ -474,32 +475,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				if (pos == len) {
 					scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
 				}
-
-				/*
-				 * try { Rectangle y =
-				 * text.modelToView(text.getDocument().getLength()); if (y !=
-				 * null) { int height = y.y + y.height + kNoteOffset; if (height
-				 * < kMinNoteSize) { height = kMinNoteSize; }
-				 * 
-				 * if (height < kMinNoteSize + kBorder) {
-				 * areaHolder.setLayout(null); } else {
-				 * areaHolder.setLayout(areaHolderLayout); }
-				 * 
-				 * int pos = text.getCaretPosition(); int len =
-				 * text.getDocument().getLength(); if (pos == len) {
-				 * scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE); }
-				 * 
-				 * Rectangle b = area.getBounds(); area.setBounds(b.x, b.y,
-				 * b.width, height); area.revalidate();
-				 * 
-				 * b = areaHolder.getBounds(); b.height = height + kNoteOffset +
-				 * kBorder * 2; areaHolder.setBounds(b.x, b.y, getWidth(),
-				 * b.height);
-				 * 
-				 * areaHolder.revalidate(); scrollHolder.revalidate();
-				 * 
-				 * } } catch (BadLocationException e) { }
-				 */
 			}
 		});
 
