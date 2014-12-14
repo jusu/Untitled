@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -27,6 +28,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.Scrollable;
+import javax.swing.SwingConstants;
 import javax.swing.text.BadLocationException;
 
 import com.google.common.eventbus.Subscribe;
@@ -87,7 +90,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private Note currentNote;
 	private HashMap<Object, File> currentAttachments = new HashMap<Object, File>();
 
-	JPanel main, area, areaHolder;
+	JPanel main, area;
+	ScrollablePanel areaHolder;
 	BackgroundPanel scrollHolder;
 	JScrollPane scroll;
 	CustomEditor editor;
@@ -122,6 +126,32 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			} else {
 				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 2, null);
 			}
+		}
+	}
+
+	public class ScrollablePanel extends JPanel implements Scrollable {
+		public Dimension getPreferredScrollableViewportSize() {
+			Dimension d = getPreferredSize();
+			if (d.height < kMinNoteSize) {
+				d.height = kMinNoteSize;
+			}
+			return d;
+		}
+
+		public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return 10;
+		}
+
+		public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return ((orientation == SwingConstants.VERTICAL) ? visibleRect.height : visibleRect.width) - 10;
+		}
+
+		public boolean getScrollableTracksViewportWidth() {
+			return true;
+		}
+
+		public boolean getScrollableTracksViewportHeight() {
+			return false;
 		}
 	}
 
@@ -189,14 +219,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		final int topBorderOffset = 2;
 		areaHolderLayout = new BorderLayout();
-		areaHolder = new JPanel(areaHolderLayout);
+		areaHolder = new ScrollablePanel();
+		areaHolder.setLayout(areaHolderLayout);
 		areaHolder.setBorder(BorderFactory.createEmptyBorder(kBorder - topBorderOffset, kBorder, kBorder, kBorder));
-		areaHolder.setBounds(0, 0, 200, kMinNoteSize);
+		//areaHolder.setBounds(0, 0, 200, kMinNoteSize);
 		areaHolder.add(area, BorderLayout.NORTH);
 
 		scrollHolder = new BackgroundPanel();
 		scrollHolder.setOpaque(false);
-		scrollHolder.setBounds(0, 0, 200, kMinNoteSize);
+		//scrollHolder.setBounds(0, 0, 200, kMinNoteSize);
 
 		scroll = new JScrollPane(areaHolder);
 		scroll.setOpaque(false);
@@ -436,52 +467,39 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	@Override
 	public void caretChanged(final JTextPane text) {
-		// Expand/shrink JTextPane to content height
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					Rectangle y = text.modelToView(text.getDocument().getLength());
-					if (y != null) {
-						int height = y.y + y.height + kNoteOffset;
-						if (height < kMinNoteSize) {
-							height = kMinNoteSize;
-						}
-
-						// Swing when you're winning part #2.
-						//
-						// BorderLayout is fine EXCEPT when note should be at
-						// least kMinNoteSize height.
-						//
-						// BorderLayout would make it as small as the real text
-						// height.
-						//
-						// Prevent that by switching with null layout on the go.
-
-						if (height < kMinNoteSize + kBorder) {
-							areaHolder.setLayout(null);
-						} else {
-							areaHolder.setLayout(areaHolderLayout);
-						}
-
-						int pos = text.getCaretPosition();
-						int len = text.getDocument().getLength();
-						if (pos == len) {
-							scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
-						}
-
-						Rectangle b = area.getBounds();
-						area.setBounds(b.x, b.y, b.width, height);
-						area.revalidate();
-
-						b = areaHolder.getBounds();
-						b.height = height + kNoteOffset + kBorder * 2;
-						areaHolder.setBounds(b.x, b.y, getWidth(), b.height);
-
-						areaHolder.revalidate();
-						scrollHolder.revalidate();
-					}
-				} catch (BadLocationException e) {
+				int pos = text.getCaretPosition();
+				int len = text.getDocument().getLength();
+				if (pos == len) {
+					scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
 				}
+
+				/*
+				 * try { Rectangle y =
+				 * text.modelToView(text.getDocument().getLength()); if (y !=
+				 * null) { int height = y.y + y.height + kNoteOffset; if (height
+				 * < kMinNoteSize) { height = kMinNoteSize; }
+				 * 
+				 * if (height < kMinNoteSize + kBorder) {
+				 * areaHolder.setLayout(null); } else {
+				 * areaHolder.setLayout(areaHolderLayout); }
+				 * 
+				 * int pos = text.getCaretPosition(); int len =
+				 * text.getDocument().getLength(); if (pos == len) {
+				 * scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE); }
+				 * 
+				 * Rectangle b = area.getBounds(); area.setBounds(b.x, b.y,
+				 * b.width, height); area.revalidate();
+				 * 
+				 * b = areaHolder.getBounds(); b.height = height + kNoteOffset +
+				 * kBorder * 2; areaHolder.setBounds(b.x, b.y, getWidth(),
+				 * b.height);
+				 * 
+				 * areaHolder.revalidate(); scrollHolder.revalidate();
+				 * 
+				 * } } catch (BadLocationException e) { }
+				 */
 			}
 		});
 
