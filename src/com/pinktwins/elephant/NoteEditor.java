@@ -175,11 +175,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		currNotebook = new JButton("");
 		currNotebook.setBorderPainted(false);
+		currNotebook.setContentAreaFilled(false);
 		currNotebook.setIcon(new ImageIcon(noteToolsNotebook));
 		currNotebook.setForeground(ElephantWindow.colorTitleButton);
 
 		JButton trash = new JButton("");
 		trash.setBorderPainted(false);
+		trash.setContentAreaFilled(false);
 		trash.setIcon(new ImageIcon(noteToolsTrash));
 
 		toolsTopLeft.add(currNotebook, BorderLayout.WEST);

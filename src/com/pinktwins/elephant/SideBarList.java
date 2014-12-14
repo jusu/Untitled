@@ -218,6 +218,8 @@ public class SideBarList extends JPanel {
 			setLayout(new BorderLayout());
 			setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
 
+			icon.setBorderPainted(false);
+			icon.setContentAreaFilled(false);
 			icon.setBorder(ElephantWindow.emptyBorder);
 
 			label.setForeground(Color.LIGHT_GRAY);
