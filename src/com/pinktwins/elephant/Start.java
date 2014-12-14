@@ -48,7 +48,7 @@ public class Start extends BackgroundPanel {
 
 		JButton bLocation = new JButton("Choose folder");
 
-		JLabel hint = new JLabel("Folder 'Elephant' will be created under this location.", JLabel.CENTER);
+		JLabel hint = new JLabel("Folder 'Elephant' will be created under this folder.", JLabel.CENTER);
 		hint.setForeground(Color.DARK_GRAY);
 		hint.setFont(ElephantWindow.fontStart);
 		hint.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
@@ -76,10 +76,23 @@ public class Start extends BackgroundPanel {
 
 							File inbox = new File(folder + File.separator + "Inbox");
 							if (inbox.mkdirs()) {
-								File note = new File(inbox + File.separator + "Welcome.txt");
+
+								File note = new File(inbox + File.separator + "Shortcuts.txt");
 								Note n = new Note(note);
+								n.getMeta().title("To add shortcuts..");
+								n.save("Edit the file \".shortcuts\" in your note folder.\nUI coming eventually!");
+
+								note = new File(inbox + File.separator + "Welcome.txt");
+								n = new Note(note);
 								n.getMeta().title("Hello there");
 								n.save("Welcome to Elephant!\n\nHit CMD-N to create a new note.\nTry CMD-J to quickly jump to another notebook.\nDrag an image or file to attach it.\n\nThis is Elephant release #1. You're an early bird!");
+
+								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
+								try {
+									IOUtil.writeFile(shortcuts, "{\"list\": [\"Inbox\", \"Inbox/Welcome.txt\"]}");
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
 							}
 
 							Vault.getInstance().setLocation(folder.getAbsolutePath());

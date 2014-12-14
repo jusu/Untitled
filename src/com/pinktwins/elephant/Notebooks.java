@@ -174,7 +174,7 @@ public class Notebooks extends BackgroundPanel {
 		scroll.getHorizontalScrollBar().setUnitIncrement(5);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
 		if (isModal) {
-			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1, true));
+			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
 			if (isJump) {
 				scroll.setBounds(18, 40, 424 - 18, 564);
 			} else {

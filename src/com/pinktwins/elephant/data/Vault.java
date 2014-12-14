@@ -49,7 +49,11 @@ public class Vault {
 			return null;
 		}
 		File f = new File(home.getAbsolutePath() + File.separator + defaultNotebook);
-		return findNotebook(f);
+		Notebook nb = findNotebook(f);
+		if (nb == null && notebooks.size() > 0) {
+			nb = notebooks.get(0);
+		}
+		return nb;
 	}
 
 	public File getTrash() {

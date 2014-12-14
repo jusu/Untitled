@@ -59,7 +59,7 @@ public class FileAttachment extends JPanel {
 
 		setLayout(new BorderLayout());
 		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true));
+		setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 
 		left = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		left.setOpaque(false);

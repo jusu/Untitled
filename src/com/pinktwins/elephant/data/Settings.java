@@ -10,7 +10,7 @@ public class Settings {
 	private String homeDir;
 	private JSONObject map;
 
-	private File settingsFile() {
+	public File settingsFile() {
 		return new File(homeDir + File.separator + ".com.pinktwins.elephant.settings");
 	}
 

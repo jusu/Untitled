@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
@@ -23,16 +24,19 @@ import com.pinktwins.elephant.data.NotebookEvent.Kind;
 public class Note {
 	private File file, meta;
 	private String fileName = "";
-	
+
 	private boolean saveLocked = false;
 
-	private BasicFileAttributes attr;
 	static private DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
 
 	public interface Meta {
 		public String title();
 
+		public long created();
+
 		public void title(String newTitle);
+
+		public void setCreatedTime();
 
 		public int getAttachmentPosition(File attachment);
 
@@ -57,7 +61,7 @@ public class Note {
 	}
 
 	private File metaFromFile(File f) {
-		return new File(f.getParentFile().getAbsolutePath() + File.separator + "." + f.getName() + ".meta");
+		return new File(f.getParentFile().getAbsolutePath() + File.separator + "." + f.getName() + ".elephant");
 	}
 
 	public Note(File f) {
@@ -80,30 +84,11 @@ public class Note {
 	}
 
 	public String createdStr() {
-		if (attr == null) {
-			try {
-				attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-			} catch (IOException e) {
-				e.printStackTrace();
-				return "";
-			}
-		}
-		return df.print(attr.creationTime().toMillis());
+		return df.print(getMeta().created());
 	}
 
 	public String updatedStr() {
-		if (attr == null) {
-			try {
-				attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return df.print(attr.lastModifiedTime().toMillis());
-	}
-
-	public void flushAttrs() {
-		attr = null;
+		return df.print(lastModified());
 	}
 
 	private void readInfo() {
@@ -224,7 +209,7 @@ public class Note {
 			if (s == null) {
 				if (file.exists()) {
 					s = file.getName();
-					s = s.replace("." + FilenameUtils.getExtension(s),  "");
+					s = s.replace("." + FilenameUtils.getExtension(s), "");
 				} else {
 					s = "Untitled";
 				}
@@ -233,8 +218,23 @@ public class Note {
 		}
 
 		@Override
+		public long created() {
+			try {
+				return Long.valueOf(map.get("created"));
+			} catch (NumberFormatException e) {
+				return new Date().getTime();
+			}
+		}
+
+		@Override
 		public void title(String newTitle) {
 			setMeta("title", newTitle);
+			reload();
+		}
+
+		@Override
+		public void setCreatedTime() {
+			setMeta("created", String.valueOf(new Date().getTime()));
 			reload();
 		}
 

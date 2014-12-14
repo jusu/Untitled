@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,6 +66,8 @@ public class ElephantWindow extends JFrame {
 	private Tags tags = new Tags(this);
 
 	private boolean hasWindowFocus;
+
+	private int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 	enum UiModes {
 		notebooks, notes, tags
@@ -229,7 +232,7 @@ public class ElephantWindow extends JFrame {
 			switch (e.getID()) {
 			case KeyEvent.KEY_PRESSED:
 				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
-					if ((e.getModifiers() & KeyEvent.META_MASK) == KeyEvent.META_MASK && (e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
+					if ((e.getModifiers() & menuMask) == menuMask && (e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
 						String target = sideBar.shortcuts.getTarget(e.getKeyCode() - KeyEvent.VK_1);
 						toolBar.clearSearch();
 						openShortcut(target);
@@ -280,7 +283,7 @@ public class ElephantWindow extends JFrame {
 					}
 				}
 			}
-			
+
 			return true;
 		} else {
 			return false;
@@ -334,6 +337,9 @@ public class ElephantWindow extends JFrame {
 	public void showAllNotes() {
 		Notebook nb = Notebook.getNotebookWithAllNotes();
 		showNotebook(nb);
+	}
+
+	public void showSettings() {
 	}
 
 	public void focusEditor() {
@@ -418,7 +424,6 @@ public class ElephantWindow extends JFrame {
 	ActionListener cutTextAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("CUT");
 			noteEditor.cutAction();
 		}
 	};
@@ -426,7 +431,6 @@ public class ElephantWindow extends JFrame {
 	ActionListener copyTextAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("COPY");
 			noteEditor.copyAction();
 		}
 	};
@@ -434,7 +438,6 @@ public class ElephantWindow extends JFrame {
 	ActionListener pasteTextAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("PASTE");
 			noteEditor.pasteAction();
 		}
 	};
@@ -453,6 +456,13 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener settingsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showSettings();
+		}
+	};
+
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
 		mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
@@ -464,34 +474,37 @@ public class ElephantWindow extends JFrame {
 		JMenuBar mb = new JMenuBar();
 
 		JMenu file = new JMenu("File");
-		file.add(menuItem("New Note", KeyEvent.VK_N, ActionEvent.META_MASK, newNoteAction));
-		file.add(menuItem("New Notebook", KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK, newNotebookAction));
-		file.add(menuItem("New Elephant Window", KeyEvent.VK_N, ActionEvent.META_MASK | ActionEvent.ALT_MASK, newWindowAction));
+		file.add(menuItem("New Note", KeyEvent.VK_N, menuMask, newNoteAction));
+		file.add(menuItem("New Notebook", KeyEvent.VK_N, menuMask | KeyEvent.SHIFT_DOWN_MASK, newNotebookAction));
+		file.add(menuItem("New Elephant Window", KeyEvent.VK_N, menuMask | KeyEvent.ALT_DOWN_MASK, newWindowAction));
 		file.addSeparator();
-		file.add(menuItem("Save", KeyEvent.VK_S, ActionEvent.META_MASK, saveNoteAction));
+		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
+		// file.addSeparator();
+		// file.add(menuItem("Settings", KeyEvent.VK_COMMA,
+		// ActionEvent.META_MASK, settingsAction));
 
 		JMenu edit = new JMenu("Edit");
 
-		final JMenuItem iCut = menuItem("Cut", KeyEvent.VK_X, KeyEvent.META_DOWN_MASK, cutTextAction);
-		final JMenuItem iCopy = menuItem("Copy", KeyEvent.VK_C, KeyEvent.META_DOWN_MASK, copyTextAction);
-		final JMenuItem iPaste = menuItem("Paste", KeyEvent.VK_V, KeyEvent.META_DOWN_MASK, pasteTextAction);
+		final JMenuItem iCut = menuItem("Cut", KeyEvent.VK_X, menuMask, cutTextAction);
+		final JMenuItem iCopy = menuItem("Copy", KeyEvent.VK_C, menuMask, copyTextAction);
+		final JMenuItem iPaste = menuItem("Paste", KeyEvent.VK_V, menuMask, pasteTextAction);
 		edit.add(iCut);
 		edit.add(iCopy);
 		edit.add(iPaste);
 
 		edit.addSeparator();
-		edit.add(menuItem("Search Notes...", KeyEvent.VK_F, ActionEvent.META_MASK | ActionEvent.ALT_MASK, searchAction));
+		edit.add(menuItem("Search Notes...", KeyEvent.VK_F, menuMask | KeyEvent.ALT_DOWN_MASK, searchAction));
 
 		JMenu view = new JMenu("View");
-		view.add(menuItem("Notes", KeyEvent.VK_2, ActionEvent.META_MASK | ActionEvent.ALT_MASK, showNotesAction));
-		view.add(menuItem("Notebooks", KeyEvent.VK_3, ActionEvent.META_MASK | ActionEvent.ALT_MASK, showNotebooksAction));
-		view.add(menuItem("Tags", KeyEvent.VK_4, ActionEvent.META_MASK | ActionEvent.ALT_MASK, showTagsAction));
+		view.add(menuItem("Notes", KeyEvent.VK_2, menuMask | KeyEvent.ALT_DOWN_MASK, showNotesAction));
+		view.add(menuItem("Notebooks", KeyEvent.VK_3, menuMask | KeyEvent.ALT_DOWN_MASK, showNotebooksAction));
+		view.add(menuItem("Tags", KeyEvent.VK_4, menuMask | KeyEvent.ALT_DOWN_MASK, showTagsAction));
 		view.addSeparator();
-		view.add(menuItem("Show All Notes", KeyEvent.VK_A, ActionEvent.META_MASK | ActionEvent.SHIFT_MASK, showAllNotesAction));
-		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, ActionEvent.META_MASK, jumpToNotebookAction));
+		view.add(menuItem("Show All Notes", KeyEvent.VK_A, menuMask | KeyEvent.SHIFT_DOWN_MASK, showAllNotesAction));
+		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, menuMask, jumpToNotebookAction));
 
 		JMenu note = new JMenu("Note");
-		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, ActionEvent.META_MASK | ActionEvent.CTRL_MASK, moveNoteAction));
+		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, menuMask | KeyEvent.CTRL_DOWN_MASK, moveNoteAction));
 
 		mb.add(file);
 		mb.add(edit);

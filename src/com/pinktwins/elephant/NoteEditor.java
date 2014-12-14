@@ -367,7 +367,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());
-		note.flushAttrs();
 
 		caretChanged(editor.getTextPane());
 	}

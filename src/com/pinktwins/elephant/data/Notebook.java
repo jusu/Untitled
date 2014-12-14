@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
 public class Notebook {
@@ -157,7 +158,10 @@ public class Notebook {
 
 		f.createNewFile();
 		Note n = new Note(f);
-		n.getMeta().title("Untitled");
+
+		Meta m = n.getMeta();
+		m.title("Untitled");
+		m.setCreatedTime();
 
 		notes.add(0, n);
 
