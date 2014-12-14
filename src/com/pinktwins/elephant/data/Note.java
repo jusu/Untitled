@@ -104,9 +104,10 @@ public class Note {
 	}
 
 	public long lastModified() {
-		long l1 = file.lastModified();
-		long l2 = meta.lastModified();
-		return l1 > l2 ? l1 : l2;
+		return file.lastModified();
+		//long l1 = file.lastModified();
+		//long l2 = meta.lastModified();
+		//return l1 > l2 ? l1 : l2;
 	}
 
 	private byte[] contents;

@@ -97,7 +97,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	JScrollPane scroll;
 	CustomEditor editor;
 	BackgroundPanel topShadow;
-	JButton currNotebook;
+	JButton currNotebook, trash;
 	JLabel noteCreated, noteUpdated;
 	BorderLayout areaHolderLayout;
 
@@ -179,11 +179,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		currNotebook.setIcon(new ImageIcon(noteToolsNotebook));
 		currNotebook.setForeground(ElephantWindow.colorTitleButton);
 
-		JButton trash = new JButton("");
+		trash = new JButton("");
 		trash.setBorderPainted(false);
 		trash.setContentAreaFilled(false);
 		trash.setIcon(new ImageIcon(noteToolsTrash));
-
+		
 		toolsTopLeft.add(currNotebook, BorderLayout.WEST);
 		toolsTopRight.add(trash, BorderLayout.EAST);
 		toolsTop.add(toolsTopLeft, BorderLayout.WEST);
@@ -367,6 +367,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		Notebook nb = Vault.getInstance().findNotebook(note.file().getParentFile());
 		currNotebook.setText(nb.name());
 
+		trash.setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
+		
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());
 

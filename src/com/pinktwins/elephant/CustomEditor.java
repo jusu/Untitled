@@ -3,6 +3,7 @@ package com.pinktwins.elephant;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -30,6 +31,8 @@ import javax.swing.JTextPane;
 import javax.swing.TransferHandler;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -108,7 +111,7 @@ public class CustomEditor extends RoundPanel {
 	@SuppressWarnings("serial")
 	public CustomEditor() {
 		super();
-		
+
 		this.setDoubleBuffered(true);
 
 		setBackground(Color.WHITE);
@@ -123,6 +126,34 @@ public class CustomEditor extends RoundPanel {
 		title = new JTextField();
 		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
 		title.addFocusListener(editorFocusListener);
+		title.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				if (title.getCaretPosition() == 0) {
+					String s = title.getText();
+					if (s.length() == 9 && s.indexOf("Untitled") == 1) {
+						EventQueue.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								try {
+									title.getDocument().remove(1, "Untitled".length());
+								} catch (BadLocationException e1) {
+									e1.printStackTrace();
+								}
+							}
+						});
+					}
+				}
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+			}
+		});
 
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 

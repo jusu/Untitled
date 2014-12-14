@@ -171,8 +171,13 @@ public class Notebook {
 	}
 
 	public void deleteNote(Note note) {
+		File trash = Vault.getInstance().getTrash();
+		if (folder.equals(trash)) {
+			return;
+		}
+
 		notes.remove(note);
-		note.moveTo(Vault.getInstance().getTrash());
+		note.moveTo(trash);
 	}
 
 	public Note find(String name) {
