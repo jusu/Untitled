@@ -16,7 +16,6 @@ public class Settings {
 
 	public Settings() {
 		homeDir = System.getProperty("user.home");
-		System.out.println("home: " + homeDir);
 		map = load();
 	}
 

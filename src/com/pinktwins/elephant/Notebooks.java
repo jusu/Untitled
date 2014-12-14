@@ -162,7 +162,7 @@ public class Notebooks extends BackgroundPanel {
 		if (isModal) {
 			JLabel title = new JLabel(modalHeader, JLabel.CENTER);
 			title.setFont(ElephantWindow.fontModalHeader);
-			title.setBounds(0, 14, ModalNotebookChooser.fixedWidth, 40);
+			title.setBounds(0, 14, NotebookChooser.fixedWidth, 40);
 			tools.add(title);
 		} else {
 			tools.add(bNew);
@@ -201,7 +201,7 @@ public class Notebooks extends BackgroundPanel {
 				actions.add(bMove);
 			}
 
-			actions.setBounds(0, ModalNotebookChooser.fixedHeight - 46, ModalNotebookChooser.fixedWidth - 7, 40);
+			actions.setBounds(0, NotebookChooser.fixedHeight - 46, NotebookChooser.fixedWidth - 7, 40);
 			add(actions);
 
 			bCancel.addActionListener(new ActionListener() {

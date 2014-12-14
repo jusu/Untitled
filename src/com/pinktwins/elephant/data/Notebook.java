@@ -166,7 +166,6 @@ public class Notebook {
 		return n;
 	}
 
-	// XXX before moving to trash, make filename unique
 	public void deleteNote(Note note) {
 		notes.remove(note);
 		note.moveTo(Vault.getInstance().getTrash());

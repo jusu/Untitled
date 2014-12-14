@@ -474,17 +474,15 @@ public class NoteList extends BackgroundPanel {
 	}
 
 	public void openNotebookChooserForJumping() {
-		ModalNotebookChooser nbc = new ModalNotebookChooser(window, "", false);
+		NotebookChooser nbc = new NotebookChooser(window, "");
 
 		// Center on window
 		Point p = currentName.getLocationOnScreen();
 		Rectangle r = window.getBounds();
-		int x = (p.x + currentName.getWidth() / 2) - ModalNotebookChooser.fixedWidth / 2;
-		nbc.setBounds(x, p.y + currentName.getHeight(), ModalNotebookChooser.fixedWidth, ModalNotebookChooser.fixedHeight);
+		int x = (p.x + currentName.getWidth() / 2) - NotebookChooser.fixedWidth / 2;
+		nbc.setBounds(x, p.y + currentName.getHeight(), NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
 
 		nbc.setVisible(true);
-		nbc.requestFocusInWindow();
-		nbc.requestFocus();
 
 		nbc.setNotebookActionListener(new NotebookActionListener() {
 			@Override

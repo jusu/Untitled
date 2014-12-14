@@ -262,17 +262,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void openNotebookChooserForMoving() {
 		if (currentNote != null) {
-			ModalNotebookChooser nbc = new ModalNotebookChooser(window, "Move \"" + editor.getTitle() + "\"", false);
+			NotebookChooser nbc = new NotebookChooser(window, String.format("Move \"%s\"", editor.getTitle()));
 
 			// Center on window
 			Point p = currNotebook.getLocationOnScreen();
 			Rectangle r = window.getBounds();
-			int x = r.x + r.width / 2 - ModalNotebookChooser.fixedWidth / 2;
-			nbc.setBounds(x, p.y, ModalNotebookChooser.fixedWidth, ModalNotebookChooser.fixedHeight);
+			int x = r.x + r.width / 2 - NotebookChooser.fixedWidth / 2;
+			nbc.setBounds(x, p.y, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
 
 			nbc.setVisible(true);
-			nbc.requestFocusInWindow();
-			nbc.requestFocus();
 
 			nbc.setNotebookActionListener(new NotebookActionListener() {
 				@Override
@@ -297,7 +295,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			return;
 		}
 
-		System.out.println("MOVE " + n.getMeta().title() + " -> " + destination.name() + " (" + destination.folder() + ")");
+		System.out.println("move " + n.getMeta().title() + " -> " + destination.name() + " (" + destination.folder() + ")");
 
 		n.moveTo(destination.folder());
 		window.sortAndUpdate();

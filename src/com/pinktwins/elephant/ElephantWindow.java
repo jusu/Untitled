@@ -105,7 +105,7 @@ public class ElephantWindow extends JFrame {
 				hasWindowFocus = false;
 
 				for (Window w : getWindows()) {
-					if (w instanceof ModalNotebookChooser && w.isActive()) {
+					if (w instanceof NotebookChooser && w.isActive()) {
 						return;
 					}
 				}
@@ -166,10 +166,10 @@ public class ElephantWindow extends JFrame {
 
 				// XXX the windows accumulate. Get rid of them.
 				for (Window w : getWindows()) {
-					if (w instanceof ModalNotebookChooser) {
+					if (w instanceof NotebookChooser) {
 						// System.out.println("NotebookChoosers: " + (++n));
 						if (w.isActive()) {
-							((ModalNotebookChooser) w).handleKeyEvent(e);
+							((NotebookChooser) w).handleKeyEvent(e);
 						}
 					}
 				}

@@ -1,12 +1,8 @@
 package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -15,7 +11,7 @@ import javax.swing.JDialog;
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Notebook;
 
-public class ModalNotebookChooser extends JDialog {
+public class NotebookChooser extends JDialog {
 
 	private static final long serialVersionUID = 4290404794842317473L;
 
@@ -30,8 +26,8 @@ public class ModalNotebookChooser extends JDialog {
 		naListener = l;
 	}
 
-	public ModalNotebookChooser(Frame owner, String title, boolean modal) {
-		super(owner, title, modal);
+	public NotebookChooser(Frame owner, String title) {
+		super(owner, title, false);
 
 		setUndecorated(true);
 		setLayout(new BorderLayout());
@@ -49,10 +45,8 @@ public class ModalNotebookChooser extends JDialog {
 
 			@Override
 			public void didSelect(Notebook nb) {
-				if (naListener != null) {
-					naListener.didSelect(nb);
-					close();
-				}
+				naListener.didSelect(nb);
+				close();
 			}
 		});
 
@@ -82,7 +76,7 @@ public class ModalNotebookChooser extends JDialog {
 				close();
 				break;
 			case KeyEvent.VK_UP:
-				// arrows move focus away from search anyway, this would be extra.
+				// arrows move focus away from search automatically
 				if (!notebooks.search.hasFocus()) {
 					notebooks.changeSelection(-1, e.getKeyCode());
 				}
