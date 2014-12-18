@@ -74,16 +74,7 @@ public class Vault {
 			}
 		}
 
-		sortNotebooks();
-	}
-
-	private void sortNotebooks() {
-		Collections.sort(notebooks, new Comparator<Notebook>() {
-			@Override
-			public int compare(Notebook o1, Notebook o2) {
-				return o1.name().toLowerCase().compareTo(o2.name().toLowerCase());
-			}
-		});
+		Collections.sort(notebooks);
 	}
 
 	public List<Notebook> getNotebooks() {

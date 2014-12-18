@@ -3,6 +3,7 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -13,7 +14,7 @@ import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
-public class Notebook {
+public class Notebook implements Comparable<Notebook> {
 	final static public String NAME_ALLNOTES = "All Notes";
 	final static public String NAME_SEARCH = "Search";
 
@@ -42,6 +43,16 @@ public class Notebook {
 		}
 
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return folder.hashCode();
+	}
+
+	@Override
+	public int compareTo(Notebook nb) {
+		return name().toLowerCase().compareTo(nb.name().toLowerCase());
 	}
 
 	public File folder() {
@@ -116,12 +127,7 @@ public class Notebook {
 	}
 
 	public void sortNotes() {
-		Collections.sort(notes, new Comparator<Note>() {
-			@Override
-			public int compare(Note o1, Note o2) {
-				return o1.lastModified() > o2.lastModified() ? -1 : 1;
-			}
-		});
+		Collections.sort(notes);
 	}
 
 	public List<Note> getNotes() {

@@ -57,6 +57,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private final int kNoteOffset = 64;
 	private final int kBorder = 14;
 
+	private Note loadAfterLayout = null;
+
+	static private ImageScalingCache scalingCache = new ImageScalingCache();
+
 	static {
 		try {
 			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteeditor.png"));
@@ -183,7 +187,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		trash.setBorderPainted(false);
 		trash.setContentAreaFilled(false);
 		trash.setIcon(new ImageIcon(noteToolsTrash));
-		
+
 		toolsTopLeft.add(currNotebook, BorderLayout.WEST);
 		toolsTopRight.add(trash, BorderLayout.EAST);
 		toolsTop.add(toolsTopLeft, BorderLayout.WEST);
@@ -225,12 +229,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		areaHolder = new ScrollablePanel();
 		areaHolder.setLayout(areaHolderLayout);
 		areaHolder.setBorder(BorderFactory.createEmptyBorder(kBorder - topBorderOffset, kBorder, kBorder, kBorder));
-		//areaHolder.setBounds(0, 0, 200, kMinNoteSize);
+		// areaHolder.setBounds(0, 0, 200, kMinNoteSize);
 		areaHolder.add(area, BorderLayout.NORTH);
 
 		scrollHolder = new BackgroundPanel();
 		scrollHolder.setOpaque(false);
-		//scrollHolder.setBounds(0, 0, 200, kMinNoteSize);
+		// scrollHolder.setBounds(0, 0, 200, kMinNoteSize);
 
 		scroll = new JScrollPane(areaHolder);
 		scroll.setOpaque(false);
@@ -272,17 +276,19 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				scrollHolder.setBounds(0, kNoteOffset + topBorderOffset, getWidth(), getHeight() - kNoteOffset - topBorderOffset);
 				areaHolder.setBounds(0, 0, ab.width, ab.height);
 
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						//NoteEditor.this.editor.revalidate();
+				Rectangle r = tools.getBounds();
+				r.width = getWidth();
+				tools.setBounds(r);
 
-						Rectangle r = tools.getBounds();
-						r.width = getWidth();
-						tools.setBounds(r);
-
-						tools.revalidate();
-					}
-				});
+				if (loadAfterLayout != null) {
+					EventQueue.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							_load(loadAfterLayout);
+							loadAfterLayout = null;
+						}
+					});
+				}
 			}
 		});
 
@@ -293,6 +299,43 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 		});
 	}
+
+	// XXX always scale from original image?
+	// XXX cache scaled image to get it again faster
+	private Image getScaledImage(Image i, File sourceFile) {
+		long w = getWidth() - kBorder * 4 - 12;
+		long iw = i.getWidth(null);
+
+		if (i.getWidth(null) > w) {
+			float f = w / (float) iw;
+			int scaledWidth = (int) (f * (float) iw);
+			int scaledHeight = (int) (f * (float) i.getHeight(null));
+
+			Image cached = scalingCache.get(sourceFile, scaledWidth, scaledHeight);
+			if (cached != null) {
+				return cached;
+			}
+
+			Image img = i.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+			scalingCache.put(sourceFile, scaledWidth, scaledHeight, img);
+
+			return img;
+		} else {
+			return i;
+		}
+	}
+
+	/*
+	 * private void scaleImagesToEditorWidth() {
+	 * 
+	 * EventQueue.invokeLater(new Runnable() {
+	 * 
+	 * @Override public void run() { System.out.println("scaling getWidth=" +
+	 * getWidth()); for (Object o : currentAttachments.keySet()) { if (o
+	 * instanceof ImageIcon) { ImageIcon ii = (ImageIcon) o; if
+	 * (ii.getIconWidth() > getWidth() - kBorder * 4) {
+	 * ii.setImage(getScaledImage(ii.getImage())); } } } } }); }
+	 */
 
 	public void openNotebookChooserForMoving() {
 		if (currentNote != null) {
@@ -344,7 +387,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		visible(false);
 	}
 
-	public void load(Note note) {
+	public void load(final Note note) {
+		if (getWidth() == 0) {
+			loadAfterLayout = note;
+		} else {
+			_load(note);
+		}
+	}
+
+	public void _load(Note note) {
 		currentNote = note;
 		currentAttachments.clear();
 
@@ -368,7 +419,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		currNotebook.setText(nb.name());
 
 		trash.setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
-		
+
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());
 
@@ -501,6 +552,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		try {
 			Image i = ImageIO.read(f);
 			if (i != null) {
+				if (getWidth() > 0) {
+					i = getScaledImage(i, f);
+				} else {
+					throw new AssertionError();
+				}
+
 				ImageIcon ii = new ImageIcon(i);
 
 				noteArea.setCaretPosition(position);

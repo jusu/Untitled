@@ -21,7 +21,7 @@ import org.json.JSONObject;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
-public class Note {
+public class Note implements Comparable<Note> {
 	private File file, meta;
 	private String fileName = "";
 
@@ -58,6 +58,26 @@ public class Note {
 		}
 
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return file.hashCode();
+	}
+	
+	@Override
+	public int compareTo(Note n) {
+		long m1 = file.lastModified(), m2 = n.file().lastModified();
+
+		if (m1 > m2) {
+			return -1;
+		}
+
+		if (m1 < m2) {
+			return 1;
+		}
+
+		return 0;
 	}
 
 	private File metaFromFile(File f) {
@@ -105,9 +125,9 @@ public class Note {
 
 	public long lastModified() {
 		return file.lastModified();
-		//long l1 = file.lastModified();
-		//long l2 = meta.lastModified();
-		//return l1 > l2 ? l1 : l2;
+		// long l1 = file.lastModified();
+		// long l2 = meta.lastModified();
+		// return l1 > l2 ? l1 : l2;
 	}
 
 	private byte[] contents;
