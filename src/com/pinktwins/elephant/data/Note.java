@@ -318,7 +318,10 @@ public class Note implements Comparable<Note> {
 				nb.refresh();
 			}
 
-			Elephant.eventBus.post(new NotebookEvent(Kind.noteMoved));
+			NotebookEvent event = new NotebookEvent(Kind.noteMoved);
+			event.source = file;
+			event.dest = destFile;
+			Elephant.eventBus.post(event);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

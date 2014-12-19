@@ -70,19 +70,40 @@ public class RecentNotes {
 		}
 	}
 
-	@Subscribe
-	public void handleNoteChange(NoteChangedEvent event) {
-		if (recent.contains(event.note)) {
-			recent.remove(event.note);
+	private void addRecentNote(Note n) {
+		if (recent.contains(n)) {
+			recent.remove(n);
 		}
 
-		recent.add(0, event.note);
+		recent.add(0, n);
 
 		while (recent.size() > MAX_NOTES) {
 			recent.remove(MAX_NOTES - 1);
 		}
+	}
+
+	@Subscribe
+	public void handleNoteChange(NoteChangedEvent event) {
+		addRecentNote(event.note);
 
 		Elephant.eventBus.post(new RecentNotesChangedEvent());
 		saveHistory();
 	}
+
+	@Subscribe
+	public void handleNotebookEvent(NotebookEvent event) {
+		if (event.source != null && event.dest != null) {
+			Note old = new Note(event.source);
+
+			if (recent.contains(old)) {
+				recent.remove(old);
+			}
+
+			addRecentNote(new Note(event.dest));
+
+			Elephant.eventBus.post(new RecentNotesChangedEvent());
+			saveHistory();
+		}
+	}
+
 }
