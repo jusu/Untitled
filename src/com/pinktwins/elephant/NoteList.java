@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
@@ -15,20 +14,23 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 
+import org.apache.commons.io.FilenameUtils;
 import org.pushingpixels.trident.Timeline;
 
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
@@ -305,7 +307,7 @@ public class NoteList extends BackgroundPanel {
 		private Note note;
 		private Dimension size = new Dimension(196, 196);
 		private JLabel name;
-		private JTextArea preview;
+		private JTextPane preview;
 		private BackgroundPanel root;
 
 		public NoteItem(Note n) {
@@ -326,24 +328,62 @@ public class NoteList extends BackgroundPanel {
 
 			name = new JLabel(n.getMeta().title());
 			name.setFont(ElephantWindow.fontH1);
-			name.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+			name.setBorder(BorderFactory.createEmptyBorder(12, 12, 8, 12));
 			p.add(name, BorderLayout.NORTH);
 
-			JPanel previewPane = new JPanel();
-			previewPane.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
-			previewPane.setLayout(new GridLayout(1, 1));
+			final JPanel previewPane = new JPanel();
+			previewPane.setLayout(null);
 			previewPane.setBackground(Color.WHITE);
 
-			preview = new JTextArea();
+			preview = new JTextPane();
+			preview.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
 			preview.setEditable(false);
 			preview.setFont(ElephantWindow.fontSmall);
 			preview.setText(getContentPreview());
 			preview.setBackground(Color.WHITE);
+			preview.setBounds(0, 0, 176, 138);
 
 			previewPane.add(preview);
 
-			p.add(previewPane, BorderLayout.CENTER);
+			for (File f : note.getAttachmentList()) {
+				String ext = FilenameUtils.getExtension(f.getAbsolutePath()).toLowerCase();
+				if ("png".equals(ext) || "jpg".equals(ext) || "gif".equals(ext)) {
+					try {
+						Image i = ImageIO.read(f);
+						if (i != null) {
+							float scale = i.getWidth(null) / (float) (196 - 12 - 4);
+							int w = (int) (i.getWidth(null) / scale);
+							int h = (int) ((float) i.getHeight(null) / scale);
 
+							Image scaled = NoteEditor.scalingCache.get(f, w, h);
+							if (scaled == null) {
+								System.out.println("scaling");
+								scaled = i.getScaledInstance(w, h, Image.SCALE_AREA_AVERAGING);
+								NoteEditor.scalingCache.put(f, w, h, scaled);
+							}
+
+							JLabel l = new JLabel("");
+							l.setIcon(new ImageIcon(scaled));
+							l.setBounds(0, 4, 190, 99);
+
+							JPanel pa = new JPanel(null);
+							pa.setBorder(ElephantWindow.emptyBorder);
+							pa.setBackground(Color.WHITE);
+							pa.add(l);
+
+							preview.setBounds(0, 0, 176, 40);
+							pa.setBounds(0, 40, 190, 103);
+
+							previewPane.add(pa);
+							break;
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+
+			p.add(previewPane, BorderLayout.CENTER);
 			root.addOpaque(p, BorderLayout.CENTER);
 			add(root, BorderLayout.CENTER);
 
@@ -395,12 +435,16 @@ public class NoteList extends BackgroundPanel {
 			}
 		}
 
-		@Override
-		public void mousePressed(MouseEvent e) {
+		private void noteClicked() {
 			Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
 			selectNote(NoteItem.this.note);
 			window.showNote(note);
 			unfocusEditor();
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			noteClicked();
 		}
 
 		@Override

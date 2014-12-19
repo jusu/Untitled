@@ -29,6 +29,8 @@ public class Note implements Comparable<Note> {
 
 	static private DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
 
+	static private File[] emptyFileList = new File[0];
+	
 	public interface Meta {
 		public String title();
 
@@ -397,7 +399,7 @@ public class Note implements Comparable<Note> {
 		if (f.exists()) {
 			return f.listFiles();
 		} else {
-			return null;
+			return emptyFileList;
 		}
 	}
 

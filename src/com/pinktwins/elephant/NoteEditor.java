@@ -59,7 +59,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private Note loadAfterLayout = null;
 
-	static private ImageScalingCache scalingCache = new ImageScalingCache();
+	static public ImageScalingCache scalingCache = new ImageScalingCache();
 
 	static {
 		try {
@@ -316,7 +316,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				return cached;
 			}
 
-			Image img = i.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+			Image img = i.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_AREA_AVERAGING);
 			scalingCache.put(sourceFile, scaledWidth, scaledHeight, img);
 
 			return img;
