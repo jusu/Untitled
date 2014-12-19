@@ -148,6 +148,8 @@ public class NoteList extends BackgroundPanel {
 		});
 	}
 
+	static private HashMap<File, NoteItem> itemCache = new HashMap<File, NoteItem>();
+
 	public void load(Notebook notebook) {
 		this.notebook = notebook;
 
@@ -160,7 +162,22 @@ public class NoteList extends BackgroundPanel {
 
 		List<Note> list = notebook.getNotes();
 		for (Note n : list) {
-			NoteItem item = new NoteItem(n);
+			NoteItem item = itemCache.get(n.file());
+			if (item == null) {
+				item = new NoteItem(n);
+				itemCache.put(n.file(), item);
+				if (itemCache.size() > 1000) {
+					boolean t = false;
+					File[] keys = new File[0];
+					keys = itemCache.keySet().toArray(keys);
+					for (File old : keys) {
+						if (t) {
+							itemCache.remove(old);
+						}
+						t = !t;
+					}
+				}
+			}
 
 			main.add(item);
 			noteItems.add(item);
