@@ -3,8 +3,6 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,7 +28,7 @@ public class Note implements Comparable<Note> {
 	static private DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
 
 	static private File[] emptyFileList = new File[0];
-	
+
 	public interface Meta {
 		public String title();
 
@@ -66,7 +64,7 @@ public class Note implements Comparable<Note> {
 	public int hashCode() {
 		return file.hashCode();
 	}
-	
+
 	@Override
 	public int compareTo(Note n) {
 		long m1 = file.lastModified(), m2 = n.file().lastModified();
@@ -83,7 +81,14 @@ public class Note implements Comparable<Note> {
 	}
 
 	private File metaFromFile(File f) {
-		return new File(f.getParentFile().getAbsolutePath() + File.separator + "." + f.getName() + ".elephant");
+		String flatPath = f.getAbsolutePath().replace(Vault.getInstance().getHome().getAbsolutePath() + File.separator, "");
+		flatPath = flatPath.replaceAll(File.separator, "_");
+		File m = new File(Vault.getInstance().getHome().getAbsolutePath() + File.separator + ".meta" + File.separator + flatPath);
+		m.getParentFile().mkdirs();
+		return m;
+
+		// return new File(f.getParentFile().getAbsolutePath() + File.separator
+		// + "." + f.getName() + ".elephant");
 	}
 
 	public Note(File f) {
@@ -120,9 +125,6 @@ public class Note implements Comparable<Note> {
 
 	public long lastModified() {
 		return file.lastModified();
-		// long l1 = file.lastModified();
-		// long l2 = meta.lastModified();
-		// return l1 > l2 ? l1 : l2;
 	}
 
 	private byte[] contents;
@@ -132,14 +134,8 @@ public class Note implements Comparable<Note> {
 			return "(binary)";
 		}
 
-		try {
-			contents = IOUtil.readFile(file);
-			return new String(contents, Charset.defaultCharset());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return "";
+		contents = IOUtil.readFile(file);
+		return new String(contents, Charset.defaultCharset());
 	}
 
 	public void save(String newText) {
@@ -183,8 +179,6 @@ public class Note implements Comparable<Note> {
 			return map;
 		} catch (JSONException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		return emptyMap;
@@ -208,13 +202,6 @@ public class Note implements Comparable<Note> {
 	}
 
 	public Meta getMeta() {
-		try {
-			if (!meta.exists()) {
-				meta.createNewFile();
-			}
-		} catch (IOException e) {
-		}
-
 		return new Metadata(getMetaMap());
 	}
 
@@ -290,7 +277,7 @@ public class Note implements Comparable<Note> {
 	public void moveTo(File dest) {
 
 		File destFile = new File(dest + File.separator + file.getName());
-		File destMeta = new File(dest + File.separator + meta.getName());
+		File destMeta = metaFromFile(destFile);
 		File destAtts = new File(attachmentFolderPath(destFile));
 
 		if (destFile.exists() || destMeta.exists() || destAtts.exists()) {
@@ -301,7 +288,7 @@ public class Note implements Comparable<Note> {
 
 		try {
 			FileUtils.moveFileToDirectory(file, dest, false);
-			FileUtils.moveFileToDirectory(meta, dest, false);
+			FileUtils.moveFile(meta, destMeta);
 
 			File atts = new File(attachmentFolderPath(file));
 			if (atts.exists() && atts.isDirectory()) {

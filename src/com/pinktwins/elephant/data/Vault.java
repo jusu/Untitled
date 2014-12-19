@@ -67,7 +67,7 @@ public class Vault {
 		trash.mkdirs();
 
 		for (File f : home.listFiles()) {
-			if (f.isDirectory()) {
+			if (f.isDirectory() && f.getName().charAt(0) != '.') {
 				if (findNotebook(f) == null) {
 					notebooks.add(new Notebook(f));
 				}
