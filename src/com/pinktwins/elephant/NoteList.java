@@ -326,6 +326,7 @@ public class NoteList extends BackgroundPanel {
 		private Dimension size = new Dimension(196, 196);
 		private JLabel name;
 		private JTextPane preview;
+		private JPanel previewPane;
 		private BackgroundPanel root;
 
 		public NoteItem(Note n) {
@@ -349,9 +350,22 @@ public class NoteList extends BackgroundPanel {
 			name.setBorder(BorderFactory.createEmptyBorder(12, 12, 8, 12));
 			p.add(name, BorderLayout.NORTH);
 
-			final JPanel previewPane = new JPanel();
+			previewPane = new JPanel();
 			previewPane.setLayout(null);
 			previewPane.setBackground(Color.WHITE);
+
+			createPreviewComponents();
+
+			p.add(previewPane, BorderLayout.CENTER);
+			root.addOpaque(p, BorderLayout.CENTER);
+			add(root, BorderLayout.CENTER);
+
+			p.addMouseListener(this);
+			preview.addMouseListener(this);
+		}
+
+		private void createPreviewComponents() {
+			previewPane.removeAll();
 
 			preview = new JTextPane();
 			preview.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
@@ -402,14 +416,7 @@ public class NoteList extends BackgroundPanel {
 				}
 			}
 
-			p.add(previewPane, BorderLayout.CENTER);
-			root.addOpaque(p, BorderLayout.CENTER);
-			add(root, BorderLayout.CENTER);
-
-			p.addMouseListener(this);
-			preview.addMouseListener(this);
 		}
-
 		private String getContentPreview() {
 			String contents = note.contents().trim();
 			if (contents.length() > 200) {
@@ -420,7 +427,8 @@ public class NoteList extends BackgroundPanel {
 
 		public void updateThumb() {
 			name.setText(note.getMeta().title());
-			preview.setText(getContentPreview());
+			createPreviewComponents();
+			//preview.setText(getContentPreview());
 		}
 
 		public void setSelected(boolean b) {
