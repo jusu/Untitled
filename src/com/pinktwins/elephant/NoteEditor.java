@@ -560,7 +560,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 				ImageIcon ii = new ImageIcon(i);
 
-				noteArea.setCaretPosition(position);
+				if (position > noteArea.getDocument().getLength()) {
+					position = 0;
+				}
+
+				try {
+					noteArea.setCaretPosition(position);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				}
+
 				noteArea.insertIcon(ii);
 
 				currentAttachments.put(ii, f);

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
@@ -41,7 +42,7 @@ import com.pinktwins.elephant.data.Notebook;
 public class NoteList extends BackgroundPanel {
 
 	private static final long serialVersionUID = 5649274177360148568L;
-	private static Image tile, noteShadow, noteSelection;
+	private static Image tile, noteShadow, noteSelection, iAllNotes;
 
 	private ElephantWindow window;
 	final private Color kColorNoteBorder = Color.decode("#cdcdcd");
@@ -58,6 +59,7 @@ public class NoteList extends BackgroundPanel {
 			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notelist.png"));
 			noteShadow = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteShadow.png"));
 			noteSelection = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteSelection.png"));
+			iAllNotes = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/allNotes.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -76,10 +78,13 @@ public class NoteList extends BackgroundPanel {
 	private void createComponents() {
 		// title bar
 		final JPanel title = new JPanel(new BorderLayout());
+		title.setBorder(ElephantWindow.emptyBorder);
 
-		final JButton allNotes = new JButton("All Notes");
-		allNotes.setForeground(ElephantWindow.colorTitleButton);
-		allNotes.setBorderPainted(true);
+		final JButton allNotes = new JButton("");
+		allNotes.setIcon(new ImageIcon(iAllNotes));
+		// allNotes.setForeground(ElephantWindow.colorTitleButton);
+		allNotes.setBorderPainted(false);
+		allNotes.setContentAreaFilled(false);
 		allNotes.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -87,12 +92,12 @@ public class NoteList extends BackgroundPanel {
 			}
 		});
 
-		allNotesPanel = new JPanel();
+		allNotesPanel = new JPanel(new GridLayout(1, 1));
 		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		allNotesPanel.add(allNotes);
 
 		fillerPanel = new JPanel();
-		JButton filler = new JButton("               ");
+		JButton filler = new JButton("         ");
 		filler.setContentAreaFilled(false);
 		filler.setBorderPainted(false);
 		fillerPanel.add(filler);
@@ -361,7 +366,6 @@ public class NoteList extends BackgroundPanel {
 			add(root, BorderLayout.CENTER);
 
 			p.addMouseListener(this);
-			preview.addMouseListener(this);
 		}
 
 		private void createPreviewComponents() {
@@ -374,6 +378,7 @@ public class NoteList extends BackgroundPanel {
 			preview.setText(getContentPreview());
 			preview.setBackground(Color.WHITE);
 			preview.setBounds(0, 0, 176, 138);
+			preview.addMouseListener(this);
 
 			previewPane.add(preview);
 
@@ -417,6 +422,7 @@ public class NoteList extends BackgroundPanel {
 			}
 
 		}
+
 		private String getContentPreview() {
 			String contents = note.contents().trim();
 			if (contents.length() > 200) {
@@ -428,7 +434,7 @@ public class NoteList extends BackgroundPanel {
 		public void updateThumb() {
 			name.setText(note.getMeta().title());
 			createPreviewComponents();
-			//preview.setText(getContentPreview());
+			// preview.setText(getContentPreview());
 		}
 
 		public void setSelected(boolean b) {
