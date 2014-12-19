@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -82,7 +83,7 @@ public class Note implements Comparable<Note> {
 
 	private File metaFromFile(File f) {
 		String flatPath = f.getAbsolutePath().replace(Vault.getInstance().getHome().getAbsolutePath() + File.separator, "");
-		flatPath = flatPath.replaceAll(File.separator, "_");
+		flatPath = flatPath.replaceAll(Matcher.quoteReplacement(File.separator), "_");
 		File m = new File(Vault.getInstance().getHome().getAbsolutePath() + File.separator + ".meta" + File.separator + flatPath);
 		m.getParentFile().mkdirs();
 		return m;
@@ -288,7 +289,9 @@ public class Note implements Comparable<Note> {
 
 		try {
 			FileUtils.moveFileToDirectory(file, dest, false);
-			FileUtils.moveFile(meta, destMeta);
+			if (meta.exists()) {
+				FileUtils.moveFile(meta, destMeta);
+			}
 
 			File atts = new File(attachmentFolderPath(file));
 			if (atts.exists() && atts.isDirectory()) {

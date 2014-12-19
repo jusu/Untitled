@@ -74,6 +74,8 @@ public class Start extends BackgroundPanel {
 						File folder = new File(f + File.separator + "Elephant");
 						if (folder.exists() || folder.mkdirs()) {
 
+							Vault.getInstance().setLocation(folder.getAbsolutePath());
+
 							File inbox = new File(folder + File.separator + "Inbox");
 							if (inbox.mkdirs()) {
 
@@ -85,7 +87,7 @@ public class Start extends BackgroundPanel {
 								note = new File(inbox + File.separator + "Welcome.txt");
 								n = new Note(note);
 								n.getMeta().title("Hello there");
-								n.save("Welcome to Elephant!\n\nHit CMD-N to create a new note.\nTry CMD-J to quickly jump to another notebook.\nDrag an image or file to attach it.\n\nThis is Elephant release #1. You're an early bird!");
+								n.save("Welcome to Elephant!\n\nHit CMD-N to create a new note.\nTry CMD-J to quickly jump to another notebook.\nDrag an image or file to attach it.\n\nThis is Elephant release #2. You're an early bird!");
 
 								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
 								try {
@@ -95,7 +97,7 @@ public class Start extends BackgroundPanel {
 								}
 							}
 
-							Vault.getInstance().setLocation(folder.getAbsolutePath());
+							Vault.getInstance().populate();
 							runWhenLocationSet.run();
 						}
 					}

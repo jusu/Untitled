@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
 
 import javax.imageio.ImageIO;
 
@@ -51,7 +52,7 @@ public class ImageScalingCache {
 
 	private File getCacheFile(File f, int w, int h) {
 		String relativePath = f.getAbsolutePath().replace(Vault.getInstance().getHome().getAbsolutePath() + File.separator, "");
-		String cacheName = relativePath.replaceAll(File.separator, "_");
+		String cacheName = relativePath.replaceAll(Matcher.quoteReplacement(File.separator), "_");
 
 		int n = cacheName.indexOf("." + FilenameUtils.getExtension(cacheName));
 		cacheName = cacheName.substring(0, n) + "_" + w + "_" + h + cacheName.substring(n);

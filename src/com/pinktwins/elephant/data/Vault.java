@@ -60,7 +60,7 @@ public class Vault {
 		return trash;
 	}
 
-	private void populate() {
+	public void populate() {
 		home = new File(HOME);
 
 		trash = new File(home.getAbsolutePath() + File.separator + "Trash");

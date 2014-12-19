@@ -90,11 +90,13 @@ public class FileAttachment extends JPanel {
 		show = new JButton("");
 		show.setIcon(new ImageIcon(quickLook));
 		show.setBorderPainted(false);
+		show.setContentAreaFilled(false);
 		show.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 4));
 
 		open = new JButton("");
 		open.setIcon(new ImageIcon(openFolder));
 		open.setBorderPainted(false);
+		open.setContentAreaFilled(false);
 		open.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 14));
 
 		text.add(label, BorderLayout.NORTH);
