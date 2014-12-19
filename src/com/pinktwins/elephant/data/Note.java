@@ -95,13 +95,6 @@ public class Note implements Comparable<Note> {
 			saveLocked = true;
 		}
 
-		try {
-			if (!meta.exists()) {
-				meta.createNewFile();
-			}
-		} catch (IOException e) {
-		}
-
 		readInfo();
 	}
 
@@ -215,6 +208,13 @@ public class Note implements Comparable<Note> {
 	}
 
 	public Meta getMeta() {
+		try {
+			if (!meta.exists()) {
+				meta.createNewFile();
+			}
+		} catch (IOException e) {
+		}
+
 		return new Metadata(getMetaMap());
 	}
 
