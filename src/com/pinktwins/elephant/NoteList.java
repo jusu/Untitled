@@ -345,6 +345,8 @@ public class NoteList extends BackgroundPanel {
 
 			previewPane.add(preview);
 
+			// Picture thumbnail.
+			// XXX with many notes, this absolutely must be postponed.
 			for (File f : note.getAttachmentList()) {
 				String ext = FilenameUtils.getExtension(f.getAbsolutePath()).toLowerCase();
 				if ("png".equals(ext) || "jpg".equals(ext) || "gif".equals(ext)) {
@@ -357,7 +359,6 @@ public class NoteList extends BackgroundPanel {
 
 							Image scaled = NoteEditor.scalingCache.get(f, w, h);
 							if (scaled == null) {
-								System.out.println("scaling");
 								scaled = i.getScaledInstance(w, h, Image.SCALE_AREA_AVERAGING);
 								NoteEditor.scalingCache.put(f, w, h, scaled);
 							}
@@ -392,7 +393,7 @@ public class NoteList extends BackgroundPanel {
 		}
 
 		private String getContentPreview() {
-			String contents = note.contents();
+			String contents = note.contents().trim();
 			if (contents.length() > 200) {
 				contents = contents.substring(0, 200) + "…";
 			}
@@ -543,4 +544,11 @@ public class NoteList extends BackgroundPanel {
 		});
 	}
 
+	public boolean isAllNotes() {
+		return notebook.isAllNotes();
+	}
+
+	public boolean isTrash() {
+		return notebook.isTrash();
+	}
 }

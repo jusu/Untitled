@@ -351,6 +351,11 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void newNote() {
+		if (noteList.isAllNotes() || noteList.isTrash()) {
+			Notebook nb = Vault.getInstance().getDefaultNotebook();
+			showNotebook(nb);
+		}
+
 		noteList.newNote();
 		focusEditor();
 	}
@@ -452,7 +457,9 @@ public class ElephantWindow extends JFrame {
 	ActionListener jumpToNotebookAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			noteList.openNotebookChooserForJumping();
+			if (uiMode == uiMode.notes) {
+				noteList.openNotebookChooserForJumping();
+			}
 		}
 	};
 
@@ -597,6 +604,3 @@ public class ElephantWindow extends JFrame {
 		}
 	}
 }
-
-// laku 4ever ;,,,,(
-
