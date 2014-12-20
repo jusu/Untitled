@@ -413,6 +413,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 		}
 
+		editor.discardUndoBuffer();
+
 		visible(true);
 
 		Notebook nb = Vault.getInstance().findNotebook(note.file().getParentFile());
@@ -621,4 +623,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor.getTextPane().paste();
 	}
 
+	public void undo() {
+		editor.undo();
+	}
+
+	public void redo() {
+		editor.redo();
+	}
 }

@@ -32,6 +32,8 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -40,6 +42,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
 import javax.swing.text.StyleConstants;
+import javax.swing.undo.UndoManager;
 
 public class CustomEditor extends RoundPanel {
 
@@ -52,6 +55,8 @@ public class CustomEditor extends RoundPanel {
 	private JTextField title;
 	private CustomTextPane note;
 	private JPanel padding;
+
+	private UndoManager undoManager = new UndoManager();
 
 	public boolean isRichText;
 
@@ -368,6 +373,8 @@ public class CustomEditor extends RoundPanel {
 			}
 		});
 
+		note.getDocument().addUndoableEditListener(new UndoEditListener());
+
 		add(note, BorderLayout.CENTER);
 
 		createPadding();
@@ -439,6 +446,7 @@ public class CustomEditor extends RoundPanel {
 
 		// replace JTextPane with new instance to get rid of old styles.
 		createNote();
+		discardUndoBuffer();
 	}
 
 	public boolean hasFocus() {
@@ -483,5 +491,32 @@ public class CustomEditor extends RoundPanel {
 		}
 
 		return list;
+	}
+
+	protected class UndoEditListener implements UndoableEditListener {
+		public void undoableEditHappened(UndoableEditEvent e) {
+			// Remember the edit and update the menus
+			undoManager.addEdit(e.getEdit());
+			Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+		}
+	}
+
+	public void undo() {
+		if (undoManager.canUndo()) {
+			undoManager.undo();
+		}
+		Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+	}
+
+	public void redo() {
+		if (undoManager.canRedo()) {
+			undoManager.redo();
+		}
+		Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+	}
+
+	public void discardUndoBuffer() {
+		undoManager.discardAllEdits();
+		Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
 	}
 }

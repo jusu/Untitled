@@ -69,6 +69,8 @@ public class ElephantWindow extends JFrame {
 
 	private int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
+	JMenuItem iUndo, iRedo;
+
 	enum UiModes {
 		notebooks, notes, tags
 	};
@@ -470,6 +472,20 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener undoAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.undo();
+		}
+	};
+
+	ActionListener redoAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.redo();
+		}
+	};
+
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
 		mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
@@ -491,6 +507,15 @@ public class ElephantWindow extends JFrame {
 		// ActionEvent.META_MASK, settingsAction));
 
 		JMenu edit = new JMenu("Edit");
+
+		iUndo = menuItem("Undo", KeyEvent.VK_Z, menuMask, undoAction);
+		iUndo.setEnabled(false);
+		iRedo = menuItem("Redo", KeyEvent.VK_Z, menuMask | KeyEvent.SHIFT_DOWN_MASK, redoAction);
+		iRedo.setEnabled(false);
+
+		edit.add(iUndo);
+		edit.add(iRedo);
+		edit.addSeparator();
 
 		final JMenuItem iCut = menuItem("Cut", KeyEvent.VK_X, menuMask, cutTextAction);
 		final JMenuItem iCopy = menuItem("Copy", KeyEvent.VK_C, menuMask, copyTextAction);
@@ -593,6 +618,25 @@ public class ElephantWindow extends JFrame {
 	public void handleVaultEvent(VaultEvent event) {
 		if (event.kind == VaultEvent.Kind.notebookListChanged) {
 			notebooks.refresh();
+		}
+	}
+
+	@Subscribe
+	public void handleUndoRedoSUR(UndoRedoStateUpdateRequest r) {
+		if (r.manager.canUndo()) {
+			iUndo.setEnabled(true);
+			iUndo.setName(r.manager.getUndoPresentationName());
+		} else {
+			iUndo.setEnabled(false);
+			iUndo.setName("Undo");
+		}
+
+		if (r.manager.canRedo()) {
+			iRedo.setEnabled(true);
+			iRedo.setName(r.manager.getRedoPresentationName());
+		} else {
+			iRedo.setEnabled(false);
+			iRedo.setName("Redo");
 		}
 	}
 
