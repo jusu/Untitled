@@ -177,8 +177,12 @@ public class Notebook implements Comparable<Notebook> {
 	}
 
 	public void deleteNote(Note note) {
+		if (isTrash()) {
+			return;
+		}
+
 		File trash = Vault.getInstance().getTrash();
-		if (folder.equals(trash)) {
+		if (folder != null && folder.equals(trash)) {
 			return;
 		}
 
