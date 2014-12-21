@@ -80,6 +80,8 @@ public class ElephantWindow extends JFrame {
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
 
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
 		setBounds(loadBounds());
 
 		Elephant.eventBus.register(this);
@@ -95,8 +97,9 @@ public class ElephantWindow extends JFrame {
 			}
 		}
 
-		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		manager.addKeyEventDispatcher(new KeyDispatcher());
+		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		final KeyDispatcher keyDisp = new KeyDispatcher();
+		manager.addKeyEventDispatcher(keyDisp);
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -121,6 +124,22 @@ public class ElephantWindow extends JFrame {
 			@Override
 			public void windowClosed(WindowEvent e) {
 				saveChanges();
+
+				manager.removeKeyEventDispatcher(keyDisp);
+
+				boolean alive = false;
+
+				for (Window w : getWindows()) {
+					if (w.isShowing()) {
+						alive = true;
+					}
+				}
+
+				System.out.println("Window closed. alive=" + alive);
+
+				if (!alive) {
+					System.exit(0);
+				}
 			}
 		});
 
@@ -175,9 +194,11 @@ public class ElephantWindow extends JFrame {
 						// System.out.println("NotebookChoosers: " + (++n));
 						if (w.isActive()) {
 							((NotebookChooser) w).handleKeyEvent(e);
+							return true;
 						}
 					}
 				}
+
 				return false;
 			}
 
