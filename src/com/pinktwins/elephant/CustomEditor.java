@@ -12,6 +12,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -23,10 +24,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -41,8 +45,13 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.StyledEditorKit;
 import javax.swing.undo.UndoManager;
+
+import com.google.common.eventbus.Subscribe;
 
 public class CustomEditor extends RoundPanel {
 
@@ -115,6 +124,8 @@ public class CustomEditor extends RoundPanel {
 	@SuppressWarnings("serial")
 	public CustomEditor() {
 		super();
+
+		Elephant.eventBus.register(this);
 
 		this.setDoubleBuffered(true);
 
@@ -375,9 +386,119 @@ public class CustomEditor extends RoundPanel {
 
 		note.getDocument().addUndoableEditListener(new UndoEditListener());
 
+		InputMap inputMap = note.getInputMap();
+
+		KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_B, ElephantWindow.menuMask);
+		inputMap.put(ks, boldAction);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_I, ElephantWindow.menuMask);
+		inputMap.put(ks, italicAction);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_U, ElephantWindow.menuMask);
+		inputMap.put(ks, underlineAction);
+
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ElephantWindow.menuMask);
+		inputMap.put(ks, increaseFontSizeAction);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ElephantWindow.menuMask);
+		inputMap.put(ks, decreaseFontSizeAction);
+
 		add(note, BorderLayout.CENTER);
 
 		createPadding();
+	}
+
+	private AbstractAction boldAction = new AbstractAction() {
+		StyledEditorKit.BoldAction a = new StyledEditorKit.BoldAction();
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			isRichText = true;
+			a.actionPerformed(e);
+		}
+	};
+
+	private AbstractAction italicAction = new AbstractAction() {
+		StyledEditorKit.ItalicAction a = new StyledEditorKit.ItalicAction();
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			isRichText = true;
+			a.actionPerformed(e);
+		}
+	};
+
+	private AbstractAction underlineAction = new AbstractAction() {
+		StyledEditorKit.UnderlineAction a = new StyledEditorKit.UnderlineAction();
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			isRichText = true;
+			a.actionPerformed(e);
+		}
+	};
+
+	private void shiftFontSize(final int delta) {
+		int start = note.getSelectionStart();
+		int end = note.getSelectionEnd();
+
+		StyledDocument doc = note.getStyledDocument();
+
+		if (start == end) {
+			return;
+		}
+
+		AttributeSet attrs = doc.getCharacterElement(start).getAttributes();
+		SimpleAttributeSet as = new SimpleAttributeSet();
+		as.addAttributes(attrs);
+
+		int size = StyleConstants.getFontSize(attrs);
+		StyleConstants.setFontSize(as, size + delta);
+
+		doc.setCharacterAttributes(start, end - start, as, false);
+
+		isRichText = true;
+	}
+
+	private AbstractAction increaseFontSizeAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			shiftFontSize(1);
+		}
+	};
+
+	private AbstractAction decreaseFontSizeAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			shiftFontSize(-1);
+		}
+	};
+
+	@Subscribe
+	public void handleStyleCommandEvent(StyleCommandEvent e) {
+		String cmd = e.event.getActionCommand();
+		if ("Bold".equals(cmd)) {
+			boldAction.actionPerformed(e.event);
+			return;
+		}
+		if ("Italic".equals(cmd)) {
+			italicAction.actionPerformed(e.event);
+			return;
+		}
+		if ("Underline".equals(cmd)) {
+			underlineAction.actionPerformed(e.event);
+			return;
+		}
+		if ("Bigger".equals(cmd)) {
+			increaseFontSizeAction.actionPerformed(e.event);
+			return;
+		}
+		if ("Smaller".equals(cmd)) {
+			decreaseFontSizeAction.actionPerformed(e.event);
+			return;
+		}
+		if ("Make Plain Text".equals(cmd)) {
+			note.getStyledDocument().setCharacterAttributes(0, note.getDocument().getLength(), new SimpleAttributeSet(), true);
+			note.requestFocusInWindow();
+			isRichText = false;
+		}
 	}
 
 	private void createPadding() {
@@ -399,32 +520,39 @@ public class CustomEditor extends RoundPanel {
 		title.setSelectionEnd(0);
 	}
 
-	public void setText(String s) {
-		note.setText("");
-		isRichText = false;
+	public static boolean setTextRtfOrPlain(JTextPane textPane, String s) {
+		boolean rich = false;
 
 		if (s != null && s.length() > 0) {
 			if (s.indexOf("{\\rtf") == 0) {
 				try {
-					RtfUtil.putRtf(note.getDocument(), s, 0);
-					if (note.getDocument().getLength() == 0) {
-						note.setText(s);
+					RtfUtil.putRtf(textPane.getDocument(), s, 0);
+					if (textPane.getDocument().getLength() == 0) {
+						textPane.setText(s);
 					} else {
-						isRichText = true;
+						rich = true;
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
 					System.out.println("no rtf");
-					note.setText(s);
+					textPane.setText(s);
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 					System.out.println("no rtf");
-					note.setText(s);
+					textPane.setText(s);
 				}
 			} else {
-				note.setText(s);
+				textPane.setText(s);
 			}
 		}
+
+		return rich;
+	}
+
+	public void setText(String s) {
+		note.setText("");
+
+		isRichText = setTextRtfOrPlain(note, s);
 
 		note.setCaretPosition(0);
 	}

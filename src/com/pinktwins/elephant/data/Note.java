@@ -282,9 +282,14 @@ public class Note implements Comparable<Note> {
 		File destAtts = new File(attachmentFolderPath(destFile));
 
 		if (destFile.exists() || destMeta.exists() || destAtts.exists()) {
-			attemptSafeRename(file.getName());
-			moveTo(dest);
-			return;
+			try {
+				attemptSafeRename(file.getName());
+				moveTo(dest);
+				return;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return;
+			}
 		}
 
 		try {
@@ -317,7 +322,7 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
-	public void attemptSafeRename(String newName) {
+	public void attemptSafeRename(String newName) throws IOException {
 
 		newName = newName.replaceAll("[^a-zA-Z0-9 \\.\\-]", "_");
 
@@ -339,18 +344,18 @@ public class Note implements Comparable<Note> {
 			return;
 		}
 
-		try {
+		if (meta.exists()) {
 			FileUtils.moveFile(meta, newMeta);
+		}
+		if (file.exists()) {
 			FileUtils.moveFile(file, newFile);
+		}
 
-			file = newFile;
-			meta = newMeta;
+		file = newFile;
+		meta = newMeta;
 
-			if (newAtts != null) {
-				FileUtils.moveDirectory(atts, newAtts);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (newAtts != null) {
+			FileUtils.moveDirectory(atts, newAtts);
 		}
 	}
 

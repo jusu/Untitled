@@ -375,7 +375,7 @@ public class NoteList extends BackgroundPanel {
 			preview.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
 			preview.setEditable(false);
 			preview.setFont(ElephantWindow.fontSmall);
-			preview.setText(getContentPreview());
+			CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
 			preview.setBackground(Color.WHITE);
 			preview.setBounds(0, 0, 176, 138);
 			preview.addMouseListener(this);

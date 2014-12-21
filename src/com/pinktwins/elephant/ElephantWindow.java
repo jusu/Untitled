@@ -67,7 +67,7 @@ public class ElephantWindow extends JFrame {
 
 	private boolean hasWindowFocus;
 
-	private int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+	public static int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 	JMenuItem iUndo, iRedo;
 
@@ -486,9 +486,18 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener styleAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Elephant.eventBus.post(new StyleCommandEvent(e));
+		}
+	};
+
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
-		mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
+		if (keyCode > 0 || keyMask > 0) {
+			mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
+		}
 		mi.addActionListener(action);
 		return mi;
 	}
@@ -538,10 +547,25 @@ public class ElephantWindow extends JFrame {
 		JMenu note = new JMenu("Note");
 		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, menuMask | KeyEvent.CTRL_DOWN_MASK, moveNoteAction));
 
+		JMenu format = new JMenu("Format");
+		JMenu style = new JMenu("Style");
+
+		style.add(menuItem("Bold", KeyEvent.VK_B, menuMask, styleAction));
+		style.add(menuItem("Italic", KeyEvent.VK_I, menuMask, styleAction));
+		style.add(menuItem("Underline", KeyEvent.VK_U, menuMask, styleAction));
+		style.addSeparator();
+		style.add(menuItem("Bigger", KeyEvent.VK_PLUS, menuMask, styleAction));
+		style.add(menuItem("Smaller", KeyEvent.VK_MINUS, menuMask, styleAction));
+
+		format.add(style);
+		format.addSeparator();
+		format.add(menuItem("Make Plain Text", 0, 0, styleAction));
+
 		mb.add(file);
 		mb.add(edit);
 		mb.add(view);
 		mb.add(note);
+		mb.add(format);
 
 		setJMenuBar(mb);
 

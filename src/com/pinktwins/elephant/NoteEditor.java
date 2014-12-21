@@ -32,6 +32,8 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.text.BadLocationException;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.CustomEditor.EditorEventListener;
@@ -122,6 +124,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private class TopShadowPanel extends JPanel {
 		private static final long serialVersionUID = 6626079564069649611L;
 
+		private final Color lineColor = Color.decode("#b4b4b4");
+
 		@Override
 		public void paint(Graphics g) {
 			super.paint(g);
@@ -131,6 +135,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			} else {
 				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 2, null);
 			}
+
+			g.setColor(lineColor);
+			g.drawLine(0, 0, 0, getHeight());
 		}
 	}
 
@@ -166,7 +173,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		main.setBorder(BorderFactory.createEmptyBorder(kBorder, kBorder, kBorder, kBorder));
 
 		final DividedPanel tools = new DividedPanel(tile);
-		tools.setBounds(0, 0, 1920, 65);
+		tools.setBounds(1, 0, 1920, 65);
 
 		JPanel toolsTop = new JPanel(new BorderLayout());
 		toolsTop.setOpaque(false);
@@ -447,6 +454,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
+	private void renameAccordingToFormat(String title) {
+		try {
+			currentNote.attemptSafeRename(title + (editor.isRichText ? ".rtf" : ".txt"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void saveChanges() {
 		if (!isDirty) {
 			return;
@@ -461,8 +476,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				String editedTitle = editor.getTitle();
 				if (!fileTitle.equals(editedTitle)) {
 					currentNote.getMeta().title(editedTitle);
-					currentNote.attemptSafeRename(editedTitle + (editor.isRichText ? ".rtf" : ".txt"));
+					renameAccordingToFormat(editedTitle);
 					changed = true;
+				}
+
+				if (!changed) {
+					// Did format change during edit?
+					String ext = FilenameUtils.getExtension(currentNote.file().getAbsolutePath()).toLowerCase();
+					if ((editor.isRichText && "txt".equals(ext)) || (!editor.isRichText && "rtf".equals(ext))) {
+						renameAccordingToFormat(editedTitle);
+					}
 				}
 
 				String fileText = currentNote.contents();

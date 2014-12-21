@@ -106,7 +106,7 @@ public class Notebook implements Comparable<Notebook> {
 		notes.clear();
 		for (File f : folder.listFiles()) {
 			String name = f.getName();
-			String ext = FilenameUtils.getExtension(f.getName());
+			String ext = FilenameUtils.getExtension(f.getName()).toLowerCase();
 
 			if (name.charAt(0) != '.' && !name.endsWith("~") && (ext.equals("txt") || ext.equals("rtf"))) {
 				try {
