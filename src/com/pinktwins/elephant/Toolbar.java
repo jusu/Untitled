@@ -2,9 +2,12 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -55,19 +58,52 @@ public class Toolbar extends BackgroundPanel {
 		add(p, BorderLayout.EAST);
 
 		search.getDocument().addDocumentListener(new DocumentListener() {
+
+			Timer t = new Timer();
+
+			class PendingSearch extends TimerTask {
+				private final String text;
+
+				public PendingSearch(String text) {
+					this.text = text;
+				}
+
+				@Override
+				public void run() {
+					EventQueue.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							window.search(text);
+						}
+					});
+				}
+			}
+
+			PendingSearch pending = null;
+
+			private void doSearch(String text) {
+				if (pending != null) {
+					pending.cancel();
+					pending = null;
+				}
+
+				pending = new PendingSearch(text);
+				t.schedule(pending, 250);
+			}
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				window.search(search.getText());
+				doSearch(search.getText());
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				window.search(search.getText());
+				doSearch(search.getText());
 			}
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				window.search(search.getText());
+				doSearch(search.getText());
 			}
 		});
 	}
@@ -92,7 +128,7 @@ public class Toolbar extends BackgroundPanel {
 		search.setFocusable(true);
 		search.requestFocusInWindow();
 	}
-	
+
 	public void clearSearch() {
 		search.setText("");
 		search.setFocusable(false);

@@ -63,7 +63,7 @@ public class Note implements Comparable<Note> {
 
 	@Override
 	public int hashCode() {
-		return file.hashCode();
+		return file.getAbsoluteFile().hashCode();
 	}
 
 	@Override

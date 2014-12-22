@@ -99,6 +99,7 @@ public class ElephantWindow extends JFrame {
 
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 		final KeyDispatcher keyDisp = new KeyDispatcher();
+
 		manager.addKeyEventDispatcher(keyDisp);
 
 		addWindowListener(new WindowAdapter() {
@@ -162,6 +163,39 @@ public class ElephantWindow extends JFrame {
 			public void componentHidden(ComponentEvent e) {
 			}
 		});
+
+		// Run any search in the background. This will populate the 'SimpleSearchIndex' class
+		// with string to note references for future searches.
+		// Also cache notelist items to speed up search result displays.
+
+		if (!Vault.ssi.ready()) {
+			new Thread() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						return;
+					}
+
+					System.out.println("Search optimization..");
+					long start = System.currentTimeMillis();
+					Vault.getInstance().search("a");
+					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
+
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						return;
+					}
+
+					System.out.println("Thumbnail cache..");
+					start = System.currentTimeMillis();
+					noteList.cache(Notebook.getNotebookWithAllNotes());
+					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
+				}
+			}.start();
+		}
 	}
 
 	private Rectangle loadBounds() {
@@ -194,7 +228,7 @@ public class ElephantWindow extends JFrame {
 						// System.out.println("NotebookChoosers: " + (++n));
 						if (w.isActive()) {
 							((NotebookChooser) w).handleKeyEvent(e);
-							return true;
+							return false;
 						}
 					}
 				}
