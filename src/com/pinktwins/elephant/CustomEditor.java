@@ -19,11 +19,16 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
@@ -49,7 +54,10 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
+import javax.swing.text.rtf.RTFEditorKit;
 import javax.swing.undo.UndoManager;
+
+import org.apache.commons.io.IOUtils;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -243,27 +251,59 @@ public class CustomEditor extends RoundPanel {
 
 		// http://www.javapractices.com/topic/TopicAction.do?Id=82
 
+		private String prevRtfCopy = "";
+
 		public void setClipboardContents(String aString) {
 			StringSelection stringSelection = new StringSelection(aString);
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			clipboard.setContents(stringSelection, this);
+			prevRtfCopy = "";
+		}
+
+		public void setClipboardContentsRtf(String rtf) {
+			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			try {
+				DataHandler hand = new DataHandler(new ByteArrayInputStream(rtf.getBytes("UTF-8")), "text/rtf");
+				clipboard.setContents(hand, this);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			prevRtfCopy = rtf;
 		}
 
 		public String getClipboardContents() {
 			String result = "";
+
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			// odd: the Object param of getContents is not currently used
 			Transferable contents = clipboard.getContents(null);
-			boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+
+			DataFlavor[] fl = contents.getTransferDataFlavors();
+			ArrayList<DataFlavor> textFlavors = new ArrayList<DataFlavor>();
+			for (DataFlavor df : fl) {
+				String mime = df.getMimeType();
+				if (mime.indexOf("text/rtf") >= 0 || mime.indexOf("text/plain") >= 0) {
+					textFlavors.add(df);
+				}
+			}
+
+			DataFlavor[] te = new DataFlavor[textFlavors.size()];
+			te = textFlavors.toArray(te);
+
+			DataFlavor best = DataFlavor.selectBestTextFlavor(te);
+			boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(best);
 			if (hasTransferableText) {
 				try {
-					result = (String) contents.getTransferData(DataFlavor.stringFlavor);
+					Reader r = best.getReaderForText(contents);
+					BufferedReader br = new BufferedReader(r);
+					result = IOUtils.toString(br);
 				} catch (UnsupportedFlavorException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
+
 			return result;
 		}
 
@@ -306,11 +346,41 @@ public class CustomEditor extends RoundPanel {
 			if (s != null && !s.isEmpty()) {
 				setClipboardContents(s);
 			}
+
+			if (isRichText) {
+				int start = note.getSelectionStart();
+				int end = note.getSelectionEnd();
+
+				if (end > start) {
+					// Put rtf to clipboard: clone document, remove
+					// everything but selection.
+					Document d = new CustomDocument();
+					try {
+						RtfUtil.putRtf(d, RtfUtil.getRtf(getDocument()), 0);
+						d.remove(end, d.getLength() - end);
+						d.remove(0, start);
+						String rtf = RtfUtil.getRtf(d);
+
+						setClipboardContentsRtf(rtf);
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (BadLocationException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 
 		@Override
 		public void paste() {
 			String s = getClipboardContents();
+
+			// For some reason I don't get any rtf text from clipboard copied
+			// there by me. Workround.
+			if (s.isEmpty() && !prevRtfCopy.isEmpty()) {
+				s = prevRtfCopy;
+			}
+
 			if (!s.isEmpty()) {
 				try {
 					CPPInfo i = new CPPInfo();
@@ -320,7 +390,40 @@ public class CustomEditor extends RoundPanel {
 					}
 
 					i.pos -= i.adjust;
-					i.doc.insertString(i.pos, s, null);
+
+					if (!s.substring(0, 5).equals("{\\rtf")) {
+						i.doc.insertString(i.pos, s, null);
+					} else {
+						// RTFEditorKit doesn't support 'position' argument on
+						// read() method, so create a new document and copy
+						// text + styles over.
+						CustomDocument d = new CustomDocument();
+
+						try {
+							RtfUtil.putRtf(d, s, 0);
+
+							Element[] elems = d.getRootElements();
+							for (Element e : elems) {
+								for (int idx = 0, count = e.getElementCount(); idx < count - 1; idx++) {
+									Element sub = e.getElement(idx);
+									if ("paragraph".equals(sub.getName())) {
+										int start = sub.getStartOffset();
+										int end = sub.getEndOffset();
+										AttributeSet as = d.getCharacterElement(start).getAttributes();
+
+										if (end > start) {
+											String text = d.getText(start, end - start);
+											i.doc.insertString(i.pos, text, as);
+											i.pos += end - start;
+											isRichText = true;
+										}
+									}
+								}
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}

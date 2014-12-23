@@ -43,6 +43,6 @@ public class RtfUtil {
 
 	public static void putRtf(Document doc, String rtfContents, int position) throws IOException, BadLocationException {
 		RTFEditorKit kit = new RTFEditorKit();
-		kit.read(new StringReader(rtfContents), doc, 0);
+		kit.read(new StringReader(rtfContents), doc, position);
 	}
 }

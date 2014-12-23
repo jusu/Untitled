@@ -164,7 +164,8 @@ public class ElephantWindow extends JFrame {
 			}
 		});
 
-		// Run any search in the background. This will populate the 'SimpleSearchIndex' class
+		// Run dummy search in the background. This will populate the
+		// 'SimpleSearchIndex' class
 		// with string to note references for future searches.
 		// Also cache notelist items to speed up search result displays.
 
@@ -215,8 +216,10 @@ public class ElephantWindow extends JFrame {
 		Elephant.settings.setChain("windowX", r.x).setChain("windowY", r.y).setChain("windowWidth", r.width).set("windowHeight", r.height);
 	}
 
+	// Handling key dispatching for full control over keyboard interaction.
 	// XXX this will bite me eventually
 	private class KeyDispatcher implements KeyEventDispatcher {
+
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			if (!hasWindowFocus) {
@@ -345,7 +348,6 @@ public class ElephantWindow extends JFrame {
 		} else {
 			return false;
 		}
-
 	}
 
 	public void saveChanges() {
@@ -380,9 +382,6 @@ public class ElephantWindow extends JFrame {
 		noteEditor.clear();
 		noteList.load(notebook);
 		noteList.changeSelection(1, 0);
-
-		// DO I NEED THIS OR NOT?
-		// noteList.unfocusEditor();
 	}
 
 	public void showNote(Note note) {
@@ -415,6 +414,14 @@ public class ElephantWindow extends JFrame {
 
 		noteList.newNote();
 		focusEditor();
+	}
+
+	public void search(String text) {
+		if (text.length() == 0) {
+			showNotebook(Vault.getInstance().getDefaultNotebook());
+		} else {
+			showNotebook(Vault.getInstance().search(text));
+		}
 	}
 
 	ActionListener newNoteAction = new ActionListener() {
@@ -716,14 +723,6 @@ public class ElephantWindow extends JFrame {
 		} else {
 			iRedo.setEnabled(false);
 			iRedo.setName("Redo");
-		}
-	}
-
-	public void search(String text) {
-		if (text.length() == 0) {
-			showNotebook(Vault.getInstance().getDefaultNotebook());
-		} else {
-			showNotebook(Vault.getInstance().search(text));
 		}
 	}
 }
