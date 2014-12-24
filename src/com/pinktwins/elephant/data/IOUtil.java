@@ -58,8 +58,6 @@ public class IOUtil {
 		Files.write(text, file, Charset.defaultCharset());
 	}
 
-	final static private JSONObject emptyJson = new JSONObject();
-
 	public static JSONObject loadJson(File file) {
 		try {
 			String json = null;
@@ -79,6 +77,6 @@ public class IOUtil {
 			e.printStackTrace();
 		}
 
-		return emptyJson;
+		return new JSONObject();
 	}
 }
