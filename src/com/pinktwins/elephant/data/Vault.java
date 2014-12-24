@@ -32,7 +32,8 @@ public class Vault {
 	private File home;
 	private File trash;
 
-	private static ArrayList<Notebook> notebooks = Factory.newArrayList();
+	private ArrayList<Notebook> notebooks = Factory.newArrayList();
+	private Tags tags = new Tags();
 
 	private Vault() {
 		Elephant.eventBus.register(this);
@@ -73,6 +74,8 @@ public class Vault {
 		}
 
 		Collections.sort(notebooks);
+
+		tags.reload(home.getAbsolutePath() + File.separator + ".tags");
 	}
 
 	public List<Notebook> getNotebooks() {

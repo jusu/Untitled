@@ -48,6 +48,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontBoldEditor = Font.decode("Arial-BOLD-13");
 	final public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
 	final public static Font fontNormal = Font.decode("Arial-14");
+	final public static Font fontMediumPlus = Font.decode("Arial-12");
 	final public static Font fontMedium = Font.decode("Arial-11");
 	final public static Font fontModalHeader = Font.decode("Arial-BOLD-16");
 

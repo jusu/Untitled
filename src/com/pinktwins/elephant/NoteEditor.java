@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
@@ -103,6 +104,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	BackgroundPanel scrollHolder;
 	JScrollPane scroll;
 	CustomEditor editor;
+	TagEditorPane tagPane;
 	BackgroundPanel topShadow;
 	JButton currNotebook, trash;
 	JLabel noteCreated, noteUpdated;
@@ -190,13 +192,21 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		currNotebook.setContentAreaFilled(false);
 		currNotebook.setIcon(new ImageIcon(noteToolsNotebook));
 		currNotebook.setForeground(ElephantWindow.colorTitleButton);
+		currNotebook.setFont(ElephantWindow.fontMediumPlus);
+
+		tagPane = new TagEditorPane();
 
 		trash = new JButton("");
 		trash.setBorderPainted(false);
 		trash.setContentAreaFilled(false);
 		trash.setIcon(new ImageIcon(noteToolsTrash));
 
-		toolsTopLeft.add(currNotebook, BorderLayout.WEST);
+		JPanel toolsTopLeftWest = new JPanel(new GridBagLayout());
+		toolsTopLeftWest.setOpaque(false);
+		toolsTopLeftWest.add(currNotebook);
+		toolsTopLeftWest.add(tagPane.getComponent());
+
+		toolsTopLeft.add(toolsTopLeftWest, BorderLayout.WEST);
 		toolsTopRight.add(trash, BorderLayout.EAST);
 		toolsTop.add(toolsTopLeft, BorderLayout.WEST);
 		toolsTop.add(toolsTopRight, BorderLayout.EAST);
@@ -237,12 +247,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		areaHolder = new ScrollablePanel();
 		areaHolder.setLayout(areaHolderLayout);
 		areaHolder.setBorder(BorderFactory.createEmptyBorder(kBorder - topBorderOffset, kBorder, kBorder, kBorder));
-		// areaHolder.setBounds(0, 0, 200, kMinNoteSize);
 		areaHolder.add(area, BorderLayout.NORTH);
 
 		scrollHolder = new BackgroundPanel();
 		scrollHolder.setOpaque(false);
-		// scrollHolder.setBounds(0, 0, 200, kMinNoteSize);
 
 		scroll = new JScrollPane(areaHolder);
 		scroll.setOpaque(false);
@@ -287,6 +295,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				Rectangle r = tools.getBounds();
 				r.width = getWidth();
 				tools.setBounds(r);
+
+				tagPane.updateWidth(r.width);
 
 				if (loadAfterLayout != null) {
 					EventQueue.invokeLater(new Runnable() {
@@ -441,7 +451,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public boolean hasFocus() {
-		return editor.hasFocus();
+		return editor.hasFocus() || tagPane.hasFocus();
 	}
 
 	public void unfocus() {
