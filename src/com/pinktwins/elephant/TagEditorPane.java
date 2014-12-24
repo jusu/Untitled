@@ -77,7 +77,6 @@ public class TagEditorPane {
 	}
 
 	public void updateWidth(int w) {
-		System.out.println("new width " + w);
 		scroll.setPreferredSize(new Dimension(w - 128, prefH1));
 		tagHint.setPreferredSize(new Dimension(w - 128, prefH2));
 
