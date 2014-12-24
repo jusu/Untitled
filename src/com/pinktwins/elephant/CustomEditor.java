@@ -150,6 +150,8 @@ public class CustomEditor extends RoundPanel {
 		title = new JTextField();
 		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
 		title.addFocusListener(editorFocusListener);
+		TextComponentUtils.insertListenerForHintText(title, "Untitled");
+/*
 		title.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -178,7 +180,8 @@ public class CustomEditor extends RoundPanel {
 			public void changedUpdate(DocumentEvent e) {
 			}
 		});
-
+*/
+		
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 
 		title.addKeyListener(new KeyListener() {
