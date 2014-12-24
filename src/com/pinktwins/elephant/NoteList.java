@@ -36,6 +36,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.pushingpixels.trident.Timeline;
 
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
+import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 
@@ -52,7 +53,7 @@ public class NoteList extends BackgroundPanel {
 	private Notebook previousNotebook;
 	private int initialScrollValue;
 
-	private ArrayList<NoteItem> noteItems = new ArrayList<NoteItem>();
+	private ArrayList<NoteItem> noteItems = Factory.newArrayList();
 
 	static {
 		try {
@@ -153,7 +154,7 @@ public class NoteList extends BackgroundPanel {
 		});
 	}
 
-	static private HashMap<File, NoteItem> itemCache = new HashMap<File, NoteItem>();
+	static private HashMap<File, NoteItem> itemCache = Factory.newHashMap();
 
 	public void cache(Notebook notebook) {
 		List<Note> list = notebook.getNotes();

@@ -158,7 +158,7 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
-	final private HashMap<String, String> emptyMap = new HashMap<String, String>();
+	final private HashMap<String, String> emptyMap = Factory.newHashMap();
 
 	public Map<String, String> getMetaMap() {
 		try {
@@ -168,11 +168,12 @@ public class Note implements Comparable<Note> {
 			}
 
 			JSONObject o = new JSONObject(json);
-			HashMap<String, String> map = new HashMap<String, String>();
+			HashMap<String, String> map = Factory.newHashMap();
 
-			Iterator<?> i = o.keys();
+			@SuppressWarnings("unchecked")
+			Iterator<String> i = o.keys();
 			while (i.hasNext()) {
-				String key = (String) i.next();
+				String key = i.next();
 				String value = o.optString(key);
 				map.put(key, value);
 			}

@@ -13,14 +13,15 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Vault;
 
 public class ImageScalingCache {
 
 	public int maxSize = 100;
 
-	HashMap<String, Image> map = new HashMap<String, Image>();
-	ArrayList<String> gets = new ArrayList<String>();
+	HashMap<String, Image> map = Factory.newHashMap();
+	ArrayList<String> gets = Factory.newArrayList();
 
 	public Image get(File sourceFile, int w, int h) {
 		String key = key(sourceFile, w, h);

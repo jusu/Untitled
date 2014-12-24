@@ -33,6 +33,7 @@ import com.pinktwins.elephant.NoteEditor.NoteEditorStateListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.data.VaultEvent;
 
@@ -169,7 +170,7 @@ public class ElephantWindow extends JFrame {
 		// with string to note references for future searches.
 		// Also cache notelist items to speed up search result displays.
 
-		if (!Vault.ssi.ready()) {
+		if (!Search.ssi.ready()) {
 			new Thread() {
 				@Override
 				public void run() {
@@ -181,7 +182,7 @@ public class ElephantWindow extends JFrame {
 
 					System.out.println("Search optimization..");
 					long start = System.currentTimeMillis();
-					Vault.getInstance().search("a");
+					Search.search("a");
 					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
 
 					try {
@@ -223,8 +224,6 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			if (!hasWindowFocus) {
-				int n = 0;
-
 				// XXX the windows accumulate. Get rid of them.
 				for (Window w : getWindows()) {
 					if (w instanceof NotebookChooser) {
@@ -420,7 +419,7 @@ public class ElephantWindow extends JFrame {
 		if (text.length() == 0) {
 			showNotebook(Vault.getInstance().getDefaultNotebook());
 		} else {
-			showNotebook(Vault.getInstance().search(text));
+			showNotebook(Search.search(text));
 		}
 	}
 

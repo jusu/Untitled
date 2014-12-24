@@ -13,7 +13,7 @@ public class SimpleSearchIndex {
 
 	private boolean isReady = false;
 
-	private HashMap<String, Set<Note>> map = new HashMap<String, Set<Note>>();
+	private HashMap<String, Set<Note>> map = Factory.newHashMap();
 
 	public SimpleSearchIndex() {
 		Elephant.eventBus.register(this);
@@ -42,8 +42,8 @@ public class SimpleSearchIndex {
 	}
 
 	public List<Note> search(String text) {
-		ArrayList<Note> found = new ArrayList<Note>();
-		HashSet<Note> foundSet = new HashSet<Note>();
+		ArrayList<Note> found = Factory.newArrayList();
+		HashSet<Note> foundSet = Factory.newHashSet();
 
 		Set<String> strs = map.keySet();
 		for (String s : strs) {

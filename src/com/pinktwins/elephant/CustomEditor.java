@@ -60,6 +60,7 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.io.IOUtils;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.data.Factory;
 
 public class CustomEditor extends RoundPanel {
 
@@ -279,7 +280,7 @@ public class CustomEditor extends RoundPanel {
 			Transferable contents = clipboard.getContents(null);
 
 			DataFlavor[] fl = contents.getTransferDataFlavors();
-			ArrayList<DataFlavor> textFlavors = new ArrayList<DataFlavor>();
+			ArrayList<DataFlavor> textFlavors = Factory.newArrayList();
 			for (DataFlavor df : fl) {
 				String mime = df.getMimeType();
 				if (mime.indexOf("text/rtf") >= 0 || mime.indexOf("text/plain") >= 0) {
@@ -700,7 +701,7 @@ public class CustomEditor extends RoundPanel {
 	}
 
 	public List<AttachmentInfo> getAttachmentInfo() {
-		ArrayList<AttachmentInfo> list = new ArrayList<AttachmentInfo>();
+		ArrayList<AttachmentInfo> list = Factory.newArrayList();
 
 		ElementIterator iterator = new ElementIterator(note.getDocument());
 		Element element;

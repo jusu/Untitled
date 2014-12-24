@@ -37,6 +37,7 @@ import javax.swing.text.Document;
 import org.pushingpixels.trident.Timeline;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.NotebookEvent;
 import com.pinktwins.elephant.data.Vault;
@@ -62,7 +63,7 @@ public class Notebooks extends BackgroundPanel {
 	private ElephantWindow window;
 	private NotebookItem selectedNotebook;
 
-	private ArrayList<NotebookItem> notebookItems = new ArrayList<NotebookItem>();
+	private ArrayList<NotebookItem> notebookItems = Factory.newArrayList();
 
 	static {
 		try {

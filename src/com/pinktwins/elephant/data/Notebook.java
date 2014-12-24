@@ -3,9 +3,7 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -21,7 +19,7 @@ public class Notebook implements Comparable<Notebook> {
 	private String name = "";
 	private File folder;
 
-	public ArrayList<Note> notes = new ArrayList<Note>();
+	public ArrayList<Note> notes = Factory.newArrayList();
 
 	@Override
 	public boolean equals(Object o) {

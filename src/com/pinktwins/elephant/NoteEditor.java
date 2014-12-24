@@ -40,6 +40,7 @@ import com.pinktwins.elephant.CustomEditor.EditorEventListener;
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
@@ -95,7 +96,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private Note currentNote;
-	private HashMap<Object, File> currentAttachments = new HashMap<Object, File>();
+	private HashMap<Object, File> currentAttachments = Factory.newHashMap();
 
 	JPanel main, area;
 	ScrollablePanel areaHolder;

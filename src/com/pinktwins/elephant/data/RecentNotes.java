@@ -16,7 +16,7 @@ public class RecentNotes {
 
 	private static final int MAX_NOTES = 5;
 
-	private ArrayList<Note> recent = new ArrayList<Note>();
+	private ArrayList<Note> recent = Factory.newArrayList();
 
 	public RecentNotes() {
 		Elephant.eventBus.register(this);
