@@ -284,19 +284,19 @@ public class TagEditorPane {
 			int width = fm.stringWidth(name);
 			g.dispose();
 
-			BufferedImage image = new BufferedImage(width + 16, 11, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage image = new BufferedImage(width + 22, 11, BufferedImage.TYPE_INT_ARGB);
 			g = image.createGraphics();
 			g.setFont(font);
 			g.setColor(ElephantWindow.colorTitleButton);
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-			g.drawImage(tagLeft, 0, 0, null);
-			for (int n = 10; n < width + 6; n += 10) {
+			g.drawImage(tagLeft, 3, 0, null);
+			for (int n = 13; n < width + 9; n += 10) {
 				g.drawImage(tagMiddle, n, 0, null);
 			}
-			g.drawImage(tagRight, width + 6, 0, null);
+			g.drawImage(tagRight, width + 9, 0, null);
 
-			g.drawString(name, 8, 10);
+			g.drawString(name, 11, 9);
 			g.dispose();
 
 			setImage(image);
