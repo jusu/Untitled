@@ -112,7 +112,9 @@ public class Note implements Comparable<Note> {
 	}
 
 	public String createdStr() {
-		return df.print(getMeta().created());
+		long t = getMeta().created();
+		long m = lastModified();
+		return df.print(t < m ? t : m);
 	}
 
 	public String updatedStr() {
@@ -241,6 +243,7 @@ public class Note implements Comparable<Note> {
 			try {
 				return Long.valueOf(map.get("created"));
 			} catch (NumberFormatException e) {
+				setCreatedTime();
 				return new Date().getTime();
 			}
 		}

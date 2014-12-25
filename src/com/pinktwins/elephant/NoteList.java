@@ -18,8 +18,10 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -31,8 +33,14 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.pushingpixels.trident.Timeline;
 
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
@@ -337,9 +345,14 @@ public class NoteList extends BackgroundPanel {
 		}
 	}
 
+	static private DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
+
 	class NoteItem extends JPanel implements MouseListener {
 
 		private static final long serialVersionUID = -4080651728730225105L;
+
+		private static final long time_24h = 1000 * 60 * 60 * 24;
+
 		private Note note;
 		private Dimension size = new Dimension(196, 196);
 		private JLabel name;
@@ -387,11 +400,43 @@ public class NoteList extends BackgroundPanel {
 			preview = new JTextPane();
 			preview.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
 			preview.setEditable(false);
-			preview.setFont(ElephantWindow.fontSmall);
+			preview.setFont(ElephantWindow.fontMediumPlus);
+			preview.setForeground(ElephantWindow.colorPreviewGray);
 			CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
 			preview.setBackground(Color.WHITE);
 			preview.setBounds(0, 0, 176, 138);
 			preview.addMouseListener(this);
+
+			// time
+			String ts = "";
+			Color col = ElephantWindow.colorGreen;
+
+			long now = System.currentTimeMillis();
+			Date noteDate = new Date(note.lastModified());
+
+			boolean today = DateUtils.isSameDay(new Date(now), noteDate);
+			if (today) {
+				ts = "Today";
+			} else {
+				boolean yesterday = DateUtils.isSameDay(new Date(now - time_24h), noteDate);
+				if (yesterday) {
+					ts = "Yesterday";
+				} else {
+					ts = df.print(note.lastModified());
+				}
+			}
+
+			if (now - note.lastModified() > time_24h * 30) {
+				col = ElephantWindow.colorBlue;
+			}
+
+			Style style = preview.addStyle("timestampStyle", null);
+			StyleConstants.setForeground(style, col);
+			try {
+				preview.getDocument().insertString(0, ts + " ", style);
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
 
 			previewPane.add(preview);
 

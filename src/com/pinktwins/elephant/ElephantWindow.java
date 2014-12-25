@@ -57,6 +57,10 @@ public class ElephantWindow extends JFrame {
 	final public static Color colorTitleButton = Color.decode("#666666");
 	final public static Color colorGray5 = Color.decode("#555555");
 	final public static Color colorDB = Color.decode("#dbdbdb");
+	final public static Color colorGreen = Color.decode("#00a834");
+	final public static Color colorBlue = Color.decode("#0091e6");
+	final public static Color colorPreviewGray = Color.decode("#666663");
+	final public static Color colorPreviewGrayOlder = Color.decode("#b1b1b1");
 	
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 

@@ -31,7 +31,6 @@ import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
 import javax.swing.text.StyleConstants;
 
-import com.pinktwins.elephant.EditorEventListener;
 import com.pinktwins.elephant.data.Factory;
 
 public class TagEditorPane {
@@ -117,8 +116,17 @@ public class TagEditorPane {
 
 			@Override
 			public void focusLost(FocusEvent e) {
+				String s = editor.getText().trim();
+				if (!s.isEmpty()) {
+					turnTextToTag(s);
+				}
+
 				if (eeListener != null) {
 					eeListener.editingFocusLost();
+
+					if (editor.getText().trim().isEmpty() && getTagNames().isEmpty()) {
+						hideEditor();
+					}
 				}
 			}
 		});
@@ -173,6 +181,8 @@ public class TagEditorPane {
 		editor.setText("");
 		loadedTags = tagNames;
 		if (tagNames.isEmpty()) {
+			editor.setText(clickToAddTags);
+			editor.setCaretPosition(0);
 			hideEditor();
 		} else {
 			showEditor();
@@ -184,6 +194,11 @@ public class TagEditorPane {
 
 	public void turnTextToTag(String tagText) {
 		String tx = editor.getText();
+
+		if (tx.equals(clickToAddTags)) {
+			return;
+		}
+
 		int n = tx.indexOf(tagText);
 		if (n >= 0) {
 			try {
@@ -219,12 +234,14 @@ public class TagEditorPane {
 	private void hideEditor() {
 		p.removeAll();
 		p.add(tagHint);
+		p.repaint();
 		p.revalidate();
 	}
 
 	private void showEditor() {
 		p.removeAll();
 		p.add(scroll);
+		p.repaint();
 		p.revalidate();
 	}
 
@@ -287,7 +304,7 @@ public class TagEditorPane {
 			BufferedImage image = new BufferedImage(width + 22, 11, BufferedImage.TYPE_INT_ARGB);
 			g = image.createGraphics();
 			g.setFont(font);
-			g.setColor(ElephantWindow.colorTitleButton);
+			g.setColor(Color.decode("#101010"));
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 			g.drawImage(tagLeft, 3, 0, null);
