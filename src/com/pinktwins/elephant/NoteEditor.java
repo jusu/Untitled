@@ -37,11 +37,11 @@ import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
-import com.pinktwins.elephant.CustomEditor.EditorEventListener;
+import com.pinktwins.elephant.EditorEventListener;
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
+import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
-import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
@@ -195,6 +195,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		currNotebook.setFont(ElephantWindow.fontMediumPlus);
 
 		tagPane = new TagEditorPane();
+		tagPane.setEditorEventListener(this);
 
 		trash = new JButton("");
 		trash.setBorderPainted(false);
@@ -421,6 +422,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor.setTitle(m.title());
 		editor.setText(note.contents());
 
+		tagPane.load(Vault.getInstance().resolveTagIds(m.tags()));
+
 		File[] files = currentNote.getAttachmentList();
 		if (files != null) {
 			for (File f : files) {
@@ -454,6 +457,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		return editor.hasFocus() || tagPane.hasFocus();
 	}
 
+	public void focusTags() {
+		tagPane.requestFocus();
+	}
+
 	public void unfocus() {
 		window.unfocusEditor();
 	}
@@ -474,15 +481,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void saveChanges() {
-		if (!isDirty) {
+		if (!isDirty && !tagPane.isDirty()) {
 			return;
 		}
-
+		
 		if (currentNote != null) {
 			boolean changed = false;
 			boolean contentChanged = false;
 
 			try {
+				// Title
 				String fileTitle = currentNote.getMeta().title();
 				String editedTitle = editor.getTitle();
 				if (!fileTitle.equals(editedTitle)) {
@@ -491,12 +499,21 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					changed = true;
 				}
 
+				// Format
 				if (!changed) {
 					// Did format change during edit?
 					String ext = FilenameUtils.getExtension(currentNote.file().getAbsolutePath()).toLowerCase();
 					if ((editor.isRichText && "txt".equals(ext)) || (!editor.isRichText && "rtf".equals(ext))) {
 						renameAccordingToFormat(editedTitle);
 					}
+				}
+
+				// Tags
+				if (tagPane.isDirty()) {
+					List<String> tagNames = tagPane.getTagNames();
+					List<String> tagIds = Vault.getInstance().resolveTagNames(tagNames);
+					currentNote.getMeta().setTags(tagIds, tagNames);
+					changed = true;
 				}
 
 				String fileText = currentNote.contents();

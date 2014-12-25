@@ -43,6 +43,18 @@ public class Vault {
 		return home;
 	}
 
+	public boolean hasLocation() {
+		return !HOME.isEmpty();
+	}
+
+	public void setLocation(String vaultPath) {
+		if (new File(vaultPath).exists()) {
+			Elephant.settings.set(vaultFolderSettingName, vaultPath);
+			HOME = vaultPath;
+			populate();
+		}
+	}
+
 	public Notebook getDefaultNotebook() {
 		if (!hasLocation()) {
 			return null;
@@ -105,21 +117,17 @@ public class Vault {
 		return null;
 	}
 
+	public List<String> resolveTagNames(List<String> tagNames) {
+		return tags.resolveNames(tagNames);
+	}
+
+	public List<String> resolveTagIds(List<String> tagIds) {
+		return tags.resolveIds(tagIds);
+	}
+
 	@Subscribe
 	public void handleVaultEvent(VaultEvent event) {
 		populate();
-	}
-
-	public void setLocation(String vaultPath) {
-		if (new File(vaultPath).exists()) {
-			Elephant.settings.set(vaultFolderSettingName, vaultPath);
-			HOME = vaultPath;
-			populate();
-		}
-	}
-
-	public boolean hasLocation() {
-		return !HOME.isEmpty();
 	}
 
 }

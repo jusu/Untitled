@@ -3,15 +3,18 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
@@ -42,6 +45,10 @@ public class Note implements Comparable<Note> {
 		public int getAttachmentPosition(File attachment);
 
 		public void setAttachmentPosition(File attachment, int position);
+
+		public List<String> tags();
+
+		public void setTags(List<String> tagIds, List<String> tagNames);
 	}
 
 	@Override
@@ -267,6 +274,30 @@ public class Note implements Comparable<Note> {
 		@Override
 		public void setAttachmentPosition(File attachment, int position) {
 			setMeta("attachment:" + attachment.getName() + ":position", String.valueOf(position));
+			reload();
+		}
+
+		@Override
+		public List<String> tags() {
+			ArrayList<String> names = Factory.newArrayList();
+
+			String ids = map.get("tagIds");
+			if (ids != null) {
+				String[] a = ids.split(",");
+				for (String s : a) {
+					names.add(s);
+				}
+			}
+
+			return names;
+		}
+
+		@Override
+		public void setTags(List<String> tagIds, List<String> tagNames) {
+			// tagIds are what matters. names are stored just to make exporting
+			// out of Elephant easier.
+			setMeta("tagIds", StringUtils.join(tagIds, ","));
+			setMeta("tagNames", StringUtils.join(tagNames, ","));
 			reload();
 		}
 

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.data.Note.Meta;
 
 public class SimpleSearchIndex {
 
@@ -65,8 +66,25 @@ public class SimpleSearchIndex {
 			}
 		}
 
-		digest(e.note, e.note.getMeta().title());
-		digest(e.note, e.note.contents());
+		digestNote(e.note, Vault.getInstance().findNotebook(e.note.file().getParentFile()));
+	}
+
+	public void digestNote(Note note, Notebook nb) {
+		Meta meta = note.getMeta();
+		digest(note, meta.title());
+		digest(note, note.contents());
+
+		List<String> tagIds = meta.tags();
+		if (!tagIds.isEmpty()) {
+			List<String> tagNames = Vault.getInstance().resolveTagIds(tagIds);
+			for (String s : tagNames) {
+				digest(note, s + " tag:" + s + " t:" + s);
+			}
+		}
+
+		if (nb != null) {
+			digest(note, "notebook:" + nb.name() + " nb:" + nb.name());
+		}
 	}
 
 	public void debug() {

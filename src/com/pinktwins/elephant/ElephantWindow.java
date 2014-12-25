@@ -50,12 +50,14 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontNormal = Font.decode("Arial-14");
 	final public static Font fontMediumPlus = Font.decode("Arial-12");
 	final public static Font fontMedium = Font.decode("Arial-11");
+	final public static Font fontMediumMinus = Font.decode("Arial-10");
 	final public static Font fontModalHeader = Font.decode("Arial-BOLD-16");
 
 	final public static Color colorTitle = Color.decode("#999999");
 	final public static Color colorTitleButton = Color.decode("#666666");
 	final public static Color colorGray5 = Color.decode("#555555");
-
+	final public static Color colorDB = Color.decode("#dbdbdb");
+	
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
 	CustomSplitPane splitLeft, splitRight;
@@ -259,6 +261,24 @@ public class ElephantWindow extends JFrame {
 							break;
 						case KeyEvent.VK_BACK_SPACE:
 							deleteSelectedNote();
+							break;
+						}
+						break;
+					}
+				} else {
+					// XXX editor eats cmd-' for jumping to tags.
+					// capture cmd-' here. why it comes as VK_BACK_SLASH
+					// is unknown.
+					// XXX works in mac, test win and test different key
+					// layouts.
+					switch (e.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						switch (e.getKeyCode()) {
+						case KeyEvent.VK_BACK_SLASH:
+							if ((e.getModifiers() & menuMask) == menuMask) {
+								editTagsAction.actionPerformed(null);
+							}
+							break;
 						}
 						break;
 					}
@@ -511,6 +531,20 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener editTitleAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.editor.focusTitle();
+		}
+	};
+
+	ActionListener editTagsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.focusTags();
+		}
+	};
+
 	ActionListener moveNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -607,6 +641,9 @@ public class ElephantWindow extends JFrame {
 		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, menuMask, jumpToNotebookAction));
 
 		JMenu note = new JMenu("Note");
+		note.add(menuItem("Edit Note Title", KeyEvent.VK_L, menuMask, editTitleAction));
+		note.add(menuItem("Edit Note Tags", KeyEvent.VK_QUOTE, menuMask, editTagsAction));
+		note.addSeparator();
 		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, menuMask | KeyEvent.CTRL_DOWN_MASK, moveNoteAction));
 
 		JMenu format = new JMenu("Format");

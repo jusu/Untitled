@@ -17,24 +17,7 @@ public class Search {
 			for (Notebook nb : Vault.getInstance().getNotebooks()) {
 				if (!nb.isTrash()) {
 					for (Note n : nb.notes) {
-						boolean match = false;
-
-						String title = n.getMeta().title();
-						String contents = n.contents();
-						if (title.toLowerCase().indexOf(text) >= 0) {
-							match = true;
-						} else {
-							if (contents.toLowerCase().indexOf(text) >= 0) {
-								match = true;
-							}
-						}
-
-						ssi.digest(n, title);
-						ssi.digest(n, contents);
-
-						if (match) {
-							found.addNote(n);
-						}
+						ssi.digestNote(n, nb);
 					}
 				}
 			}

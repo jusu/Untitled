@@ -66,9 +66,9 @@ public class CustomEditor extends RoundPanel {
 
 	private static final long serialVersionUID = -6604641427725747091L;
 
-	private static final String ELEM = AbstractDocument.ElementNameAttribute;
-	private static final String ICON = StyleConstants.IconElementName;
-	private static final String COMP = StyleConstants.ComponentElementName;
+	public static final String ELEM = AbstractDocument.ElementNameAttribute;
+	public static final String ICON = StyleConstants.IconElementName;
+	public static final String COMP = StyleConstants.ComponentElementName;
 
 	private JTextField title;
 	private CustomTextPane note;
@@ -83,16 +83,6 @@ public class CustomEditor extends RoundPanel {
 	}
 
 	final Color kDividerColor = Color.decode("#dbdbdb");
-
-	public interface EditorEventListener {
-		public void editingFocusGained();
-
-		public void editingFocusLost();
-
-		public void caretChanged(JTextPane text);
-
-		public void filesDropped(List<File> files);
-	}
 
 	public JTextPane getTextPane() {
 		return note;

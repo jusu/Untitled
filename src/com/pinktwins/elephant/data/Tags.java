@@ -3,7 +3,11 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +34,6 @@ public class Tags {
 			}
 		}
 
-		System.out.println("Loaded " + flatList.size() + " tags.");
 		fileLoaded = path;
 	}
 
@@ -54,12 +57,68 @@ public class Tags {
 			e.printStackTrace();
 		}
 	}
+
+	public List<String> resolveNames(List<String> tagNames) {
+		ArrayList<String> ids = Factory.newArrayList();
+
+		boolean newTags = false;
+
+		for (final String tagName : tagNames) {
+			Collection<Tag> t = CollectionUtils.select(flatList, new Predicate<Tag>() {
+				@Override
+				public boolean evaluate(Tag t) {
+					return tagName.equals(t.name);
+				}
+			});
+
+			if (t.isEmpty()) {
+				Tag tag = new Tag(tagName);
+				flatList.add(tag);
+				newTags = true;
+				ids.add(tag.id);
+			} else {
+				if (t.size() > 1) {
+					// XXX more than one tag found by name. Ask user which tag
+					// to use.
+				}
+				// XXX now using first found tag, resolve if multiple found
+				for (Tag tag : t) {
+					ids.add(tag.id);
+					break;
+				}
+			}
+		}
+
+		if (newTags) {
+			save();
+		}
+
+		return ids;
+	}
+
+	public List<String> resolveIds(List<String> tagIds) {
+		ArrayList<String> names = Factory.newArrayList();
+
+		for (Tag t : flatList) {
+			if (tagIds.contains(t.id)) {
+				names.add(t.name);
+			}
+		}
+
+		return names;
+	}
 }
 
 class Tag {
 	String id;
 	String name;
 	String parentId;
+
+	public Tag(String name) {
+		id = Long.toString(System.currentTimeMillis(), 36);
+		this.name = name;
+		parentId = "";
+	}
 
 	public Tag(JSONObject o) {
 		id = o.optString("id");
