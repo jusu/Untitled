@@ -57,16 +57,13 @@ public class SimpleSearchIndex {
 		return found;
 	}
 
-	@Subscribe
-	public void handleNoteChanged(NoteChangedEvent e) {
+	public void purgeNote(Note note) {
 		for (String s : map.keySet()) {
 			Set<Note> set = map.get(s);
 			if (set != null) {
-				set.remove(e.note);
+				set.remove(note);
 			}
 		}
-
-		digestNote(e.note, Vault.getInstance().findNotebook(e.note.file().getParentFile()));
 	}
 
 	public void digestNote(Note note, Notebook nb) {
@@ -95,5 +92,30 @@ public class SimpleSearchIndex {
 			n += set.size();
 		}
 		System.out.println("total of " + n + " set items.");
+	}
+
+	@Subscribe
+	public void handleNoteChanged(NoteChangedEvent e) {
+		purgeNote(e.note);
+		digestNote(e.note, e.note.findContainingNotebook());
+	}
+
+	@Subscribe
+	public void handleNotebookEvent(NotebookEvent event) {
+		switch (event.kind) {
+		case noteMoved:
+			if (event.source != null && event.dest != null) {
+				Note oldNote = new Note(event.source);
+				Note newNote = new Note(event.dest);
+
+				purgeNote(oldNote);
+				digestNote(newNote, newNote.findContainingNotebook());
+			}
+			break;
+		case noteCreated:
+			break;
+		default:
+			break;
+		}
 	}
 }

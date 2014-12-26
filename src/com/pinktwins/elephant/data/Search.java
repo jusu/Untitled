@@ -22,39 +22,39 @@ public class Search {
 				}
 			}
 			ssi.markReady();
-		} else {
-			ArrayList<HashSet<Note>> sets = Factory.newArrayList();
+		}
 
-			/*
-			 * List<String> keys = new ArrayList<String>(); Matcher m =
-			 * Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text); while
-			 * (m.find()) { keys.add(m.group(1).replace("\"", "")); }
-			 */
+		ArrayList<HashSet<Note>> sets = Factory.newArrayList();
 
-			String[] a = text.split(" ");
-			for (String q : a) {
-				HashSet<Note> notes = Factory.newHashSet();
-				notes.addAll(ssi.search(q));
-				sets.add(notes);
+		/*
+		 * List<String> keys = new ArrayList<String>(); Matcher m =
+		 * Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text); while
+		 * (m.find()) { keys.add(m.group(1).replace("\"", "")); }
+		 */
+
+		String[] a = text.split(" ");
+		for (String q : a) {
+			HashSet<Note> notes = Factory.newHashSet();
+			notes.addAll(ssi.search(q));
+			sets.add(notes);
+		}
+
+		HashSet<Note> smallest = null;
+		int smallestSize = Integer.MAX_VALUE;
+
+		for (HashSet<Note> notes : sets) {
+			if (notes.size() < smallestSize) {
+				smallest = notes;
 			}
+		}
 
-			HashSet<Note> smallest = null;
-			int smallestSize = Integer.MAX_VALUE;
-
+		if (smallest != null) {
 			for (HashSet<Note> notes : sets) {
-				if (notes.size() < smallestSize) {
-					smallest = notes;
-				}
+				smallest.retainAll(notes);
 			}
 
-			if (smallest != null) {
-				for (HashSet<Note> notes : sets) {
-					smallest.retainAll(notes);
-				}
-
-				for (Note n : smallest) {
-					found.addNote(n);
-				}
+			for (Note n : smallest) {
+				found.addNote(n);
 			}
 		}
 
