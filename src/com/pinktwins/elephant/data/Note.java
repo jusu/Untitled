@@ -111,6 +111,10 @@ public class Note implements Comparable<Note> {
 		readInfo();
 	}
 
+	public Notebook findContainingNotebook() {
+		return Vault.getInstance().findNotebook(file.getParentFile());
+	}
+
 	public String createdStr() {
 		long t = getMeta().created();
 		long m = lastModified();
@@ -338,7 +342,7 @@ public class Note implements Comparable<Note> {
 				FileUtils.moveDirectoryToDirectory(atts, dest, true);
 			}
 
-			Notebook source = Vault.getInstance().findNotebook(file.getParentFile());
+			Notebook source = findContainingNotebook();
 			if (source != null) {
 				source.refresh();
 			}
