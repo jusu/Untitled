@@ -319,6 +319,10 @@ public class NoteList extends BackgroundPanel {
 			select--;
 		}
 
+		if (select < 0) {
+			select = 0;
+		}
+
 		if (select >= 0 && select < len) {
 			deselectAll();
 

@@ -405,7 +405,7 @@ public class ElephantWindow extends JFrame {
 		showNotes();
 		noteEditor.clear();
 		noteList.load(notebook);
-		noteList.changeSelection(1, 0);
+		noteList.changeSelection(0, 0);
 	}
 
 	public void showNote(Note note) {
