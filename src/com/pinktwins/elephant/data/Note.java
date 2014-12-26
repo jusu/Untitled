@@ -12,6 +12,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.RtfUtil;
 import com.pinktwins.elephant.data.NotebookEvent.Kind;
 
 public class Note implements Comparable<Note> {
@@ -141,15 +145,27 @@ public class Note implements Comparable<Note> {
 		return file.lastModified();
 	}
 
-	private byte[] contents;
-
 	public String contents() {
 		if (saveLocked) {
 			return "(binary)";
 		}
 
-		contents = IOUtil.readFile(file);
+		byte[] contents = IOUtil.readFile(file);
 		return new String(contents, Charset.defaultCharset());
+	}
+
+	public String plainTextContents(String contents) {
+		DefaultStyledDocument doc = new DefaultStyledDocument();
+		try {
+			RtfUtil.putRtf(doc, contents, 0);
+			return doc.getText(0, doc.getLength());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+
+		return "";
 	}
 
 	public void save(String newText) {

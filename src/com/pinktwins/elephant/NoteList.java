@@ -638,11 +638,7 @@ public class NoteList extends BackgroundPanel {
 		});
 	}
 
-	public boolean isAllNotes() {
-		return notebook.isAllNotes();
-	}
-
-	public boolean isTrash() {
-		return notebook.isTrash();
+	public boolean isDynamicallyCreatedNotebook() {
+		return notebook.isAllNotes() || notebook.isTrash() || notebook.isSearch();
 	}
 }

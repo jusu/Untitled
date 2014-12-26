@@ -31,7 +31,10 @@ public class SimpleSearchIndex {
 	public void digest(Note n, String text) {
 		String[] a = text.split(" ");
 		for (String s : a) {
-			s = s.toLowerCase();
+			s = s.toLowerCase().trim();
+			if (s.isEmpty()) {
+				continue;
+			}
 
 			Set<Note> set = map.get(s);
 			if (set == null) {
@@ -69,7 +72,12 @@ public class SimpleSearchIndex {
 	public void digestNote(Note note, Notebook nb) {
 		Meta meta = note.getMeta();
 		digest(note, meta.title());
-		digest(note, note.contents());
+
+		String contents = note.contents();
+		if (contents.startsWith("{\\rtf")) {
+			contents = note.plainTextContents(contents);
+		}
+		digest(note, contents);
 
 		List<String> tagIds = meta.tags();
 		if (!tagIds.isEmpty()) {

@@ -2,6 +2,10 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -115,7 +119,7 @@ class Tag {
 	String parentId;
 
 	public Tag(String name) {
-		id = Long.toString(System.currentTimeMillis(), 36);
+		id = Long.toString(System.currentTimeMillis(), 36) + "_" + (long)(Math.random() * 1000.0f);
 		this.name = name;
 		parentId = "";
 	}
@@ -123,6 +127,11 @@ class Tag {
 	public Tag(JSONObject o) {
 		id = o.optString("id");
 		name = o.optString("name");
+		try {
+			name = URLDecoder.decode(name, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		parentId = o.optString("parentId");
 	}
 
@@ -130,7 +139,12 @@ class Tag {
 		JSONObject o = new JSONObject();
 		try {
 			o.put("id", id);
-			o.put("name", name);
+			try {
+				o.put("name", URLEncoder.encode(name, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				o.put("name", name);
+			}
 			o.put("parentId", parentId);
 		} catch (JSONException e) {
 			e.printStackTrace();

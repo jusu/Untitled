@@ -12,6 +12,7 @@ public class Search {
 
 		Notebook found = new Notebook();
 		found.setName(Notebook.NAME_SEARCH);
+		found.setToSearchResultNotebook();
 
 		if (!ssi.ready()) {
 			for (Notebook nb : Vault.getInstance().getNotebooks()) {

@@ -144,8 +144,6 @@ public class ElephantWindow extends JFrame {
 					}
 				}
 
-				System.out.println("Window closed. alive=" + alive);
-
 				if (!alive) {
 					System.exit(0);
 				}
@@ -431,7 +429,7 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void newNote() {
-		if (noteList.isAllNotes() || noteList.isTrash()) {
+		if (noteList.isDynamicallyCreatedNotebook()) {
 			Notebook nb = Vault.getInstance().getDefaultNotebook();
 			showNotebook(nb);
 		}

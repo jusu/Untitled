@@ -18,6 +18,7 @@ public class Notebook implements Comparable<Notebook> {
 
 	private String name = "";
 	private File folder;
+	private boolean isSearch;
 
 	public ArrayList<Note> notes = Factory.newArrayList();
 
@@ -68,6 +69,10 @@ public class Notebook implements Comparable<Notebook> {
 		name = folder.getName();
 		this.folder = folder;
 		populate();
+	}
+
+	public void setToSearchResultNotebook() {
+		isSearch = true;
 	}
 
 	public static Notebook createNotebook() throws IOException {
@@ -150,6 +155,10 @@ public class Notebook implements Comparable<Notebook> {
 
 	public boolean isAllNotes() {
 		return NAME_ALLNOTES.equals(name);
+	}
+
+	public boolean isSearch() {
+		return isSearch;
 	}
 
 	public Note newNote() throws IOException {
