@@ -74,7 +74,7 @@ public class Note implements Comparable<Note> {
 
 	@Override
 	public int hashCode() {
-		return file.getAbsoluteFile().hashCode();
+		return file.getAbsolutePath().hashCode();
 	}
 
 	@Override
