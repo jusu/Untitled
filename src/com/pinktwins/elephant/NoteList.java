@@ -641,4 +641,8 @@ public class NoteList extends BackgroundPanel {
 	public boolean isDynamicallyCreatedNotebook() {
 		return notebook.isAllNotes() || notebook.isTrash() || notebook.isSearch();
 	}
+	
+	public boolean isSearch() {
+		return notebook.isSearch();
+	}
 }

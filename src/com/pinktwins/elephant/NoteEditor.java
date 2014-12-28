@@ -395,6 +395,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		n.moveTo(destination.folder());
 		window.sortAndUpdate();
+
+		if (window.isShowingSearchResults()) {
+			window.redoSearch();
+		}
+
 		clear();
 	}
 
@@ -484,7 +489,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		if (!isDirty && !tagPane.isDirty()) {
 			return;
 		}
-		
+
 		if (currentNote != null) {
 			boolean changed = false;
 			boolean contentChanged = false;

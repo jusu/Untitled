@@ -61,7 +61,7 @@ public class ElephantWindow extends JFrame {
 	final public static Color colorBlue = Color.decode("#0091e6");
 	final public static Color colorPreviewGray = Color.decode("#666663");
 	final public static Color colorPreviewGrayOlder = Color.decode("#b1b1b1");
-	
+
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
 	CustomSplitPane splitLeft, splitRight;
@@ -438,12 +438,23 @@ public class ElephantWindow extends JFrame {
 		focusEditor();
 	}
 
+	private String previousSearchText = "";
+
 	public void search(String text) {
+		previousSearchText = text;
 		if (text.length() == 0) {
 			showNotebook(Vault.getInstance().getDefaultNotebook());
 		} else {
 			showNotebook(Search.search(text));
 		}
+	}
+
+	public void redoSearch() {
+		search(previousSearchText);
+	}
+
+	public boolean isShowingSearchResults() {
+		return noteList.isSearch();
 	}
 
 	ActionListener newNoteAction = new ActionListener() {
