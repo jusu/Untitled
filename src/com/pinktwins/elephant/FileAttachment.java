@@ -11,8 +11,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -33,12 +33,9 @@ public class FileAttachment extends JPanel {
 	private static String qlPath = "/usr/bin/qlmanage";
 
 	static {
-		try {
-			quickLook = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/quickLook.png"));
-			openFolder = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/openFolder.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Iterator<Image> i = Images.iterator(new String[] { "quickLook", "openFolder" });
+		quickLook = i.next();
+		openFolder = i.next();
 
 		qlExists = new File(qlPath).exists();
 	}

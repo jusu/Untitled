@@ -14,11 +14,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,18 +42,15 @@ public class TagEditorPane {
 	private static int prefH1 = 14, prefH2 = 20;
 	private static final String clickToAddTags = "click to add tags";
 
-	private static Image tagLeft, tagRight, tagMiddle;
+	private static Image tagLeft, tagMiddle, tagRight;
 
 	private List<String> loadedTags;
 
 	static {
-		try {
-			tagLeft = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/tagLeft.png"));
-			tagMiddle = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/tagMiddle.png"));
-			tagRight = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/tagRight.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Iterator<Image> i = Images.iterator(new String[]{ "tagLeft", "tagMiddle", "tagRight" });
+		tagLeft = i.next();
+		tagMiddle = i.next();
+		tagRight = i.next();
 	}
 
 	static class TagDocument extends DefaultStyledDocument {

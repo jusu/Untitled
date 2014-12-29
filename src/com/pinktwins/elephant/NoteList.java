@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,14 +65,11 @@ public class NoteList extends BackgroundPanel {
 	private ArrayList<NoteItem> noteItems = Factory.newArrayList();
 
 	static {
-		try {
-			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notelist.png"));
-			noteShadow = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteShadow.png"));
-			noteSelection = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteSelection.png"));
-			iAllNotes = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/allNotes.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Iterator<Image> i = Images.iterator(new String[] { "notelist", "noteShadow", "noteSelection", "allNotes" });
+		tile = i.next();
+		noteShadow = i.next();
+		noteSelection = i.next();
+		iAllNotes = i.next();
 	}
 
 	public NoteList(ElephantWindow w) {
@@ -620,7 +618,7 @@ public class NoteList extends BackgroundPanel {
 
 		// Center on window
 		Point p = currentName.getLocationOnScreen();
-		Rectangle r = window.getBounds();
+		//Rectangle r = window.getBounds();
 		int x = (p.x + currentName.getWidth() / 2) - NotebookChooser.fixedWidth / 2;
 		nbc.setBounds(x, p.y + currentName.getHeight(), NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
 
@@ -641,7 +639,7 @@ public class NoteList extends BackgroundPanel {
 	public boolean isDynamicallyCreatedNotebook() {
 		return notebook.isAllNotes() || notebook.isTrash() || notebook.isSearch();
 	}
-	
+
 	public boolean isSearch() {
 		return notebook.isSearch();
 	}

@@ -309,6 +309,10 @@ public class ElephantWindow extends JFrame {
 					}
 				}
 				break;
+			case tags:
+				break;
+			default:
+				break;
 			}
 
 			switch (e.getID()) {
@@ -568,7 +572,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener jumpToNotebookAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (uiMode == uiMode.notes) {
+			if (uiMode == UiModes.notes) {
 				noteList.openNotebookChooserForJumping();
 			}
 		}

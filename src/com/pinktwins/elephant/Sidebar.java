@@ -4,9 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
-import java.io.IOException;
+import java.util.Iterator;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
@@ -31,12 +30,9 @@ public class Sidebar extends BackgroundPanel {
 	SideBarList shortcuts, recent, navigation;
 
 	static {
-		try {
-			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/sidebar.png"));
-			sidebarDivider = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/sidebarDivider.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Iterator<Image> i = Images.iterator(new String[] { "sidebar", "sidebarDivider" });
+		tile = i.next();
+		sidebarDivider = i.next();
 	}
 
 	public Sidebar(ElephantWindow w) {

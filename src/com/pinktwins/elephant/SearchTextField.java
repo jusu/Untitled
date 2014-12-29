@@ -9,9 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
+import java.util.Iterator;
 
 // :-o this class
 
@@ -30,36 +28,37 @@ public class SearchTextField extends HintTextField {
 	private Color fixedColor;
 
 	static {
-		try {
-			searchLeft = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeft.png"));
-			searchMiddle = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddle.png"));
-			searchRight = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRight.png"));
-			searchLeftInactive = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftInactive.png"));
-			searchMiddleInactive = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleInactive.png"));
-			searchRightInactive = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightInactive.png"));
-			searchLeftHilite = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftHilite.png"));
-			searchMiddleHilite = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleHilite.png"));
-			searchRightHilite = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHilite.png"));
-			searchRightHiliteCross = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteCross.png"));
+		Iterator<Image> i = Images.iterator(new String[] { "searchLeft", "searchMiddle", "searchRight", "searchLeftInactive", "searchMiddleInactive",
+				"searchRightInactive", "searchLeftHilite", "searchMiddleHilite", "searchRightHilite", "searchRightHiliteCross", "searchLeftV2",
+				"searchMiddleV2", "searchRightV2", "searchLeftHiliteV2", "searchMiddleHiliteV2", "searchRightHiliteV2", "searchRightHiliteCrossV2",
+				"searchLeftV3", "searchMiddleV3", "searchRightV3", "searchLeftHiliteV3", "searchMiddleHiliteV3", "searchRightHiliteV3",
+				"searchRightHiliteCrossV3" });
+		searchLeft = i.next();
+		searchMiddle = i.next();
+		searchRight = i.next();
+		searchLeftInactive = i.next();
+		searchMiddleInactive = i.next();
+		searchRightInactive = i.next();
+		searchLeftHilite = i.next();
+		searchMiddleHilite = i.next();
+		searchRightHilite = i.next();
+		searchRightHiliteCross = i.next();
 
-			searchLeftV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftV2.png"));
-			searchMiddleV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleV2.png"));
-			searchRightV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightV2.png"));
-			searchLeftHiliteV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftHiliteV2.png"));
-			searchMiddleHiliteV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleHiliteV2.png"));
-			searchRightHiliteV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteV2.png"));
-			searchRightHiliteCrossV2 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteCrossV2.png"));
+		searchLeftV2 = i.next();
+		searchMiddleV2 = i.next();
+		searchRightV2 = i.next();
+		searchLeftHiliteV2 = i.next();
+		searchMiddleHiliteV2 = i.next();
+		searchRightHiliteV2 = i.next();
+		searchRightHiliteCrossV2 = i.next();
 
-			searchLeftV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftV3.png"));
-			searchMiddleV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleV3.png"));
-			searchRightV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightV3.png"));
-			searchLeftHiliteV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchLeftHiliteV3.png"));
-			searchMiddleHiliteV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchMiddleHiliteV3.png"));
-			searchRightHiliteV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteV3.png"));
-			searchRightHiliteCrossV3 = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/searchRightHiliteCrossV3.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		searchLeftV3 = i.next();
+		searchMiddleV3 = i.next();
+		searchRightV3 = i.next();
+		searchLeftHiliteV3 = i.next();
+		searchMiddleHiliteV3 = i.next();
+		searchRightHiliteV3 = i.next();
+		searchRightHiliteCrossV3 = i.next();
 	}
 
 	private Image[] images = new Image[10];

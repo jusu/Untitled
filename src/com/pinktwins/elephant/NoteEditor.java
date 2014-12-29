@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -66,15 +67,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	static public ImageScalingCache scalingCache = new ImageScalingCache();
 
 	static {
-		try {
-			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteeditor.png"));
-			noteTopShadow = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteTopShadow.png"));
-			noteToolsNotebook = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteToolsNotebook.png"));
-			noteToolsTrash = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteToolsTrash.png"));
-			noteToolsDivider = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/noteToolsDivider.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Iterator<Image> i = Images.iterator(new String[] { "noteeditor", "noteTopShadow", "noteToolsNotebook", "noteToolsTrash", "noteToolsDivider" });
+		tile = i.next();
+		noteTopShadow = i.next();
+		noteToolsNotebook = i.next();
+		noteToolsTrash = i.next();
+		noteToolsDivider = i.next();
 	}
 
 	interface NoteEditorStateListener {

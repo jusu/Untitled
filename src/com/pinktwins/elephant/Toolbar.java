@@ -5,11 +5,10 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Image;
-import java.io.IOException;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
@@ -28,12 +27,9 @@ public class Toolbar extends BackgroundPanel {
 	SearchTextField search;
 
 	static {
-		try {
-			toolbarBg = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/toolbarBg.png"));
-			toolbarBgInactive = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/toolbarBgInactive.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Iterator<Image> i = Images.iterator(new String[]{ "toolbarBg", "toolbarBgInactive" });
+		toolbarBg = i.next();
+		toolbarBgInactive = i.next();
 	}
 
 	public Toolbar(ElephantWindow w) {

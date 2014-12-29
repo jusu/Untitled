@@ -16,10 +16,10 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -66,15 +66,12 @@ public class Notebooks extends BackgroundPanel {
 	private ArrayList<NotebookItem> notebookItems = Factory.newArrayList();
 
 	static {
-		try {
-			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooks.png"));
-			notebookBg = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebookBg.png"));
-			notebookBgSelected = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebookBgSelected.png"));
-			notebooksHLine = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooksHLine.png"));
-			newNotebook = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/newNotebook.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "notebookBg", "notebookBgSelected", "notebooksHLine", "newNotebook" });
+		tile = i.next();
+		notebookBg = i.next();
+		notebookBgSelected = i.next();
+		notebooksHLine = i.next();
+		newNotebook = i.next();
 	}
 
 	boolean isEditing = false;

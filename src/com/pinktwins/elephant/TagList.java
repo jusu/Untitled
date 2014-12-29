@@ -8,7 +8,9 @@ public class TagList extends BackgroundPanel {
 	private ElephantWindow window;
 	
 	public TagList(ElephantWindow w) {
-		this.window = w;
+		window = w;
+		if (window != null) {
+		}
 
 		JLabel wip = new JLabel("You can add tags to notes and search with them. This view coming soon.", JLabel.CENTER);
 		wip.setFont(ElephantWindow.fontStart);
