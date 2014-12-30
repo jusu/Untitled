@@ -10,7 +10,9 @@ import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.Note.Meta;
-import com.pinktwins.elephant.data.NotebookEvent.Kind;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.eventbus.NotebookEvent.Kind;
+import com.pinktwins.elephant.util.Factory;
 
 public class Notebook implements Comparable<Notebook> {
 	final static public String NAME_ALLNOTES = "All Notes";

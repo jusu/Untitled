@@ -1,4 +1,4 @@
-package com.pinktwins.elephant.data;
+package com.pinktwins.elephant.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;

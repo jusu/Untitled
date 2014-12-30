@@ -9,6 +9,9 @@ import java.util.Set;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.Note.Meta;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.util.Factory;
 
 public class SimpleSearchIndex {
 

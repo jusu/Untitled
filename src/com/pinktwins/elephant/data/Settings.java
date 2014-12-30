@@ -6,6 +6,8 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pinktwins.elephant.util.IOUtil;
+
 public class Settings {
 	private String homeDir;
 	private JSONObject map;

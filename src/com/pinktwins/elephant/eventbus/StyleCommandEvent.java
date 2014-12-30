@@ -1,4 +1,4 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.eventbus;
 
 import java.awt.event.ActionEvent;
 

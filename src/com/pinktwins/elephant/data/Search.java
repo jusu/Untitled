@@ -3,6 +3,8 @@ package com.pinktwins.elephant.data;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.pinktwins.elephant.util.Factory;
+
 public class Search {
 
 	public static final SimpleSearchIndex ssi = new SimpleSearchIndex();

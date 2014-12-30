@@ -40,12 +40,16 @@ import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.EditorEventListener;
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
-import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
-import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.UIEvent;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 

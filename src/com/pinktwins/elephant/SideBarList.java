@@ -22,11 +22,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.data.Factory;
-import com.pinktwins.elephant.data.IOUtil;
 import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
+import com.pinktwins.elephant.util.Images;
 
 public class SideBarList extends JPanel {
 	private static final long serialVersionUID = 2473401062148102911L;

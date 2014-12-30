@@ -37,11 +37,14 @@ import javax.swing.text.Document;
 import org.pushingpixels.trident.Timeline;
 
 import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Notebook;
-import com.pinktwins.elephant.data.NotebookEvent;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.data.VaultEvent;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.eventbus.VaultEvent;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.ResizeListener;
 
 public class Notebooks extends BackgroundPanel {
 

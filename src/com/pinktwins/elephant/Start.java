@@ -16,9 +16,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.pinktwins.elephant.data.IOUtil;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.util.IOUtil;
 
 public class Start extends BackgroundPanel {
 

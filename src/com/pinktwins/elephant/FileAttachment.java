@@ -23,6 +23,9 @@ import javax.swing.JPanel;
 
 import org.apache.commons.io.FileUtils;
 
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Images;
+
 public class FileAttachment extends JPanel {
 	private static final long serialVersionUID = 5444731416148596756L;
 

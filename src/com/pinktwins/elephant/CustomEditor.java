@@ -56,7 +56,13 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.io.IOUtils;
 
 import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.data.Factory;
+import com.pinktwins.elephant.eventbus.StyleCommandEvent;
+import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.ResizeListener;
+import com.pinktwins.elephant.util.RtfUtil;
+import com.pinktwins.elephant.util.TextComponentUtil;
 
 public class CustomEditor extends RoundPanel {
 
@@ -136,7 +142,7 @@ public class CustomEditor extends RoundPanel {
 		title = new JTextField();
 		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
 		title.addFocusListener(editorFocusListener);
-		TextComponentUtils.insertListenerForHintText(title, "Untitled");
+		TextComponentUtil.insertListenerForHintText(title, "Untitled");
 /*
 		title.getDocument().addDocumentListener(new DocumentListener() {
 			@Override

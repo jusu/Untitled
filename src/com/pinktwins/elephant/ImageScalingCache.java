@@ -13,8 +13,8 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.util.Factory;
 
 public class ImageScalingCache {
 

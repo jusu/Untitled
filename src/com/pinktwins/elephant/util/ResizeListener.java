@@ -1,4 +1,4 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.util;
 
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;

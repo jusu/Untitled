@@ -45,9 +45,13 @@ import org.joda.time.format.DateTimeFormatter;
 import org.pushingpixels.trident.Timeline;
 
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
-import com.pinktwins.elephant.data.Factory;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.eventbus.UIEvent;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteList extends BackgroundPanel {
 

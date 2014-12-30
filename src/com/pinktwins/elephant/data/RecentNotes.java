@@ -11,6 +11,11 @@ import org.json.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.eventbus.RecentNotesChangedEvent;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
 
 public class RecentNotes {
 

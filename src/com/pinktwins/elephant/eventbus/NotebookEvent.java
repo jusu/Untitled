@@ -1,11 +1,13 @@
-package com.pinktwins.elephant.data;
+package com.pinktwins.elephant.eventbus;
 
 import java.io.File;
 
 public class NotebookEvent {
-	enum Kind { noteMoved, noteCreated };
-	
-	Kind kind;
+	static public enum Kind {
+		noteMoved, noteCreated
+	};
+
+	public Kind kind;
 
 	public File source, dest;
 

@@ -11,6 +11,8 @@ import org.apache.commons.collections4.Predicate;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.eventbus.VaultEvent;
+import com.pinktwins.elephant.util.Factory;
 
 // 'root' data provider
 public class Vault {

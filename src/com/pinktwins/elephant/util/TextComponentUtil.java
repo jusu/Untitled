@@ -1,4 +1,4 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.util;
 
 import java.awt.EventQueue;
 
@@ -7,7 +7,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 
-public class TextComponentUtils {
+public class TextComponentUtil {
 
 	public static void insertListenerForHintText(final JTextComponent text, final String hintText) {
 

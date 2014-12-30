@@ -30,7 +30,10 @@ import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
 import javax.swing.text.StyleConstants;
 
-import com.pinktwins.elephant.data.Factory;
+import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.TextComponentUtil;
 
 public class TagEditorPane {
 
@@ -101,7 +104,7 @@ public class TagEditorPane {
 		editor.setText(clickToAddTags);
 		editor.setCaretPosition(0);
 		editor.setBackground(ElephantWindow.colorDB);
-		TextComponentUtils.insertListenerForHintText(editor, clickToAddTags);
+		TextComponentUtil.insertListenerForHintText(editor, clickToAddTags);
 		editor.addFocusListener(new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent e) {

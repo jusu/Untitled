@@ -31,11 +31,13 @@ import javax.swing.border.Border;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.NoteEditor.NoteEditorStateListener;
 import com.pinktwins.elephant.data.Note;
-import com.pinktwins.elephant.data.NoteChangedEvent;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.data.VaultEvent;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.StyleCommandEvent;
+import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
+import com.pinktwins.elephant.eventbus.VaultEvent;
 
 public class ElephantWindow extends JFrame {
 	private static final long serialVersionUID = 1L;

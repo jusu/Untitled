@@ -1,4 +1,4 @@
-package com.pinktwins.elephant.data;
+package com.pinktwins.elephant.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

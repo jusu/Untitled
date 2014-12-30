@@ -1,4 +1,4 @@
-package com.pinktwins.elephant.data;
+package com.pinktwins.elephant.eventbus;
 
 public class VaultEvent {
 	public enum Kind { notebookCreated, notebookListChanged };

@@ -1,4 +1,4 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.util;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
+
+import com.pinktwins.elephant.Sidebar;
 
 public class Images {
 

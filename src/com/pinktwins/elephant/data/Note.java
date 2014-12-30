@@ -24,8 +24,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.pinktwins.elephant.Elephant;
-import com.pinktwins.elephant.RtfUtil;
-import com.pinktwins.elephant.data.NotebookEvent.Kind;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.eventbus.NotebookEvent.Kind;
+import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
+import com.pinktwins.elephant.util.RtfUtil;
 
 public class Note implements Comparable<Note> {
 	private File file, meta;

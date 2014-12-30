@@ -1,4 +1,4 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.eventbus;
 
 import javax.swing.undo.UndoManager;
 

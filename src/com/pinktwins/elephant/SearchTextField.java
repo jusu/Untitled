@@ -11,6 +11,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
 
+import com.pinktwins.elephant.util.Images;
+
 // :-o this class
 
 public class SearchTextField extends HintTextField {

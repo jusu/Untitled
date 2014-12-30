@@ -15,6 +15,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.util.Images;
 
 public class Toolbar extends BackgroundPanel {
 

@@ -11,8 +11,9 @@ import javax.swing.JPanel;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.RecentNotes;
-import com.pinktwins.elephant.data.RecentNotesChangedEvent;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.RecentNotesChangedEvent;
+import com.pinktwins.elephant.util.Images;
 
 public class Sidebar extends BackgroundPanel {
 

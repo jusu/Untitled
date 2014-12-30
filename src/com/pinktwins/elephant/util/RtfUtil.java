@@ -1,4 +1,4 @@
-package com.pinktwins.elephant;
+package com.pinktwins.elephant.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
