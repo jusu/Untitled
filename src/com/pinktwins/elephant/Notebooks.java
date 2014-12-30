@@ -109,19 +109,96 @@ public class Notebooks extends BackgroundPanel {
 	JButton bNew, bMove;
 	SearchTextField search;
 
-	private void createComponents() {
-		if (isModal) {
-			setLayout(null);
-			setImage(null);
-			setBackground(Color.decode("#eaeaea"));
-		}
+	private void createComponents_Modal() {
+		setLayout(null);
+		setImage(null);
+		setBackground(Color.decode("#eaeaea"));
 
 		boolean isJump = modalHeader.isEmpty(); // gah
 
 		main = new JPanel();
 		main.setLayout(null);
 
-		int divY = isModal ? 86 : 42;
+		int divY = 86;
+
+		BackgroundPanel div = new BackgroundPanel(notebooksHLine);
+		div.setBounds(0, divY, 1920, 2);
+		div.setStyle(BackgroundPanel.SCALED_X);
+
+		JPanel tools = new JPanel(null);
+		tools.setBounds(0, 0, 800, divY);
+
+		search = new SearchTextField("Find a notebook");
+		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
+		if (isJump) {
+			search.setBounds(14, 10, 414, 26);
+		} else {
+			search.setBounds(14, 60, 414, 26);
+		}
+
+		search.setFont(ElephantWindow.fontMedium);
+		search.setFixedColor(Color.decode("#e9e9e9"));
+		search.useV3();
+		search.setFixedColor(Color.WHITE);
+
+		search.windowFocusGained();
+
+		JLabel title = new JLabel(modalHeader, JLabel.CENTER);
+		title.setFont(ElephantWindow.fontModalHeader);
+		title.setBounds(0, 14, NotebookChooser.fixedWidth, 40);
+		tools.add(title);
+		tools.add(search);
+
+		createScrollPane();
+		scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
+		if (isJump) {
+			scroll.setBounds(18, 40, 424 - 18, 564);
+		} else {
+			scroll.setBounds(18, 103, 424 - 18, 564 - 103);
+		}
+
+		add(tools);
+		add(scroll);
+
+		scroll.setOpaque(true);
+		scroll.setBackground(Color.decode("#e6e6e6"));
+
+		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JButton bCancel = new JButton("Cancel");
+		bMove = new JButton("Move");
+
+		if (!isJump) {
+			actions.add(bCancel);
+			actions.add(bMove);
+		}
+
+		actions.setBounds(0, NotebookChooser.fixedHeight - 46, NotebookChooser.fixedWidth - 7, 40);
+		add(actions);
+
+		bCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (naListener != null) {
+					naListener.didCancelSelection();
+				}
+			}
+		});
+
+		bMove.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (selectedNotebook != null) {
+					naListener.didSelect(selectedNotebook.notebook);
+				}
+			}
+		});
+	}
+
+	private void createComponents_Basic() {
+		main = new JPanel();
+		main.setLayout(null);
+
+		int divY = 42;
 
 		BackgroundPanel div = new BackgroundPanel(notebooksHLine);
 		div.setBounds(0, divY, 1920, 2);
@@ -137,121 +214,52 @@ public class Notebooks extends BackgroundPanel {
 
 		search = new SearchTextField("Find a notebook");
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
-		if (isModal) {
-			if (isJump) {
-				search.setBounds(14, 10, 414, 26);
-			} else {
-				search.setBounds(14, 60, 414, 26);
-			}
-		} else {
-			search.setBounds(134, 8, 160, 26);
-		}
-
+		search.setBounds(134, 8, 160, 26);
 		search.setFont(ElephantWindow.fontMedium);
 		search.setFixedColor(Color.decode("#e9e9e9"));
-		if (isModal) {
-			search.useV3();
-			search.setFixedColor(Color.WHITE);
-		} else {
-			search.useV2();
-		}
+		search.useV2();
 		search.windowFocusGained();
 
-		if (isModal) {
-			JLabel title = new JLabel(modalHeader, JLabel.CENTER);
-			title.setFont(ElephantWindow.fontModalHeader);
-			title.setBounds(0, 14, NotebookChooser.fixedWidth, 40);
-			tools.add(title);
-		} else {
-			tools.add(bNew);
-		}
+		tools.add(bNew);
 		tools.add(search);
 
+		createScrollPane();
+
+		add(tools);
+		add(div);
+		add(scroll);
+	}
+
+	private void createScrollPane() {
 		scroll = new JScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getHorizontalScrollBar().setUnitIncrement(5);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
+	}
+	
+	private void createComponents() {
 		if (isModal) {
-			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
-			if (isJump) {
-				scroll.setBounds(18, 40, 424 - 18, 564);
-			} else {
-				scroll.setBounds(18, 103, 424 - 18, 564 - 103);
-			}
+			createComponents_Modal();
+		} else {
+			createComponents_Basic();
 		}
 
-		add(tools);
-		if (!isModal) {
-			add(div);
-		}
-		add(scroll);
-
-		if (isModal) {
-			scroll.setOpaque(true);
-			scroll.setBackground(Color.decode("#e6e6e6"));
-
-			JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			JButton bCancel = new JButton("Cancel");
-			bMove = new JButton("Move");
-
-			if (!isJump) {
-				actions.add(bCancel);
-				actions.add(bMove);
-			}
-
-			actions.setBounds(0, NotebookChooser.fixedHeight - 46, NotebookChooser.fixedWidth - 7, 40);
-			add(actions);
-
-			bCancel.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (naListener != null) {
-						naListener.didCancelSelection();
-					}
-				}
-			});
-
-			bMove.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (selectedNotebook != null) {
-						naListener.didSelect(selectedNotebook.notebook);
-					}
-				}
-			});
-		}
-
-		main.addMouseListener(new MouseListener() {
-
+		main.addMouseListener(new CustomMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				deselectAll();
 				search.setFocusable(false);
 			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
 		});
 
-		bNew.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				window.newNotebookAction.actionPerformed(null);
-			}
-		});
+		if (bNew != null) {
+			bNew.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					window.newNotebookAction.actionPerformed(null);
+				}
+			});
+		}
 
 		search.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
