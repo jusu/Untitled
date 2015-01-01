@@ -80,6 +80,7 @@ public class Notebooks extends BackgroundPanel {
 	boolean isEditing = false;
 	boolean isModal;
 	String modalHeader;
+	ListController<NotebookItem> lc;
 
 	public Notebooks(ElephantWindow w, boolean modalChooser, String modalHeader) {
 		super(tile);
@@ -87,6 +88,8 @@ public class Notebooks extends BackgroundPanel {
 		window = w;
 		isModal = modalChooser;
 		this.modalHeader = modalHeader;
+
+		lc = new ListController<NotebookItem>();
 
 		Elephant.eventBus.register(this);
 
@@ -350,7 +353,7 @@ public class Notebooks extends BackgroundPanel {
 
 		for (NotebookItem item : notebookItems) {
 			size = item.getPreferredSize();
-			itemsPerRow = (b.height - yOff) / size.height;
+			lc.itemsPerRow = (b.height - yOff) / size.height;
 
 			item.setBounds(xOff + x, y + insets.top, size.width, size.height);
 
@@ -382,31 +385,11 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
-	int itemsPerRow;
-
 	public void changeSelection(int delta, int keyCode) {
-		int len = notebookItems.size();
-		int select = -1;
+		boolean sideways = keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT;
 
-		if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
-			delta *= itemsPerRow;
-		}
-
-		if (selectedNotebook == null) {
-			if (len > 0) {
-				if (delta < 0) {
-					select = len - 1;
-				} else {
-					select = 0;
-				}
-			}
-		} else {
-			int currentIndex = notebookItems.indexOf(selectedNotebook);
-			select = currentIndex + delta;
-		}
-
-		if (select >= 0 && select < len) {
-			NotebookItem item = notebookItems.get(select);
+		NotebookItem item = lc.changeSelection(notebookItems, selectedNotebook, delta, sideways);
+		if (item != null) {
 			selectNotebook(item);
 		}
 	}
@@ -421,46 +404,10 @@ public class Notebooks extends BackgroundPanel {
 			bMove.requestFocusInWindow();
 		}
 
-		Rectangle b = item.getBounds();
-
 		if (isModal) {
-			int itemY = b.y;
-			int y = scroll.getVerticalScrollBar().getValue();
-			int scrollHeight = scroll.getBounds().height;
-
-			if (itemY < y || itemY + b.width >= y + scrollHeight) {
-
-				if (itemY < y) {
-					itemY -= 12;
-				} else {
-					itemY -= scrollHeight - b.height - 12;
-				}
-
-				JScrollBar bar = scroll.getVerticalScrollBar();
-				Timeline timeline = new Timeline(bar);
-				timeline.addPropertyToInterpolate("value", bar.getValue(), itemY);
-				timeline.setDuration(100);
-				timeline.play();
-			}
+			lc.updateVerticalScrollbar(item, scroll);
 		} else {
-			int itemX = b.x;
-			int x = scroll.getHorizontalScrollBar().getValue();
-			int scrollWidth = scroll.getBounds().width;
-
-			if (itemX < x || itemX + b.height >= x + scrollWidth) {
-
-				if (itemX < x) {
-					itemX -= 12;
-				} else {
-					itemX -= scrollWidth - b.width - 12;
-				}
-
-				JScrollBar bar = scroll.getHorizontalScrollBar();
-				Timeline timeline = new Timeline(bar);
-				timeline.addPropertyToInterpolate("value", bar.getValue(), itemX);
-				timeline.setDuration(100);
-				timeline.play();
-			}
+			lc.updateHorizontalScrollbar(item, scroll);
 		}
 	}
 

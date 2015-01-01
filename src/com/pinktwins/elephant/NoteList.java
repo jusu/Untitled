@@ -67,6 +67,9 @@ public class NoteList extends BackgroundPanel {
 	private int initialScrollValue;
 
 	private ArrayList<NoteItem> noteItems = Factory.newArrayList();
+	static private HashMap<File, NoteItem> itemCache = Factory.newHashMap();
+
+	private ListController<NoteItem> lc = new ListController<NoteItem>();
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "notelist", "noteShadow", "noteSelection", "allNotes" });
@@ -93,7 +96,6 @@ public class NoteList extends BackgroundPanel {
 
 		final JButton allNotes = new JButton("");
 		allNotes.setIcon(new ImageIcon(iAllNotes));
-		// allNotes.setForeground(ElephantWindow.colorTitleButton);
 		allNotes.setBorderPainted(false);
 		allNotes.setContentAreaFilled(false);
 		allNotes.addActionListener(new ActionListener() {
@@ -164,8 +166,6 @@ public class NoteList extends BackgroundPanel {
 		});
 	}
 
-	static private HashMap<File, NoteItem> itemCache = Factory.newHashMap();
-
 	public void cache(Notebook notebook) {
 		List<Note> list = notebook.getNotes();
 		for (Note n : list) {
@@ -217,12 +217,9 @@ public class NoteList extends BackgroundPanel {
 		}
 
 		layoutItems();
-		// revalidate();
 
 		previousNotebook = notebook;
 	}
-
-	int itemsPerRow;
 
 	private void layoutItems() {
 		Insets insets = main.getInsets();
@@ -237,19 +234,19 @@ public class NoteList extends BackgroundPanel {
 		for (NoteItem item : noteItems) {
 			size = item.getPreferredSize();
 
-			itemsPerRow = mainBounds.width / size.width;
-			int extra = mainBounds.width - (size.width * itemsPerRow);
+			lc.itemsPerRow = mainBounds.width / size.width;
+			int extra = mainBounds.width - (size.width * lc.itemsPerRow);
 			extra /= 2;
 
 			int linedX = x + insets.left + (itemAtRow * size.width);
-			if (itemsPerRow > 0) {
-				int add = extra / itemsPerRow;
+			if (lc.itemsPerRow > 0) {
+				int add = extra / lc.itemsPerRow;
 				linedX += (itemAtRow + 1) * add;
 			}
 
 			item.setBounds(linedX, y + insets.top, size.width, size.height);
 
-			if (itemAtRow < itemsPerRow - 1) {
+			if (itemAtRow < lc.itemsPerRow - 1) {
 				itemAtRow++;
 				lastOffset = size.height;
 			} else {
@@ -275,62 +272,17 @@ public class NoteList extends BackgroundPanel {
 		selectedNote = item;
 		item.setSelected(true);
 
-		Rectangle b = item.getBounds();
-		int itemY = b.y;
-		int y = scroll.getVerticalScrollBar().getValue();
-		int scrollHeight = scroll.getBounds().height;
-
-		if (itemY < y || itemY + b.height >= y + scrollHeight) {
-
-			if (itemY < y) {
-				itemY -= 12;
-			} else {
-				itemY -= scrollHeight - b.height - 12;
-			}
-
-			JScrollBar bar = scroll.getVerticalScrollBar();
-			Timeline timeline = new Timeline(bar);
-			timeline.addPropertyToInterpolate("value", bar.getValue(), itemY);
-			timeline.setDuration(100);
-			timeline.play();
-		}
+		lc.updateVerticalScrollbar(item, scroll);
 	}
 
 	public void changeSelection(int delta, int keyCode) {
-		int len = noteItems.size();
-		int select = -1;
+		boolean sideways = keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN;
 
-		if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN) {
-			delta *= itemsPerRow;
-		}
-
-		if (selectedNote == null) {
-			if (len > 0) {
-				if (delta < 0) {
-					select = len - 1;
-				} else {
-					select = 0;
-				}
-			}
-		} else {
-			int currentIndex = noteItems.indexOf(selectedNote);
-			select = currentIndex + delta;
-		}
-
-		if (select == len && len > 0) {
-			select--;
-		}
-
-		if (select < 0) {
-			select = 0;
-		}
-
-		if (select >= 0 && select < len) {
+		NoteItem item = lc.changeSelection(noteItems, selectedNote, delta, sideways);
+		if (item != null) {
 			deselectAll();
-
-			NoteItem ni = noteItems.get(select);
-			selectNote(ni);
-			window.showNote(ni.note);
+			selectNote(item);
+			window.showNote(item.note);
 		}
 	}
 
@@ -498,7 +450,6 @@ public class NoteList extends BackgroundPanel {
 		public void updateThumb() {
 			name.setText(note.getMeta().title());
 			createPreviewComponents();
-			// preview.setText(getContentPreview());
 		}
 
 		public void setSelected(boolean b) {
@@ -622,7 +573,6 @@ public class NoteList extends BackgroundPanel {
 
 		// Center on window
 		Point p = currentName.getLocationOnScreen();
-		//Rectangle r = window.getBounds();
 		int x = (p.x + currentName.getWidth() / 2) - NotebookChooser.fixedWidth / 2;
 		nbc.setBounds(x, p.y + currentName.getHeight(), NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
 
