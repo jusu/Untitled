@@ -40,7 +40,6 @@ import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 
 public class ElephantWindow extends JFrame {
-	private static final long serialVersionUID = 1L;
 
 	final public static Font fontStart = Font.decode("Arial-ITALIC-18");
 	final public static Font fontTitle = Font.decode("Helvetica-BOLD-18");

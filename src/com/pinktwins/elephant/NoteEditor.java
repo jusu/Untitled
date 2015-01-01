@@ -53,8 +53,6 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
-	private static final long serialVersionUID = 5649274177360148568L;
-
 	static public final int kMinNoteSize = 288;
 
 	private static Image tile, noteTopShadow, noteToolsNotebook, noteToolsTrash, noteToolsDivider;
@@ -345,18 +343,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			return i;
 		}
 	}
-
-	/*
-	 * private void scaleImagesToEditorWidth() {
-	 * 
-	 * EventQueue.invokeLater(new Runnable() {
-	 * 
-	 * @Override public void run() { System.out.println("scaling getWidth=" +
-	 * getWidth()); for (Object o : currentAttachments.keySet()) { if (o
-	 * instanceof ImageIcon) { ImageIcon ii = (ImageIcon) o; if
-	 * (ii.getIconWidth() > getWidth() - kBorder * 4) {
-	 * ii.setImage(getScaledImage(ii.getImage())); } } } } }); }
-	 */
 
 	public void openNotebookChooserForMoving() {
 		if (currentNote != null) {

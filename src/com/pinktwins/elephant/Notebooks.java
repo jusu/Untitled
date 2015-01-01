@@ -35,7 +35,6 @@ import com.pinktwins.elephant.util.Images;
 
 public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
-	private static final long serialVersionUID = 7129502018764896415L;
 	private static Image tile, notebookBg, notebookBgSelected, notebooksHLine, newNotebook;
 
 	interface NotebookActionListener {

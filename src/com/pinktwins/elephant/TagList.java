@@ -19,8 +19,6 @@ import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 
-// XXX some duplicate code with Notebooks class. dedup.
-
 public class TagList extends ToolbarList<TagList.TagItem> {
 
 	private static Image tile, newTag;
