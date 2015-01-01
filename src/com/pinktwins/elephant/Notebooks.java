@@ -8,7 +8,6 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -17,33 +16,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.VaultEvent;
-import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
-import com.pinktwins.elephant.util.ResizeListener;
 
-public class Notebooks extends BackgroundPanel {
+public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
 	private static final long serialVersionUID = 7129502018764896415L;
 	private static Image tile, notebookBg, notebookBgSelected, notebooksHLine, newNotebook;
@@ -61,7 +51,6 @@ public class Notebooks extends BackgroundPanel {
 	}
 
 	private ElephantWindow window;
-	private NotebookItem selectedNotebook;
 
 	private ArrayList<NotebookItem> notebookItems = Factory.newArrayList();
 
@@ -74,13 +63,12 @@ public class Notebooks extends BackgroundPanel {
 		newNotebook = i.next();
 	}
 
-	private boolean isEditing = false;
 	private boolean isModal;
 	private String modalHeader;
 	private ListController<NotebookItem> lc = ListController.newInstance();
 
 	public Notebooks(ElephantWindow w, boolean modalChooser, String modalHeader) {
-		super(tile);
+		super(tile, newNotebook, "Find a notebook");
 
 		window = w;
 		isModal = modalChooser;
@@ -88,15 +76,7 @@ public class Notebooks extends BackgroundPanel {
 
 		Elephant.eventBus.register(this);
 
-		createComponents();
-		update();
-
-		addComponentListener(new ResizeListener() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				layoutItems();
-			}
-		});
+		initialize();
 	}
 
 	@Subscribe
@@ -105,10 +85,7 @@ public class Notebooks extends BackgroundPanel {
 		revalidate();
 	}
 
-	JScrollPane scroll;
-	JPanel main;
-	JButton bNew, bMove;
-	SearchTextField search;
+	JButton bMove;
 
 	private void createComponents_Modal() {
 		setLayout(null);
@@ -150,7 +127,11 @@ public class Notebooks extends BackgroundPanel {
 		tools.add(title);
 		tools.add(search);
 
-		createScrollPane();
+		scroll = new JScrollPane(main);
+		scroll.setBorder(ElephantWindow.emptyBorder);
+		scroll.getHorizontalScrollBar().setUnitIncrement(5);
+		scroll.getVerticalScrollBar().setUnitIncrement(5);
+
 		scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
 		if (isJump) {
 			scroll.setBounds(18, 40, 424 - 18, 564);
@@ -188,132 +169,35 @@ public class Notebooks extends BackgroundPanel {
 		bMove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (selectedNotebook != null) {
-					naListener.didSelect(selectedNotebook.notebook);
+				if (selectedItem != null) {
+					naListener.didSelect(selectedItem.notebook);
 				}
 			}
 		});
 	}
 
-	private void createComponents_Basic() {
-		main = new JPanel();
-		main.setLayout(null);
-
-		int divY = 42;
-
-		BackgroundPanel div = new BackgroundPanel(notebooksHLine);
-		div.setBounds(0, divY, 1920, 2);
-		div.setStyle(BackgroundPanel.SCALED_X);
-
-		JPanel tools = new JPanel(null);
-		tools.setBounds(0, 0, 800, divY);
-
-		bNew = new JButton("");
-		bNew.setIcon(new ImageIcon(newNotebook));
-		bNew.setBorderPainted(false);
-		bNew.setBounds(10, 10, newNotebook.getWidth(null), newNotebook.getHeight(null));
-
-		search = new SearchTextField("Find a notebook");
-		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
-		search.setBounds(134, 8, 160, 26);
-		search.setFont(ElephantWindow.fontMedium);
-		search.setFixedColor(Color.decode("#e9e9e9"));
-		search.useV2();
-		search.windowFocusGained();
-
-		tools.add(bNew);
-		tools.add(search);
-
-		createScrollPane();
-
-		add(tools);
-		add(div);
-		add(scroll);
-	}
-
-	private void createScrollPane() {
-		scroll = new JScrollPane(main);
-		scroll.setBorder(ElephantWindow.emptyBorder);
-		scroll.getHorizontalScrollBar().setUnitIncrement(5);
-		scroll.getVerticalScrollBar().setUnitIncrement(5);
-	}
-
-	private void createComponents() {
+	protected void createComponents() {
 		if (isModal) {
 			createComponents_Modal();
+			addComponentListeners();
 		} else {
-			createComponents_Basic();
+			super.createComponents();
 		}
-
-		main.addMouseListener(new CustomMouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				deselectAll();
-				search.setFocusable(false);
-			}
-		});
-
-		if (bNew != null) {
-			bNew.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					window.newNotebookAction.actionPerformed(null);
-				}
-			});
-		}
-
-		search.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				refresh();
-			}
-
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				refresh();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				refresh();
-			}
-		});
-
-		search.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_UP:
-					if (search.hasFocus()) {
-						search.setFocusable(false);
-						changeSelection(-1, 0);
-					}
-					break;
-				case KeyEvent.VK_DOWN:
-					if (search.hasFocus()) {
-						search.setFocusable(false);
-						changeSelection(1, 0);
-					}
-					break;
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-		});
 	}
 
+	@Override
+	protected void newButtonAction() {
+		window.newNotebookAction.actionPerformed(null);
+	}
+
+	@Override
 	public void refresh() {
 		update();
 		layoutItems();
 	}
 
-	private void update() {
+	@Override
+	protected void update() {
 		for (NotebookItem item : notebookItems) {
 			item.setVisible(false);
 		}
@@ -329,7 +213,8 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
-	private void layoutItems() {
+	@Override
+	protected void layoutItems() {
 		Insets insets = main.getInsets();
 		Dimension size = new Dimension();
 
@@ -370,20 +255,19 @@ public class Notebooks extends BackgroundPanel {
 		main.setPreferredSize(d);
 	}
 
-	private void deselectAll() {
-		if (selectedNotebook != null) {
-			selectedNotebook.setSelected(false);
-			selectedNotebook = null;
-		}
+	@Override
+	protected void deselectAll() {
+		super.deselectAll();
 		if (isModal) {
 			bMove.setEnabled(false);
 		}
 	}
 
+	@Override
 	public void changeSelection(int delta, int keyCode) {
 		boolean sideways = keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT;
 
-		NotebookItem item = lc.changeSelection(notebookItems, selectedNotebook, delta, sideways);
+		NotebookItem item = lc.changeSelection(notebookItems, selectedItem, delta, sideways);
 		if (item != null) {
 			selectNotebook(item);
 		}
@@ -392,7 +276,7 @@ public class Notebooks extends BackgroundPanel {
 	void selectNotebook(NotebookItem item) {
 		deselectAll();
 		item.setSelected(true);
-		selectedNotebook = item;
+		selectedItem = item;
 
 		if (isModal) {
 			bMove.setEnabled(true);
@@ -407,8 +291,15 @@ public class Notebooks extends BackgroundPanel {
 	}
 
 	public void openSelected() {
-		if (selectedNotebook != null) {
-			window.showNotebook(selectedNotebook.notebook);
+		if (selectedItem != null) {
+			window.showNotebook(selectedItem.notebook);
+		}
+	}
+
+	@Override
+	protected void vkEnter() {
+		if (selectedItem != null && naListener != null) {
+			naListener.didSelect(selectedItem.notebook);
 		}
 	}
 
@@ -429,11 +320,7 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
-	public boolean isEditing() {
-		return isEditing || search.hasFocus();
-	}
-
-	class NotebookItem extends BackgroundPanel implements MouseListener {
+	class NotebookItem extends BackgroundPanel implements ToolbarList.ToolbarListItem, MouseListener {
 		private static final long serialVersionUID = -7285867977183764620L;
 
 		private Notebook notebook;
@@ -532,10 +419,11 @@ public class Notebooks extends BackgroundPanel {
 			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged));
 		}
 
+		@Override
 		public void setSelected(boolean b) {
 			if (b) {
 				setImage(notebookBgSelected);
-				selectedNotebook = this;
+				selectedItem = this;
 			} else {
 				setImage(notebookBg);
 			}
@@ -590,44 +478,4 @@ public class Notebooks extends BackgroundPanel {
 		}
 	}
 
-	static final Timer t = new Timer();
-
-	public void handleKeyEvent(final KeyEvent e) {
-		switch (e.getID()) {
-		case KeyEvent.KEY_PRESSED:
-			switch (e.getKeyCode()) {
-			case KeyEvent.VK_ENTER:
-				if (selectedNotebook != null && naListener != null) {
-					naListener.didSelect(selectedNotebook.notebook);
-				}
-				break;
-			default:
-				if (e.getModifiers() == 0) {
-					if (!search.hasFocus()) {
-						final Document d = search.getDocument();
-						final int pos = search.getCaretPosition();
-
-						// Avoid inserted character to be highlighted and wiped
-						// by succeeding keystrokes
-						TimerTask tt = new TimerTask() {
-							@Override
-							public void run() {
-								try {
-									d.insertString(pos, String.valueOf(e.getKeyChar()), null);
-									search.setCaretPosition(search.getCaretPosition() + 1);
-								} catch (BadLocationException e1) {
-									e1.printStackTrace();
-								}
-							}
-						};
-
-						t.schedule(tt, 50);
-					}
-				}
-				search.setFocusable(true);
-				search.requestFocusInWindow();
-			}
-			break;
-		}
-	}
 }
