@@ -11,6 +11,10 @@ import org.pushingpixels.trident.Timeline;
 
 public class ListController<T> {
 
+	public static <T> ListController<T> newInstance() {
+		return new ListController<T>();
+	}
+
 	public int itemsPerRow = 1;
 
 	public T changeSelection(List<T> list, T currentSelectionItem, int delta, boolean sideways) {

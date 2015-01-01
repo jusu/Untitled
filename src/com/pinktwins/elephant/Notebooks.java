@@ -25,7 +25,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -33,8 +32,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-
-import org.pushingpixels.trident.Timeline;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
@@ -77,10 +74,10 @@ public class Notebooks extends BackgroundPanel {
 		newNotebook = i.next();
 	}
 
-	boolean isEditing = false;
-	boolean isModal;
-	String modalHeader;
-	ListController<NotebookItem> lc;
+	private boolean isEditing = false;
+	private boolean isModal;
+	private String modalHeader;
+	private ListController<NotebookItem> lc = ListController.newInstance();
 
 	public Notebooks(ElephantWindow w, boolean modalChooser, String modalHeader) {
 		super(tile);
@@ -88,8 +85,6 @@ public class Notebooks extends BackgroundPanel {
 		window = w;
 		isModal = modalChooser;
 		this.modalHeader = modalHeader;
-
-		lc = new ListController<NotebookItem>();
 
 		Elephant.eventBus.register(this);
 
@@ -242,7 +237,7 @@ public class Notebooks extends BackgroundPanel {
 		scroll.getHorizontalScrollBar().setUnitIncrement(5);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
 	}
-	
+
 	private void createComponents() {
 		if (isModal) {
 			createComponents_Modal();
@@ -353,7 +348,7 @@ public class Notebooks extends BackgroundPanel {
 
 		for (NotebookItem item : notebookItems) {
 			size = item.getPreferredSize();
-			lc.itemsPerRow = (b.height - yOff) / size.height;
+			lc.itemsPerRow = (b.height - yOff) / (size.height - 1);
 
 			item.setBounds(xOff + x, y + insets.top, size.width, size.height);
 

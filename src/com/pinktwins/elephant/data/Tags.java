@@ -107,50 +107,14 @@ public class Tags {
 
 		for (Tag t : flatList) {
 			if (tagIds.contains(t.id)) {
-				names.add(t.name);
+				names.add(t.name());
 			}
 		}
 
 		return names;
 	}
-}
 
-class Tag {
-	String id;
-	String name;
-	String parentId;
-
-	public Tag(String name) {
-		id = Long.toString(System.currentTimeMillis(), 36) + "_" + (long)(Math.random() * 1000.0f);
-		this.name = name;
-		parentId = "";
-	}
-
-	public Tag(JSONObject o) {
-		id = o.optString("id");
-		name = o.optString("name");
-		try {
-			name = URLDecoder.decode(name, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		parentId = o.optString("parentId");
-	}
-
-	public Object toJSON() {
-		JSONObject o = new JSONObject();
-		try {
-			o.put("id", id);
-			try {
-				o.put("name", URLEncoder.encode(name, "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-				o.put("name", name);
-			}
-			o.put("parentId", parentId);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return o;
+	public List<Tag> asList() {
+		return flatList;
 	}
 }

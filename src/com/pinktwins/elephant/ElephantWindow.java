@@ -312,6 +312,27 @@ public class ElephantWindow extends JFrame {
 				}
 				break;
 			case tags:
+				if (!tags.isEditing() && !toolBar.isEditing()) {
+					switch (e.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						switch (e.getKeyCode()) {
+						case KeyEvent.VK_UP:
+						case KeyEvent.VK_LEFT:
+							tags.changeSelection(-1, e.getKeyCode());
+							break;
+						case KeyEvent.VK_DOWN:
+						case KeyEvent.VK_RIGHT:
+							tags.changeSelection(1, e.getKeyCode());
+							break;
+						case KeyEvent.VK_ENTER:
+							tags.openSelected();
+							break;
+						default:
+							tags.handleKeyEvent(e);
+						}
+						break;
+					}
+				}
 				break;
 			default:
 				break;

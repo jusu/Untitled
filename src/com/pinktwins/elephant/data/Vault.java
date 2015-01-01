@@ -39,7 +39,7 @@ public class Vault {
 
 	private Vault() {
 		Elephant.eventBus.register(this);
-		
+
 		String def = Elephant.settings.getString("defaultNotebook");
 		if (!def.isEmpty()) {
 			defaultNotebook = def;
@@ -102,7 +102,7 @@ public class Vault {
 	}
 
 	public Collection<Notebook> getNotebooksWithFilter(final String text) {
-		if (text == null || text.length() == 0) {
+		if (text == null || text.isEmpty()) {
 			return notebooks;
 		}
 
@@ -111,6 +111,20 @@ public class Vault {
 			@Override
 			public boolean evaluate(Notebook nb) {
 				return nb.name().toLowerCase().indexOf(lo) >= 0;
+			}
+		});
+	}
+
+	public Collection<Tag> getTagsWithFilter(String text) {
+		if (text == null || text.isEmpty()) {
+			return tags.asList();
+		}
+
+		final String lo = text.toLowerCase();
+		return CollectionUtils.select(tags.asList(), new Predicate<Tag>() {
+			@Override
+			public boolean evaluate(Tag t) {
+				return t.name.toLowerCase().indexOf(lo) >= 0;
 			}
 		});
 	}
@@ -136,5 +150,4 @@ public class Vault {
 	public void handleVaultEvent(VaultEvent event) {
 		populate();
 	}
-
 }

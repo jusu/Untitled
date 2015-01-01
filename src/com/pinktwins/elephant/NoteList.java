@@ -30,7 +30,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
@@ -42,7 +41,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.pushingpixels.trident.Timeline;
 
 import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Note;
@@ -55,7 +53,6 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteList extends BackgroundPanel {
 
-	private static final long serialVersionUID = 5649274177360148568L;
 	private static Image tile, noteShadow, noteSelection, iAllNotes;
 
 	private ElephantWindow window;
@@ -69,7 +66,7 @@ public class NoteList extends BackgroundPanel {
 	private ArrayList<NoteItem> noteItems = Factory.newArrayList();
 	static private HashMap<File, NoteItem> itemCache = Factory.newHashMap();
 
-	private ListController<NoteItem> lc = new ListController<NoteItem>();
+	private ListController<NoteItem> lc = ListController.newInstance();
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "notelist", "noteShadow", "noteSelection", "allNotes" });
