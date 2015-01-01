@@ -1,14 +1,20 @@
 package com.pinktwins.elephant;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,14 +29,18 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.ResizeListener;
 
-public class ToolbarList<T extends ToolbarList.ToolbarListItem> extends BackgroundPanel {
+public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> extends BackgroundPanel {
 
 	interface ToolbarListItem {
 		public void setSelected(boolean b);
 	}
+
+	protected ArrayList<T> itemList = Factory.newArrayList();
+	protected ListController<T> lc = ListController.newInstance();
 
 	private static Image hLine;
 
@@ -111,12 +121,61 @@ public class ToolbarList<T extends ToolbarList.ToolbarListItem> extends Backgrou
 		addComponentListeners();
 	}
 
+	// Override
+	protected List<T> queryFilter(String text) {
+		return Factory.newArrayList();
+	}
+
 	protected void update() {
-		// Override
+		for (T item : itemList) {
+			item.setVisible(false);
+		}
+
+		main.removeAll();
+		itemList.clear();
+
+		List<T> list = queryFilter(search.getText());
+
+		for (T item : list) {
+			main.add(item);
+			itemList.add(item);
+		}
 	}
 
 	protected void layoutItems() {
-		// Override
+		Insets insets = main.getInsets();
+		Dimension size = new Dimension();
+
+		int xOff = 12 + insets.left;
+		int yOff = 57;
+
+		int x = 0;
+		int y = yOff;
+
+		Rectangle b = main.getBounds();
+
+		for (T item : itemList) {
+			size = item.getPreferredSize();
+			lc.itemsPerRow = (b.height - yOff) / size.height;
+
+			item.setBounds(xOff + x, y + insets.top, size.width, size.height);
+
+			y += size.height;
+
+			if (y + size.height > b.height) {
+				x += size.width + xOff;
+				y = yOff;
+			}
+		}
+
+		Dimension d = main.getPreferredSize();
+		d.width = x + size.width + xOff * 2;
+		main.setPreferredSize(d);
+	}
+
+	protected void refresh() {
+		update();
+		layoutItems();
 	}
 
 	protected void vkEnter() {
@@ -127,19 +186,11 @@ public class ToolbarList<T extends ToolbarList.ToolbarListItem> extends Backgrou
 		// Override
 	}
 
-	protected void refresh() {
-		// Override
-	}
-
 	protected void deselectAll() {
 		if (selectedItem != null) {
 			selectedItem.setSelected(false);
 			selectedItem = null;
 		}
-	}
-
-	public void changeSelection(int delta, int keyCode) {
-		// Override
 	}
 
 	public boolean isEditing() {
@@ -209,6 +260,23 @@ public class ToolbarList<T extends ToolbarList.ToolbarListItem> extends Backgrou
 			}
 		});
 
+	}
+
+	public void changeSelection(int delta, int keyCode) {
+		boolean sideways = keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT;
+
+		T item = lc.changeSelection(itemList, selectedItem, delta, sideways);
+		if (item != null) {
+			selectItem(item);
+		}
+	}
+
+	protected void selectItem(T item) {
+		deselectAll();
+		item.setSelected(true);
+		selectedItem = item;
+
+		lc.updateHorizontalScrollbar(item, scroll);
 	}
 
 	static final Timer t = new Timer();

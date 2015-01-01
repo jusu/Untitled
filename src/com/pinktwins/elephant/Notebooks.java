@@ -14,8 +14,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -52,8 +52,6 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
 	private ElephantWindow window;
 
-	private ArrayList<NotebookItem> notebookItems = Factory.newArrayList();
-
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "notebookBg", "notebookBgSelected", "notebooksHLine", "newNotebook" });
 		tile = i.next();
@@ -65,7 +63,6 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
 	private boolean isModal;
 	private String modalHeader;
-	private ListController<NotebookItem> lc = ListController.newInstance();
 
 	public Notebooks(ElephantWindow w, boolean modalChooser, String modalHeader) {
 		super(tile, newNotebook, "Find a notebook");
@@ -191,26 +188,12 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 	}
 
 	@Override
-	public void refresh() {
-		update();
-		layoutItems();
-	}
-
-	@Override
-	protected void update() {
-		for (NotebookItem item : notebookItems) {
-			item.setVisible(false);
+	protected List<NotebookItem> queryFilter(String text) {
+		ArrayList<NotebookItem> items = Factory.newArrayList();
+		for (Notebook nb : Vault.getInstance().getNotebooksWithFilter(search.getText())) {
+			items.add(new NotebookItem(nb));
 		}
-
-		main.removeAll();
-		notebookItems.clear();
-
-		Collection<Notebook> list = Vault.getInstance().getNotebooksWithFilter(search.getText());
-		for (Notebook nb : list) {
-			NotebookItem item = new NotebookItem(nb);
-			main.add(item);
-			notebookItems.add(item);
-		}
+		return items;
 	}
 
 	@Override
@@ -231,7 +214,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
 		Rectangle b = main.getBounds();
 
-		for (NotebookItem item : notebookItems) {
+		for (NotebookItem item : itemList) {
 			size = item.getPreferredSize();
 			lc.itemsPerRow = (b.height - yOff) / (size.height - 1);
 
@@ -264,29 +247,14 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 	}
 
 	@Override
-	public void changeSelection(int delta, int keyCode) {
-		boolean sideways = keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT;
-
-		NotebookItem item = lc.changeSelection(notebookItems, selectedItem, delta, sideways);
-		if (item != null) {
-			selectNotebook(item);
-		}
-	}
-
-	void selectNotebook(NotebookItem item) {
-		deselectAll();
-		item.setSelected(true);
-		selectedItem = item;
+	protected void selectItem(NotebookItem item) {
+		super.selectItem(item);
 
 		if (isModal) {
 			bMove.setEnabled(true);
 			bMove.requestFocusInWindow();
-		}
 
-		if (isModal) {
 			lc.updateVerticalScrollbar(item, scroll);
-		} else {
-			lc.updateHorizontalScrollbar(item, scroll);
 		}
 	}
 
@@ -308,7 +276,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			Notebook nb = Notebook.createNotebook();
 			NotebookItem newItem = new NotebookItem(nb);
 			newItem.setEditable();
-			notebookItems.add(0, newItem);
+			itemList.add(0, newItem);
 			main.add(newItem, 0);
 			layoutItems();
 
@@ -397,9 +365,9 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated));
 				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged));
 
-				for (NotebookItem item : notebookItems) {
+				for (NotebookItem item : itemList) {
 					if (item.notebook.equals(notebook.folder())) {
-						selectNotebook(item);
+						selectItem(item);
 					}
 				}
 
@@ -462,7 +430,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 				return;
 			}
 
-			selectNotebook(NotebookItem.this);
+			selectItem(NotebookItem.this);
 		}
 
 		@Override
