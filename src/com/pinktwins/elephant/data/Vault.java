@@ -39,6 +39,11 @@ public class Vault {
 
 	private Vault() {
 		Elephant.eventBus.register(this);
+		
+		String def = Elephant.settings.getString("defaultNotebook");
+		if (!def.isEmpty()) {
+			defaultNotebook = def;
+		}
 	}
 
 	public File getHome() {
