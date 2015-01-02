@@ -49,6 +49,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	}
 
 	private String modalHeader;
+	private boolean isJump;
 
 	public NotebooksModal(ElephantWindow w, String modalHeader) {
 		super(tile, newNotebook, "Find a notebook");
@@ -60,7 +61,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		initialize();
 		layoutItemHeightAdjustment = -1;
-		layoutXOffAdjustment = 80;
+		layoutXOffAdjustment = isJump ? 80 : 56;
 		layoutYOffAdjustment = -49;
 		layoutHeightOnly = true;
 	}
@@ -79,13 +80,13 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 	Color colorMove = Color.decode("#eaeaea");
 	Color colorJump = Color.decode("#f6f6f6");
-	
+
 	@Override
 	protected void createComponents() {
 		setLayout(null);
 		setImage(null);
 
-		boolean isJump = modalHeader.isEmpty(); // gah
+		isJump = modalHeader.isEmpty(); // gah
 
 		setBackground(isJump ? colorJump : colorMove);
 
@@ -128,7 +129,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
 
 		if (isJump) {
-			scroll.setBounds(0, 44, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight - 56); // w: 424 - 18, h: 564
+			scroll.setBounds(0, 44, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight - 56);
 		} else {
 			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
 			scroll.setBounds(18, 103, 424 - 18, 564 - 103);
