@@ -71,7 +71,7 @@ public class ElephantWindow extends JFrame {
 	private Sidebar sideBar = new Sidebar(this);
 	private NoteList noteList = new NoteList(this);
 	private NoteEditor noteEditor = new NoteEditor(this);
-	private Notebooks notebooks = new Notebooks(this, false, "");
+	private Notebooks notebooks = new Notebooks(this);
 	private TagList tags = new TagList(this);
 
 	private boolean hasWindowFocus;

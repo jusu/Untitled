@@ -39,7 +39,6 @@ import org.apache.commons.io.FilenameUtils;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.EditorEventListener;
-import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;

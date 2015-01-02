@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,13 +10,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -27,29 +30,39 @@ import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 
-public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
+// 'Modal' version of Notebooks view, used by NotebookChooser
 
-	private static Image tile, notebookBg, notebookBgSelected, newNotebook;
+public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
+
+	private static Image tile, notebookBg, notebookBgSelected, notebooksHLine, newNotebook;
+
 	private ElephantWindow window;
 	private NotebookActionListener naListener;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "notebookBg", "notebookBgSelected", "newNotebook" });
+		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "notebookBg", "notebookBgSelected", "notebooksHLine", "newNotebook" });
 		tile = i.next();
 		notebookBg = i.next();
 		notebookBgSelected = i.next();
+		notebooksHLine = i.next();
 		newNotebook = i.next();
 	}
 
-	public Notebooks(ElephantWindow w) {
+	private String modalHeader;
+
+	public NotebooksModal(ElephantWindow w, String modalHeader) {
 		super(tile, newNotebook, "Find a notebook");
 
 		window = w;
+		this.modalHeader = modalHeader;
 
 		Elephant.eventBus.register(this);
 
 		initialize();
 		layoutItemHeightAdjustment = -1;
+		layoutXOffAdjustment = 56;
+		layoutYOffAdjustment = -49;
+		layoutHeightOnly = true;
 	}
 
 	public void setNotebookActionListener(NotebookActionListener l) {
@@ -60,6 +73,100 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 	public void handleNotebookEvent(NotebookEvent event) {
 		refresh();
 		revalidate();
+	}
+
+	JButton bMove;
+
+	@Override
+	protected void createComponents() {
+		setLayout(null);
+		setImage(null);
+		setBackground(Color.decode("#eaeaea"));
+
+		boolean isJump = modalHeader.isEmpty(); // gah
+
+		main = new JPanel();
+		main.setLayout(null);
+
+		int divY = 86;
+
+		BackgroundPanel div = new BackgroundPanel(notebooksHLine);
+		div.setBounds(0, divY, 1920, 2);
+		div.setStyle(BackgroundPanel.SCALED_X);
+
+		JPanel tools = new JPanel(null);
+		tools.setBounds(0, 0, 800, divY);
+
+		search = new SearchTextField("Find a notebook");
+		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
+		if (isJump) {
+			search.setBounds(14, 10, 414, 26);
+		} else {
+			search.setBounds(14, 60, 414, 26);
+		}
+
+		search.setFont(ElephantWindow.fontMedium);
+		search.setFixedColor(Color.decode("#e9e9e9"));
+		search.useV3();
+		search.setFixedColor(Color.WHITE);
+
+		search.windowFocusGained();
+
+		JLabel title = new JLabel(modalHeader, JLabel.CENTER);
+		title.setFont(ElephantWindow.fontModalHeader);
+		title.setBounds(0, 14, NotebookChooser.fixedWidth, 40);
+		tools.add(title);
+		tools.add(search);
+
+		scroll = new JScrollPane(main);
+		scroll.setBorder(ElephantWindow.emptyBorder);
+		scroll.getHorizontalScrollBar().setUnitIncrement(5);
+		scroll.getVerticalScrollBar().setUnitIncrement(5);
+
+		scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
+		if (isJump) {
+			scroll.setBounds(18, 40, 424 - 18, 564);
+		} else {
+			scroll.setBounds(18, 103, 424 - 18, 564 - 103);
+		}
+
+		add(tools);
+		add(scroll);
+
+		scroll.setOpaque(true);
+		scroll.setBackground(Color.decode("#e6e6e6"));
+
+		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JButton bCancel = new JButton("Cancel");
+		bMove = new JButton("Move");
+
+		if (!isJump) {
+			actions.add(bCancel);
+			actions.add(bMove);
+		}
+
+		actions.setBounds(0, NotebookChooser.fixedHeight - 46, NotebookChooser.fixedWidth - 7, 40);
+		add(actions);
+
+		bCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (naListener != null) {
+					naListener.didCancelSelection();
+				}
+			}
+		});
+
+		bMove.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (selectedItem != null) {
+					naListener.didSelect(selectedItem.notebook);
+				}
+			}
+		});
+
+		addComponentListeners();
 	}
 
 	@Override
@@ -76,6 +183,22 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		return items;
 	}
 
+	@Override
+	protected void deselectAll() {
+		super.deselectAll();
+		bMove.setEnabled(false);
+	}
+
+	@Override
+	protected void selectItem(NotebookItem item) {
+		super.selectItem(item);
+
+		bMove.setEnabled(true);
+		bMove.requestFocusInWindow();
+
+		lc.updateVerticalScrollbar(item, scroll);
+	}
+
 	public void openSelected() {
 		if (selectedItem != null) {
 			window.showNotebook(selectedItem.notebook);
@@ -89,23 +212,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		}
 	}
 
-	public void newNotebook() {
-		try {
-			Notebook nb = Notebook.createNotebook();
-			NotebookItem newItem = new NotebookItem(nb);
-			newItem.setEditable();
-			itemList.add(0, newItem);
-			main.add(newItem, 0);
-			layoutItems();
-
-			deselectAll();
-			newItem.edit.requestFocusInWindow();
-			isEditing = true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	// XXX rewrite to look right
 	class NotebookItem extends BackgroundPanel implements ToolbarList.ToolbarListItem, MouseListener {
 		private static final long serialVersionUID = -7285867977183764620L;
 
@@ -263,4 +370,5 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		public void mouseExited(MouseEvent e) {
 		}
 	}
+
 }

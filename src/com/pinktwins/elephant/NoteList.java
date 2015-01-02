@@ -42,7 +42,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.eventbus.UIEvent;

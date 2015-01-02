@@ -8,7 +8,6 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
 
-import com.pinktwins.elephant.Notebooks.NotebookActionListener;
 import com.pinktwins.elephant.data.Notebook;
 
 public class NotebookChooser extends JDialog {
@@ -18,7 +17,7 @@ public class NotebookChooser extends JDialog {
 	public static final int fixedWidth = 442;
 	public static final int fixedHeight = 622;
 
-	private Notebooks notebooks;
+	private NotebooksModal notebooks;
 
 	private NotebookActionListener naListener;
 
@@ -32,7 +31,7 @@ public class NotebookChooser extends JDialog {
 		setUndecorated(true);
 		setLayout(new BorderLayout());
 
-		notebooks = new Notebooks((ElephantWindow) owner, true, title);
+		notebooks = new NotebooksModal((ElephantWindow) owner, title);
 		add(notebooks);
 
 		notebooks.search.requestFocusInWindow();

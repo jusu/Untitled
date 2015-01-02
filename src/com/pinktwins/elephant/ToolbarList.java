@@ -53,6 +53,11 @@ public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> exte
 
 	protected T selectedItem;
 
+	protected int layoutItemHeightAdjustment = 0;
+	protected int layoutXOffAdjustment = 0;
+	protected int layoutYOffAdjustment = 0;
+	protected boolean layoutHeightOnly = false;
+
 	private Image newButtonImage;
 	private String searchHint;
 
@@ -149,6 +154,9 @@ public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> exte
 		int xOff = 12 + insets.left;
 		int yOff = 57;
 
+		xOff += layoutXOffAdjustment;
+		yOff += layoutYOffAdjustment;
+
 		int x = 0;
 		int y = yOff;
 
@@ -156,20 +164,25 @@ public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> exte
 
 		for (T item : itemList) {
 			size = item.getPreferredSize();
-			lc.itemsPerRow = (b.height - yOff) / size.height;
+			lc.itemsPerRow = (b.height - yOff) / (size.height + layoutItemHeightAdjustment);
 
 			item.setBounds(xOff + x, y + insets.top, size.width, size.height);
 
-			y += size.height;
+			y += size.height + layoutItemHeightAdjustment;
 
-			if (y + size.height > b.height) {
-				x += size.width + xOff;
-				y = yOff;
+			if (!layoutHeightOnly) {
+				if (y + size.height > b.height) {
+					x += size.width + xOff;
+					y = yOff;
+				}
 			}
 		}
 
 		Dimension d = main.getPreferredSize();
 		d.width = x + size.width + xOff * 2;
+		if (layoutHeightOnly) {
+			d.height = y + size.height + yOff;
+		}
 		main.setPreferredSize(d);
 	}
 
