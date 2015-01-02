@@ -105,11 +105,7 @@ public class NoteList extends BackgroundPanel {
 		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		allNotesPanel.add(allNotes);
 
-		fillerPanel = new JPanel();
-		JButton filler = new JButton("         ");
-		filler.setContentAreaFilled(false);
-		filler.setBorderPainted(false);
-		fillerPanel.add(filler);
+		fillerPanel = new JPanel(new GridLayout(1, 1));
 
 		currentName = new JLabel("", JLabel.CENTER);
 		currentName.setBorder(BorderFactory.createEmptyBorder(13, 0, 9, 0));
@@ -151,6 +147,9 @@ public class NoteList extends BackgroundPanel {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				layoutItems();
+
+				fillerPanel.setPreferredSize(new Dimension(allNotesPanel.getWidth(), 10));
+				fillerPanel.revalidate();
 			}
 		});
 

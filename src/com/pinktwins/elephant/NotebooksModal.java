@@ -60,7 +60,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		initialize();
 		layoutItemHeightAdjustment = -1;
-		layoutXOffAdjustment = 56;
+		layoutXOffAdjustment = 80;
 		layoutYOffAdjustment = -49;
 		layoutHeightOnly = true;
 	}
@@ -77,13 +77,17 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 	JButton bMove;
 
+	Color colorMove = Color.decode("#eaeaea");
+	Color colorJump = Color.decode("#f6f6f6");
+	
 	@Override
 	protected void createComponents() {
 		setLayout(null);
 		setImage(null);
-		setBackground(Color.decode("#eaeaea"));
 
 		boolean isJump = modalHeader.isEmpty(); // gah
+
+		setBackground(isJump ? colorJump : colorMove);
 
 		main = new JPanel();
 		main.setLayout(null);
@@ -120,13 +124,13 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		scroll = new JScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
-		scroll.getHorizontalScrollBar().setUnitIncrement(5);
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
 
-		scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
 		if (isJump) {
-			scroll.setBounds(18, 40, 424 - 18, 564);
+			scroll.setBounds(0, 44, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight - 56); // w: 424 - 18, h: 564
 		} else {
+			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
 			scroll.setBounds(18, 103, 424 - 18, 564 - 103);
 		}
 
@@ -134,7 +138,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		add(scroll);
 
 		scroll.setOpaque(true);
-		scroll.setBackground(Color.decode("#e6e6e6"));
+		scroll.setBackground(isJump ? colorJump : Color.decode("#e6e6e6"));
 
 		JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton bCancel = new JButton("Cancel");
