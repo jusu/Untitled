@@ -21,6 +21,7 @@ public class Tags {
 	private String fileLoaded;
 
 	public void reload(String path) {
+		flatList.clear();
 
 		JSONObject o = IOUtil.loadJson(new File(path));
 
