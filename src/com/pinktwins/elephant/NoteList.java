@@ -145,7 +145,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public void cache(Notebook notebook) {
 		for (Note n : notebook.getNotes()) {
-			NoteItem.itemOf(n, this);
+			NoteItem.itemOf(n);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 		List<Note> list = notebook.getNotes();
 		for (Note n : list) {
-			NoteItem item = NoteItem.itemOf(n, this);
+			NoteItem item = NoteItem.itemOf(n);
 			main.add(item);
 			noteItems.add(item);
 		}

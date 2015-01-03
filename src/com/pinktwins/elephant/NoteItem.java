@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -52,18 +53,23 @@ class NoteItem extends JPanel implements MouseListener {
 	private JPanel previewPane;
 	private BackgroundPanel root;
 
-	final private NoteItemListener itemListener;
-
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteShadow", "noteSelection" });
 		noteShadow = i.next();
 		noteSelection = i.next();
 	}
 
-	static public NoteItem itemOf(Note n, NoteItemListener l) {
+	static public NoteItem itemOf(Note n) {
 		NoteItem item = itemCache.get(n.file());
+
+		// If cached item is attached in another ElephantWindow,
+		// we need a new instance.
+		if (item != null && item.getParent() != null) {
+			item = null;
+		}
+
 		if (item == null) {
-			item = new NoteItem(n, l);
+			item = new NoteItem(n);
 			itemCache.put(n.file(), item);
 		}
 
@@ -83,11 +89,10 @@ class NoteItem extends JPanel implements MouseListener {
 		return item;
 	}
 
-	private NoteItem(Note n, NoteItemListener l) {
+	private NoteItem(Note n) {
 		super();
 
 		note = n;
-		itemListener = l;
 
 		setLayout(new BorderLayout());
 
@@ -207,6 +212,14 @@ class NoteItem extends JPanel implements MouseListener {
 
 	}
 
+	private NoteItemListener getNoteItemListenerFromParentTree() {
+		Container c = getParent();
+		while (c != null && !(c instanceof NoteItemListener)) {
+			c = c.getParent();
+		}
+		return (NoteItemListener) c;
+	}
+
 	private String getContentPreview() {
 		String contents = note.contents().trim();
 		if (contents.length() > 200) {
@@ -250,7 +263,10 @@ class NoteItem extends JPanel implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		itemListener.noteClicked(this, e.getClickCount() == 2);
+		NoteItemListener l = getNoteItemListenerFromParentTree();
+		if (l != null) {
+			l.noteClicked(this, e.getClickCount() == 2);
+		}
 	}
 
 	@Override
