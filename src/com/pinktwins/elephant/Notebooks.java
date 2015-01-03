@@ -180,8 +180,8 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			String s = edit.getText();
 			if (notebook.rename(s)) {
 				isEditing = false;
-				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated));
-				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged));
+				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated, notebook));
+				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, notebook));
 
 				for (NotebookItem item : itemList) {
 					if (item.notebook.equals(notebook.folder())) {
@@ -202,7 +202,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			}
 
 			isEditing = false;
-			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged));
+			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, notebook));
 		}
 
 		@Override

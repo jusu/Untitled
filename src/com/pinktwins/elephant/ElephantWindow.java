@@ -799,8 +799,19 @@ public class ElephantWindow extends JFrame {
 
 	@Subscribe
 	public void handleVaultEvent(VaultEvent event) {
-		if (event.kind == VaultEvent.Kind.notebookListChanged) {
+		switch (event.kind) {
+		case notebookCreated:
+			break;
+		case notebookListChanged:
 			notebooks.refresh();
+			break;
+		case notebookRefreshed:
+			if (noteList.isShowingNotebook(event.ref)) {
+				sortAndUpdate();
+			}
+			break;
+		default:
+			break;
 		}
 	}
 

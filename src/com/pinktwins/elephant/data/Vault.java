@@ -1,6 +1,7 @@
 package com.pinktwins.elephant.data;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,11 +12,12 @@ import org.apache.commons.collections4.Predicate;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.data.WatchDir.WatchDirListener;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Factory;
 
 // 'root' data provider
-public class Vault {
+public class Vault implements WatchDirListener {
 
 	public static final String vaultFolderSettingName = "noteFolder";
 
@@ -36,6 +38,8 @@ public class Vault {
 
 	private ArrayList<Notebook> notebooks = Factory.newArrayList();
 	private Tags tags = new Tags();
+
+	WatchDir watchDir;
 
 	private Vault() {
 		Elephant.eventBus.register(this);
@@ -95,6 +99,20 @@ public class Vault {
 		Collections.sort(notebooks);
 
 		tags.reload(home.getAbsolutePath() + File.separator + ".tags");
+
+		if (watchDir == null) {
+			new Thread() {
+				@Override
+				public void run() {
+					try {
+						watchDir = new WatchDir(HOME, false, Vault.this);
+						watchDir.processEvents();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+		}
 	}
 
 	public List<Notebook> getNotebooks() {
@@ -149,5 +167,19 @@ public class Vault {
 	@Subscribe
 	public void handleVaultEvent(VaultEvent event) {
 		populate();
+	}
+
+	@Override
+	public void watchEvent(String kind, String file) {
+		if ("ENTRY_MODIFY".equals(kind)) {
+			Notebook nb = findNotebook(new File(file));
+			if (nb != null) {
+				int prevCount = nb.count();
+				nb.refresh();
+				if (prevCount != nb.count()) {
+					Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
+				}
+			}
+		}
 	}
 }
