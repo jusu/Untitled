@@ -184,6 +184,8 @@ public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> exte
 			d.height = y + size.height + yOff;
 		}
 		main.setPreferredSize(d);
+		
+		main.repaint();
 	}
 
 	protected void refresh() {
