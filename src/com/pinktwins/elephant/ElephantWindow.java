@@ -65,14 +65,14 @@ public class ElephantWindow extends JFrame {
 
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
-	CustomSplitPane splitLeft, splitRight;
+	private CustomSplitPane splitLeft, splitRight;
 
-	private Toolbar toolBar = new Toolbar(this);
-	private Sidebar sideBar = new Sidebar(this);
-	private NoteList noteList = new NoteList(this);
-	private NoteEditor noteEditor = new NoteEditor(this);
-	private Notebooks notebooks = new Notebooks(this);
-	private TagList tags = new TagList(this);
+	final private Toolbar toolBar = new Toolbar(this);
+	final private Sidebar sideBar = new Sidebar(this);
+	final private NoteList noteList = new NoteList(this);
+	final private NoteEditor noteEditor = new NoteEditor(this);
+	final private Notebooks notebooks = new Notebooks(this);
+	final private TagList tags = new TagList(this);
 
 	private boolean hasWindowFocus;
 
@@ -766,14 +766,14 @@ public class ElephantWindow extends JFrame {
 		noteEditor.unfocus();
 	}
 
-	@Subscribe
-	public void handleNoteChanged(NoteChangedEvent event) {
-		noteList.updateThumb(event.note);
-	}
-
 	public void sortAndUpdate() {
 		noteList.sortAndUpdate();
 		splitLeft.revalidate();
+	}
+
+	@Subscribe
+	public void handleNoteChanged(NoteChangedEvent event) {
+		noteList.updateThumb(event.note);
 	}
 
 	@Subscribe
