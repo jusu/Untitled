@@ -35,7 +35,7 @@ import com.pinktwins.elephant.util.Images;
 class NoteItem extends JPanel implements MouseListener {
 
 	interface NoteItemListener {
-		public void noteClicked(NoteItem item);
+		public void noteClicked(NoteItem item, boolean doubleClick);
 	}
 
 	final static private DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
@@ -125,6 +125,7 @@ class NoteItem extends JPanel implements MouseListener {
 		preview = new JTextPane();
 		preview.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
 		preview.setEditable(false);
+		preview.setFocusable(false);
 		preview.setFont(ElephantWindow.fontMediumPlus);
 		preview.setForeground(ElephantWindow.colorPreviewGray);
 		CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
@@ -245,14 +246,11 @@ class NoteItem extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (e.getClickCount() == 2) {
-			// XXX open note in new window
-		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		itemListener.noteClicked(this);
+		itemListener.noteClicked(this, e.getClickCount() == 2);
 	}
 
 	@Override

@@ -228,12 +228,15 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	}
 
 	@Override
-	public void noteClicked(NoteItem item) {
-		Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
-		selectNote(item.note);
-		window.showNote(item.note);
-		unfocusEditor();
-
+	public void noteClicked(NoteItem item, boolean doubleClick) {
+		if (doubleClick) {
+			window.openNoteWindow(item.note);
+		} else {
+			Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
+			selectNote(item.note);
+			window.showNote(item.note);
+			unfocusEditor();
+		}
 	}
 
 	private void selectNote(NoteItem item) {

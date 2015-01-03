@@ -78,6 +78,7 @@ public class ElephantWindow extends JFrame {
 
 	public static int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
+	JMenuBar menuBar;
 	JMenuItem iUndo, iRedo;
 
 	enum UiModes {
@@ -438,6 +439,26 @@ public class ElephantWindow extends JFrame {
 		noteEditor.load(note);
 	}
 
+	public void openNoteWindow(Note note) {
+		// changes needed:
+		// - create a new menubar for this jframe
+		// - bind actions in the new menubar to this editor (style changes,
+		// undo/redo, cmd-l, cmd-'
+		// - disable actions in the editor that call window. or route them thru
+		// eventBus
+		// - remember and use previous notewindow position
+
+		/*
+		 * JFrame f = new JFrame();
+		 * f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		 * 
+		 * NoteEditor e = new NoteEditor(null); e.load(note);
+		 * 
+		 * f.add(e); f.pack(); f.setBounds(400, 100, 550, 650);
+		 * f.setVisible(true);
+		 */
+	}
+
 	public void showAllNotes() {
 		Notebook nb = Notebook.getNotebookWithAllNotes();
 		showNotebook(nb);
@@ -638,7 +659,7 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void createMenu() {
-		JMenuBar mb = new JMenuBar();
+		menuBar = new JMenuBar();
 
 		JMenu file = new JMenu("File");
 		file.add(menuItem("New Note", KeyEvent.VK_N, menuMask, newNoteAction));
@@ -699,13 +720,13 @@ public class ElephantWindow extends JFrame {
 		format.addSeparator();
 		format.add(menuItem("Make Plain Text", 0, 0, styleAction));
 
-		mb.add(file);
-		mb.add(edit);
-		mb.add(view);
-		mb.add(note);
-		mb.add(format);
+		menuBar.add(file);
+		menuBar.add(edit);
+		menuBar.add(view);
+		menuBar.add(note);
+		menuBar.add(format);
 
-		setJMenuBar(mb);
+		setJMenuBar(menuBar);
 
 		noteEditor.addStateListener(new NoteEditorStateListener() {
 			@Override
