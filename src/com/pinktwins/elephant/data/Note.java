@@ -101,9 +101,6 @@ public class Note implements Comparable<Note> {
 		File m = new File(Vault.getInstance().getHome().getAbsolutePath() + File.separator + ".meta" + File.separator + flatPath);
 		m.getParentFile().mkdirs();
 		return m;
-
-		// return new File(f.getParentFile().getAbsolutePath() + File.separator
-		// + "." + f.getName() + ".elephant");
 	}
 
 	public Note(File f) {
@@ -178,13 +175,6 @@ public class Note implements Comparable<Note> {
 
 		try {
 			IOUtil.writeFile(file, newText);
-
-			// XXX if I just wrote rtf rich text to .txt file, might want to
-			// rename that file.
-
-			// XXX after 'make plain text' command, should write .txt file, not
-			// .rtf
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
