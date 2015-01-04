@@ -88,13 +88,6 @@ public class SimpleSearchIndex {
 		for (Set<Note> set : tagMap.values()) {
 			set.remove(note);
 		}
-		/*
-		 * for (String s : wordMap.keySet()) { Set<Note> set = wordMap.get(s);
-		 * if (set != null) { set.remove(note); } }
-		 * 
-		 * for (String s: tagMap.keySet()) { Set<Note> set = tagMap.get(s); if
-		 * (set != null) { set.remove(note); } }
-		 */
 	}
 
 	public void digestNote(Note note, Notebook nb) {

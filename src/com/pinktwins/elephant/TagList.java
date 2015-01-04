@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
@@ -68,7 +70,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 	@Override
 	protected void newButtonAction() {
-		System.out.println("NEW TAG");
+		JOptionPane.showMessageDialog(null, "This view is still a work in progress. To create a tag just use the note editor.");
 	}
 
 	@Override
