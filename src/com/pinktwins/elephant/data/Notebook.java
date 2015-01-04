@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -20,7 +21,7 @@ public class Notebook implements Comparable<Notebook> {
 
 	private String name = "";
 	private File folder;
-	private boolean isSearch;
+	private boolean isSearch, isTagSearch;
 
 	public ArrayList<Note> notes = Factory.newArrayList();
 
@@ -77,6 +78,10 @@ public class Notebook implements Comparable<Notebook> {
 		isSearch = true;
 	}
 
+	public void setToTagResultNotebook() {
+		isTagSearch = true;
+	}
+	
 	public static Notebook createNotebook() throws IOException {
 		String baseName = Vault.getInstance().getHome() + File.separator + "New notebook";
 		File f = new File(baseName);
@@ -105,6 +110,14 @@ public class Notebook implements Comparable<Notebook> {
 		all.sortNotes();
 
 		return all;
+	}
+
+	public static Notebook getNotebookWithTag(String tagId, String tagName) {
+		Notebook nb = new Notebook();
+		nb.name = "Tag " + tagName;
+		Set<Note> notes = Search.ssi.notesByTag(tagId);
+		nb.notes.addAll(notes);
+		return nb;
 	}
 
 	private void populate() {
@@ -163,6 +176,10 @@ public class Notebook implements Comparable<Notebook> {
 		return isSearch;
 	}
 
+	public boolean isTagSearch() {
+		return isTagSearch;
+	}
+	
 	public Note newNote() throws IOException {
 		if (folder == null) {
 			throw new IllegalStateException();

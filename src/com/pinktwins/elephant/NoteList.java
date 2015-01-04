@@ -356,7 +356,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	}
 
 	public boolean isDynamicallyCreatedNotebook() {
-		return notebook.isAllNotes() || notebook.isTrash() || notebook.isSearch();
+		return notebook.isAllNotes() || notebook.isTrash() || notebook.isSearch() || notebook.isTagSearch();
 	}
 
 	public boolean isSearch() {

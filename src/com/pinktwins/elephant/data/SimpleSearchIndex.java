@@ -17,7 +17,10 @@ public class SimpleSearchIndex {
 
 	private boolean isReady = false;
 
-	private HashMap<String, Set<Note>> map = Factory.newHashMap();
+	// word -> Set<Note>
+	private HashMap<String, Set<Note>> wordMap = Factory.newHashMap();
+	// tagId -> Set<Note>
+	private HashMap<String, Set<Note>> tagMap = Factory.newHashMap();
 
 	public SimpleSearchIndex() {
 		Elephant.eventBus.register(this);
@@ -31,7 +34,7 @@ public class SimpleSearchIndex {
 		isReady = true;
 	}
 
-	public void digest(Note n, String text) {
+	public void digestWord(Note n, String text) {
 		String[] a = text.split(" ");
 		for (String s : a) {
 			s = s.toLowerCase().trim();
@@ -39,23 +42,37 @@ public class SimpleSearchIndex {
 				continue;
 			}
 
-			Set<Note> set = map.get(s);
+			Set<Note> set = wordMap.get(s);
 			if (set == null) {
-				set = new HashSet<Note>();
+				set = Factory.newHashSet();
 			}
 			set.add(n);
-			map.put(s, set);
+			wordMap.put(s, set);
 		}
+	}
+
+	public void digestTag(Note n, String tagId) {
+		if (tagId.isEmpty()) {
+			return;
+		}
+
+		Set<Note> set = tagMap.get(tagId);
+		if (set == null) {
+			set = Factory.newHashSet();
+		}
+
+		set.add(n);
+		tagMap.put(tagId, set);
 	}
 
 	public List<Note> search(String text) {
 		ArrayList<Note> found = Factory.newArrayList();
 		HashSet<Note> foundSet = Factory.newHashSet();
 
-		Set<String> strs = map.keySet();
+		Set<String> strs = wordMap.keySet();
 		for (String s : strs) {
 			if (s.indexOf(text) >= 0) {
-				foundSet.addAll(map.get(s));
+				foundSet.addAll(wordMap.get(s));
 			}
 		}
 
@@ -64,45 +81,65 @@ public class SimpleSearchIndex {
 	}
 
 	public void purgeNote(Note note) {
-		for (String s : map.keySet()) {
-			Set<Note> set = map.get(s);
-			if (set != null) {
-				set.remove(note);
-			}
+		for (Set<Note> set : wordMap.values()) {
+			set.remove(note);
 		}
+
+		for (Set<Note> set : tagMap.values()) {
+			set.remove(note);
+		}
+		/*
+		 * for (String s : wordMap.keySet()) { Set<Note> set = wordMap.get(s);
+		 * if (set != null) { set.remove(note); } }
+		 * 
+		 * for (String s: tagMap.keySet()) { Set<Note> set = tagMap.get(s); if
+		 * (set != null) { set.remove(note); } }
+		 */
 	}
 
 	public void digestNote(Note note, Notebook nb) {
 		Meta meta = note.getMeta();
-		digest(note, meta.title());
+		digestWord(note, meta.title());
 
 		String contents = note.contents();
 		if (contents.startsWith("{\\rtf")) {
 			contents = note.plainTextContents(contents);
 		}
-		digest(note, contents);
+		digestWord(note, contents);
 
 		List<String> tagIds = meta.tags();
 		if (!tagIds.isEmpty()) {
+			for (String s : tagIds) {
+				digestTag(note, s);
+			}
+
 			List<String> tagNames = Vault.getInstance().resolveTagIds(tagIds);
 			for (String s : tagNames) {
-				digest(note, s + " tag:" + s + " t:" + s);
+				digestWord(note, s + " tag:" + s + " t:" + s);
 			}
 		}
 
 		if (nb != null) {
-			digest(note, "notebook:" + nb.name() + " nb:" + nb.name());
+			digestWord(note, "notebook:" + nb.name() + " nb:" + nb.name());
 		}
 	}
 
 	public void debug() {
-		System.out.println("SSI has " + map.keySet().size() + " strings.");
+		System.out.println("SSI has " + wordMap.keySet().size() + " strings.");
 		long n = 0;
-		for (String s : map.keySet()) {
-			Set<Note> set = map.get(s);
+		for (String s : wordMap.keySet()) {
+			Set<Note> set = wordMap.get(s);
 			n += set.size();
 		}
 		System.out.println("total of " + n + " set items.");
+	}
+
+	public Set<Note> notesByTag(String tagId) {
+		Set<Note> notes = tagMap.get(tagId);
+		if (notes == null) {
+			notes = Factory.newHashSet();
+		}
+		return notes;
 	}
 
 	@Subscribe

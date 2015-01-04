@@ -27,6 +27,10 @@ public class Tag implements Comparable<Tag> {
 	public String name() {
 		return name;
 	}
+	
+	public String id() {
+		return id;
+	}
 
 	public Tag(JSONObject o) {
 		id = o.optString("id");

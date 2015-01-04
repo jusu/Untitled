@@ -72,7 +72,7 @@ public class ElephantWindow extends JFrame {
 	final private NoteList noteList = new NoteList(this);
 	final private NoteEditor noteEditor = new NoteEditor(this);
 	final private Notebooks notebooks = new Notebooks(this);
-	final private TagList tags = new TagList(this);
+	final private TagList tagList = new TagList(this);
 
 	private boolean hasWindowFocus;
 
@@ -192,6 +192,8 @@ public class ElephantWindow extends JFrame {
 					Search.search("a");
 					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
 
+					tagList.ssiDone();
+					
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
@@ -312,23 +314,23 @@ public class ElephantWindow extends JFrame {
 				}
 				break;
 			case tags:
-				if (!tags.isEditing() && !toolBar.isEditing()) {
+				if (!tagList.isEditing() && !toolBar.isEditing()) {
 					switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						switch (e.getKeyCode()) {
 						case KeyEvent.VK_UP:
 						case KeyEvent.VK_LEFT:
-							tags.changeSelection(-1, e.getKeyCode());
+							tagList.changeSelection(-1, e.getKeyCode());
 							break;
 						case KeyEvent.VK_DOWN:
 						case KeyEvent.VK_RIGHT:
-							tags.changeSelection(1, e.getKeyCode());
+							tagList.changeSelection(1, e.getKeyCode());
 							break;
 						case KeyEvent.VK_ENTER:
-							tags.openSelected();
+							tagList.openSelected();
 							break;
 						default:
-							tags.handleKeyEvent(e);
+							tagList.handleKeyEvent(e);
 						}
 						break;
 					}
@@ -421,7 +423,7 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void showTags() {
-		splitLeft.setRightComponent(tags);
+		splitLeft.setRightComponent(tagList);
 		uiMode = UiModes.tags;
 		sideBar.selectNavigation(2);
 	}
@@ -437,7 +439,9 @@ public class ElephantWindow extends JFrame {
 		showNotes();
 		noteEditor.clear();
 		noteEditor.load(note);
-		noteEditor.focusQuickLook();
+		if (!toolBar.isEditing()) {
+			noteEditor.focusQuickLook();
+		}
 	}
 
 	public void openNoteWindow(Note note) {

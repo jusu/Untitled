@@ -3,6 +3,7 @@ package com.pinktwins.elephant;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -310,12 +311,17 @@ abstract public class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 							TimerTask tt = new TimerTask() {
 								@Override
 								public void run() {
-									try {
-										d.insertString(pos, String.valueOf(e.getKeyChar()), null);
-										search.setCaretPosition(search.getCaretPosition() + 1);
-									} catch (BadLocationException e1) {
-										e1.printStackTrace();
-									}
+									EventQueue.invokeLater(new Runnable() {
+										@Override
+										public void run() {
+											try {
+												d.insertString(pos, String.valueOf(e.getKeyChar()), null);
+												search.setCaretPosition(search.getCaretPosition() + 1);
+											} catch (BadLocationException e1) {
+											} catch (IllegalArgumentException e2) {
+											}
+										}
+									});
 								}
 							};
 
