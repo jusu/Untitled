@@ -1,5 +1,6 @@
 package com.pinktwins.elephant.data;
 
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -170,16 +171,21 @@ public class Vault implements WatchDirListener {
 	}
 
 	@Override
-	public void watchEvent(String kind, String file) {
+	public void watchEvent(final String kind, final String file) {
 		if ("ENTRY_MODIFY".equals(kind)) {
-			Notebook nb = findNotebook(new File(file));
-			if (nb != null) {
-				int prevCount = nb.count();
-				nb.refresh();
-				if (prevCount != nb.count()) {
-					Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					Notebook nb = findNotebook(new File(file));
+					if (nb != null) {
+						int prevCount = nb.count();
+						nb.refresh();
+						if (prevCount != nb.count()) {
+							Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
+						}
+					}
 				}
-			}
+			});
 		}
 	}
 }
