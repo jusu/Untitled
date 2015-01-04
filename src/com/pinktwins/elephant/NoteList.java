@@ -235,7 +235,6 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
 			selectNote(item.note);
 			window.showNote(item.note);
-			unfocusEditor();
 		}
 	}
 

@@ -164,4 +164,10 @@ public class FileAttachment extends JPanel {
 			}
 		});
 	}
+	
+	public void focusQuickLook() {
+		if (qlExists) {
+			show.requestFocusInWindow();
+		}
+	}
 }

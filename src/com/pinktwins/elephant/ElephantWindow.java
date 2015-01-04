@@ -437,6 +437,7 @@ public class ElephantWindow extends JFrame {
 		showNotes();
 		noteEditor.clear();
 		noteEditor.load(note);
+		noteEditor.focusQuickLook();
 	}
 
 	public void openNoteWindow(Note note) {

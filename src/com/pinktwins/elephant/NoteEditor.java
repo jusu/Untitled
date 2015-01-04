@@ -441,6 +441,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		caretChanged(editor.getTextPane());
 	}
 
+	public void focusQuickLook() {
+		for (Object o : currentAttachments.keySet()) {
+			if (o instanceof FileAttachment) {
+				FileAttachment fa = (FileAttachment) o;
+				fa.focusQuickLook();
+				break;
+			}
+		}
+	}
+
 	private void visible(boolean b) {
 		main.setVisible(b);
 	}
