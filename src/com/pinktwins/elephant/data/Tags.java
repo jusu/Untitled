@@ -69,10 +69,12 @@ public class Tags {
 		boolean newTags = false;
 
 		for (final String tagName : tagNames) {
+
+			final String tagNameLo = tagName.toLowerCase();
 			Collection<Tag> t = CollectionUtils.select(flatList, new Predicate<Tag>() {
 				@Override
 				public boolean evaluate(Tag t) {
-					return tagName.equals(t.name);
+					return tagNameLo.equals(t.name.toLowerCase());
 				}
 			});
 
@@ -95,6 +97,7 @@ public class Tags {
 		}
 
 		if (newTags) {
+			Collections.sort(flatList);
 			save();
 		}
 

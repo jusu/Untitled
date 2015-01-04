@@ -79,7 +79,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 		// Small gap before each header
 		for (TagItem item : itemList) {
-			item.setDrawHeader(prev == null || prev.nameStr.charAt(0) != item.nameStr.charAt(0), false);
+			item.setDrawHeader(prev == null || !prev.nameStr.substring(0, 1).toLowerCase().equals(item.nameStr.substring(0, 1).toLowerCase()), false);
 			if (prev != null && item.drawHeader) {
 				prev.size.height += 8;
 			}
