@@ -21,8 +21,13 @@ public class CustomSplitPane extends JSplitPane {
 	int fixedLocation;
 	boolean isDragging;
 
+	class CustomSplitPaneUI extends BasicSplitPaneUI {
+	}
+
 	public CustomSplitPane(int i) {
 		super(i);
+
+		this.setUI(new CustomSplitPaneUI());
 
 		addComponentListener(new ComponentListener() {
 
@@ -60,7 +65,6 @@ public class CustomSplitPane extends JSplitPane {
 				}
 			}
 		});
-
 	}
 
 	public void setFixedLocation(int loc) {
@@ -68,13 +72,18 @@ public class CustomSplitPane extends JSplitPane {
 		setDividerLocation(loc);
 	}
 
-	public void initLocationWithKey(String key) {
+	public void initLocationWithKey(String key, int defaultValue) {
 		if (saveKey != null) {
 			// Should call only once
 			throw new AssertionError();
 		}
 
 		int loc = Elephant.settings.getInt(key);
+
+		if (loc == 0) {
+			loc = defaultValue;
+		}
+
 		if (loc > 0) {
 			setFixedLocation(loc);
 		}
@@ -130,4 +139,5 @@ public class CustomSplitPane extends JSplitPane {
 		super.setRightComponent(c);
 		setFixedLocation(i);
 	}
+
 }
