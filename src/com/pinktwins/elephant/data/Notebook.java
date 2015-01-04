@@ -114,6 +114,7 @@ public class Notebook implements Comparable<Notebook> {
 
 	public static Notebook getNotebookWithTag(String tagId, String tagName) {
 		Notebook nb = new Notebook();
+		nb.setToTagResultNotebook();
 		nb.name = "Tag " + tagName;
 		Set<Note> notes = Search.ssi.notesByTag(tagId);
 		nb.notes.addAll(notes);

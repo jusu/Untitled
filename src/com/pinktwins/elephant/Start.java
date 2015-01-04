@@ -87,7 +87,7 @@ public class Start extends BackgroundPanel {
 								note = new File(inbox + File.separator + "Welcome.txt");
 								n = new Note(note);
 								n.getMeta().title("Hello there");
-								n.save("Welcome to Elephant!\n\nHit CMD-N to create a new note.\n\nDrag an image or file here to attach it.\n\nThis is Elephant release #4. You're an early bird!");
+								n.save("Welcome to Elephant!\n\nHit CMD-N to create a new note.\n\nDrag an image or file here to attach it.\n\nThis is Elephant release #5. You're an early bird!");
 
 								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
 								try {

@@ -11,6 +11,7 @@ import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
+import com.pinktwins.elephant.eventbus.SearchIndexChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 
 public class SimpleSearchIndex {
@@ -139,6 +140,8 @@ public class SimpleSearchIndex {
 	public void handleNoteChanged(NoteChangedEvent e) {
 		purgeNote(e.note);
 		digestNote(e.note, e.note.findContainingNotebook());
+
+		Elephant.eventBus.post(new SearchIndexChangedEvent());
 	}
 
 	@Subscribe

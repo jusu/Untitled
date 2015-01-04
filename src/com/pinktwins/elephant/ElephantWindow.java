@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
@@ -193,7 +194,7 @@ public class ElephantWindow extends JFrame {
 					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
 
 					tagList.ssiDone();
-					
+
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
@@ -753,14 +754,14 @@ public class ElephantWindow extends JFrame {
 		splitLeft.setResizeWeight(0.2);
 		splitLeft.setContinuousLayout(true);
 		splitLeft.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		splitLeft.initLocationWithKey("divider1");
+		splitLeft.initLocationWithKey("divider1", 150);
 		splitLeft.limitLocation(250);
 
 		splitRight = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitRight.setResizeWeight(0.5);
 		splitRight.setContinuousLayout(true);
 		splitRight.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		splitRight.initLocationWithKey("divider2");
+		splitRight.initLocationWithKey("divider2", 425);
 
 		splitLeft.setLeftComponent(sideBar);
 		splitLeft.setRightComponent(splitRight);
@@ -772,9 +773,10 @@ public class ElephantWindow extends JFrame {
 			Start start = new Start(new Runnable() {
 				@Override
 				public void run() {
-					ElephantWindow.this.setVisible(false);
-					ElephantWindow.this.dispose();
-					newWindow();
+					if (!Elephant.restartApplication()) {
+						JOptionPane.showMessageDialog(null, "Great! Now please restart.");
+						System.exit(0);
+					}
 				}
 			});
 			add(start);
