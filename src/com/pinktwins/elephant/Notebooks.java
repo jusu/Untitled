@@ -82,13 +82,6 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		}
 	}
 
-	@Override
-	protected void vkEnter() {
-		if (selectedItem != null && naListener != null) {
-			naListener.didSelect(selectedItem.notebook);
-		}
-	}
-
 	public void newNotebook() {
 		try {
 			Notebook nb = Notebook.createNotebook();

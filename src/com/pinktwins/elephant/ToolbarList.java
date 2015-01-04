@@ -33,7 +33,7 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.ResizeListener;
 
-public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> extends BackgroundPanel {
+abstract public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> extends BackgroundPanel {
 
 	interface ToolbarListItem {
 		public void setSelected(boolean b);
@@ -126,9 +126,11 @@ public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> exte
 		addComponentListeners();
 	}
 
-	// Override
-	protected List<T> queryFilter(String text) {
-		return Factory.newArrayList();
+	abstract protected List<T> queryFilter(String text);
+
+	abstract protected void newButtonAction();
+
+	protected void vkEnter() {
 	}
 
 	protected void update() {
@@ -184,21 +186,13 @@ public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> exte
 			d.height = y + size.height + yOff;
 		}
 		main.setPreferredSize(d);
-		
+
 		main.repaint();
 	}
 
 	protected void refresh() {
 		update();
 		layoutItems();
-	}
-
-	protected void vkEnter() {
-		// Override
-	}
-
-	protected void newButtonAction() {
-		// Override
 	}
 
 	protected void deselectAll() {
