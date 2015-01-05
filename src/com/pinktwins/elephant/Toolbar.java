@@ -70,7 +70,9 @@ public class Toolbar extends BackgroundPanel {
 					EventQueue.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							window.search(text);
+							if (search.isFocusable()) {
+								window.search(text);
+							}
 						}
 					});
 				}
@@ -127,7 +129,7 @@ public class Toolbar extends BackgroundPanel {
 	}
 
 	public void clearSearch() {
-		search.setText("");
 		search.setFocusable(false);
+		search.setText("");
 	}
 }
