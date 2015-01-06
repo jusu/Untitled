@@ -17,16 +17,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.util.Factory;
-import com.pinktwins.elephant.util.IOUtil;
 import com.pinktwins.elephant.util.Images;
 
 public class SideBarList extends JPanel {
@@ -68,33 +61,20 @@ public class SideBarList extends JPanel {
 		return "";
 	}
 
-	public void load(File f) {
+	public <T> void load(List<T> notes) {
 		items.clear();
 
-		JSONObject o = IOUtil.loadJson(f);
-		if (o.has("list")) {
-			try {
-				JSONArray arr = o.getJSONArray("list");
+		for (T n : notes) {
+			SideBarListItem item;
 
-				for (int n = 0, len = arr.length(); n < len; n++) {
-					String s = arr.getString(n);
-
-					SideBarListItem item = new SideBarListItem(s);
-					items.add(item);
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
+			if (n instanceof String) {
+				item = new SideBarListItem((String) n);
+			} else if (n instanceof Note) {
+				item = new SideBarListItem((Note) n);
+			} else {
+				throw new IllegalArgumentException();
 			}
-		}
 
-		createComponents(true);
-	}
-
-	public void load(List<Note> notes) {
-		items.clear();
-
-		for (Note n : notes) {
-			SideBarListItem item = new SideBarListItem(n);
 			items.add(item);
 		}
 
@@ -164,13 +144,6 @@ public class SideBarList extends JPanel {
 		String target;
 		JButton icon = new JButton();
 		JLabel label = new JLabel("");
-
-		@Subscribe
-		public void handleNoteChanged(NoteChangedEvent event) {
-			if (event.note.equals(file)) {
-				refresh();
-			}
-		}
 
 		public void refresh() {
 			String s;

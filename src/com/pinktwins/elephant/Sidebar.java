@@ -3,7 +3,6 @@ package com.pinktwins.elephant;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.io.File;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
@@ -11,8 +10,9 @@ import javax.swing.JPanel;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.RecentNotes;
-import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.data.Shortcuts;
 import com.pinktwins.elephant.eventbus.RecentNotesChangedEvent;
+import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
 import com.pinktwins.elephant.util.Images;
 
 public class Sidebar extends BackgroundPanel {
@@ -26,9 +26,10 @@ public class Sidebar extends BackgroundPanel {
 	private ElephantWindow window;
 	private static Image tile, sidebarDivider;
 
+	private Shortcuts shortcuts = new Shortcuts();
 	private RecentNotes recentNotes = new RecentNotes();
 
-	SideBarList shortcuts, recent, navigation;
+	SideBarList shortcutList, recentList, navigationList;
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "sidebar", "sidebarDivider" });
@@ -42,24 +43,24 @@ public class Sidebar extends BackgroundPanel {
 
 		Elephant.eventBus.register(this);
 
-		shortcuts = new SideBarList(window, "SHORTCUTS");
-		shortcuts.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
-		shortcuts.load(new File(Vault.getInstance().getHome() + File.separator + ".shortcuts"));
+		shortcutList = new SideBarList(window, "SHORTCUTS");
+		shortcutList.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+		shortcutList.load(shortcuts.load());
 
-		recent = new SideBarList(window, "RECENT NOTES");
-		recent.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
-		recent.load(recentNotes.list());
+		recentList = new SideBarList(window, "RECENT NOTES");
+		recentList.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+		recentList.load(recentNotes.list());
 
 		BackgroundPanel div = new BackgroundPanel(sidebarDivider);
 		div.setStyle(BackgroundPanel.SCALED_X);
 		div.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
 		div.setMaximumSize(new Dimension(1920, 2));
 
-		navigation = new SideBarList(window, "");
-		navigation.addNavigation();
-		navigation.setOpaque(false);
-		navigation.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
-		navigation.highlightSelection = true;
+		navigationList = new SideBarList(window, "");
+		navigationList.addNavigation();
+		navigationList.setOpaque(false);
+		navigationList.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+		navigationList.highlightSelection = true;
 
 		JPanel p1 = new JPanel(new BorderLayout());
 		JPanel p2 = new JPanel(new BorderLayout());
@@ -68,23 +69,29 @@ public class Sidebar extends BackgroundPanel {
 		p2.setOpaque(false);
 		p3.setOpaque(false);
 
-		add(shortcuts, BorderLayout.NORTH);
-		p1.add(recent, BorderLayout.NORTH);
+		add(shortcutList, BorderLayout.NORTH);
+		p1.add(recentList, BorderLayout.NORTH);
 		p2.add(div, BorderLayout.NORTH);
-		p3.add(navigation, BorderLayout.NORTH);
-		
+		p3.add(navigationList, BorderLayout.NORTH);
+
 		add(p1, BorderLayout.CENTER);
 		p1.add(p2, BorderLayout.CENTER);
 		p2.add(p3, BorderLayout.CENTER);
 	}
 
 	public void selectNavigation(int n) {
-		navigation.select(n);
+		navigationList.select(n);
+	}
+
+	@Subscribe
+	public void handleShortcutsChanged(ShortcutsChangedEvent event) {
+		shortcutList.load(shortcuts.list());
+		revalidate();
 	}
 
 	@Subscribe
 	public void handleRecentNotesChanged(RecentNotesChangedEvent event) {
-		recent.load(recentNotes.list());
+		recentList.load(recentNotes.list());
 		revalidate();
 	}
 }

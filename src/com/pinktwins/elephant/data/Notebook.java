@@ -81,7 +81,7 @@ public class Notebook implements Comparable<Notebook> {
 	public void setToTagResultNotebook() {
 		isTagSearch = true;
 	}
-	
+
 	public static Notebook createNotebook() throws IOException {
 		String baseName = Vault.getInstance().getHome() + File.separator + "New notebook";
 		File f = new File(baseName);
@@ -180,7 +180,7 @@ public class Notebook implements Comparable<Notebook> {
 	public boolean isTagSearch() {
 		return isTagSearch;
 	}
-	
+
 	public Note newNote() throws IOException {
 		if (folder == null) {
 			throw new IllegalStateException();
@@ -198,7 +198,7 @@ public class Notebook implements Comparable<Notebook> {
 
 		notes.add(0, n);
 
-		Elephant.eventBus.post(new NotebookEvent(Kind.noteCreated));
+		NotebookEvent.post(NotebookEvent.Kind.noteCreated, f, f);
 
 		return n;
 	}

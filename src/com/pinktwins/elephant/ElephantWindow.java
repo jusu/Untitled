@@ -345,7 +345,7 @@ public class ElephantWindow extends JFrame {
 			case KeyEvent.KEY_PRESSED:
 				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
 					if ((e.getModifiers() & menuMask) == menuMask && (e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
-						String target = sideBar.shortcuts.getTarget(e.getKeyCode() - KeyEvent.VK_1);
+						String target = sideBar.shortcutList.getTarget(e.getKeyCode() - KeyEvent.VK_1);
 						toolBar.clearSearch();
 						openShortcut(target);
 					}

@@ -361,10 +361,7 @@ public class Note implements Comparable<Note> {
 				nb.refresh();
 			}
 
-			NotebookEvent event = new NotebookEvent(Kind.noteMoved);
-			event.source = file;
-			event.dest = destFile;
-			Elephant.eventBus.post(event);
+			NotebookEvent.post(NotebookEvent.Kind.noteMoved, file, destFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -398,6 +395,8 @@ public class Note implements Comparable<Note> {
 		if (file.exists()) {
 			FileUtils.moveFile(file, newFile);
 		}
+
+		NotebookEvent.post(NotebookEvent.Kind.noteRenamed, file, newFile);
 
 		file = newFile;
 		meta = newMeta;
