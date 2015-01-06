@@ -266,7 +266,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	public void selectNote(Note n) {
 		deselectAll();
 		for (NoteItem item : noteItems) {
-			if (item.note == n) {
+			if (item.note.equals(n)) {
 				selectNote(item);
 				return;
 			}
