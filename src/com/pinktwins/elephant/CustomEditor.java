@@ -143,37 +143,7 @@ public class CustomEditor extends RoundPanel {
 		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
 		title.addFocusListener(editorFocusListener);
 		TextComponentUtil.insertListenerForHintText(title, "Untitled");
-/*
-		title.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				if (title.getCaretPosition() == 0) {
-					String s = title.getText();
-					if (s.length() == 9 && s.indexOf("Untitled") == 1) {
-						EventQueue.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								try {
-									title.getDocument().remove(1, "Untitled".length());
-								} catch (BadLocationException e1) {
-									e1.printStackTrace();
-								}
-							}
-						});
-					}
-				}
-			}
 
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-			}
-		});
-*/
-		
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 
 		title.addKeyListener(new KeyListener() {
@@ -232,6 +202,18 @@ public class CustomEditor extends RoundPanel {
 			}
 		});
 
+	}
+
+	void insertNewline(int position) {
+		try {
+			note.getDocument().insertString(position, "\n", null);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+	}
+
+	AttributeSet getAttributes(int position) {
+		return ((CustomDocument) note.getDocument()).getCharacterElement(position).getAttributes();
 	}
 
 	CustomMouseListener paddingClick = new CustomMouseListener() {
