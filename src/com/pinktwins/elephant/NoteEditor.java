@@ -318,8 +318,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		});
 	}
 
-	// XXX always scale from original image?
-	// XXX cache scaled image to get it again faster
 	private Image getScaledImage(Image i, File sourceFile) {
 		long w = getWidth() - kBorder * 4 - 12;
 		long iw = i.getWidth(null);
