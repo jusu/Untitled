@@ -79,9 +79,14 @@ public class CustomEditor extends RoundPanel {
 	private UndoManager undoManager = new UndoManager();
 
 	public boolean isRichText;
+	private boolean maybeImporting;
 
 	public boolean isRichText() {
 		return isRichText;
+	}
+
+	public boolean maybeImporting() {
+		return maybeImporting;
 	}
 
 	final Color kDividerColor = Color.decode("#dbdbdb");
@@ -201,7 +206,6 @@ public class CustomEditor extends RoundPanel {
 				}
 			}
 		});
-
 	}
 
 	void insertNewline(int position) {
@@ -426,11 +430,14 @@ public class CustomEditor extends RoundPanel {
 		note.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
 		note.setDragEnabled(true);
 
+		maybeImporting = false;
+
 		note.setTransferHandler(new TransferHandler() {
 			private static final long serialVersionUID = -4777142447614165019L;
 
 			@Override
 			public boolean canImport(TransferHandler.TransferSupport info) {
+				maybeImporting = true;
 				return true;
 			}
 

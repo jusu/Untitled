@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -20,6 +21,10 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 
 import org.apache.commons.io.FileUtils;
 
@@ -43,12 +48,15 @@ public class FileAttachment extends JPanel {
 		qlExists = new File(qlPath).exists();
 	}
 
-	private JPanel left, text, right;
+	private JPanel iconArea, left, text, right;
 	private JLabel label, size;
 	private JButton icon, show, open;
+	private ImageScaler scaler;
 
-	public FileAttachment(final File f) {
+	public FileAttachment(final File f, ImageScaler scaler) {
 		super();
+
+		this.scaler = scaler;
 
 		String labelStr = f.getName();
 		long fileLen = 0;
@@ -60,6 +68,9 @@ public class FileAttachment extends JPanel {
 		setLayout(new BorderLayout());
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+
+		iconArea = new JPanel(new BorderLayout());
+		iconArea.setBackground(Color.WHITE);
 
 		left = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		left.setOpaque(false);
@@ -110,10 +121,14 @@ public class FileAttachment extends JPanel {
 		}
 		right.add(open);
 
-		add(left, BorderLayout.WEST);
-		add(right, BorderLayout.EAST);
+		iconArea.add(left, BorderLayout.WEST);
+		iconArea.add(right, BorderLayout.EAST);
+
+		add(iconArea, BorderLayout.NORTH);
 
 		setMaximumSize(new Dimension(294, 38));
+
+		addPreview(f);
 
 		icon.addMouseListener(new CustomMouseListener() {
 			@Override
@@ -164,7 +179,66 @@ public class FileAttachment extends JPanel {
 			}
 		});
 	}
-	
+
+	private void addPreview(File f) {
+		File[] files = previewFiles(f);
+		if (files.length > 0) {
+			JTextPane tp = new JTextPane();
+			tp.setBackground(Color.WHITE);
+			tp.setOpaque(true);
+			tp.setFocusable(false);
+
+			Style style = tp.addStyle("nada", null);
+			StyleConstants.setFontSize(style, 0);
+
+			for (File pf : files) {
+				addPageBreak(tp, style);
+
+				try {
+					Image img = ImageIO.read(pf);
+					if (img != null) {
+						img = scaler.scale(img, pf);
+						tp.insertIcon(new ImageIcon(img));
+						try {
+							tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
+						} catch (BadLocationException e1) {
+							e1.printStackTrace();
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			add(tp, BorderLayout.CENTER);
+		}
+	}
+
+	File[] previewFiles(File f) {
+		File pf = new File(f.getAbsolutePath() + ".preview");
+		if (pf.exists() && pf.isDirectory()) {
+			return pf.listFiles();
+		} else {
+			return new File[0];
+		}
+	}
+
+	final static Color pageBreakColor = Color.decode("#c0c0c0");
+
+	void addPageBreak(JTextPane tp, Style style) {
+		JPanel p = new JPanel(null);
+		p.setBounds(0, 0, ElephantWindow.bigWidth, 1);
+		p.setBackground(pageBreakColor);
+		p.setBorder(ElephantWindow.emptyBorder);
+		tp.insertComponent(p);
+
+		try {
+			tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
+		} catch (BadLocationException e1) {
+			e1.printStackTrace();
+		}
+	}
+
 	public void focusQuickLook() {
 		if (qlExists) {
 			show.requestFocusInWindow();

@@ -36,12 +36,10 @@ import javax.swing.text.AbstractDocument.LeafElement;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
-import com.pinktwins.elephant.CustomEditor.CustomDocument;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
@@ -83,20 +81,19 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public void stateChange(boolean hasFocus, boolean hasSelection);
 	}
 
-	public NoteEditor(ElephantWindow w) {
-		super(tile);
-		window = w;
-
-		Elephant.eventBus.register(this);
-
-		createComponents();
+	class EditorWidthScaler implements ImageScaler {
+		public Image scale(Image i, File source) {
+			return getScaledImage(i, source, -2);
+		}
 	}
 
-	NoteEditorStateListener stateListener;
+	EditorWidthScaler editorWidthScaler = new EditorWidthScaler();
 
 	public void addStateListener(NoteEditorStateListener l) {
 		stateListener = l;
 	}
+
+	NoteEditorStateListener stateListener;
 
 	private Note currentNote;
 	private HashMap<Object, File> currentAttachments = Factory.newHashMap();
@@ -170,6 +167,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public boolean getScrollableTracksViewportHeight() {
 			return false;
 		}
+	}
+
+	public NoteEditor(ElephantWindow w) {
+		super(tile);
+		window = w;
+
+		Elephant.eventBus.register(this);
+
+		createComponents();
 	}
 
 	private void createComponents() {
@@ -321,8 +327,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		});
 	}
 
-	private Image getScaledImage(Image i, File sourceFile) {
-		long w = getWidth() - kBorder * 4 - 12;
+	private Image getScaledImage(Image i, File sourceFile, int widthOffset) {
+		long w = getWidth() - kBorder * 4 - 12 + widthOffset;
 		long iw = i.getWidth(null);
 
 		if (i.getWidth(null) > w) {
@@ -543,6 +549,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 				String fileText = currentNote.contents();
 				String editedText = editor.getText();
+
 				if (!fileText.equals(editedText)) {
 					currentNote.save(editedText);
 					changed = true;
@@ -604,6 +611,22 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			public void run() {
 				int pos = text.getCaretPosition();
 				int len = text.getDocument().getLength();
+
+				// When editor is unfocused, caret should only change when
+				// inserting images/attachments to document during loading.
+				// We want to see the top of note after all loading is done,
+				// so keep vertical scroll bar at 0.
+				//
+				// Only exception to this should be dropping a file,
+				// which can change caret position while editor
+				// is unfocused. editor.maybeImporting() tracks
+				// drag'n'drop state - true indicates a drop might
+				// be in progress, and we need to keep scroll value.
+				if (!editor.isFocusOwner() && !editor.maybeImporting()) {
+					scroll.getVerticalScrollBar().setValue(0);
+				}
+
+				// Writing new lines, keep scroll to bottom
 				if (pos == len) {
 					scroll.getVerticalScrollBar().setValue(Integer.MAX_VALUE);
 				}
@@ -631,7 +654,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			Image i = ImageIO.read(f);
 			if (i != null) {
 				if (getWidth() > 0) {
-					i = getScaledImage(i, f);
+					i = getScaledImage(i, f, 0);
 				} else {
 					throw new AssertionError();
 				}
@@ -648,11 +671,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					e.printStackTrace();
 				}
 
+				// XXX this inserts one extra character to document. replace
+				// existing empty character instead.
 				noteArea.insertIcon(ii);
 
 				currentAttachments.put(ii, f);
 			} else {
-				FileAttachment aa = new FileAttachment(f);
+				FileAttachment aa = new FileAttachment(f, editorWidthScaler);
 
 				noteArea.setCaretPosition(position);
 				noteArea.insertComponent(aa);

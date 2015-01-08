@@ -172,44 +172,70 @@ class NoteItem extends JPanel implements MouseListener {
 		previewPane.add(preview);
 
 		// Picture thumbnail.
-		// XXX with many notes, this absolutely must be postponed.
 		for (File f : note.getAttachmentList()) {
 			String ext = FilenameUtils.getExtension(f.getAbsolutePath()).toLowerCase();
 			if ("png".equals(ext) || "jpg".equals(ext) || "gif".equals(ext)) {
-				try {
-					Image i = ImageIO.read(f);
-					if (i != null) {
-						float scale = i.getWidth(null) / (float) (196 - 12 - 4);
-						int w = (int) (i.getWidth(null) / scale);
-						int h = (int) ((float) i.getHeight(null) / scale);
+				if (addPictureThumbnail(f)) {
+					break;
+				}
+			}
 
-						Image scaled = NoteEditor.scalingCache.get(f, w, h);
-						if (scaled == null) {
-							scaled = i.getScaledInstance(w, h, Image.SCALE_AREA_AVERAGING);
-							NoteEditor.scalingCache.put(f, w, h, scaled);
+			if ("pdf".equals(ext)) {
+				File previewDir = new File(f.getAbsolutePath() + ".preview");
+				if (previewDir.exists() && previewDir.isDirectory()) {
+					File[] files = previewDir.listFiles();
+					boolean done = false;
+					for (File ff : files) {
+						ext = FilenameUtils.getExtension(ff.getAbsolutePath()).toLowerCase();
+						if ("png".equals(ext) || "jpg".equals(ext) || "gif".equals(ext)) {
+							if (addPictureThumbnail(ff)) {
+								done = true;
+								break;
+							}
 						}
-
-						JLabel l = new JLabel("");
-						l.setIcon(new ImageIcon(scaled));
-						l.setBounds(0, 4, 190, 99);
-
-						JPanel pa = new JPanel(null);
-						pa.setBorder(ElephantWindow.emptyBorder);
-						pa.setBackground(Color.WHITE);
-						pa.add(l);
-
-						preview.setBounds(0, 0, 176, 40);
-						pa.setBounds(0, 40, 190, 103);
-
-						previewPane.add(pa);
+					}
+					if (done) {
 						break;
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		}
+	}
 
+	private boolean addPictureThumbnail(File f) {
+		try {
+			Image i = ImageIO.read(f);
+			if (i != null) {
+				float scale = i.getWidth(null) / (float) (196 - 12 - 4);
+				int w = (int) (i.getWidth(null) / scale);
+				int h = (int) ((float) i.getHeight(null) / scale);
+
+				Image scaled = NoteEditor.scalingCache.get(f, w, h);
+				if (scaled == null) {
+					scaled = i.getScaledInstance(w, h, Image.SCALE_AREA_AVERAGING);
+					NoteEditor.scalingCache.put(f, w, h, scaled);
+				}
+
+				JLabel l = new JLabel("");
+				l.setIcon(new ImageIcon(scaled));
+				l.setBounds(0, 4, 190, 99);
+
+				JPanel pa = new JPanel(null);
+				pa.setBorder(ElephantWindow.emptyBorder);
+				pa.setBackground(Color.WHITE);
+				pa.add(l);
+
+				preview.setBounds(0, 0, 176, 40);
+				pa.setBounds(0, 40, 190, 103);
+
+				previewPane.add(pa);
+				return true;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 	private NoteItemListener getNoteItemListenerFromParentTree() {
