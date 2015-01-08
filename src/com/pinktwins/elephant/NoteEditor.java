@@ -34,11 +34,11 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.text.BadLocationException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
-import com.pinktwins.elephant.EditorEventListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
@@ -416,6 +416,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		File[] files = currentNote.getAttachmentList();
 		if (files != null) {
+			CollectionUtils.reverseArray(files);
 			for (File f : files) {
 				if (f.getName().charAt(0) != '.' && f.isFile()) {
 					int position = m.getAttachmentPosition(f);
@@ -620,6 +621,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				try {
 					noteArea.setCaretPosition(position);
 				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				}
+
+				// ii is represented as attribute of one character of content.
+				// Insert another character in case another image needs to be
+				// inserted.
+				try {
+					noteArea.getDocument().insertString(noteArea.getCaretPosition(), "\n", null);
+				} catch (BadLocationException e) {
 					e.printStackTrace();
 				}
 
