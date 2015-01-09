@@ -317,6 +317,7 @@ public class FileAttachment extends JPanel {
 	}
 
 	private void addPreview(File f) {
+
 		PdfHolder pdfHolder = new PdfHolder();
 		final List<PreviewPageProvider> pages = getPreviewPages(f, pdfHolder);
 
@@ -462,7 +463,7 @@ public class FileAttachment extends JPanel {
 			}
 
 			if (!workers.isEmpty()) {
-				// One more worker to enable scrolling
+				// One more worker to mark done
 				workers.add(new SwingWorker<Image, Void>() {
 					@Override
 					protected Image doInBackground() throws Exception {
