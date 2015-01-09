@@ -5,8 +5,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 
 import javax.imageio.ImageIO;
@@ -14,41 +12,15 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.util.Factory;
 
 public class ImageScalingCache {
 
-	public int maxSize = 100;
-
-	HashMap<String, Image> map = Factory.newHashMap();
-	ArrayList<String> gets = Factory.newArrayList();
-
 	public Image get(File sourceFile, int w, int h) {
-		String key = key(sourceFile, w, h);
-		Image i = map.get(key);
-
-		if (i == null) {
-			i = load(sourceFile, w, h);
-		}
-
-		if (i != null) {
-			gets.remove(key);
-			gets.add(key);
-		}
-
-		return i;
+		return load(sourceFile, w, h);
 	}
 
 	public void put(File sourceFile, int w, int h, Image img) {
-		String key = key(sourceFile, w, h);
-		map.put(key, img);
 		store(sourceFile, img, w, h);
-
-		if (map.size() > maxSize) {
-			String oldestGet = gets.get(0);
-			gets.remove(0);
-			map.remove(oldestGet);
-		}
 	}
 
 	static public String getImageCacheDir() {
@@ -90,10 +62,6 @@ public class ImageScalingCache {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	private String key(File f, int w, int h) {
-		return String.format("%s:%d:%d", f.getAbsolutePath(), w, h);
 	}
 
 	// http://stackoverflow.com/questions/13605248/java-converting-image-to-bufferedimage
