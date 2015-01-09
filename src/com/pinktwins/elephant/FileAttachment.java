@@ -11,7 +11,10 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -22,13 +25,16 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import javax.swing.SwingWorker;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
 import org.apache.commons.io.FileUtils;
 
+import com.pinktwins.elephant.NoteEditor.EditorController;
 import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 
 public class FileAttachment extends JPanel {
@@ -52,11 +58,13 @@ public class FileAttachment extends JPanel {
 	private JLabel label, size;
 	private JButton icon, show, open;
 	private ImageScaler scaler;
+	private EditorController editor;
 
-	public FileAttachment(final File f, ImageScaler scaler) {
+	public FileAttachment(final File f, ImageScaler scaler, EditorController editor) {
 		super();
 
 		this.scaler = scaler;
+		this.editor = editor;
 
 		String labelStr = f.getName();
 		long fileLen = 0;
@@ -183,31 +191,102 @@ public class FileAttachment extends JPanel {
 	private void addPreview(File f) {
 		File[] files = previewFiles(f);
 		if (files.length > 0) {
-			JTextPane tp = new JTextPane();
+			final JTextPane tp = new JTextPane();
 			tp.setBackground(Color.WHITE);
 			tp.setOpaque(true);
 			tp.setFocusable(false);
 
-			Style style = tp.addStyle("nada", null);
+			final Style style = tp.addStyle("nada", null);
 			StyleConstants.setFontSize(style, 0);
 
-			for (File pf : files) {
-				addPageBreak(tp, style);
+			final int noteHash = editor.noteHash();
 
-				try {
-					Image img = ImageIO.read(pf);
-					if (img != null) {
-						img = scaler.scale(img, pf);
-						tp.insertIcon(new ImageIcon(img));
-						try {
-							tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
-						} catch (BadLocationException e1) {
-							e1.printStackTrace();
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
+			class Workers {
+				private final ArrayList<SwingWorker<Image, Void>> workers = Factory.newArrayList();
+
+				public void add(SwingWorker<Image, Void> w) {
+					workers.add(w);
 				}
+
+				public void next() {
+					if (workers.size() > 0) {
+						editor.lockScrolling(true);
+						SwingWorker<Image, Void> w = workers.get(0);
+						workers.remove(0);
+						w.execute();
+					}
+				}
+
+				public boolean isEmpty() {
+					return workers.isEmpty();
+				}
+			}
+
+			final Workers workers = new Workers();
+
+			for (File pf : files) {
+				final File imageFile = pf;
+
+				workers.add(new SwingWorker<Image, Void>() {
+					@Override
+					protected Image doInBackground() throws Exception {
+						try {
+							Image img = ImageIO.read(imageFile);
+							if (img != null) {
+								img = scaler.scale(img, imageFile);
+							}
+							return img;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						return null;
+					}
+
+					@Override
+					protected void done() {
+						try {
+							Image img = get();
+							if (img != null) {
+								addPageBreak(tp, style);
+								tp.insertIcon(new ImageIcon(img));
+								try {
+									tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
+								} catch (BadLocationException e) {
+									e.printStackTrace();
+								}
+							}
+
+							// abort if editor has changed note
+							if (noteHash == editor.noteHash()) {
+								workers.next();
+							} else {
+								editor.lockScrolling(false);
+							}
+						} catch (ExecutionException e) {
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+					}
+				});
+			}
+
+			if (!workers.isEmpty()) {
+				// One more worker to enable scrolling
+				workers.add(new SwingWorker<Image, Void>() {
+					@Override
+					protected Image doInBackground() throws Exception {
+						return null;
+					}
+
+					@Override
+					protected void done() {
+						editor.lockScrolling(false);
+					}
+				});
+
+				workers.next();
 			}
 
 			add(tp, BorderLayout.CENTER);
@@ -217,7 +296,9 @@ public class FileAttachment extends JPanel {
 	File[] previewFiles(File f) {
 		File pf = new File(f.getAbsolutePath() + ".preview");
 		if (pf.exists() && pf.isDirectory()) {
-			return pf.listFiles();
+			File[] files = pf.listFiles();
+			Arrays.sort(files);
+			return files;
 		} else {
 			return new File[0];
 		}

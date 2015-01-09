@@ -28,7 +28,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -81,13 +80,28 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public void stateChange(boolean hasFocus, boolean hasSelection);
 	}
 
-	class EditorWidthScaler implements ImageScaler {
+	class EditorWidthImageScaler implements ImageScaler {
 		public Image scale(Image i, File source) {
 			return getScaledImage(i, source, -2);
 		}
 	}
 
-	EditorWidthScaler editorWidthScaler = new EditorWidthScaler();
+	class EditorController {
+		public void lockScrolling(boolean value) {
+			scroll.setLocked(value);
+		}
+
+		public int noteHash() {
+			if (currentNote == null) {
+				return 0;
+			} else {
+				return currentNote.hashCode();
+			}
+		}
+	}
+
+	EditorWidthImageScaler editorWidthScaler = new EditorWidthImageScaler();
+	EditorController editorController = new EditorController();
 
 	public void addStateListener(NoteEditorStateListener l) {
 		stateListener = l;
@@ -101,7 +115,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	JPanel main, area;
 	ScrollablePanel areaHolder;
 	BackgroundPanel scrollHolder;
-	JScrollPane scroll;
+	CustomScrollPane scroll;
 	CustomEditor editor;
 	TagEditorPane tagPane;
 	BackgroundPanel topShadow;
@@ -143,6 +157,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
+	// Custom panel to fix note editor width to window width.
 	public class ScrollablePanel extends JPanel implements Scrollable {
 		public Dimension getPreferredScrollableViewportSize() {
 			Dimension d = getPreferredSize();
@@ -261,7 +276,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		scrollHolder = new BackgroundPanel();
 		scrollHolder.setOpaque(false);
 
-		scroll = new JScrollPane(areaHolder);
+		scroll = new CustomScrollPane(areaHolder);
 		scroll.setOpaque(false);
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getVerticalScrollBar().setUnitIncrement(10);
@@ -677,7 +692,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 				currentAttachments.put(ii, f);
 			} else {
-				FileAttachment aa = new FileAttachment(f, editorWidthScaler);
+				FileAttachment aa = new FileAttachment(f, editorWidthScaler, editorController);
 
 				noteArea.setCaretPosition(position);
 				noteArea.insertComponent(aa);
