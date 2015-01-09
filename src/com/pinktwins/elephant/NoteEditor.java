@@ -146,8 +146,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public void paint(Graphics g) {
 			super.paint(g);
 
+			int adjust = scroll.isLocked() ? 0 : kBorder+1;
+
 			if (scroll.getVerticalScrollBar().getValue() < 4) {
-				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 4, null);
+				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth() - adjust, 4, null);
 			} else {
 				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 2, null);
 			}

@@ -204,7 +204,8 @@ public class FileAttachment extends JPanel {
 		return new File(path);
 	}
 
-	// get file for page#. arg File F is a directory previously got with getPreviewDirectory()
+	// get file for page#. arg File F is a directory previously got with
+	// getPreviewDirectory()
 	static public File getPreviewFileForPage(File f, int page) {
 		return new File(String.format("%s%spage_%05d.png", f.getAbsolutePath(), File.separator, page));
 	}

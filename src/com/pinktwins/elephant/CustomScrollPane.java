@@ -31,4 +31,8 @@ public class CustomScrollPane extends JScrollPane {
 		lockedValue = getVerticalScrollBar().getValue();
 		this.setVerticalScrollBarPolicy(b ? JScrollPane.VERTICAL_SCROLLBAR_NEVER : JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	}
+	
+	public boolean isLocked() {
+		return isLocked;
+	}
 }
