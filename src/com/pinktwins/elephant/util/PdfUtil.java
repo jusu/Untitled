@@ -1,5 +1,6 @@
 package com.pinktwins.elephant.util;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -55,7 +56,6 @@ public class PdfUtil {
 			ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
 
 			pdffile = new PDFFile(buf);
-
 			numPages = pdffile.getNumPages();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -66,6 +66,11 @@ public class PdfUtil {
 
 	public int numPages() {
 		return numPages;
+	}
+
+	public Dimension pageSize(int n) {
+		PDFPage page = pdffile.getPage(n);
+		return new Dimension((int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
 	}
 
 	public Image writePage(int n, File outPath) {

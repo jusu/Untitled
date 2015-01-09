@@ -4,7 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
 import java.awt.Image;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -237,6 +242,8 @@ public class FileAttachment extends JPanel {
 				return img;
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (IndexOutOfBoundsException e) {
+				e.printStackTrace();
 			}
 			return null;
 		}
@@ -274,7 +281,11 @@ public class FileAttachment extends JPanel {
 		}
 	}
 
-	private List<PreviewPageProvider> getPreviewPages(File f) {
+	class PdfHolder {
+		PdfUtil pdf;
+	}
+
+	private List<PreviewPageProvider> getPreviewPages(File f, PdfHolder pdfHolder) {
 		ArrayList<PreviewPageProvider> pages = Factory.newArrayList();
 
 		File[] files = previewFiles(f);
@@ -288,6 +299,7 @@ public class FileAttachment extends JPanel {
 
 		if (FilenameUtils.getExtension(f.getName()).toLowerCase().equals("pdf")) {
 			PdfUtil pdf = new PdfUtil(f);
+
 			if (pdf.numPages() > gotPages) {
 				File outPath = getPreviewDirectory(f);
 				outPath.mkdirs();
@@ -297,13 +309,17 @@ public class FileAttachment extends JPanel {
 					}
 				}
 			}
+
+			pdfHolder.pdf = pdf;
 		}
 
 		return pages;
 	}
 
 	private void addPreview(File f) {
-		final List<PreviewPageProvider> pages = getPreviewPages(f);
+		PdfHolder pdfHolder = new PdfHolder();
+		final List<PreviewPageProvider> pages = getPreviewPages(f, pdfHolder);
+
 		if (pages.size() > 0) {
 			final JTextPane tp = new JTextPane();
 			tp.setBackground(Color.WHITE);
@@ -324,7 +340,7 @@ public class FileAttachment extends JPanel {
 
 				public void next() {
 					if (workers.size() > 0) {
-						editor.lockScrolling(true);
+						// editor.lockScrolling(true);
 						SwingWorker<Image, Void> w = workers.get(0);
 						workers.remove(0);
 						w.execute();
@@ -337,6 +353,57 @@ public class FileAttachment extends JPanel {
 
 				public int size() {
 					return workers.size();
+				}
+			}
+
+			// pageIcons - one icon per page
+			final ArrayList<ImageIcon> pageIcons = Factory.newArrayList();
+			Image page1 = pages.get(0).getPage();
+			int w = page1.getWidth(null);
+			int h = page1.getHeight(null);
+
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			Image blank = null;
+
+			GraphicsDevice gs = null;
+			GraphicsConfiguration gc = null;
+			try {
+				gs = ge.getDefaultScreenDevice();
+				gc = gs.getDefaultConfiguration();
+				blank = gc.createCompatibleImage(w, h, Transparency.BITMASK);
+			} catch (HeadlessException e) {
+			}
+
+			// Insert blank pages as placeholders
+			editor.scrollTo(0);
+
+			int pageNum = 0;
+			for (PreviewPageProvider ppp : pages) {
+				pageNum++;
+
+				/*
+				 * If pdf, check if aspect ratio changed. Must add a placeholder
+				 * with correct aspect ratio, or cropping will occur.
+				 */
+				if (pdfHolder.pdf != null) {
+					Dimension d = pdfHolder.pdf.pageSize(pageNum);
+					if (d.width * 100 / d.height != w * 100 / h) {
+						blank = gc.createCompatibleImage(d.width, d.height, Transparency.BITMASK);
+						blank = scaler.scale(blank, new File(ImageScalingCache.getImageCacheDir() + File.separator + "blank.png"));
+						w = blank.getWidth(null);
+						h = blank.getHeight(null);
+					}
+				}
+
+				ImageIcon ii = new ImageIcon(blank);
+				pageIcons.add(ii);
+
+				addPageBreak(tp, style);
+				tp.insertIcon(ii);
+				try {
+					tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
+				} catch (BadLocationException e) {
+					e.printStackTrace();
 				}
 			}
 
@@ -356,12 +423,12 @@ public class FileAttachment extends JPanel {
 						try {
 							Image img = get();
 							if (img != null) {
-								addPageBreak(tp, style);
-								tp.insertIcon(new ImageIcon(img));
-								try {
-									tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
-								} catch (BadLocationException e) {
-									e.printStackTrace();
+								int num = pages.size() - workers.size();
+
+								if (num >= 0 && num < pageIcons.size()) {
+									pageIcons.get(num).setImage(img);
+									tp.repaint();
+									// editor.lockScrolling(false);
 								}
 							}
 
@@ -382,7 +449,7 @@ public class FileAttachment extends JPanel {
 							if (noteHash == editor.noteHash()) {
 								workers.next();
 							} else {
-								editor.lockScrolling(false);
+								// editor.lockScrolling(false);
 							}
 						} catch (ExecutionException e) {
 							e.printStackTrace();
@@ -404,7 +471,7 @@ public class FileAttachment extends JPanel {
 
 					@Override
 					protected void done() {
-						editor.lockScrolling(false);
+						// editor.lockScrolling(false);
 						updateInfoStr("");
 					}
 				});

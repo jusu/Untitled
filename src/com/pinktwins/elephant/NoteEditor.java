@@ -87,6 +87,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	class EditorController {
+		public void scrollTo(int value) {
+			scroll.getVerticalScrollBar().setValue(value);
+		}
+
 		public void lockScrolling(boolean value) {
 			scroll.setLocked(value);
 		}
@@ -146,7 +150,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public void paint(Graphics g) {
 			super.paint(g);
 
-			int adjust = scroll.isLocked() ? 0 : kBorder+1;
+			int adjust = scroll.isLocked() ? 0 : kBorder + 1;
 
 			if (scroll.getVerticalScrollBar().getValue() < 4) {
 				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth() - adjust, 4, null);
