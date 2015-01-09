@@ -51,6 +51,10 @@ public class ImageScalingCache {
 		}
 	}
 
+	static public String getImageCacheDir() {
+		return Vault.getInstance().getHome().getAbsolutePath() + File.separator + ".imagecache";
+	}
+
 	private File getCacheFile(File f, int w, int h) {
 		String relativePath = f.getAbsolutePath().replace(Vault.getInstance().getHome().getAbsolutePath() + File.separator, "");
 		String cacheName = relativePath.replaceAll(Matcher.quoteReplacement(File.separator), "_");
@@ -58,7 +62,7 @@ public class ImageScalingCache {
 		int n = cacheName.indexOf("." + FilenameUtils.getExtension(cacheName));
 		cacheName = cacheName.substring(0, n) + "_" + w + "_" + h + cacheName.substring(n);
 
-		File cache = new File(Vault.getInstance().getHome().getAbsolutePath() + File.separator + ".imagecache" + File.separator + cacheName);
+		File cache = new File(getImageCacheDir() + File.separator + cacheName);
 		return cache;
 	}
 

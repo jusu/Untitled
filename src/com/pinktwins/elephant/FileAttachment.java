@@ -52,6 +52,8 @@ public class FileAttachment extends JPanel {
 
 	interface PreviewPageProvider {
 		Image getPage();
+
+		File getFile();
 	}
 
 	static {
@@ -196,6 +198,12 @@ public class FileAttachment extends JPanel {
 		});
 	}
 
+	static public File getPreviewDirectory(File f) {
+		String path = ImageScalingCache.getImageCacheDir() + File.separator + f.getName();
+		path += "_" + f.length() + ".preview";
+		return new File(path);
+	}
+
 	class FilePageProvider implements PreviewPageProvider {
 		File page;
 
@@ -215,6 +223,11 @@ public class FileAttachment extends JPanel {
 				e.printStackTrace();
 			}
 			return null;
+		}
+
+		@Override
+		public File getFile() {
+			return page;
 		}
 	}
 
@@ -237,6 +250,12 @@ public class FileAttachment extends JPanel {
 			}
 			return img;
 		}
+
+		@Override
+		public File getFile() {
+			getPage();
+			return outPath;
+		}
 	}
 
 	private List<PreviewPageProvider> getPreviewPages(File f) {
@@ -254,7 +273,7 @@ public class FileAttachment extends JPanel {
 		if (FilenameUtils.getExtension(f.getName()).toLowerCase().equals("pdf")) {
 			PdfUtil pdf = new PdfUtil(f);
 			if (pdf.numPages() > gotPages) {
-				File outPath = new File(f.getAbsolutePath() + ".preview");
+				File outPath = getPreviewDirectory(f);
 				outPath.mkdirs();
 				if (outPath.exists()) {
 					for (int n = gotPages; n < pdf.numPages(); n++) {
@@ -363,15 +382,16 @@ public class FileAttachment extends JPanel {
 		}
 	}
 
-	File[] previewFiles(File f) {
-		File pf = new File(f.getAbsolutePath() + ".preview");
+	static public File[] previewFiles(File f) {
+		File pf = getPreviewDirectory(f);
 		if (pf.exists() && pf.isDirectory()) {
-			File[] files = pf.listFiles(new FileFilter(){
+			File[] files = pf.listFiles(new FileFilter() {
 				@Override
 				public boolean accept(File pathname) {
 					String ext = FilenameUtils.getExtension(pathname.getName()).toLowerCase();
 					return ("jpg".equals(ext) || "jpeg".equals(ext) || "png".equals(ext) || "gif".equals(ext));
-				}});
+				}
+			});
 			Arrays.sort(files);
 			return files;
 		} else {

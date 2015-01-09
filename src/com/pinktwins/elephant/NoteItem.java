@@ -32,6 +32,7 @@ import org.joda.time.format.DateTimeFormatter;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.PdfUtil;
 
 class NoteItem extends JPanel implements MouseListener {
 
@@ -181,21 +182,30 @@ class NoteItem extends JPanel implements MouseListener {
 			}
 
 			if ("pdf".equals(ext)) {
-				File previewDir = new File(f.getAbsolutePath() + ".preview");
-				if (previewDir.exists() && previewDir.isDirectory()) {
-					File[] files = previewDir.listFiles();
-					boolean done = false;
-					for (File ff : files) {
-						ext = FilenameUtils.getExtension(ff.getAbsolutePath()).toLowerCase();
-						if ("png".equals(ext) || "jpg".equals(ext) || "gif".equals(ext)) {
-							if (addPictureThumbnail(ff)) {
-								done = true;
-								break;
-							}
+				File[] files = FileAttachment.previewFiles(f);
+				boolean done = false;
+				for (File ff : files) {
+					ext = FilenameUtils.getExtension(ff.getAbsolutePath()).toLowerCase();
+					if ("png".equals(ext) || "jpg".equals(ext) || "jpeg".equals(ext) || "gif".equals(ext)) {
+						if (addPictureThumbnail(ff)) {
+							done = true;
+							break;
 						}
 					}
-					if (done) {
-						break;
+				}
+				if (done) {
+					break;
+				}
+				File previewDir = FileAttachment.getPreviewDirectory(f);
+				previewDir.mkdirs();
+				if (previewDir.exists()) {
+					PdfUtil pdf = new PdfUtil(f);
+					if (pdf.numPages() > 0) {
+						File ff = new File(previewDir + File.separator + "page_1.png");
+						if (pdf.writePage(1, ff) != null) {
+							addPictureThumbnail(ff);
+							break;
+						}
 					}
 				}
 			}
