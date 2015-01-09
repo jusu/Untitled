@@ -10,10 +10,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.imageio.ImageIO;
@@ -31,11 +33,13 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.NoteEditor.EditorController;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.PdfUtil;
 
 public class FileAttachment extends JPanel {
 	private static final long serialVersionUID = 5444731416148596756L;
@@ -45,6 +49,10 @@ public class FileAttachment extends JPanel {
 	private static Image quickLook, openFolder;
 	private static boolean qlExists;
 	private static String qlPath = "/usr/bin/qlmanage";
+
+	interface PreviewPageProvider {
+		Image getPage();
+	}
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "quickLook", "openFolder" });
@@ -188,9 +196,80 @@ public class FileAttachment extends JPanel {
 		});
 	}
 
-	private void addPreview(File f) {
+	class FilePageProvider implements PreviewPageProvider {
+		File page;
+
+		public FilePageProvider(File page) {
+			this.page = page;
+		}
+
+		@Override
+		public Image getPage() {
+			try {
+				Image img = ImageIO.read(page);
+				if (img != null) {
+					img = scaler.scale(img, page);
+				}
+				return img;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	class PdfPageProvider implements PreviewPageProvider {
+		PdfUtil pdf;
+		int page;
+		File outPath;
+
+		public PdfPageProvider(PdfUtil pdf, int page, File outPath) {
+			this.pdf = pdf;
+			this.page = page;
+			this.outPath = outPath;
+		}
+
+		@Override
+		public Image getPage() {
+			Image img = pdf.writePage(page, outPath);
+			if (img != null) {
+				img = scaler.scale(img, outPath);
+			}
+			return img;
+		}
+	}
+
+	private List<PreviewPageProvider> getPreviewPages(File f) {
+		ArrayList<PreviewPageProvider> pages = Factory.newArrayList();
+
 		File[] files = previewFiles(f);
 		if (files.length > 0) {
+			for (File file : files) {
+				pages.add(new FilePageProvider(file));
+			}
+		}
+
+		int gotPages = pages.size();
+
+		if (FilenameUtils.getExtension(f.getName()).toLowerCase().equals("pdf")) {
+			PdfUtil pdf = new PdfUtil(f);
+			if (pdf.numPages() > gotPages) {
+				File outPath = new File(f.getAbsolutePath() + ".preview");
+				outPath.mkdirs();
+				if (outPath.exists()) {
+					for (int n = gotPages; n < pdf.numPages(); n++) {
+						pages.add(new PdfPageProvider(pdf, n + 1, new File(outPath.getAbsolutePath() + File.separator + "page_" + (n + 1) + ".png")));
+					}
+				}
+			}
+		}
+
+		return pages;
+	}
+
+	private void addPreview(File f) {
+		List<PreviewPageProvider> pages = getPreviewPages(f);
+		if (pages.size() > 0) {
 			final JTextPane tp = new JTextPane();
 			tp.setBackground(Color.WHITE);
 			tp.setOpaque(true);
@@ -224,22 +303,13 @@ public class FileAttachment extends JPanel {
 
 			final Workers workers = new Workers();
 
-			for (File pf : files) {
-				final File imageFile = pf;
+			for (PreviewPageProvider ppp : pages) {
+				final PreviewPageProvider page = ppp;
 
 				workers.add(new SwingWorker<Image, Void>() {
 					@Override
 					protected Image doInBackground() throws Exception {
-						try {
-							Image img = ImageIO.read(imageFile);
-							if (img != null) {
-								img = scaler.scale(img, imageFile);
-							}
-							return img;
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						return null;
+						return page.getPage();
 					}
 
 					@Override
@@ -296,7 +366,12 @@ public class FileAttachment extends JPanel {
 	File[] previewFiles(File f) {
 		File pf = new File(f.getAbsolutePath() + ".preview");
 		if (pf.exists() && pf.isDirectory()) {
-			File[] files = pf.listFiles();
+			File[] files = pf.listFiles(new FileFilter(){
+				@Override
+				public boolean accept(File pathname) {
+					String ext = FilenameUtils.getExtension(pathname.getName()).toLowerCase();
+					return ("jpg".equals(ext) || "jpeg".equals(ext) || "png".equals(ext) || "gif".equals(ext));
+				}});
 			Arrays.sort(files);
 			return files;
 		} else {
