@@ -69,6 +69,7 @@ public class FileAttachment extends JPanel {
 	private JButton icon, show, open;
 	private ImageScaler scaler;
 	private EditorController editor;
+	private String labelStr, sizeStr;
 
 	public FileAttachment(final File f, ImageScaler scaler, EditorController editor) {
 		super();
@@ -76,7 +77,7 @@ public class FileAttachment extends JPanel {
 		this.scaler = scaler;
 		this.editor = editor;
 
-		String labelStr = f.getName();
+		labelStr = f.getName();
 		long fileLen = 0;
 
 		if (f.exists()) {
@@ -103,7 +104,8 @@ public class FileAttachment extends JPanel {
 		label.setFont(ElephantWindow.fontBoldEditor);
 		label.setForeground(ElephantWindow.colorGray5);
 
-		size = new JLabel(FileUtils.byteCountToDisplaySize(fileLen));
+		sizeStr = FileUtils.byteCountToDisplaySize(fileLen);
+		size = new JLabel(sizeStr);
 		size.setFont(ElephantWindow.fontMedium);
 		size.setForeground(Color.DARK_GRAY);
 
@@ -196,6 +198,14 @@ public class FileAttachment extends JPanel {
 				}
 			}
 		});
+	}
+
+	long loadingStartTs;
+
+	private void updateInfoStr(String info) {
+		if (System.currentTimeMillis() - loadingStartTs > 1000) {
+			size.setText(sizeStr + info);
+		}
 	}
 
 	static public File getPreviewDirectory(File f) {
@@ -293,7 +303,7 @@ public class FileAttachment extends JPanel {
 	}
 
 	private void addPreview(File f) {
-		List<PreviewPageProvider> pages = getPreviewPages(f);
+		final List<PreviewPageProvider> pages = getPreviewPages(f);
 		if (pages.size() > 0) {
 			final JTextPane tp = new JTextPane();
 			tp.setBackground(Color.WHITE);
@@ -324,6 +334,10 @@ public class FileAttachment extends JPanel {
 				public boolean isEmpty() {
 					return workers.isEmpty();
 				}
+
+				public int size() {
+					return workers.size();
+				}
 			}
 
 			final Workers workers = new Workers();
@@ -350,6 +364,19 @@ public class FileAttachment extends JPanel {
 									e.printStackTrace();
 								}
 							}
+
+							int f = (int) ((1.0f - workers.size() / (float) (pages.size())) * 100f);
+
+							String s = "   ";
+							for (int n = 0; n < 10; n++) {
+								if (f > n * 10) {
+									s += "•";
+								} else {
+									s += "·";
+								}
+							}
+
+							updateInfoStr(s);
 
 							// abort if editor has changed note
 							if (noteHash == editor.noteHash()) {
@@ -378,9 +405,11 @@ public class FileAttachment extends JPanel {
 					@Override
 					protected void done() {
 						editor.lockScrolling(false);
+						updateInfoStr("");
 					}
 				});
 
+				loadingStartTs = System.currentTimeMillis();
 				workers.next();
 			}
 
