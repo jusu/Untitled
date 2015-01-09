@@ -204,6 +204,11 @@ public class FileAttachment extends JPanel {
 		return new File(path);
 	}
 
+	// get file for page#. arg File F is a directory previously got with getPreviewDirectory()
+	static public File getPreviewFileForPage(File f, int page) {
+		return new File(String.format("%s%spage_%05d.png", f.getAbsolutePath(), File.separator, page));
+	}
+
 	class FilePageProvider implements PreviewPageProvider {
 		File page;
 
@@ -277,7 +282,7 @@ public class FileAttachment extends JPanel {
 				outPath.mkdirs();
 				if (outPath.exists()) {
 					for (int n = gotPages; n < pdf.numPages(); n++) {
-						pages.add(new PdfPageProvider(pdf, n + 1, new File(outPath.getAbsolutePath() + File.separator + "page_" + (n + 1) + ".png")));
+						pages.add(new PdfPageProvider(pdf, n + 1, getPreviewFileForPage(outPath, n + 1)));
 					}
 				}
 			}
