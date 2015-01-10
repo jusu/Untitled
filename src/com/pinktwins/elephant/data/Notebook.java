@@ -120,18 +120,20 @@ public class Notebook implements Comparable<Notebook> {
 	}
 
 	private void populate() {
-		notes.clear();
-		for (File f : folder.listFiles()) {
-			String name = f.getName();
-			String ext = FilenameUtils.getExtension(f.getName()).toLowerCase();
+		if (folder != null) {
+			notes.clear();
+			for (File f : folder.listFiles()) {
+				String name = f.getName();
+				String ext = FilenameUtils.getExtension(f.getName()).toLowerCase();
 
-			if (name.charAt(0) != '.' && !name.endsWith("~") && (ext.equals("txt") || ext.equals("rtf"))) {
-				try {
-					if (f.isFile()) {
-						notes.add(new Note(f));
+				if (name.charAt(0) != '.' && !name.endsWith("~") && (ext.equals("txt") || ext.equals("rtf"))) {
+					try {
+						if (f.isFile()) {
+							notes.add(new Note(f));
+						}
+					} catch (SecurityException e) {
+						e.printStackTrace();
 					}
-				} catch (SecurityException e) {
-					e.printStackTrace();
 				}
 			}
 		}
