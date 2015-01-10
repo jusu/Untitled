@@ -455,9 +455,13 @@ public class Note implements Comparable<Note> {
 	public void removeAttachment(File f) {
 		try {
 			File deletedFolder = new File(attachmentFolder() + File.separator + "deleted");
-			// XXX file may exist in deleted folder already, should rename to
-			// unique
-			FileUtils.moveFileToDirectory(f, deletedFolder, true);
+
+			File newDeletedFile = new File(deletedFolder + File.separator + f.getName());
+			while (newDeletedFile.exists()) {
+				newDeletedFile = new File(deletedFolder + File.separator + f.getName() + "_" + ts() + "_" + ((int)(Math.random() * 1000000)));
+			}
+
+			FileUtils.moveFile(f, newDeletedFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -353,6 +354,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				unfocus();
 			}
 		});
+
+		main.setTransferHandler(new AttachmentTransferHandler(this));
 	}
 
 	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
@@ -585,7 +588,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					contentChanged = true;
 
 					// update attachment positions
-					Set<Object> remainingAttachments = currentAttachments.keySet();
+					Set<Object> remainingAttachments = new HashSet<Object>(currentAttachments.keySet());
 					for (AttachmentInfo info : editor.getAttachmentInfo()) {
 						if (info.object instanceof ImageIcon || info.object instanceof FileAttachment) {
 							File f = currentAttachments.get(info.object);

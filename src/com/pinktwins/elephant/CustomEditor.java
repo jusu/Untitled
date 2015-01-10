@@ -20,7 +20,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -99,7 +98,23 @@ public class CustomEditor extends RoundPanel {
 
 	public void setEditorEventListener(EditorEventListener l) {
 		eeListener = l;
+		
+		attachmentTransferHandler = new NoteAttachmentTransferHandler(eeListener);
 	}
+
+	class NoteAttachmentTransferHandler extends AttachmentTransferHandler {
+		public NoteAttachmentTransferHandler(EditorEventListener listener) {
+			super(listener);
+		}
+
+		@Override
+		public boolean canImport(TransferHandler.TransferSupport info) {
+			maybeImporting = true;
+			return true;
+		}
+	}
+
+	NoteAttachmentTransferHandler attachmentTransferHandler;
 
 	FocusListener editorFocusListener = new FocusListener() {
 		@Override
@@ -416,7 +431,7 @@ public class CustomEditor extends RoundPanel {
 		public void lostOwnership(Clipboard clipboard, Transferable contents) {
 		}
 	}
-
+	
 	private void createNote() {
 
 		if (note != null) {
@@ -432,36 +447,7 @@ public class CustomEditor extends RoundPanel {
 
 		maybeImporting = false;
 
-		note.setTransferHandler(new TransferHandler() {
-			private static final long serialVersionUID = -4777142447614165019L;
-
-			@Override
-			public boolean canImport(TransferHandler.TransferSupport info) {
-				maybeImporting = true;
-				return true;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean importData(TransferHandler.TransferSupport info) {
-				if (!info.isDrop()) {
-					return false;
-				}
-
-				Transferable t = info.getTransferable();
-				List<File> data;
-				try {
-					data = (List<File>) t.getTransferData(DataFlavor.javaFileListFlavor);
-				} catch (Exception e) {
-					return false;
-				}
-				if (eeListener != null) {
-					eeListener.filesDropped(data);
-				}
-
-				return true;
-			}
-		});
+		note.setTransferHandler(attachmentTransferHandler);
 
 		note.addCaretListener(new CaretListener() {
 			@Override
