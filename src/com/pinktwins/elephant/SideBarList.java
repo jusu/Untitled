@@ -160,8 +160,8 @@ public class SideBarList extends JPanel {
 					s = note.getMeta().title();
 				}
 
-				if (s.length() > 20) {
-					s = s.substring(0, 20) + "…";
+				if (s.length() > 16) {
+					s = s.substring(0, 16) + "…";
 				}
 			} else {
 				s = fileMovedStr;
@@ -176,14 +176,14 @@ public class SideBarList extends JPanel {
 			setOpaque(false);
 
 			setLayout(new BorderLayout());
-			setBorder(BorderFactory.createEmptyBorder(2, 12, 2, 12));
+			setBorder(BorderFactory.createEmptyBorder(2, 12, 1, 12));
 
 			icon.setBorderPainted(false);
 			icon.setContentAreaFilled(false);
 			icon.setBorder(ElephantWindow.emptyBorder);
 
 			label.setForeground(Color.LIGHT_GRAY);
-			label.setFont(ElephantWindow.fontNormal);
+			label.setFont(ElephantWindow.fontSideBarText);
 			label.setBorder(BorderFactory.createEmptyBorder(1, 6, 2, 0));
 
 			add(icon, BorderLayout.WEST);
