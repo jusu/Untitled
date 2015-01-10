@@ -235,7 +235,21 @@ public class FileAttachment extends JPanel {
 		@Override
 		public Image getPage() {
 			try {
-				Image img = ImageIO.read(page);
+				Image img = null;
+				try {
+					img = ImageIO.read(page);
+				} catch (IndexOutOfBoundsException e) {
+					// XXX suspect method of resilience
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {
+					}
+					try {
+						img = ImageIO.read(page);
+					} catch (IndexOutOfBoundsException e2) {
+						System.out.println("Failed reading pdf page file " + page.getAbsolutePath());
+					}
+				}
 				if (img != null) {
 					img = scaler.scale(img, page);
 				}
@@ -318,7 +332,7 @@ public class FileAttachment extends JPanel {
 
 	private void addPreview(File f) {
 
-		PdfHolder pdfHolder = new PdfHolder();
+		final PdfHolder pdfHolder = new PdfHolder();
 		final List<PreviewPageProvider> pages = getPreviewPages(f, pdfHolder);
 
 		if (pages.size() > 0) {
@@ -344,6 +358,14 @@ public class FileAttachment extends JPanel {
 						// editor.lockScrolling(true);
 						SwingWorker<Image, Void> w = workers.get(0);
 						workers.remove(0);
+						w.execute();
+					}
+				}
+
+				public void last() {
+					if (workers.size() > 0) {
+						SwingWorker<Image, Void> w = workers.get(workers.size() - 1);
+						workers.clear();
 						w.execute();
 					}
 				}
@@ -450,7 +472,7 @@ public class FileAttachment extends JPanel {
 							if (noteHash == editor.noteHash()) {
 								workers.next();
 							} else {
-								// editor.lockScrolling(false);
+								workers.last();
 							}
 						} catch (ExecutionException e) {
 							e.printStackTrace();
@@ -463,7 +485,7 @@ public class FileAttachment extends JPanel {
 			}
 
 			if (!workers.isEmpty()) {
-				// One more worker to mark done
+				// One more worker to mark done + cleanup
 				workers.add(new SwingWorker<Image, Void>() {
 					@Override
 					protected Image doInBackground() throws Exception {
@@ -474,6 +496,9 @@ public class FileAttachment extends JPanel {
 					protected void done() {
 						// editor.lockScrolling(false);
 						updateInfoStr("");
+						if (pdfHolder.pdf != null) {
+							pdfHolder.pdf.close();
+						}
 					}
 				});
 

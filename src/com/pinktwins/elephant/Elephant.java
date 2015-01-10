@@ -17,7 +17,11 @@ public class Elephant {
 	public final static EventBus eventBus = new EventBus();
 	public final static Settings settings = new Settings();
 
+	public static String[] args;
+
 	public static void main(String args[]) {
+		Elephant.args = args;
+		
 		try {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Elephant");

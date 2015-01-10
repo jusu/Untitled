@@ -208,8 +208,9 @@ class NoteItem extends JPanel implements MouseListener {
 						File ff = FileAttachment.getPreviewFileForPage(previewDir, 1);
 						if (pdf.writePage(1, ff) != null) {
 							addPictureThumbnail(ff);
-							break;
 						}
+						pdf.close();
+						break;
 					}
 				}
 			}

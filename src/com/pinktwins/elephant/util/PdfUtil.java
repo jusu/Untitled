@@ -8,6 +8,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -49,6 +50,8 @@ public class PdfUtil {
 	PDFFile pdffile;
 	int numPages;
 
+	final static int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
+
 	public PdfUtil(File f) {
 		try {
 			raf = new RandomAccessFile(f, "r");
@@ -76,9 +79,12 @@ public class PdfUtil {
 	public Image writePage(int n, File outPath) {
 		PDFPage page = pdffile.getPage(n);
 
+		// Improve the image quality slightly compared to assuming 72dpi.
+		// XXX magic formula
+		double adjust = (screenDpi / 72.0 - 1.0) / 2.0 + 1.0;
+
 		Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
-		Image img = page.getImage(rect.width, rect.height, // width &
-															// height
+		Image img = page.getImage((int)(rect.width * adjust), (int)(rect.height * adjust),
 				rect, // clip rect
 				null, // null for the ImageObserver
 				true, // fill background with white

@@ -36,6 +36,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
@@ -82,7 +83,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	class EditorWidthImageScaler implements ImageScaler {
 		public Image scale(Image i, File source) {
-			return getScaledImage(i, source, -2);
+			int adjust = -1;
+
+			if (SystemUtils.IS_OS_WINDOWS) {
+				adjust = -9;
+			}
+
+			return getScaledImage(i, source, adjust, true);
 		}
 	}
 
@@ -348,11 +355,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		});
 	}
 
-	private Image getScaledImage(Image i, File sourceFile, int widthOffset) {
+	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
 		long w = getWidth() - kBorder * 4 - 12 + widthOffset;
 		long iw = i.getWidth(null);
 
-		if (i.getWidth(null) > w) {
+		if (useFullWidth || i.getWidth(null) > w) {
 			float f = w / (float) iw;
 			int scaledWidth = (int) (f * (float) iw);
 			int scaledHeight = (int) (f * (float) i.getHeight(null));
@@ -676,7 +683,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			Image i = ImageIO.read(f);
 			if (i != null) {
 				if (getWidth() > 0) {
-					i = getScaledImage(i, f, 0);
+					i = getScaledImage(i, f, 0, false);
 				} else {
 					throw new AssertionError();
 				}
