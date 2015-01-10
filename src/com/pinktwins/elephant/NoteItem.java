@@ -60,6 +60,10 @@ class NoteItem extends JPanel implements MouseListener {
 		noteSelection = i.next();
 	}
 
+	static public void removeCacheKey(File f) {
+		itemCache.remove(f);
+	}
+
 	static public NoteItem itemOf(Note n) {
 		NoteItem item = itemCache.get(n.file());
 

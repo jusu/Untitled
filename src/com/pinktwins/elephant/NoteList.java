@@ -27,9 +27,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.NoteItem.NoteItemListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
@@ -60,6 +62,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	public NoteList(ElephantWindow w) {
 		super(tile);
 		window = w;
+
+		Elephant.eventBus.register(this);
+
 		createComponents();
 	}
 
@@ -316,11 +321,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		}
 	}
 
-	public void sortAndUpdate() {
-		notebook.sortNotes();
-
-		// XXX animate position changes to notes
-
+	public void updateLoad() {
 		Note n = null;
 		if (selectedNote != null) {
 			n = selectedNote.note;
@@ -331,6 +332,11 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		if (n != null) {
 			selectNote(n);
 		}
+	}
+
+	public void sortAndUpdate() {
+		notebook.refresh();
+		updateLoad();
 	}
 
 	public void openNotebookChooserForJumping() {
@@ -365,5 +371,24 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public boolean isShowingNotebook(Notebook nb) {
 		return notebook.equals(nb);
+	}
+
+	@Subscribe
+	public void handleNotebookEvent(NotebookEvent event) {
+		switch (event.kind) {
+		case noteCreated:
+			break;
+		case noteMoved:
+			NoteItem.removeCacheKey(event.source);
+			break;
+		case noteRenamed:
+			NoteItem.removeCacheKey(event.source);
+			if (isShowingNotebook(Note.findContainingNotebook(event.dest))) {
+				sortAndUpdate();
+			}
+			break;
+		default:
+			break;
+		}
 	}
 }

@@ -23,14 +23,13 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
-import com.pinktwins.elephant.eventbus.NotebookEvent.Kind;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
 import com.pinktwins.elephant.util.RtfUtil;
 
 public class Note implements Comparable<Note> {
+	
 	private File file, meta;
 	private String fileName = "";
 
@@ -115,8 +114,12 @@ public class Note implements Comparable<Note> {
 		readInfo();
 	}
 
+	static public Notebook findContainingNotebook(File f) {
+		return Vault.getInstance().findNotebook(f.getParentFile());
+	}
+
 	public Notebook findContainingNotebook() {
-		return Vault.getInstance().findNotebook(file.getParentFile());
+		return findContainingNotebook(file);
 	}
 
 	public String createdStr() {
@@ -396,10 +399,11 @@ public class Note implements Comparable<Note> {
 			FileUtils.moveFile(file, newFile);
 		}
 
-		NotebookEvent.post(NotebookEvent.Kind.noteRenamed, file, newFile);
-
+		File oldFile = file;
 		file = newFile;
 		meta = newMeta;
+
+		NotebookEvent.post(NotebookEvent.Kind.noteRenamed, oldFile, newFile);
 
 		if (newAtts != null) {
 			FileUtils.moveDirectory(atts, newAtts);

@@ -178,11 +178,8 @@ public class Vault implements WatchDirListener {
 				public void run() {
 					Notebook nb = findNotebook(new File(file));
 					if (nb != null) {
-						int prevCount = nb.count();
 						nb.refresh();
-						if (prevCount != nb.count()) {
-							Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
-						}
+						Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
 					}
 				}
 			});

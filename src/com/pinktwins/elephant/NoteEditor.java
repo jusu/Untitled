@@ -557,6 +557,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					String ext = FilenameUtils.getExtension(currentNote.file().getAbsolutePath()).toLowerCase();
 					if ((editor.isRichText && "txt".equals(ext)) || (!editor.isRichText && "rtf".equals(ext))) {
 						renameAccordingToFormat(editedTitle);
+						changed = true;
 					}
 				}
 
