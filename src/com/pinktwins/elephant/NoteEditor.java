@@ -529,7 +529,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor.discardUndoBuffer();
 
 		if (note.isMarkdown()) {
-			String html = pegDown.markdownToHtml(note.contents());
+			String contents = note.contents();
+			String html = pegDown.markdownToHtml(editor.isRichText ? note.plainTextContents(contents) : contents);
 			editor.displayHtml(currentNote.file(), html);
 		}
 
