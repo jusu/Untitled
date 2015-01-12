@@ -598,6 +598,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor.focusTitle();
 	}
 
+	public void focusEditor() {
+		editor.getTextPane().requestFocusInWindow();
+	}
+
 	@Override
 	public void editingFocusGained() {
 		isDirty = true;
@@ -670,6 +674,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			if (f.isFile()) {
 				System.out.println("file: " + f.getAbsolutePath());
 				try {
+					isDirty = true;
+
 					File attached = currentNote.importAttachment(f);
 					currentNote.getMeta().setAttachmentPosition(attached, noteArea.getCaretPosition());
 

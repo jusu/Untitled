@@ -525,6 +525,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener saveNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			noteEditor.focusEditor();
 			unfocusEditor();
 		}
 	};
@@ -802,9 +803,14 @@ public class ElephantWindow extends JFrame {
 		splitLeft.revalidate();
 	}
 
+	public void updateThumb(Note note) {
+		noteList.updateThumb(note);
+		splitLeft.revalidate();
+	}
+
 	@Subscribe
 	public void handleNoteChanged(NoteChangedEvent event) {
-		noteList.updateThumb(event.note);
+		updateThumb(event.note);
 		if (event.contentChanged) {
 			sortAndUpdate();
 		}

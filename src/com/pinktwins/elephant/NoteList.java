@@ -280,6 +280,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public void unfocusEditor() {
 		if (selectedNote != null) {
+			this.requestFocusInWindow();
 			selectedNote.requestFocusInWindow();
 		}
 	}
