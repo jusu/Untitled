@@ -591,8 +591,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		scroll.setLocked(true);
 		scroll.unlockAfter(100);
-
-		window.unfocusEditor();
 	}
 
 	public void focusTitle() {
