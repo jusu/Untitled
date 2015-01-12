@@ -315,7 +315,11 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	public void updateThumb(Note note) {
 		for (NoteItem item : noteItems) {
 			if (item.note.equals(note)) {
-				item.updateThumb();
+				int index = noteItems.indexOf(item);
+				noteItems.remove(item);
+
+				NoteItem.removeCacheKey(note.file());
+				noteItems.add(index, NoteItem.itemOf(note));
 				return;
 			}
 		}

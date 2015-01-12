@@ -177,16 +177,16 @@ class NoteItem extends JPanel implements MouseListener {
 		previewPane.add(preview);
 
 		// Picture thumbnail.
-		for (File f : note.getAttachmentList()) {
-			String ext = FilenameUtils.getExtension(f.getAbsolutePath()).toLowerCase();
+		for (Note.AttachmentInfo i : note.getAttachmentList()) {
+			String ext = FilenameUtils.getExtension(i.f.getAbsolutePath()).toLowerCase();
 			if ("png".equals(ext) || "jpg".equals(ext) || "gif".equals(ext)) {
-				if (addPictureThumbnail(f)) {
+				if (addPictureThumbnail(i.f)) {
 					break;
 				}
 			}
 
 			if ("pdf".equals(ext)) {
-				File[] files = FileAttachment.previewFiles(f);
+				File[] files = FileAttachment.previewFiles(i.f);
 				boolean done = false;
 				for (File ff : files) {
 					ext = FilenameUtils.getExtension(ff.getAbsolutePath()).toLowerCase();
@@ -200,10 +200,10 @@ class NoteItem extends JPanel implements MouseListener {
 				if (done) {
 					break;
 				}
-				File previewDir = FileAttachment.getPreviewDirectory(f);
+				File previewDir = FileAttachment.getPreviewDirectory(i.f);
 				previewDir.mkdirs();
 				if (previewDir.exists()) {
-					PdfUtil pdf = new PdfUtil(f);
+					PdfUtil pdf = new PdfUtil(i.f);
 					if (pdf.numPages() > 0) {
 						File ff = FileAttachment.getPreviewFileForPage(previewDir, 1);
 						if (pdf.writePage(1, ff) != null) {
@@ -267,11 +267,6 @@ class NoteItem extends JPanel implements MouseListener {
 			contents = contents.substring(0, 200) + "…";
 		}
 		return contents;
-	}
-
-	public void updateThumb() {
-		name.setText(note.getMeta().title());
-		createPreviewComponents();
 	}
 
 	public void setSelected(boolean b) {

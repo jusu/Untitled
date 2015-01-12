@@ -17,13 +17,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -32,23 +30,21 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
+import javax.swing.TransferHandler;
 import javax.swing.text.AbstractDocument.LeafElement;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.pegdown.PegDownProcessor;
 
 import com.google.common.eventbus.Subscribe;
-import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
-import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
-import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.ResizeListener;
 
@@ -69,6 +65,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	static public ImageScalingCache scalingCache = new ImageScalingCache();
 
+	static private PegDownProcessor pegDown;
+	// takes ~250-350 ms
+	final private Thread pegDownInit = new Thread() {
+		@Override
+		public void run() {
+			pegDown = new PegDownProcessor();
+		}
+	};
+
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteeditor", "noteTopShadow", "noteToolsNotebook", "noteToolsTrash", "noteToolsDivider" });
 		tile = i.next();
@@ -82,6 +87,21 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public void stateChange(boolean hasFocus, boolean hasSelection);
 	}
 
+	class EditorAttachmentTransferHandler extends AttachmentTransferHandler {
+		public EditorAttachmentTransferHandler(EditorEventListener listener) {
+			super(listener);
+		}
+
+		@Override
+		public boolean canImport(TransferHandler.TransferSupport info) {
+			if (editor.isShowingMarkdown()) {
+				return false;
+			}
+
+			return true;
+		}
+	}
+
 	class EditorWidthImageScaler implements ImageScaler {
 		public Image scale(Image i, File source) {
 			int adjust = -1;
@@ -91,6 +111,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 
 			return getScaledImage(i, source, adjust, true);
+		}
+	}
+
+	class ImageAttachmentImageScaler implements ImageScaler {
+		public Image scale(Image i, File source) {
+			return getScaledImage(i, source, 0, false);
 		}
 	}
 
@@ -113,6 +139,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	EditorWidthImageScaler editorWidthScaler = new EditorWidthImageScaler();
+	ImageAttachmentImageScaler imageAttachmentImageScaler = new ImageAttachmentImageScaler();
 	EditorController editorController = new EditorController();
 
 	public void addStateListener(NoteEditorStateListener l) {
@@ -122,7 +149,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	NoteEditorStateListener stateListener;
 
 	private Note currentNote;
-	private HashMap<Object, File> currentAttachments = Factory.newHashMap();
+	private NoteAttachments attachments = new NoteAttachments();
 
 	JPanel main, area;
 	ScrollablePanel areaHolder;
@@ -205,6 +232,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		Elephant.eventBus.register(this);
 
 		createComponents();
+
+		pegDownInit.start();
 	}
 
 	private void createComponents() {
@@ -355,7 +384,23 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			}
 		});
 
-		main.setTransferHandler(new AttachmentTransferHandler(this));
+		scroll.addMouseListener(new CustomMouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				unfocus();
+
+				// If we switch out from markdown-editing to rich display,
+				// the unfocus happens too late to actually save edits.
+				// This UIEvent marks a savepoint.
+				UIEvent.post(UIEvent.Kind.editorWillChangeNote);
+
+				if (currentNote.isMarkdown()) {
+					window.showNote(currentNote);
+				}
+			}
+		});
+
+		main.setTransferHandler(new EditorAttachmentTransferHandler(this));
 	}
 
 	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
@@ -430,7 +475,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void clear() {
 		currentNote = null;
-		currentAttachments.clear();
+		attachments = new NoteAttachments();
 		editor.clear();
 		isDirty = false;
 		visible(false);
@@ -445,48 +490,48 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void _load(Note note) {
+
 		currentNote = note;
-		currentAttachments.clear();
+		attachments = new NoteAttachments();
 
 		Meta m = note.getMeta();
+
 		editor.setTitle(m.title());
 		editor.setText(note.contents());
 
 		tagPane.load(Vault.getInstance().resolveTagIds(m.tags()));
 
-		File[] files = currentNote.getAttachmentList();
-		if (files != null) {
-			int loPosition = 0;
+		List<Note.AttachmentInfo> info = currentNote.getAttachmentList();
+		if (!info.isEmpty()) {
 
-			for (File f : files) {
-				if (f.getName().charAt(0) != '.' && f.isFile()) {
-					int position = m.getAttachmentPosition(f);
+			// We need to insert attachments from end to start - thus, sort.
+			Collections.reverse(info);
 
-					// If attachments have no set position, lay them one
-					// after another.
-					if (position == 0) {
-						position = loPosition;
-						editor.insertNewline(position);
-						loPosition += 2;
+			for (Note.AttachmentInfo ap : info) {
+
+				// If position to insert attachment into would have
+				// component content already, it would be overwritten.
+				// Make sure there is none.
+				AttributeSet as = editor.getAttributes(ap.position);
+				if (as instanceof LeafElement) {
+					LeafElement l = (LeafElement) as;
+					if (!"content".equals(l.getName())) {
+						editor.insertNewline(ap.position);
 					}
-
-					// If position to insert attachment into would have
-					// component content already, it would be overwritten.
-					// Make sure there is none.
-					AttributeSet as = editor.getAttributes(position);
-					if (as instanceof LeafElement) {
-						LeafElement l = (LeafElement) as;
-						if (!"content".equals(l.getName())) {
-							editor.insertNewline(position);
-						}
-					}
-
-					insertFileIntoNote(f, position);
 				}
+
+				attachments.insertFileIntoNote(this, ap.f, ap.position);
 			}
 		}
 
+		attachments.loaded();
+
 		editor.discardUndoBuffer();
+
+		if (note.isMarkdown()) {
+			String html = pegDown.markdownToHtml(note.contents());
+			editor.displayHtml(currentNote.file(), html);
+		}
 
 		visible(true);
 
@@ -502,7 +547,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void focusQuickLook() {
-		for (Object o : currentAttachments.keySet()) {
+		for (Object o : attachments.keySet()) {
 			if (o instanceof FileAttachment) {
 				FileAttachment fa = (FileAttachment) o;
 				fa.focusQuickLook();
@@ -534,93 +579,20 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
-	private void renameAccordingToFormat(String title) {
-		try {
-			currentNote.attemptSafeRename(title + (editor.isRichText ? ".rtf" : ".txt"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public void saveChanges() {
 		if (!isDirty && !tagPane.isDirty()) {
 			return;
 		}
 
-		if (currentNote != null) {
-			boolean changed = false;
-			boolean contentChanged = false;
+		SaveChanges.savechanges(currentNote, attachments, this, tagPane);
 
-			try {
-				// Title
-				String fileTitle = currentNote.getMeta().title();
-				String editedTitle = editor.getTitle();
-				if (!fileTitle.equals(editedTitle)) {
-					currentNote.getMeta().title(editedTitle);
-					renameAccordingToFormat(editedTitle);
-					changed = true;
-				}
-
-				// Format
-				if (!changed) {
-					// Did format change during edit?
-					String ext = FilenameUtils.getExtension(currentNote.file().getAbsolutePath()).toLowerCase();
-					if ((editor.isRichText && "txt".equals(ext)) || (!editor.isRichText && "rtf".equals(ext))) {
-						renameAccordingToFormat(editedTitle);
-						changed = true;
-					}
-				}
-
-				// Tags
-				if (tagPane.isDirty()) {
-					List<String> tagNames = tagPane.getTagNames();
-					List<String> tagIds = Vault.getInstance().resolveTagNames(tagNames);
-					currentNote.getMeta().setTags(tagIds, tagNames);
-					changed = true;
-				}
-
-				String fileText = currentNote.contents();
-				String editedText = editor.getText();
-
-				if (!fileText.equals(editedText)) {
-					currentNote.save(editedText);
-					changed = true;
-					contentChanged = true;
-
-					// update attachment positions
-					Set<Object> remainingAttachments = new HashSet<Object>(currentAttachments.keySet());
-					for (AttachmentInfo info : editor.getAttachmentInfo()) {
-						if (info.object instanceof ImageIcon || info.object instanceof FileAttachment) {
-							File f = currentAttachments.get(info.object);
-							if (f != null) {
-								currentNote.getMeta().setAttachmentPosition(f, info.startPosition);
-								remainingAttachments.remove(info.object);
-							}
-						}
-					}
-
-					// remainingAttachments were not found in document anymore.
-					// Move to 'deleted'
-					for (Object o : remainingAttachments) {
-						File f = currentAttachments.get(o);
-						System.out.println("No longer in document: " + f);
-						currentNote.removeAttachment(f);
-						currentAttachments.remove(o);
-					}
-				}
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
-
-			if (changed) {
-				Elephant.eventBus.post(new NoteChangedEvent(currentNote));
-				if (contentChanged) {
-					window.sortAndUpdate();
-				}
-			}
-		}
-
+		attachments.loaded();
 		isDirty = false;
+
+		scroll.setLocked(true);
+		scroll.unlockAfter(100);
+
+		window.unfocusEditor();
 	}
 
 	public void focusTitle() {
@@ -675,52 +647,18 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 	}
 
-	private void insertFileIntoNote(File f, int position) {
-		JTextPane noteArea = editor.getTextPane();
+	private void insertMarkdownLink(File f) {
+		boolean isImage = Images.isImage(f);
+		String name = f.getName();
+		@SuppressWarnings("deprecation")
+		String encName = URLEncoder.encode(name);
 
-		int caret = noteArea.getCaretPosition();
-
-		// String ext = FilenameUtils.getExtension(attached.getAbsolutePath());
-		// if ext is image?
+		JTextPane tp = editor.getTextPane();
 		try {
-			Image i = ImageIO.read(f);
-			if (i != null) {
-				if (getWidth() > 0) {
-					i = getScaledImage(i, f, 0, false);
-				} else {
-					throw new AssertionError();
-				}
-
-				ImageIcon ii = new ImageIcon(i);
-
-				if (position > noteArea.getDocument().getLength()) {
-					position = 0;
-				}
-
-				try {
-					noteArea.setCaretPosition(position);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				}
-
-				// XXX this inserts one extra character to document. replace
-				// existing empty character instead.
-				noteArea.insertIcon(ii);
-
-				currentAttachments.put(ii, f);
-			} else {
-				FileAttachment aa = new FileAttachment(f, editorWidthScaler, editorController);
-
-				noteArea.setCaretPosition(position);
-				noteArea.insertComponent(aa);
-
-				currentAttachments.put(aa, f);
-			}
-		} catch (IOException e) {
+			tp.getDocument().insertString(tp.getCaretPosition(), String.format("%s[%s](%s \"\")\n", isImage ? "!" : "", name, encName), null);
+		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-
-		noteArea.setCaretPosition(caret);
 	}
 
 	@Override
@@ -736,7 +674,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					File attached = currentNote.importAttachment(f);
 					currentNote.getMeta().setAttachmentPosition(attached, noteArea.getCaretPosition());
 
-					insertFileIntoNote(attached, noteArea.getCaretPosition());
+					attachments.insertFileIntoNote(this, attached, noteArea.getCaretPosition());
+
+					if (currentNote.isMarkdown()) {
+						insertMarkdownLink(f);
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

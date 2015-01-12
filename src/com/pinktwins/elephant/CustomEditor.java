@@ -20,6 +20,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
@@ -73,6 +74,7 @@ public class CustomEditor extends RoundPanel {
 
 	private JTextField title;
 	private CustomTextPane note;
+	private HtmlPane htmlPane;
 	private JPanel padding;
 
 	private UndoManager undoManager = new UndoManager();
@@ -98,7 +100,7 @@ public class CustomEditor extends RoundPanel {
 
 	public void setEditorEventListener(EditorEventListener l) {
 		eeListener = l;
-		
+
 		attachmentTransferHandler = new NoteAttachmentTransferHandler(eeListener);
 	}
 
@@ -109,6 +111,10 @@ public class CustomEditor extends RoundPanel {
 
 		@Override
 		public boolean canImport(TransferHandler.TransferSupport info) {
+			if (isShowingMarkdown()) {
+				return false;
+			}
+
 			maybeImporting = true;
 			return true;
 		}
@@ -431,11 +437,16 @@ public class CustomEditor extends RoundPanel {
 		public void lostOwnership(Clipboard clipboard, Transferable contents) {
 		}
 	}
-	
+
 	private void createNote() {
 
 		if (note != null) {
 			remove(note);
+		}
+
+		if (htmlPane != null) {
+			remove(htmlPane);
+			htmlPane = null;
 		}
 
 		note = new CustomTextPane();
@@ -668,6 +679,7 @@ public class CustomEditor extends RoundPanel {
 	class AttachmentInfo {
 		Object object;
 		int startPosition;
+		int endPosition;
 	}
 
 	public List<AttachmentInfo> getAttachmentInfo() {
@@ -681,6 +693,7 @@ public class CustomEditor extends RoundPanel {
 				AttachmentInfo info = new AttachmentInfo();
 				info.object = StyleConstants.getIcon(as);
 				info.startPosition = element.getStartOffset();
+				info.endPosition = element.getEndOffset();
 				list.add(info);
 			}
 
@@ -688,6 +701,7 @@ public class CustomEditor extends RoundPanel {
 				AttachmentInfo info = new AttachmentInfo();
 				info.object = StyleConstants.getComponent(as);
 				info.startPosition = element.getStartOffset();
+				info.endPosition = element.getEndOffset();
 				list.add(info);
 			}
 		}
@@ -720,5 +734,31 @@ public class CustomEditor extends RoundPanel {
 	public void discardUndoBuffer() {
 		undoManager.discardAllEdits();
 		Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+	}
+
+	public void displayHtml(final File noteFile, final String html) {
+		if (htmlPane == null) {
+			htmlPane = new HtmlPane(noteFile, new Runnable() {
+				@Override
+				public void run() {
+					// Executed when mouseClick does not open a link
+					// -> go to edit mode
+					CustomEditor.this.remove(htmlPane);
+					CustomEditor.this.add(note, BorderLayout.CENTER);
+					CustomEditor.this.revalidate();
+
+					htmlPane = null;
+				}
+			});
+		}
+
+		htmlPane.setText(html);
+
+		remove(note);
+		add(htmlPane, BorderLayout.CENTER);
+	}
+
+	public boolean isShowingMarkdown() {
+		return htmlPane != null;
 	}
 }

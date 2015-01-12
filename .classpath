@@ -10,5 +10,9 @@
 	<classpathentry kind="lib" path="libs/commons-collections4-4.0.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libs/PDFRenderer-0.9.1.jar"/>
+	<classpathentry kind="lib" path="libs/parboiled-java-1.1.6.jar"/>
+	<classpathentry kind="lib" path="libs/pegdown-1.4.2.jar"/>
+	<classpathentry kind="lib" path="libs/parboiled-core-1.1.6.jar"/>
+	<classpathentry kind="lib" path="libs/asm-all-4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

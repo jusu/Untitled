@@ -55,7 +55,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontMediumMinus = Font.decode("Arial-10");
 	final public static Font fontModalHeader = Font.decode("Arial-BOLD-16");
 	final public static Font fontSideBarText = Font.decode("Arial-BOLD-13");
-	
+
 	final public static Color colorTitle = Color.decode("#999999");
 	final public static Color colorTitleButton = Color.decode("#666666");
 	final public static Color colorGray5 = Color.decode("#555555");
@@ -64,7 +64,7 @@ public class ElephantWindow extends JFrame {
 	final public static Color colorBlue = Color.decode("#0091e6");
 	final public static Color colorPreviewGray = Color.decode("#666663");
 	final public static Color colorPreviewGrayOlder = Color.decode("#b1b1b1");
-	
+
 	final public static int bigWidth = 1920;
 
 	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
@@ -805,6 +805,9 @@ public class ElephantWindow extends JFrame {
 	@Subscribe
 	public void handleNoteChanged(NoteChangedEvent event) {
 		noteList.updateThumb(event.note);
+		if (event.contentChanged) {
+			sortAndUpdate();
+		}
 	}
 
 	@Subscribe

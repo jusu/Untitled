@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,7 +30,7 @@ import com.pinktwins.elephant.util.IOUtil;
 import com.pinktwins.elephant.util.RtfUtil;
 
 public class Note implements Comparable<Note> {
-	
+
 	private File file, meta;
 	private String fileName = "";
 
@@ -55,6 +56,21 @@ public class Note implements Comparable<Note> {
 		public List<String> tags();
 
 		public void setTags(List<String> tagIds, List<String> tagNames);
+	}
+
+	public class AttachmentInfo implements Comparable<AttachmentInfo> {
+		public File f;
+		public int position;
+
+		public AttachmentInfo(File f, int position) {
+			this.f = f;
+			this.position = position;
+		}
+
+		@Override
+		public int compareTo(AttachmentInfo o) {
+			return position - o.position;
+		}
 	}
 
 	@Override
@@ -106,10 +122,10 @@ public class Note implements Comparable<Note> {
 		file = f;
 		meta = metaFromFile(f);
 
-		String ext = FilenameUtils.getExtension(f.getName());
-		if (!"txt".equals(ext) && !"rtf".equals(ext)) {
-			saveLocked = true;
-		}
+		String s = f.getName().toLowerCase();
+		boolean editable = s.endsWith(".txt") || s.endsWith(".rtf") || s.endsWith(".md");
+
+		saveLocked = !editable;
 
 		readInfo();
 	}
@@ -120,6 +136,11 @@ public class Note implements Comparable<Note> {
 
 	public Notebook findContainingNotebook() {
 		return findContainingNotebook(file);
+	}
+
+	public boolean isMarkdown() {
+		String s = file.getName();
+		return s.endsWith(".md.txt") || s.endsWith(".md");
 	}
 
 	public String createdStr() {
@@ -426,6 +447,10 @@ public class Note implements Comparable<Note> {
 		return dest;
 	}
 
+	public String attachmentFolderPath() {
+		return attachmentFolderPath(file);
+	}
+
 	private String attachmentFolderPath(File f) {
 		return f.getAbsolutePath() + ".attachments";
 	}
@@ -443,7 +468,7 @@ public class Note implements Comparable<Note> {
 		return f;
 	}
 
-	public File[] getAttachmentList() {
+	private File[] getAttachmentFiles() {
 		File f = new File(attachmentFolderPath(file));
 		if (f.exists()) {
 			return f.listFiles();
@@ -452,13 +477,31 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
+	public List<AttachmentInfo> getAttachmentList() {
+		List<AttachmentInfo> info = new ArrayList<AttachmentInfo>();
+
+		File[] files = getAttachmentFiles();
+		if (files != null) {
+			Meta m = getMeta();
+			for (File f : files) {
+				if (f.getName().charAt(0) != '.' && f.isFile()) {
+					int position = m.getAttachmentPosition(f);
+					info.add(new AttachmentInfo(f, position));
+				}
+			}
+			Collections.sort(info);
+		}
+
+		return info;
+	}
+	
 	public void removeAttachment(File f) {
 		try {
 			File deletedFolder = new File(attachmentFolder() + File.separator + "deleted");
 
 			File newDeletedFile = new File(deletedFolder + File.separator + f.getName());
 			while (newDeletedFile.exists()) {
-				newDeletedFile = new File(deletedFolder + File.separator + f.getName() + "_" + ts() + "_" + ((int)(Math.random() * 1000000)));
+				newDeletedFile = new File(deletedFolder + File.separator + f.getName() + "_" + ts() + "_" + ((int) (Math.random() * 1000000)));
 			}
 
 			FileUtils.moveFile(f, newDeletedFile);
