@@ -62,8 +62,6 @@ public class SaveChanges {
 					changed = true;
 				}
 
-				String fileText = currentNote.contents();
-
 				// Fetch attachment info
 				List<AttachmentInfo> info = editor.getAttachmentInfo();
 
@@ -102,6 +100,7 @@ public class SaveChanges {
 					}
 				}
 
+				String fileText = currentNote.contents();
 				String editedText = editor.getText();
 
 				if (!fileText.equals(editedText)) {
