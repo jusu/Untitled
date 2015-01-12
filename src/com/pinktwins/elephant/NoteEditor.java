@@ -39,6 +39,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.pegdown.PegDownProcessor;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
@@ -709,5 +710,27 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void redo() {
 		editor.redo();
+	}
+
+	public void turnToPlainText() {
+		List<AttachmentInfo> info = editor.getAttachmentInfo();
+		List<AttachmentInfo> info_reverse = editor.removeAttachmentElements(info);
+		editor.turnToPlainText();
+		importAttachments(info_reverse);
+	}
+
+	public void importAttachments(List<AttachmentInfo> info) {
+		for (AttachmentInfo i : info) {
+			File f = attachments.get(i.object);
+			if (f != null) {
+				// Use note.att-path in case note was renamed
+				File ff = new File(currentNote.attachmentFolderPath() + File.separator + f.getName());
+
+				// remove previous object mapping,
+				attachments.remove(i.object);
+				// insert.. will map a new Object -> File
+				attachments.insertFileIntoNote(this, ff, i.startPosition);
+			}
+		}
 	}
 }

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.activation.DataHandler;
@@ -580,10 +581,14 @@ public class CustomEditor extends RoundPanel {
 			return;
 		}
 		if ("Make Plain Text".equals(cmd)) {
-			note.getStyledDocument().setCharacterAttributes(0, note.getDocument().getLength(), new SimpleAttributeSet(), true);
-			note.requestFocusInWindow();
-			isRichText = false;
+			// handled directly from ElephantWindow -> noteEditor
 		}
+	}
+
+	public void turnToPlainText() {
+		note.getStyledDocument().setCharacterAttributes(0, note.getDocument().getLength(), new SimpleAttributeSet(), true);
+		note.requestFocusInWindow();
+		isRichText = false;
 	}
 
 	private void createPadding() {
@@ -707,6 +712,35 @@ public class CustomEditor extends RoundPanel {
 		}
 
 		return list;
+	}
+
+	// remove icon/file elements from document.
+	// Returns list with correct element positions
+	// after removal for possible reimport.
+
+	public List<AttachmentInfo> removeAttachmentElements(List<AttachmentInfo> info) {
+		List<AttachmentInfo> info_reverse = new ArrayList<AttachmentInfo>(info);
+
+		Collections.reverse(info_reverse);
+		for (AttachmentInfo i : info_reverse) {
+			int tagLen = i.endPosition - i.startPosition;
+			if (tagLen < 5) { // might be unneccessary safety
+				try {
+					getTextPane().getDocument().remove(i.startPosition, tagLen);
+
+					// Correct attachment position in the document
+					// WITHOUT
+					// any attachment element markers:
+					int n = info.indexOf(i);
+					i.startPosition -= n;
+					i.endPosition -= n;
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return info_reverse;
 	}
 
 	protected class UndoEditListener implements UndoableEditListener {

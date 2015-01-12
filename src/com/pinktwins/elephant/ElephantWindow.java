@@ -36,7 +36,6 @@ import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
-import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 
@@ -655,7 +654,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener styleAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Elephant.eventBus.post(new StyleCommandEvent(e));
+			noteEditor.turnToPlainText();
 		}
 	};
 

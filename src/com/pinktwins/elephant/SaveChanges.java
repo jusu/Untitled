@@ -2,8 +2,6 @@ package com.pinktwins.elephant;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -76,29 +74,10 @@ public class SaveChanges {
 					}
 				}
 
-				// Remove all icon & component elements that were inserted to
-				// hold
-				// attachments
+				// Remove all icon & component elements
+				// that were inserted to hold attachments
 
-				List<AttachmentInfo> info_reverse = new ArrayList<AttachmentInfo>(info);
-				Collections.reverse(info_reverse);
-				for (AttachmentInfo i : info_reverse) {
-					int tagLen = i.endPosition - i.startPosition;
-					if (tagLen < 5) { // might be unneccessary safety
-						try {
-							editor.getTextPane().getDocument().remove(i.startPosition, tagLen);
-
-							// Correct attachment position in the document
-							// WITHOUT
-							// any attachment element markers:
-							int n = info.indexOf(i);
-							i.startPosition -= n;
-							i.endPosition -= n;
-						} catch (BadLocationException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+				List<AttachmentInfo> info_reverse = editor.removeAttachmentElements(info);
 
 				String fileText = currentNote.contents();
 				String editedText = editor.getText();
@@ -137,18 +116,7 @@ public class SaveChanges {
 				}
 
 				// Finally, insert attachments back
-				for (AttachmentInfo i : info_reverse) {
-					File f = attachments.get(i.object);
-					if (f != null) {
-						// Use note.att-path in case note was renamed
-						File ff = new File(currentNote.attachmentFolderPath() + File.separator + f.getName());
-
-						// remove previous object mapping,
-						attachments.remove(i.object);
-						// insert.. will map a new Object -> File
-						attachments.insertFileIntoNote(noteEditor, ff, i.startPosition);
-					}
-				}
+				noteEditor.importAttachments(info_reverse);
 
 			} catch (BadLocationException e) {
 				e.printStackTrace();
