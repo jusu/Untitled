@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.apache.commons.lang3.SystemUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
@@ -106,7 +107,11 @@ public class Vault implements WatchDirListener {
 				@Override
 				public void run() {
 					try {
-						watchDir = new WatchDir(HOME, false, Vault.this);
+						// On linux the watcher needs to recursively add directories.
+						// On mac and win we get a suitable modified event without.
+						boolean watchRecursive = SystemUtils.IS_OS_LINUX;
+
+						watchDir = new WatchDir(HOME, watchRecursive, Vault.this);
 						watchDir.processEvents();
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -176,10 +181,15 @@ public class Vault implements WatchDirListener {
 			EventQueue.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					Notebook nb = findNotebook(new File(file));
+					File f = new File(file);
+					if (f.isFile()) {
+						f = f.getParentFile();
+					}
+					Notebook nb = findNotebook(f);
 					if (nb != null) {
 						nb.refresh();
 						Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
+						Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, nb));
 					}
 				}
 			});
