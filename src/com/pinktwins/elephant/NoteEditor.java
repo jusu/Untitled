@@ -66,14 +66,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	static public ImageScalingCache scalingCache = new ImageScalingCache();
 
-	static private PegDownProcessor pegDown;
-	// takes ~250-350 ms
-	final private Thread pegDownInit = new Thread() {
-		@Override
-		public void run() {
-			pegDown = new PegDownProcessor();
-		}
-	};
+	static public PegDownProcessor pegDown = new PegDownProcessor();
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteeditor", "noteTopShadow", "noteToolsNotebook", "noteToolsTrash", "noteToolsDivider" });
@@ -233,8 +226,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		Elephant.eventBus.register(this);
 
 		createComponents();
-
-		pegDownInit.start();
 	}
 
 	private void createComponents() {
@@ -722,25 +713,17 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void turnToPlainText() {
 		turnToPlainText_format();
-		try {
-			currentNote.attemptSafeRename(editor.getTitle() + ".txt");
-			editor.setMarkdown(false);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		/*
+		 * try { currentNote.attemptSafeRename(editor.getTitle() + ".txt"); editor.setMarkdown(false); } catch
+		 * (IOException e) { e.printStackTrace(); }
+		 */
 	}
 
-	public void turnToMarkdown() {
-		if (!currentNote.isMarkdown()) {
-			turnToPlainText_format();
-			try {
-				currentNote.attemptSafeRename(editor.getTitle() + ".md");
-				editor.setMarkdown(true);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+	/*
+	 * somehow I just dont like this. public void turnToMarkdown() { if (!currentNote.isMarkdown()) {
+	 * turnToPlainText_format(); try { currentNote.attemptSafeRename(editor.getTitle() + ".md");
+	 * editor.setMarkdown(true); } catch (IOException e) { e.printStackTrace(); } } }
+	 */
 
 	public void importAttachments(List<AttachmentInfo> info) {
 		for (AttachmentInfo i : info) {

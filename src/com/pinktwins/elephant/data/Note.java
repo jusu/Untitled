@@ -178,7 +178,7 @@ public class Note implements Comparable<Note> {
 		return new String(contents, Charset.defaultCharset());
 	}
 
-	public String plainTextContents(String contents) {
+	static public String plainTextContents(String contents) {
 		DefaultStyledDocument doc = new DefaultStyledDocument();
 		try {
 			RtfUtil.putRtf(doc, contents, 0);

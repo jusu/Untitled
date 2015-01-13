@@ -132,16 +132,27 @@ class NoteItem extends JPanel implements MouseListener {
 	private void createPreviewComponents() {
 		previewPane.removeAll();
 
-		preview = new JTextPane();
+		if (note.isMarkdown()) {
+			preview = new HtmlPane(note.file(), null);
+		} else {
+			preview = new JTextPane();
+		}
 		preview.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
 		preview.setEditable(false);
 		preview.setFocusable(false);
 		preview.setFont(ElephantWindow.fontMediumPlus);
 		preview.setForeground(ElephantWindow.colorPreviewGray);
-		CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
 		preview.setBackground(Color.WHITE);
 		preview.setBounds(0, 0, 176, 138);
 		preview.addMouseListener(this);
+
+		if (note.isMarkdown()) {
+			String contents = note.contents();
+			String html = NoteEditor.pegDown.markdownToHtml(contents);
+			preview.setText(html);
+		} else {
+			CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
+		}
 
 		// time
 		String ts = "";

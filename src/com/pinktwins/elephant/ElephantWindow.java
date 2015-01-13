@@ -458,13 +458,11 @@ public class ElephantWindow extends JFrame {
 		// - remember and use previous notewindow position
 
 		/*
-		 * JFrame f = new JFrame();
-		 * f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		 * JFrame f = new JFrame(); f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		 * 
 		 * NoteEditor e = new NoteEditor(null); e.load(note);
 		 * 
-		 * f.add(e); f.pack(); f.setBounds(400, 100, 550, 650);
-		 * f.setVisible(true);
+		 * f.add(e); f.pack(); f.setBounds(400, 100, 550, 650); f.setVisible(true);
 		 */
 	}
 
@@ -669,7 +667,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener markdownAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			noteEditor.turnToMarkdown();
+			// noteEditor.turnToMarkdown();
 		}
 	};
 
@@ -743,7 +741,9 @@ public class ElephantWindow extends JFrame {
 		format.add(style);
 		format.addSeparator();
 		format.add(menuItem("Make Plain Text", 0, 0, plainTextAction));
-		format.add(menuItem("Make Markdown", 0, 0, markdownAction));
+
+		// somehow I dont like this menuitem. It should be much easier.
+		// format.add(menuItem("Make Markdown", 0, 0, markdownAction));
 
 		menuBar.add(file);
 		menuBar.add(edit);

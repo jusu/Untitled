@@ -57,6 +57,7 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.io.IOUtils;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.util.CustomMouseListener;
@@ -402,6 +403,12 @@ public class CustomEditor extends RoundPanel {
 					if (!s.substring(0, 5).equals("{\\rtf")) {
 						i.doc.insertString(i.pos, s, null);
 					} else {
+						if (isMarkdown) {
+							String plain = Note.plainTextContents(s);
+							i.doc.insertString(i.pos, plain, null);
+							return;
+						}
+
 						// RTFEditorKit doesn't support 'position' argument on
 						// read() method, so create a new document and copy
 						// text + styles over.
