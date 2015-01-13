@@ -80,11 +80,15 @@ public class CustomEditor extends RoundPanel {
 
 	private UndoManager undoManager = new UndoManager();
 
-	public boolean isRichText;
+	public boolean isRichText, isMarkdown;
 	private boolean maybeImporting;
 
 	public boolean isRichText() {
 		return isRichText;
+	}
+
+	public void setMarkdown(boolean b) {
+		isMarkdown = b;
 	}
 
 	public boolean maybeImporting() {
@@ -491,13 +495,44 @@ public class CustomEditor extends RoundPanel {
 		createPadding();
 	}
 
+	private void markdownStyleCommand(String codeStart, String codeEnd) {
+		int lenStart = codeStart.length();
+		int lenEnd = codeEnd.length();
+
+		if (note.getSelectionStart() == note.getSelectionEnd()) {
+			try {
+				note.getDocument().insertString(note.getCaretPosition(), codeStart + codeEnd, null);
+				note.setCaretPosition(note.getCaretPosition() - lenEnd);
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
+		} else {
+			try {
+				if (note.getText(note.getSelectionStart(), lenStart).equals(codeStart) && note.getText(note.getSelectionEnd() - lenEnd, lenEnd).equals(codeEnd)) {
+					note.getDocument().remove(note.getSelectionEnd() - lenEnd, lenEnd);
+					note.getDocument().remove(note.getSelectionStart(), lenStart);
+				} else {
+					note.getDocument().insertString(note.getSelectionEnd(), codeEnd, null);
+					note.getDocument().insertString(note.getSelectionStart(), codeStart, null);
+					note.setSelectionStart(note.getSelectionStart() - lenStart);
+				}
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+
 	private AbstractAction boldAction = new AbstractAction() {
 		StyledEditorKit.BoldAction a = new StyledEditorKit.BoldAction();
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			isRichText = true;
-			a.actionPerformed(e);
+			if (!isMarkdown) {
+				isRichText = true;
+				a.actionPerformed(e);
+			} else {
+				markdownStyleCommand("**", "**");
+			}
 		}
 	};
 
@@ -506,8 +541,12 @@ public class CustomEditor extends RoundPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			isRichText = true;
-			a.actionPerformed(e);
+			if (!isMarkdown) {
+				isRichText = true;
+				a.actionPerformed(e);
+			} else {
+				markdownStyleCommand("_", "_");
+			}
 		}
 	};
 
@@ -516,31 +555,58 @@ public class CustomEditor extends RoundPanel {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			isRichText = true;
-			a.actionPerformed(e);
+			if (!isMarkdown) {
+				isRichText = true;
+				a.actionPerformed(e);
+			} else {
+				markdownStyleCommand("<u>", "</u>");
+			}
 		}
 	};
 
 	private void shiftFontSize(final int delta) {
-		int start = note.getSelectionStart();
-		int end = note.getSelectionEnd();
+		if (!isMarkdown) {
+			int start = note.getSelectionStart();
+			int end = note.getSelectionEnd();
 
-		StyledDocument doc = note.getStyledDocument();
+			StyledDocument doc = note.getStyledDocument();
 
-		if (start == end) {
-			return;
+			if (start == end) {
+				return;
+			}
+
+			AttributeSet attrs = doc.getCharacterElement(start).getAttributes();
+			SimpleAttributeSet as = new SimpleAttributeSet();
+			as.addAttributes(attrs);
+
+			int size = StyleConstants.getFontSize(attrs);
+			StyleConstants.setFontSize(as, size + delta);
+
+			doc.setCharacterAttributes(start, end - start, as, false);
+
+			isRichText = true;
+		} else {
+			try {
+				String s = note.getText(0, note.getCaretPosition());
+				int lastLf = s.lastIndexOf("\n");
+				if (lastLf == -1) {
+					lastLf = 0;
+				} else {
+					lastLf++;
+				}
+				if (delta > 0) {
+					note.getDocument().insertString(lastLf, "#", null);
+				} else {
+					System.out.println(lastLf);
+					if (s.length() > lastLf && s.charAt(lastLf) == '#') {
+						note.getDocument().remove(lastLf, 1);
+					}
+				}
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-
-		AttributeSet attrs = doc.getCharacterElement(start).getAttributes();
-		SimpleAttributeSet as = new SimpleAttributeSet();
-		as.addAttributes(attrs);
-
-		int size = StyleConstants.getFontSize(attrs);
-		StyleConstants.setFontSize(as, size + delta);
-
-		doc.setCharacterAttributes(start, end - start, as, false);
-
-		isRichText = true;
 	}
 
 	private AbstractAction increaseFontSizeAction = new AbstractAction() {
@@ -739,7 +805,7 @@ public class CustomEditor extends RoundPanel {
 				}
 			}
 		}
-		
+
 		return info_reverse;
 	}
 

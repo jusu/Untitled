@@ -36,6 +36,7 @@ import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 
@@ -654,7 +655,21 @@ public class ElephantWindow extends JFrame {
 	ActionListener styleAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			Elephant.eventBus.post(new StyleCommandEvent(e));
+		}
+	};
+
+	ActionListener plainTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
 			noteEditor.turnToPlainText();
+		}
+	};
+
+	ActionListener markdownAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.turnToMarkdown();
 		}
 	};
 
@@ -727,7 +742,8 @@ public class ElephantWindow extends JFrame {
 
 		format.add(style);
 		format.addSeparator();
-		format.add(menuItem("Make Plain Text", 0, 0, styleAction));
+		format.add(menuItem("Make Plain Text", 0, 0, plainTextAction));
+		format.add(menuItem("Make Markdown", 0, 0, markdownAction));
 
 		menuBar.add(file);
 		menuBar.add(edit);

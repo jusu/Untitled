@@ -69,6 +69,8 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 			return;
 		}
 
-		onTerminalClick.run();
+		if (onTerminalClick != null) {
+			onTerminalClick.run();
+		}
 	}
 }

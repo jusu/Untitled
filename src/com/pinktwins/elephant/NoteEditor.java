@@ -499,6 +499,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		editor.setTitle(m.title());
 		editor.setText(note.contents());
+		editor.setMarkdown(note.isMarkdown());
 
 		tagPane.load(Vault.getInstance().resolveTagIds(m.tags()));
 
@@ -712,11 +713,33 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor.redo();
 	}
 
-	public void turnToPlainText() {
+	private void turnToPlainText_format() {
 		List<AttachmentInfo> info = editor.getAttachmentInfo();
 		List<AttachmentInfo> info_reverse = editor.removeAttachmentElements(info);
 		editor.turnToPlainText();
 		importAttachments(info_reverse);
+	}
+
+	public void turnToPlainText() {
+		turnToPlainText_format();
+		try {
+			currentNote.attemptSafeRename(editor.getTitle() + ".txt");
+			editor.setMarkdown(false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void turnToMarkdown() {
+		if (!currentNote.isMarkdown()) {
+			turnToPlainText_format();
+			try {
+				currentNote.attemptSafeRename(editor.getTitle() + ".md");
+				editor.setMarkdown(true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void importAttachments(List<AttachmentInfo> info) {
