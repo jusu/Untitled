@@ -17,6 +17,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Iterator;
@@ -646,8 +647,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private void insertMarkdownLink(File f) {
 		boolean isImage = Images.isImage(f);
 		String name = f.getName();
-		@SuppressWarnings("deprecation")
-		String encName = URLEncoder.encode(name);
+		String encName = name;
+		try {
+			encName = URLEncoder.encode(name, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		encName = encName.replace("+", "%20");
 
 		JTextPane tp = editor.getTextPane();
 		try {

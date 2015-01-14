@@ -42,8 +42,6 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 		return null;
 	}
 
-	// XXX replace .decode
-	@SuppressWarnings("deprecation")
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		Element h = getHyperlinkElement(e);
@@ -57,7 +55,7 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 						Desktop.getDesktop().browse(new URI(href));
 					} catch (IOException e1) {
 						try {
-							Desktop.getDesktop().edit(new File(URLDecoder.decode(noteAttachmentBasedir + href)));
+							Desktop.getDesktop().edit(new File(URLDecoder.decode(noteAttachmentBasedir + href, "UTF-8")));
 						} catch (IOException e2) {
 							System.out.println("Link \"" + href + "\" is unsupported for now.");
 						}
