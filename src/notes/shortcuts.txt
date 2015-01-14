@@ -1,0 +1,2 @@
+To add shortcuts, edit the file ".shortcuts" in your note folder.
+UI coming eventually!
