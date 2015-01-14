@@ -17,17 +17,19 @@ public class HtmlPane extends JTextPane {
 		setEditable(false);
 		setContentType("text/html");
 
-		final String base = noteFile.getAbsolutePath() + ".attachments" + File.separator;
+		String base = noteFile.getAbsolutePath() + ".attachments" + File.separator;
 
-		Document doc = getDocument();
-		HTMLDocument d;
-		if (doc instanceof HTMLDocument) {
-			d = (HTMLDocument) doc;
-			try {
-				d.setBase(new URL("file://" + base));
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+		try {
+			URL baseUrl = new File(base).toURI().toURL();
+
+			Document doc = getDocument();
+			HTMLDocument d;
+			if (doc instanceof HTMLDocument) {
+				d = (HTMLDocument) doc;
+				d.setBase(baseUrl);
 			}
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
 		}
 
 		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));
