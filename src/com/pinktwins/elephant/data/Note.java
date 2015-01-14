@@ -3,6 +3,7 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -494,7 +495,7 @@ public class Note implements Comparable<Note> {
 
 		return info;
 	}
-	
+
 	public void removeAttachment(File f) {
 		try {
 			File deletedFolder = new File(attachmentFolder() + File.separator + "deleted");
@@ -509,4 +510,14 @@ public class Note implements Comparable<Note> {
 			e.printStackTrace();
 		}
 	}
+
+	static public String getResourceNote(String name) {
+		try {
+			return new String(Files.readAllBytes(new File(Note.class.getClass().getResource("/notes/" + name).getFile()).toPath()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
+
 }

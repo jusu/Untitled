@@ -79,15 +79,9 @@ public class Start extends BackgroundPanel {
 							File inbox = new File(folder + File.separator + "Inbox");
 							if (inbox.mkdirs()) {
 
-								File note = new File(inbox + File.separator + "Shortcuts.txt");
-								Note n = new Note(note);
-								n.getMeta().title("To add shortcuts..");
-								n.save("Edit the file \".shortcuts\" in your note folder.\nUI coming eventually!");
-
-								note = new File(inbox + File.separator + "Welcome.txt");
-								n = new Note(note);
-								n.getMeta().title("Hello there");
-								n.save("Welcome to Elephant!\n\nHit CMD-N to create a new note.\n\nDrag an image or file here to attach it.\n\nThis is Elephant release #7. You're an early bird!");
+								addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #2", Note.getResourceNote("shortcuts.txt"));
+								addBuiltInNote(inbox + File.separator + "Welcome.txt", "Welcome!", Note.getResourceNote("welcome.txt"));
+								addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #1", Note.getResourceNote("markdown.md"));
 
 								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
 								try {
@@ -104,5 +98,12 @@ public class Start extends BackgroundPanel {
 				}
 			}
 		});
+	}
+
+	private void addBuiltInNote(String filePath, String title, String contents) {
+		File note = new File(filePath);
+		Note n = new Note(note);
+		n.getMeta().title(title);
+		n.save(contents);
 	}
 }
