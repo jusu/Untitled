@@ -3,7 +3,6 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +18,7 @@ import javax.swing.text.DefaultStyledDocument;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -513,7 +513,7 @@ public class Note implements Comparable<Note> {
 
 	static public String getResourceNote(String name) {
 		try {
-			return new String(Files.readAllBytes(new File(Note.class.getClass().getResource("/notes/" + name).getFile()).toPath()));
+			return IOUtils.toString(Note.class.getClass().getResourceAsStream("/notes/" + name));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
