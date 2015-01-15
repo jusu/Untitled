@@ -311,7 +311,7 @@ public class FileAttachment extends JPanel {
 				String s = file.getName().replace("page_", "");
 				s = s.replace("." + FilenameUtils.getExtension(s), "");
 				int n = Integer.parseInt(s);
-				
+
 				if (n - 1 != pagesAdded) {
 					break;
 				}
@@ -413,7 +413,8 @@ public class FileAttachment extends JPanel {
 			editor.scrollTo(0);
 
 			int pageNum = 0;
-			for (PreviewPageProvider ppp : pages) {
+			for (@SuppressWarnings("unused")
+			PreviewPageProvider ppp : pages) {
 				pageNum++;
 
 				/*

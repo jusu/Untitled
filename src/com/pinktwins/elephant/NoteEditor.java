@@ -528,7 +528,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		if (note.isMarkdown()) {
 			String contents = note.contents();
-			String html = pegDown.markdownToHtml(editor.isRichText ? note.plainTextContents(contents) : contents);
+			String html = pegDown.markdownToHtml(editor.isRichText ? Note.plainTextContents(contents) : contents);
 			editor.displayHtml(currentNote.file(), html);
 		}
 

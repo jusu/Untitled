@@ -101,7 +101,7 @@ public class SimpleSearchIndex {
 
 		String contents = note.contents();
 		if (contents.startsWith("{\\rtf")) {
-			contents = note.plainTextContents(contents);
+			contents = Note.plainTextContents(contents);
 		}
 		digestWord(note, contents);
 
