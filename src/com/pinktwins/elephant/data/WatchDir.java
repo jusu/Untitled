@@ -124,7 +124,8 @@ public class WatchDir {
 				Path name = ev.context();
 				Path child = dir.resolve(name);
 
-				if (!child.toFile().getName().startsWith(".") && child.toString().indexOf("Trash") == -1) {
+				String childName = child.toFile().getName();
+				if (!childName.startsWith(".") || childName.equals(".lastSaveTs")) {
 					listener.watchEvent(event.kind().name(), child.toString());
 				}
 
@@ -156,7 +157,7 @@ public class WatchDir {
 
 	private boolean shouldRegister(Path child) {
 		String path = child.toString();
-		boolean b = path.indexOf("Trash") == -1 && path.indexOf(".meta") == -1 && path.indexOf(".imagecache") == -1 && !path.endsWith(".attachments");
+		boolean b = path.indexOf(".meta") == -1 && path.indexOf(".imagecache") == -1 && !path.endsWith(".attachments");
 		return b;
 	}
 }
