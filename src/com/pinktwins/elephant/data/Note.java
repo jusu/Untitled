@@ -520,4 +520,7 @@ public class Note implements Comparable<Note> {
 		return "";
 	}
 
+	public void touchNoteFile() {
+		file.setLastModified(System.currentTimeMillis());
+	}
 }

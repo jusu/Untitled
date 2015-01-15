@@ -1,5 +1,6 @@
 package com.pinktwins.elephant.data;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +23,9 @@ public class SimpleSearchIndex {
 	private HashMap<String, Set<Note>> wordMap = Factory.newHashMap();
 	// tagId -> Set<Note>
 	private HashMap<String, Set<Note>> tagMap = Factory.newHashMap();
+
+	// note file -> lastModified() of notefile when note digested
+	private HashMap<File, Long> digestTimes = Factory.newHashMap();
 
 	public SimpleSearchIndex() {
 		Elephant.eventBus.register(this);
@@ -116,6 +120,20 @@ public class SimpleSearchIndex {
 		if (nb != null) {
 			digestWord(note, "notebook:" + nb.name() + " nb:" + nb.name());
 		}
+
+		addDigestTimestamp(note);
+	}
+
+	private void addDigestTimestamp(Note note) {
+		digestTimes.put(note.file(), note.lastModified());
+	}
+
+	public long getDigestTime(File f) {
+		Long ts = digestTimes.get(f);
+		if (ts == null) {
+			return 0;
+		}
+		return ts.longValue();
 	}
 
 	public void debug() {

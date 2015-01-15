@@ -448,6 +448,10 @@ public class ElephantWindow extends JFrame {
 		}
 	}
 
+	public boolean isEditorDirty() {
+		return noteEditor.isDirty();
+	}
+
 	public void openNoteWindow(Note note) {
 		// changes needed:
 		// - create a new menubar for this jframe

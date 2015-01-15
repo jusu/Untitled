@@ -26,6 +26,7 @@ import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Tag;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.SearchIndexChangedEvent;
+import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 
@@ -273,4 +274,8 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 		refresh();
 	}
 
+	@Subscribe
+	public void handleTagsChangedEvent(TagsChangedEvent event) {
+		refresh();
+	}
 }

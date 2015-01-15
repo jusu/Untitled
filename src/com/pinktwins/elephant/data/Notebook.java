@@ -129,7 +129,19 @@ public class Notebook implements Comparable<Notebook> {
 				if (name.charAt(0) != '.' && !name.endsWith("~") && (ext.equals("txt") || ext.equals("rtf") || ext.equals("md"))) {
 					try {
 						if (f.isFile()) {
-							notes.add(new Note(f));
+							Note note = new Note(f);
+							notes.add(note);
+
+							// Re-digest possibly modified notes.
+							// Only for when all notes have been indexed already,
+							// and notes have been modified externally, by sync.
+							if (Search.ssi.ready()) {
+								long digestTime = Search.ssi.getDigestTime(f);
+								if (f.lastModified() != digestTime) {
+									Search.ssi.digestNote(note, this);
+								}
+							}
+
 						}
 					} catch (SecurityException e) {
 						e.printStackTrace();

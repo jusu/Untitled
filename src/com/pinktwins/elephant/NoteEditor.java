@@ -101,7 +101,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public Image scale(Image i, File source) {
 			int adjust = -1;
 
-			if (SystemUtils.IS_OS_WINDOWS) {
+			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
 				adjust = -9;
 			}
 
@@ -464,6 +464,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 
 		clear();
+	}
+
+	public boolean isDirty() {
+		return isDirty;
 	}
 
 	public void clear() {

@@ -58,6 +58,9 @@ public class SaveChanges {
 					List<String> tagIds = Vault.getInstance().resolveTagNames(tagNames);
 					currentNote.getMeta().setTags(tagIds, tagNames);
 					changed = true;
+
+					// update note file modifiction time to help sync efforts.
+					currentNote.touchNoteFile();
 				}
 
 				// Fetch attachment info

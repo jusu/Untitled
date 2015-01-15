@@ -336,6 +336,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 		if (n != null) {
 			selectNote(n);
+			if (selectedNote != null && !window.isEditorDirty()) {
+				window.showNote(n);
+			}
 		}
 	}
 

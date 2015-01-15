@@ -42,6 +42,14 @@ public class Tags {
 		fileLoaded = path;
 	}
 
+	public void refresh() {
+		if (fileLoaded == null) {
+			return;
+		}
+
+		reload(fileLoaded);
+	}
+
 	public void save() {
 		if (fileLoaded == null) {
 			throw new IllegalStateException();

@@ -15,6 +15,7 @@ import org.apache.commons.lang3.SystemUtils;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.WatchDir.WatchDirListener;
+import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Factory;
 
@@ -101,6 +102,7 @@ public class Vault implements WatchDirListener {
 		Collections.sort(notebooks);
 
 		tags.reload(home.getAbsolutePath() + File.separator + ".tags");
+		Elephant.eventBus.post(new TagsChangedEvent());
 
 		if (watchDir == null) {
 			new Thread() {
@@ -172,7 +174,18 @@ public class Vault implements WatchDirListener {
 
 	@Subscribe
 	public void handleVaultEvent(VaultEvent event) {
-		populate();
+		switch (event.kind) {
+		case notebookCreated:
+			populate();
+			break;
+		case notebookListChanged:
+			populate();
+			break;
+		case notebookRefreshed:
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override
@@ -187,6 +200,9 @@ public class Vault implements WatchDirListener {
 					}
 					Notebook nb = findNotebook(f);
 					if (nb != null) {
+						// need latest tags loaded when refreshing notebook.
+						tags.refresh();
+
 						nb.refresh();
 						Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
 						Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, nb));
