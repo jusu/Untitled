@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
 
 public class Notebook implements Comparable<Notebook> {
 	final static public String NAME_ALLNOTES = "All Notes";
@@ -258,5 +259,15 @@ public class Notebook implements Comparable<Notebook> {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public void markNoteSavedTimestamp() {
+		// write current timestamp to note folder, in file ".lastSaveTs"
+		File f = new File(folder + File.separator + ".lastSaveTs");
+		try {
+			IOUtil.writeFile(f, String.valueOf(System.currentTimeMillis()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

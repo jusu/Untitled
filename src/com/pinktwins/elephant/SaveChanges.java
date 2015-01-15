@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 
@@ -58,9 +59,6 @@ public class SaveChanges {
 					List<String> tagIds = Vault.getInstance().resolveTagNames(tagNames);
 					currentNote.getMeta().setTags(tagIds, tagNames);
 					changed = true;
-
-					// update note file modifiction time to help sync efforts.
-					currentNote.touchNoteFile();
 				}
 
 				// Fetch attachment info
@@ -120,6 +118,12 @@ public class SaveChanges {
 
 				// Finally, insert attachments back
 				noteEditor.importAttachments(info_reverse);
+
+				// update last note save time to help sync efforts
+				Notebook nb = currentNote.findContainingNotebook();
+				if (nb != null) {
+					nb.markNoteSavedTimestamp();
+				}
 
 			} catch (BadLocationException e) {
 				e.printStackTrace();
