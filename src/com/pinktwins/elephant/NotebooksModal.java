@@ -79,7 +79,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	JButton bMove;
 
 	Color colorMove = Color.decode("#eaeaea");
-	Color colorJump = Color.decode("#f6f6f6");
+	Color colorJump = Color.decode("#fdfdfd"); //#f6f6f6");
 
 	@Override
 	protected void createComponents() {
@@ -112,7 +112,11 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		search.setFont(ElephantWindow.fontMedium);
 		search.setFixedColor(Color.decode("#e9e9e9"));
-		search.useV3();
+		if (isJump) {
+			search.useV4();
+		} else {
+			search.useV3();
+		}
 		search.setFixedColor(Color.WHITE);
 
 		search.windowFocusGained();

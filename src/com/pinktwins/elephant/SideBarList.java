@@ -33,14 +33,16 @@ public class SideBarList extends JPanel {
 
 	private final String fileMovedStr = "(file moved)";
 
-	private static ImageIcon sidebarNote, sidebarNotebook, sidebarNotesLarge, sidebarNotebooksLarge, sidebarTagsLarge;
+	private static ImageIcon sidebarNote, sidebarNotebook, sidebarTag, sidebarSearch, sidebarNotesLarge, sidebarNotebooksLarge, sidebarTagsLarge;
 	private static Image sidebarTile, largeHighlight;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "sidebarNote", "sidebarNotebook", "sidebarNotesLarge", "sidebarNotebooksLarge", "sidebarTagsLarge",
-				"sidebar", "sidebarLargeHilight" });
+		Iterator<Image> i = Images.iterator(new String[] { "sidebarNote", "sidebarNotebook", "sidebarTag", "sidebarSearch", "sidebarNotesLarge",
+				"sidebarNotebooksLarge", "sidebarTagsLarge", "sidebar", "sidebarLargeHilight" });
 		sidebarNote = new ImageIcon(i.next());
 		sidebarNotebook = new ImageIcon(i.next());
+		sidebarTag = new ImageIcon(i.next());
+		sidebarSearch = new ImageIcon(i.next());
 		sidebarNotesLarge = new ImageIcon(i.next());
 		sidebarNotebooksLarge = new ImageIcon(i.next());
 		sidebarTagsLarge = new ImageIcon(i.next());
@@ -148,23 +150,40 @@ public class SideBarList extends JPanel {
 		public void refresh() {
 			String s;
 
-			if (file.exists()) {
-				if (file.isDirectory()) {
-					icon.setIcon(sidebarNotebook);
-					icon.setPressedIcon(sidebarNotebook);
-					s = file.getName();
-				} else {
-					icon.setIcon(sidebarNote);
-					icon.setPressedIcon(sidebarNote);
-					Note note = new Note(file);
-					s = note.getMeta().title();
-				}
+			String name = file.getName();
 
-				if (s.length() > 16) {
-					s = s.substring(0, 16) + "…";
+			if (name.startsWith("search:")) {
+				target = name;
+
+				String[] a = name.split(":");
+				s = a[a.length - 1];
+
+				if (name.startsWith("search:t:") || name.startsWith("search:tag:")) {
+					icon.setIcon(sidebarTag);
+					icon.setPressedIcon(sidebarTag);
+				} else {
+					icon.setIcon(sidebarSearch);
+					icon.setPressedIcon(sidebarSearch);
 				}
 			} else {
-				s = fileMovedStr;
+				if (file.exists()) {
+					if (file.isDirectory()) {
+						icon.setIcon(sidebarNotebook);
+						icon.setPressedIcon(sidebarNotebook);
+						s = file.getName();
+					} else {
+						icon.setIcon(sidebarNote);
+						icon.setPressedIcon(sidebarNote);
+						Note note = new Note(file);
+						s = note.getMeta().title();
+					}
+
+					if (s.length() > 16) {
+						s = s.substring(0, 16) + "…";
+					}
+				} else {
+					s = fileMovedStr;
+				}
 			}
 
 			label.setText(s);

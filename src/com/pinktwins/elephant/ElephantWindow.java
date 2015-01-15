@@ -37,6 +37,7 @@ import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
+import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 
@@ -376,15 +377,26 @@ public class ElephantWindow extends JFrame {
 			return true;
 		}
 
+		if (target.startsWith("search:")) {
+			String search = target.substring("search:".length());
+			toolBar.search.setText(search);
+
+			UIEvent.post(UIEvent.Kind.editorWillChangeNote);
+
+			search(search);
+			return true;
+		}
+
 		File f = new File(target);
 		if (f.exists()) {
 
-			saveChanges();
+			UIEvent.post(UIEvent.Kind.editorWillChangeNote);
 
 			if (f.isDirectory()) {
 				Notebook notebook = Vault.getInstance().findNotebook(f);
 				if (notebook != null) {
 					showNotebook(notebook);
+					toolBar.clearSearch();
 				}
 			} else {
 				File folder = f.getParentFile();
@@ -395,6 +407,7 @@ public class ElephantWindow extends JFrame {
 						showNotebook(notebook);
 						noteList.selectNote(note);
 						showNote(note);
+						toolBar.clearSearch();
 					}
 				}
 			}

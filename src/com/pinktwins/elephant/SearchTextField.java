@@ -25,6 +25,8 @@ public class SearchTextField extends HintTextField {
 
 	private static Image searchLeftV3, searchMiddleV3, searchRightV3, searchLeftHiliteV3, searchMiddleHiliteV3, searchRightHiliteV3, searchRightHiliteCrossV3;
 
+	private static Image searchLeftV4, searchMiddleV4, searchRightV4, searchLeftHiliteV4, searchMiddleHiliteV4, searchRightHiliteV4, searchRightHiliteCrossV4;
+
 	boolean hasWindowFocus, hasSearchFocus;
 
 	private Color fixedColor;
@@ -34,7 +36,8 @@ public class SearchTextField extends HintTextField {
 				"searchRightInactive", "searchLeftHilite", "searchMiddleHilite", "searchRightHilite", "searchRightHiliteCross", "searchLeftV2",
 				"searchMiddleV2", "searchRightV2", "searchLeftHiliteV2", "searchMiddleHiliteV2", "searchRightHiliteV2", "searchRightHiliteCrossV2",
 				"searchLeftV3", "searchMiddleV3", "searchRightV3", "searchLeftHiliteV3", "searchMiddleHiliteV3", "searchRightHiliteV3",
-				"searchRightHiliteCrossV3" });
+				"searchRightHiliteCrossV3", "searchLeftV4", "searchMiddleV4", "searchRightV4", "searchLeftHiliteV4", "searchMiddleHiliteV4", "searchRightHiliteV4",
+				"searchRightHiliteCrossV4" });
 		searchLeft = i.next();
 		searchMiddle = i.next();
 		searchRight = i.next();
@@ -61,6 +64,14 @@ public class SearchTextField extends HintTextField {
 		searchMiddleHiliteV3 = i.next();
 		searchRightHiliteV3 = i.next();
 		searchRightHiliteCrossV3 = i.next();
+
+		searchLeftV4 = i.next();
+		searchMiddleV4 = i.next();
+		searchRightV4 = i.next();
+		searchLeftHiliteV4 = i.next();
+		searchMiddleHiliteV4 = i.next();
+		searchRightHiliteV4 = i.next();
+		searchRightHiliteCrossV4 = i.next();
 	}
 
 	private Image[] images = new Image[10];
@@ -202,6 +213,19 @@ public class SearchTextField extends HintTextField {
 		images[7] = searchMiddleHiliteV3;
 		images[8] = searchRightHiliteV3;
 		images[9] = searchRightHiliteCrossV3;
+	}
+
+	public void useV4() {
+		images[0] = searchLeftV4;
+		images[1] = searchMiddleV4;
+		images[2] = searchRightV4;
+		images[3] = searchLeftInactive;
+		images[4] = searchMiddleInactive;
+		images[5] = searchRightInactive;
+		images[6] = searchLeftHiliteV4;
+		images[7] = searchMiddleHiliteV4;
+		images[8] = searchRightHiliteV4;
+		images[9] = searchRightHiliteCrossV4;
 	}
 
 	@Override
