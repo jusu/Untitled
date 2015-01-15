@@ -79,13 +79,13 @@ public class Start extends BackgroundPanel {
 							File inbox = new File(folder + File.separator + "Inbox");
 							if (inbox.mkdirs()) {
 
-								addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #2", Note.getResourceNote("shortcuts.txt"));
+								addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #2 - Shortcuts", Note.getResourceNote("shortcuts.txt"));
 								addBuiltInNote(inbox + File.separator + "Welcome.txt", "Welcome!", Note.getResourceNote("welcome.txt"));
-								addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #1", Note.getResourceNote("markdown.md"));
+								addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #1 - Markdown", Note.getResourceNote("markdown.md"));
 
 								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
 								try {
-									IOUtil.writeFile(shortcuts, "{\"list\": [\"Inbox\", \"Inbox/Welcome.txt\"]}");
+									IOUtil.writeFile(shortcuts, "{\"list\": [\"Inbox\", \"Inbox/Welcome.txt\", \"search:Tip\", \"search:tag:Today\"]}");
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}

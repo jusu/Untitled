@@ -1,2 +1,6 @@
 To add shortcuts, edit the file ".shortcuts" in your note folder.
 UI coming eventually!
+
+To add a search shortcut, add "search:welcome".
+
+To add a tag shortcut, add "search:tag:todo".
