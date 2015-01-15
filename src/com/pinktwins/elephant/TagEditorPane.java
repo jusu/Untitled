@@ -261,7 +261,7 @@ public class TagEditorPane {
 		scroll.setPreferredSize(new Dimension(w - 128, prefH1));
 		tagHint.setPreferredSize(new Dimension(w - 128, prefH2));
 
-		p.setPreferredSize(new Dimension(w - 100, prefH2));
+		p.setPreferredSize(new Dimension(w - 128, prefH2));
 		p.revalidate();
 	}
 
