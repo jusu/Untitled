@@ -302,10 +302,22 @@ public class FileAttachment extends JPanel {
 	private List<PreviewPageProvider> getPreviewPages(File f, PdfHolder pdfHolder) {
 		ArrayList<PreviewPageProvider> pages = Factory.newArrayList();
 
+		int pagesAdded = 0;
 		File[] files = previewFiles(f);
 		if (files.length > 0) {
 			for (File file : files) {
+
+				// If this is not the real next page (page missing in the middle), ignore remaining files and rerender.
+				String s = file.getName().replace("page_", "");
+				s = s.replace("." + FilenameUtils.getExtension(s), "");
+				int n = Integer.parseInt(s);
+				
+				if (n - 1 != pagesAdded) {
+					break;
+				}
+
 				pages.add(new FilePageProvider(file));
+				pagesAdded++;
 			}
 		}
 
@@ -405,8 +417,8 @@ public class FileAttachment extends JPanel {
 				pageNum++;
 
 				/*
-				 * If pdf, check if aspect ratio changed. Must add a placeholder
-				 * with correct aspect ratio, or cropping will occur.
+				 * If pdf, check if aspect ratio changed. Must add a placeholder with correct aspect ratio, or cropping
+				 * will occur.
 				 */
 				if (pdfHolder.pdf != null) {
 					Dimension d = pdfHolder.pdf.pageSize(pageNum);
