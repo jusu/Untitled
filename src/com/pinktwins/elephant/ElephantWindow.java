@@ -429,18 +429,21 @@ public class ElephantWindow extends JFrame {
 
 	private void showNotes() {
 		splitLeft.setRightComponent(splitRight);
+		splitLeft.setDividerColor(CustomSplitPane.DividerColor.COLOR1);
 		uiMode = UiModes.notes;
 		sideBar.selectNavigation(0);
 	}
 
 	private void showNotebooks() {
 		splitLeft.setRightComponent(notebooks);
+		splitLeft.setDividerColor(CustomSplitPane.DividerColor.COLOR2);
 		uiMode = UiModes.notebooks;
 		sideBar.selectNavigation(1);
 	}
 
 	private void showTags() {
 		splitLeft.setRightComponent(tagList);
+		splitLeft.setDividerColor(CustomSplitPane.DividerColor.COLOR2);
 		uiMode = UiModes.tags;
 		sideBar.selectNavigation(2);
 	}
@@ -792,12 +795,14 @@ public class ElephantWindow extends JFrame {
 		splitLeft.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		splitLeft.initLocationWithKey("divider1", 150);
 		splitLeft.limitLocation(250);
+		splitLeft.setDividerSize(6);
 
 		splitRight = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitRight.setResizeWeight(0.5);
 		splitRight.setContinuousLayout(true);
 		splitRight.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		splitRight.initLocationWithKey("divider2", 425);
+		splitRight.setDividerSize(2);
 
 		splitLeft.setLeftComponent(sideBar);
 		splitLeft.setRightComponent(splitRight);

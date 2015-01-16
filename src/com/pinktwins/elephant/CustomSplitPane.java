@@ -1,6 +1,8 @@
 package com.pinktwins.elephant;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -16,15 +18,50 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 public class CustomSplitPane extends JSplitPane {
 	private static final long serialVersionUID = -8922501394423552180L;
 
+	public static enum DividerColor {
+		COLOR1, COLOR2
+	};
+
 	private String saveKey;
 	private int locationLimit;
 
 	int fixedLocation;
 	boolean isDragging;
 
+	Color color1 = Color.decode("#eeeeee");
+	Color color2 = Color.decode("#dadada");
+	Color colorLine1 = Color.decode("#cccccc");
+	Color colorLine2 = Color.decode("#bfbfbf");
+	Color colorLine3 = Color.decode("#e3e3e3");
+
+	Color currentColor = color1;
+
 	class CustomSplitPaneUI extends BasicSplitPaneUI {
 		public CustomSplitPaneUI() {
 			super();
+		}
+
+		@Override
+		public BasicSplitPaneDivider createDefaultDivider() {
+			return new BasicSplitPaneDivider(this) {
+				@Override
+				public void paint(Graphics g) {
+					super.paint(g);
+					g.setColor(currentColor);
+					g.fillRect(0, 0, getWidth(), getHeight());
+
+					if (currentColor == color1) {
+						g.setColor(colorLine1);
+						g.drawLine(0, NoteList.separatorLineY, getWidth(), NoteList.separatorLineY);
+					}
+					if (currentColor == color2) {
+						g.setColor(colorLine2);
+						g.drawLine(0, 42, getWidth(), 42);
+						g.setColor(colorLine3);
+						g.drawLine(0, 43, getWidth(), 43);
+					}
+				}
+			};
 		}
 
 		public void hideDivider() {
@@ -32,6 +69,21 @@ public class CustomSplitPane extends JSplitPane {
 			if (d != null) {
 				d.setBorder(null);
 			}
+		}
+	}
+
+	public void setDividerColor(DividerColor color) {
+		switch (color) {
+		case COLOR1:
+			currentColor = color1;
+			repaint();
+			break;
+		case COLOR2:
+			currentColor = color2;
+			repaint();
+			break;
+		default:
+			break;
 		}
 	}
 

@@ -58,6 +58,8 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		tile = i.next();
 		iAllNotes = i.next();
 	}
+	
+	public static int separatorLineY = 41;
 
 	public NoteList(ElephantWindow w) {
 		super(tile);
@@ -99,7 +101,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		currentName.setFont(ElephantWindow.fontTitle);
 		currentName.setForeground(ElephantWindow.colorTitle);
 
-		JPanel sep = new JPanel(null);
+		final JPanel sep = new JPanel(null);
 		sep.setBounds(0, 0, 1920, 1);
 		sep.setBackground(Color.decode("#cccccc"));
 
@@ -137,6 +139,8 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 				fillerPanel.setPreferredSize(new Dimension(allNotesPanel.getWidth(), 10));
 				fillerPanel.revalidate();
+				
+				separatorLineY = sep.getBounds().y;
 			}
 		});
 
@@ -188,7 +192,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	private void layoutItems() {
 		Insets insets = main.getInsets();
 		Dimension size = new Dimension(192, 192);
-		int x = 6;
+		int x = 2; // 6?
 		int y = 12;
 
 		Rectangle mainBounds = main.getBounds();
