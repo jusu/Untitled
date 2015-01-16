@@ -10,6 +10,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JSplitPane;
 import javax.swing.plaf.SplitPaneUI;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 public class CustomSplitPane extends JSplitPane {
@@ -22,18 +23,30 @@ public class CustomSplitPane extends JSplitPane {
 	boolean isDragging;
 
 	class CustomSplitPaneUI extends BasicSplitPaneUI {
+		public CustomSplitPaneUI() {
+			super();
+		}
+
+		public void hideDivider() {
+			BasicSplitPaneDivider d = getDivider();
+			if (d != null) {
+				d.setBorder(null);
+			}
+		}
 	}
 
 	public CustomSplitPane(int i) {
 		super(i);
 
-		this.setUI(new CustomSplitPaneUI());
+		final CustomSplitPaneUI ui = new CustomSplitPaneUI();
+		this.setUI(ui);
 
 		addComponentListener(new ComponentListener() {
 
 			@Override
 			public void componentResized(ComponentEvent e) {
 				setDividerLocation(fixedLocation);
+				ui.hideDivider();
 			}
 
 			@Override
