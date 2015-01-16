@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JTextPane;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -182,7 +183,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 			int adjust = scroll.isLocked() ? 0 : kBorder + 1;
 
-			if (scroll.getVerticalScrollBar().getValue() < 4) {
+			JScrollBar v = scroll.getVerticalScrollBar();
+			if (v.isVisible() && v.getValue() < 4) {
 				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth() - adjust, 4, null);
 			} else {
 				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 2, null);
