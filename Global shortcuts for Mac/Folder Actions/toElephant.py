@@ -17,6 +17,15 @@ if idx >= 0:
     f = "/" + f[idx+1:].replace(":", "/")
 
 base=os.path.basename(f)
+
+# text file? just move it over, no attachments.
+ext = os.path.splitext(f)[1]
+if ext in ['.txt', '.rtf']:
+    cmd="/bin/mv -n \"{0}\" \"{1}/{2}\"".format(f, target, base)
+    os.system(cmd);
+    sys.exit(0)
+
+# something else - create empty note + attach it
 attachments="{0}/{1}.txt.attachments".format(target, base)
 
 cmd1="/bin/mkdir \"{0}\"".format(attachments)
