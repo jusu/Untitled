@@ -9,9 +9,9 @@ import org.json.JSONObject;
 
 public class Tag implements Comparable<Tag> {
 
-	String name;
-	String id;
-	String parentId;
+	final String name;
+	final String id;
+	final String parentId;
 
 	public Tag(String name) {
 		id = Long.toString(System.currentTimeMillis(), 36) + "_" + (long) (Math.random() * 1000.0f);
@@ -27,19 +27,22 @@ public class Tag implements Comparable<Tag> {
 	public String name() {
 		return name;
 	}
-	
+
 	public String id() {
 		return id;
 	}
 
 	public Tag(JSONObject o) {
 		id = o.optString("id");
-		name = o.optString("name");
+
+		String _name = o.optString("name");
 		try {
-			name = URLDecoder.decode(name, "UTF-8");
+			_name = URLDecoder.decode(_name, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+
+		name = _name;
 		parentId = o.optString("parentId");
 	}
 
