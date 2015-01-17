@@ -338,12 +338,16 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			resolveSpecialType();
+			// Jumping: one click is enough.
+			// Moving: need double click.
+			if (isJump || e.getClickCount() == 2) {
+				resolveSpecialType();
 
-			if (naListener != null) {
-				naListener.didSelect(notebook);
-			} else {
-				window.showNotebook(notebook);
+				if (naListener != null) {
+					naListener.didSelect(notebook);
+				} else {
+					window.showNotebook(notebook);
+				}
 			}
 		}
 
