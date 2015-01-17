@@ -426,10 +426,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			NotebookChooser nbc = new NotebookChooser(window, String.format("Move \"%s\"", editor.getTitle()));
 
 			// Center on window
-			Point p = currNotebook.getLocationOnScreen();
+			Point p = main.getLocationOnScreen();
 			Rectangle r = window.getBounds();
 			int x = r.x + r.width / 2 - NotebookChooser.fixedWidth / 2;
-			nbc.setBounds(x, p.y - 1, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
+			nbc.setBounds(x, p.y, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
 
 			nbc.setVisible(true);
 
