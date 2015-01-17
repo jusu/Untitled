@@ -27,6 +27,8 @@ public class Toolbar extends BackgroundPanel {
 
 	SearchTextField search;
 
+	public static boolean skipNextFocusLost = false;
+	
 	static {
 		Iterator<Image> i = Images.iterator(new String[]{ "toolbarBg", "toolbarBgInactive" });
 		toolbarBg = i.next();
@@ -115,6 +117,11 @@ public class Toolbar extends BackgroundPanel {
 	}
 
 	public void focusLost() {
+		if (skipNextFocusLost) {
+			skipNextFocusLost = false;
+			return;
+		}
+
 		setImage(toolbarBgInactive);
 		search.windowFocusLost();
 	}

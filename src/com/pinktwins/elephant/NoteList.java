@@ -356,8 +356,8 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 		// Center on window
 		Point p = currentName.getLocationOnScreen();
-		int x = (p.x + currentName.getWidth() / 2) - NotebookChooser.fixedWidth / 2;
-		nbc.setBounds(x, p.y + currentName.getHeight(), NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
+		int x = (p.x + currentName.getWidth() / 2) - NotebookChooser.fixedWidthJump / 2;
+		nbc.setBounds(x, p.y + currentName.getHeight(), NotebookChooser.fixedWidthJump, NotebookChooser.fixedHeight);
 
 		nbc.setVisible(true);
 

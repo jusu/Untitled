@@ -429,7 +429,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			Point p = currNotebook.getLocationOnScreen();
 			Rectangle r = window.getBounds();
 			int x = r.x + r.width / 2 - NotebookChooser.fixedWidth / 2;
-			nbc.setBounds(x, p.y, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
+			nbc.setBounds(x, p.y - 1, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
 
 			nbc.setVisible(true);
 

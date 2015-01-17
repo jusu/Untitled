@@ -56,6 +56,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontMediumMinus = Font.decode("Arial-10");
 	final public static Font fontModalHeader = Font.decode("Arial-BOLD-16");
 	final public static Font fontSideBarText = Font.decode("Arial-BOLD-13");
+	final public static Font fontNotebookChooser = Font.decode("Helvetica-12");
 
 	final public static Color colorTitle = Color.decode("#999999");
 	final public static Color colorTitleButton = Color.decode("#666666");
@@ -127,13 +128,6 @@ public class ElephantWindow extends JFrame {
 			@Override
 			public void windowDeactivated(WindowEvent e) {
 				hasWindowFocus = false;
-
-				for (Window w : getWindows()) {
-					if (w instanceof NotebookChooser && w.isActive()) {
-						return;
-					}
-				}
-
 				toolBar.focusLost();
 			}
 

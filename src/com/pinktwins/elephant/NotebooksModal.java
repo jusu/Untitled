@@ -3,11 +3,11 @@ package com.pinktwins.elephant;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -19,14 +19,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
-import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 
@@ -34,16 +31,18 @@ import com.pinktwins.elephant.util.Images;
 
 public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
-	private static Image tile, notebookBg, notebookBgSelected, notebooksHLine, newNotebook;
+	private static Image tile, notebookChooserSelected, notebookChooserSelectedLarge, notebookChooserTop, notebooksHLine, newNotebook;
 
 	private ElephantWindow window;
 	private NotebookActionListener naListener;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "notebookBg", "notebookBgSelected", "notebooksHLine", "newNotebook" });
+		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "notebookChooserSelected", "notebookChooserSelectedLarge", "notebookChooserTop",
+				"notebooksHLine", "newNotebook" });
 		tile = i.next();
-		notebookBg = i.next();
-		notebookBgSelected = i.next();
+		notebookChooserSelected = i.next();
+		notebookChooserSelectedLarge = i.next();
+		notebookChooserTop = i.next();
 		notebooksHLine = i.next();
 		newNotebook = i.next();
 	}
@@ -61,9 +60,18 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		initialize();
 		layoutItemHeightAdjustment = -1;
-		layoutXOffAdjustment = isJump ? 80 : 56;
+		layoutXOffAdjustment = isJump ? -9 : -11;
 		layoutYOffAdjustment = -49;
 		layoutHeightOnly = true;
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+
+		if (!isJump) {
+			g.drawImage(notebookChooserTop, 0, 0, null);
+		}
 	}
 
 	public void setNotebookActionListener(NotebookActionListener l) {
@@ -79,7 +87,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	JButton bMove;
 
 	Color colorMove = Color.decode("#eaeaea");
-	Color colorJump = Color.decode("#fdfdfd"); //#f6f6f6");
+	Color colorJump = Color.decode("#fdfdfd"); // #f6f6f6");
 
 	@Override
 	protected void createComponents() {
@@ -105,7 +113,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		search = new SearchTextField("Find a notebook");
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
 		if (isJump) {
-			search.setBounds(14, 10, 414, 26);
+			search.setBounds(14, 10, 414 - (NotebookChooser.fixedWidth - NotebookChooser.fixedWidthJump), 26);
 		} else {
 			search.setBounds(14, 60, 414, 26);
 		}
@@ -123,7 +131,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		JLabel title = new JLabel(modalHeader, JLabel.CENTER);
 		title.setFont(ElephantWindow.fontModalHeader);
-		title.setBounds(0, 14, NotebookChooser.fixedWidth, 40);
+		title.setBounds(0, 14, isJump ? NotebookChooser.fixedWidthJump : NotebookChooser.fixedWidth, 40);
 		tools.add(title);
 		tools.add(search);
 
@@ -131,9 +139,10 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		if (isJump) {
-			scroll.setBounds(0, 44, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight - 56);
+			scroll.setBounds(0, 44, NotebookChooser.fixedWidthJump, NotebookChooser.fixedHeight - 56);
 		} else {
 			scroll.setBorder(BorderFactory.createLineBorder(Color.decode("#d9d9d9"), 1));
 			scroll.setBounds(18, 103, 424 - 18, 564 - 103);
@@ -186,6 +195,11 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	@Override
 	protected List<NotebookItem> queryFilter(String text) {
 		ArrayList<NotebookItem> items = Factory.newArrayList();
+
+		if (isJump && search.getText().isEmpty()) {
+			items.add(this.createSpecialNotebookItem(SpecialItems.ALL_NOTES));
+		}
+
 		for (Notebook nb : Vault.getInstance().getNotebooksWithFilter(search.getText())) {
 			items.add(new NotebookItem(nb));
 		}
@@ -217,117 +231,92 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	@Override
 	protected void vkEnter() {
 		if (selectedItem != null && naListener != null) {
+			selectedItem.resolveSpecialType();
 			naListener.didSelect(selectedItem.notebook);
 		}
 	}
 
-	// XXX rewrite to look right
+	private static enum SpecialItems {
+		NONE(""), ALL_NOTES("All Notes");
+
+		private final String label;
+
+		SpecialItems(String label) {
+			this.label = label;
+		}
+	};
+
+	NotebookItem createSpecialNotebookItem(SpecialItems type) {
+		Notebook nb = new Notebook();
+
+		switch (type) {
+		case ALL_NOTES:
+			nb.setName(SpecialItems.ALL_NOTES.label);
+			break;
+		case NONE:
+			break;
+		}
+
+		NotebookItem item = new NotebookItem(nb);
+		item.setSpecialType(type);
+		return item;
+	}
+
+	Color colorTextUnselected = Color.decode("#0a0a0a");
+
 	class NotebookItem extends BackgroundPanel implements ToolbarList.ToolbarListItem, MouseListener {
 		private static final long serialVersionUID = -7285867977183764620L;
 
 		private Notebook notebook;
-		private Dimension size = new Dimension(252, 51);
+		private Dimension size = new Dimension(383, 21);
 		private JLabel name;
-		private JLabel count;
-		private JTextField edit;
+		private SpecialItems specialType = SpecialItems.NONE;
 
 		public NotebookItem(Notebook nb) {
-			super(notebookBg);
+			super();
 
 			setLayout(null);
+			setOpaque(false);
+			setStyle(BackgroundPanel.ACTUAL);
 
 			notebook = nb;
 
 			name = new JLabel(nb.name());
-			name.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
-			name.setForeground(Color.DARK_GRAY);
-
-			count = new JLabel(String.valueOf(nb.count()), SwingConstants.CENTER);
-			count.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 16));
-			count.setForeground(Color.DARK_GRAY);
-			count.setFont(ElephantWindow.fontMedium);
+			name.setBorder(BorderFactory.createEmptyBorder(0, 28, 0, 0));
+			name.setForeground(colorTextUnselected);
+			name.setFont(ElephantWindow.fontNotebookChooser);
 
 			add(name);
-			add(count);
 
-			name.setBounds(0, 0, 200, 51);
-			count.setBounds(202, 0, 60, 51);
+			name.setBounds(0, 0, 200, 21);
 
 			addMouseListener(this);
 		}
 
-		public void setEditable() {
-			edit = new JTextField();
-			edit.setText(notebook.name());
-			edit.setSelectionStart(0);
-			edit.setSelectionEnd(notebook.name().length());
-			edit.setMaximumSize(new Dimension(200, 30));
-			remove(name);
-			add(edit);
-
-			edit.setBounds(12, 10, 180, 31);
-
-			edit.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					doneEditing();
-				}
-			});
-
-			edit.addKeyListener(new KeyListener() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-				}
-
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						cancelEditing();
-					}
-				}
-
-				@Override
-				public void keyReleased(KeyEvent e) {
-				}
-			});
-		}
-
-		protected void doneEditing() {
-			String s = edit.getText();
-			if (notebook.rename(s)) {
-				isEditing = false;
-				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated, notebook));
-				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, notebook));
-
-				for (NotebookItem item : itemList) {
-					if (item.notebook.equals(notebook.folder())) {
-						selectItem(item);
-					}
-				}
-
-			} else {
-				// XXX likely nonconforming characters in name. explain it.
+		public void setSpecialType(SpecialItems type) {
+			specialType = type;
+			if (type != SpecialItems.NONE) {
+				name.setFont(name.getFont().deriveFont(name.getFont().getStyle() | Font.BOLD));
+				name.setBorder(BorderFactory.createEmptyBorder(5, 28, 0, 0));
+				size.height = 26;
 			}
 		}
 
-		protected void cancelEditing() {
-			try {
-				notebook.folder().delete();
-			} catch (Exception e) {
-				e.printStackTrace();
+		public void resolveSpecialType() {
+			if (specialType == SpecialItems.ALL_NOTES) {
+				notebook = Notebook.getNotebookWithAllNotes();
 			}
-
-			isEditing = false;
-			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, notebook));
 		}
 
 		@Override
 		public void setSelected(boolean b) {
 			if (b) {
-				setImage(notebookBgSelected);
+				setImage(specialType == SpecialItems.NONE ? notebookChooserSelected : notebookChooserSelectedLarge);
+				name.setForeground(Color.WHITE);
 				selectedItem = this;
 			} else {
-				setImage(notebookBg);
+				name.setForeground(colorTextUnselected);
+				setImage(null);
 			}
 			repaint();
 		}
@@ -349,21 +338,17 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			if (e.getClickCount() == 2) {
-				if (naListener != null) {
-					naListener.didSelect(notebook);
-				} else {
-					window.showNotebook(notebook);
-				}
+			resolveSpecialType();
+
+			if (naListener != null) {
+				naListener.didSelect(notebook);
+			} else {
+				window.showNotebook(notebook);
 			}
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (isEditing) {
-				return;
-			}
-
 			selectItem(NotebookItem.this);
 		}
 

@@ -15,6 +15,7 @@ public class NotebookChooser extends JDialog {
 	private static final long serialVersionUID = 4290404794842317473L;
 
 	public static final int fixedWidth = 442;
+	public static final int fixedWidthJump = 406;
 	public static final int fixedHeight = 622;
 
 	private NotebooksModal notebooks;
@@ -28,8 +29,14 @@ public class NotebookChooser extends JDialog {
 	public NotebookChooser(Frame owner, String title) {
 		super(owner, title, false);
 
+		Toolbar.skipNextFocusLost = true;
+		
 		setUndecorated(true);
 		setLayout(new BorderLayout());
+
+		if (title.isEmpty()) {
+			this.setOpacity(0.8f);
+		}
 
 		notebooks = new NotebooksModal((ElephantWindow) owner, title);
 		add(notebooks);
