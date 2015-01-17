@@ -125,6 +125,6 @@ public class Tags {
 	}
 
 	public List<Tag> asList() {
-		return flatList;
+		return new ArrayList<Tag>(flatList);
 	}
 }
