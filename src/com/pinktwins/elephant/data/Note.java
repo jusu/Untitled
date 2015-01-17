@@ -204,13 +204,11 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
-	final private HashMap<String, String> emptyMap = Factory.newHashMap();
-
 	public Map<String, String> getMetaMap() {
 		try {
 			String json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
 			if (json == null || json.isEmpty()) {
-				return emptyMap;
+				return Collections.emptyMap();
 			}
 
 			JSONObject o = new JSONObject(json);
@@ -229,7 +227,7 @@ public class Note implements Comparable<Note> {
 			e.printStackTrace();
 		}
 
-		return emptyMap;
+		return Collections.emptyMap();
 	}
 
 	private void setMeta(String key, String value) {
