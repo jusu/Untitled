@@ -67,6 +67,7 @@ public class Elephant {
 
 			final ProcessBuilder builder = new ProcessBuilder(command);
 			builder.start();
+			System.out.println("Restarting...");
 			System.exit(0);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();

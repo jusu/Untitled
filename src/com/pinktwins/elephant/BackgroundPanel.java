@@ -1,6 +1,6 @@
 package com.pinktwins.elephant;
 
-// XXX add source web link and credits
+// Based on BackgroundPanel from the webs. trivial.
 
 import java.awt.BorderLayout;
 import java.awt.Component;

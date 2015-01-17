@@ -47,7 +47,6 @@ public class Note implements Comparable<Note> {
 		public long created();
 
 		public void title(String newTitle);
-
 		public void setCreatedTime();
 
 		public int getAttachmentPosition(File attachment);
