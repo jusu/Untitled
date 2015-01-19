@@ -3,11 +3,12 @@ package com.pinktwins.elephant.data;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import com.pinktwins.elephant.eventbus.IndexProgressEvent;
 import com.pinktwins.elephant.util.Factory;
 
 public class Search {
 
-	public static final SimpleSearchIndex ssi = new SimpleSearchIndex();
+	public static final SearchIndexer ssi = new SearchIndexer();
 
 	public static Notebook search(String text) {
 		text = text.toLowerCase();
@@ -16,11 +17,21 @@ public class Search {
 		found.setName(Notebook.NAME_SEARCH);
 		found.setToSearchResultNotebook();
 
+		int totalNotes = 0;
+		int progress = -1;
+
 		if (!ssi.ready()) {
 			for (Notebook nb : Vault.getInstance().getNotebooks()) {
 				if (!nb.isTrash()) {
 					for (Note n : nb.notes) {
 						ssi.digestNote(n, nb);
+						totalNotes++;
+
+						int p = (int) (totalNotes / (float) nb.count() * 10f);
+						if (progress != p) {
+							progress = p;
+							IndexProgressEvent.post(p);
+						}
 					}
 				}
 			}
@@ -31,8 +42,8 @@ public class Search {
 
 		/*
 		 * List<String> keys = new ArrayList<String>(); Matcher m =
-		 * Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text); while
-		 * (m.find()) { keys.add(m.group(1).replace("\"", "")); }
+		 * Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text); while (m.find()) {
+		 * keys.add(m.group(1).replace("\"", "")); }
 		 */
 
 		String[] a = text.split(" ");

@@ -176,6 +176,8 @@ public class ElephantWindow extends JFrame {
 		// with string to note references for future searches.
 		// Also cache notelist items to speed up search result displays.
 
+		toolBar.indexingInProgress(true);
+
 		if (!Search.ssi.ready()) {
 			new Thread() {
 				@Override
@@ -192,6 +194,7 @@ public class ElephantWindow extends JFrame {
 					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
 
 					tagList.ssiDone();
+					toolBar.indexingInProgress(false);
 
 					try {
 						Thread.sleep(200);

@@ -469,15 +469,7 @@ public class FileAttachment extends JPanel {
 							}
 
 							int f = (int) ((1.0f - workers.size() / (float) (pages.size())) * 100f);
-
-							String s = "   ";
-							for (int n = 0; n < 10; n++) {
-								if (f > n * 10) {
-									s += "•";
-								} else {
-									s += "·";
-								}
-							}
+							String s = "   " + ProgressBars.getCharacterBar(f);
 
 							updateInfoStr(s);
 

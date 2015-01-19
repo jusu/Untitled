@@ -14,7 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.IndexProgressEvent;
 import com.pinktwins.elephant.util.Images;
 
 public class Toolbar extends BackgroundPanel {
@@ -26,11 +28,13 @@ public class Toolbar extends BackgroundPanel {
 	private static Image toolbarBg, toolbarBgInactive;
 
 	SearchTextField search;
+	private final static String searchNotes = "Search notes";
 
 	public static boolean skipNextFocusLost = false;
-	
+	private boolean isIndexing = false;
+
 	static {
-		Iterator<Image> i = Images.iterator(new String[]{ "toolbarBg", "toolbarBgInactive" });
+		Iterator<Image> i = Images.iterator(new String[] { "toolbarBg", "toolbarBgInactive" });
 		toolbarBg = i.next();
 		toolbarBgInactive = i.next();
 	}
@@ -39,13 +43,15 @@ public class Toolbar extends BackgroundPanel {
 		super(toolbarBg);
 		window = w;
 
+		Elephant.eventBus.register(this);
+
 		createComponents();
 	}
 
 	private void createComponents() {
 		final int searchWidth = 360;
 
-		search = new SearchTextField("Search notes");
+		search = new SearchTextField(searchNotes);
 		search.setPreferredSize(new Dimension(searchWidth, 26));
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
 		search.setFocusable(false);
@@ -131,12 +137,30 @@ public class Toolbar extends BackgroundPanel {
 	}
 
 	public void focusSearch() {
-		search.setFocusable(true);
-		search.requestFocusInWindow();
+		if (!isIndexing) {
+			search.setFocusable(true);
+			search.requestFocusInWindow();
+		}
 	}
 
 	public void clearSearch() {
 		search.setFocusable(false);
 		search.setText("");
+	}
+
+	public void indexingInProgress(boolean b) {
+		isIndexing = b;
+		search.setEnabled(!b);
+		clearSearch();
+		search.setHintText(searchNotes);
+	}
+
+	@Subscribe
+	public void handleIndexProgress(IndexProgressEvent event) {
+		if (isIndexing) {
+			search.setHintText(ProgressBars.getCharacterBar((int) event.progress * 10));
+		} else {
+			search.setHintText(searchNotes);
+		}
 	}
 }

@@ -3,7 +3,6 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,19 +14,19 @@ import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.SearchIndexChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 
-public class SimpleSearchIndex {
+public class SearchIndexer {
 
 	private boolean isReady = false;
 
-	// word -> Set<Note>
-	private HashMap<String, Set<Note>> wordMap = Factory.newHashMap();
 	// tagId -> Set<Note>
 	private HashMap<String, Set<Note>> tagMap = Factory.newHashMap();
 
 	// note file -> lastModified() of notefile when note digested
 	private HashMap<File, Long> digestTimes = Factory.newHashMap();
 
-	public SimpleSearchIndex() {
+	private MemorySearchIndex memoryIndex = new MemorySearchIndex();
+
+	public SearchIndexer() {
 		Elephant.eventBus.register(this);
 	}
 
@@ -40,20 +39,7 @@ public class SimpleSearchIndex {
 	}
 
 	public void digestWord(Note n, String text) {
-		String[] a = text.split(" ");
-		for (String s : a) {
-			s = s.toLowerCase().trim();
-			if (s.isEmpty()) {
-				continue;
-			}
-
-			Set<Note> set = wordMap.get(s);
-			if (set == null) {
-				set = Factory.newHashSet();
-			}
-			set.add(n);
-			wordMap.put(s, set);
-		}
+		memoryIndex.digestWord(n, text);
 	}
 
 	public void digestTag(Note n, String tagId) {
@@ -72,23 +58,12 @@ public class SimpleSearchIndex {
 
 	public List<Note> search(String text) {
 		ArrayList<Note> found = Factory.newArrayList();
-		HashSet<Note> foundSet = Factory.newHashSet();
-
-		Set<String> strs = wordMap.keySet();
-		for (String s : strs) {
-			if (s.indexOf(text) >= 0) {
-				foundSet.addAll(wordMap.get(s));
-			}
-		}
-
-		found.addAll(foundSet);
+		found.addAll(memoryIndex.search(text));
 		return found;
 	}
 
 	public void purgeNote(Note note) {
-		for (Set<Note> set : wordMap.values()) {
-			set.remove(note);
-		}
+		memoryIndex.purgeNote(note);
 
 		for (Set<Note> set : tagMap.values()) {
 			set.remove(note);
@@ -137,13 +112,7 @@ public class SimpleSearchIndex {
 	}
 
 	public void debug() {
-		System.out.println("SSI has " + wordMap.keySet().size() + " strings.");
-		long n = 0;
-		for (String s : wordMap.keySet()) {
-			Set<Note> set = wordMap.get(s);
-			n += set.size();
-		}
-		System.out.println("total of " + n + " set items.");
+		memoryIndex.debug();
 	}
 
 	public Set<Note> notesByTag(String tagId) {
