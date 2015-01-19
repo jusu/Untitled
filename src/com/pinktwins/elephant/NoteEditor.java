@@ -168,7 +168,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		@Override
 		public void paint(Graphics g) {
 			super.paint(g);
-			g.drawImage(noteToolsDivider, 16, 32, getWidth() - 32, 2, null);
+			g.drawImage(noteToolsDivider, 14, 32, getWidth() - 28, 2, null);
 		}
 	}
 
@@ -181,13 +181,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public void paint(Graphics g) {
 			super.paint(g);
 
-			int adjust = scroll.isLocked() ? 0 : kBorder + 1;
-
 			JScrollBar v = scroll.getVerticalScrollBar();
-			if (v.isVisible() && v.getValue() < 4) {
-				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth() - adjust, 4, null);
+			if (!v.isVisible()) {
+				g.drawImage(noteTopShadow, 0, kNoteOffset + 1, getWidth(), 4, null);
 			} else {
-				g.drawImage(noteTopShadow, 0, kNoteOffset, getWidth(), 2, null);
+				if (v.getValue() < 4) {
+					int adjust = scroll.isLocked() ? 0 : kBorder + 1;
+					g.drawImage(noteTopShadow, 0, kNoteOffset + 1, getWidth() - adjust, 4, null);
+				} else {
+					g.drawImage(noteTopShadow, 0, kNoteOffset + 1, getWidth(), 2, null);
+				}
 			}
 
 			g.setColor(lineColor);
@@ -237,6 +240,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		main.setBorder(BorderFactory.createEmptyBorder(kBorder, kBorder, kBorder, kBorder));
 
 		final DividedPanel tools = new DividedPanel(tile);
+		tools.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
 		tools.setBounds(1, 0, 1920, 65);
 
 		JPanel toolsTop = new JPanel(new BorderLayout());
@@ -308,7 +312,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		areaHolderLayout = new BorderLayout();
 		areaHolder = new ScrollablePanel();
 		areaHolder.setLayout(areaHolderLayout);
-		areaHolder.setBorder(BorderFactory.createEmptyBorder(kBorder - topBorderOffset, kBorder, kBorder, kBorder));
+		areaHolder.setBorder(BorderFactory.createEmptyBorder(kBorder - topBorderOffset, kBorder - 1, kBorder, kBorder));
 		areaHolder.add(area, BorderLayout.NORTH);
 
 		scrollHolder = new BackgroundPanel();

@@ -47,6 +47,7 @@ public class ElephantWindow extends JFrame {
 	final public static Font fontTitle = Font.decode("Helvetica-BOLD-18");
 	final public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
 	final public static Font fontSmall = Font.decode("Helvetica-10");
+	final public static Font fontEditorTitle = Font.decode("Helvetica-15");
 	final public static Font fontEditor = Font.decode("Arial-13");
 	final public static Font fontBoldEditor = Font.decode("Arial-BOLD-13");
 	final public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
@@ -190,7 +191,7 @@ public class ElephantWindow extends JFrame {
 
 					System.out.println("Search optimization..");
 					long start = System.currentTimeMillis();
-					Search.search("a");
+					Search.search("searchOptimization");
 					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
 
 					tagList.ssiDone();

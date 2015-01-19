@@ -158,7 +158,7 @@ public class Toolbar extends BackgroundPanel {
 	@Subscribe
 	public void handleIndexProgress(IndexProgressEvent event) {
 		if (isIndexing) {
-			search.setHintText(ProgressBars.getCharacterBar((int) event.progress * 10));
+			search.setHintText(ProgressBars.getCharacterBar((int) event.progress));
 		} else {
 			search.setHintText(searchNotes);
 		}

@@ -3,6 +3,7 @@ package com.pinktwins.elephant.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Factory {
 	public static <T> HashSet<T> newHashSet() {
@@ -15,5 +16,9 @@ public class Factory {
 	
 	public static <K,V> HashMap<K,V> newHashMap() {
 		return new HashMap<K,V>();
+	}
+
+	public static <K,V> ConcurrentHashMap<K,V> newConcurrentHashMap() {
+		return new ConcurrentHashMap<K,V>();
 	}
 }

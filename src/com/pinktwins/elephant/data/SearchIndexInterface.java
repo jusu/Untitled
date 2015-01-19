@@ -12,4 +12,6 @@ public interface SearchIndexInterface {
 
 	public abstract void debug();
 
+	public abstract void commit();
+
 }

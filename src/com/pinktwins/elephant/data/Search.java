@@ -29,8 +29,8 @@ public class Search {
 						ssi.digestNote(n, nb);
 						totalNotes++;
 
-						int p = (int) (totalNotes / (float) noteCount * 10);
-						if (progress != p) {
+						int p = (int) (totalNotes / (float) noteCount * 100);
+						if (progress != p / 10) {
 							progress = p;
 							IndexProgressEvent.post(p);
 						}

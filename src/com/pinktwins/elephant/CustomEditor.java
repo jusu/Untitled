@@ -163,7 +163,7 @@ public class CustomEditor extends RoundPanel {
 		this.setDoubleBuffered(true);
 
 		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+		setBorder(BorderFactory.createEmptyBorder(14, 18, 18, 14));
 		setLayout(new BorderLayout());
 
 		JPanel titlePanel = new JPanel();
@@ -172,7 +172,8 @@ public class CustomEditor extends RoundPanel {
 		titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 1, 0));
 
 		title = new JTextField();
-		title.setBorder(BorderFactory.createEmptyBorder(0, 0, 12, 0));
+		title.setFont(ElephantWindow.fontEditorTitle);
+		title.setBorder(BorderFactory.createEmptyBorder(2, 0, 12, 0));
 		title.addFocusListener(editorFocusListener);
 		TextComponentUtil.insertListenerForHintText(title, "Untitled");
 
