@@ -21,13 +21,15 @@ public class Search {
 		int progress = -1;
 
 		if (!ssi.ready()) {
+			int noteCount = Vault.getInstance().getNoteCount();
+
 			for (Notebook nb : Vault.getInstance().getNotebooks()) {
 				if (!nb.isTrash()) {
 					for (Note n : nb.notes) {
 						ssi.digestNote(n, nb);
 						totalNotes++;
 
-						int p = (int) (totalNotes / (float) nb.count() * 10f);
+						int p = (int) (totalNotes / (float) noteCount * 10);
 						if (progress != p) {
 							progress = p;
 							IndexProgressEvent.post(p);

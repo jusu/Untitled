@@ -127,6 +127,14 @@ public class Vault implements WatchDirListener {
 		return notebooks;
 	}
 
+	public int getNoteCount() {
+		int count = 0;
+		for (Notebook nb : notebooks) {
+			count += nb.count();
+		}
+		return count;
+	}
+
 	public Collection<Notebook> getNotebooksWithFilter(final String text) {
 		if (text == null || text.isEmpty()) {
 			return notebooks;
