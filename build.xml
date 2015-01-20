@@ -23,6 +23,9 @@
         <pathelement location="libs/pegdown-1.4.2.jar"/>
         <pathelement location="libs/parboiled-core-1.1.6.jar"/>
         <pathelement location="libs/asm-all-4.0.jar"/>
+        <pathelement location="libs/lucene-core-4.10.3.jar"/>
+        <pathelement location="libs/lucene-analyzers-common-4.10.3.jar"/>
+        <pathelement location="libs/lucene-queryparser-4.10.3.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
