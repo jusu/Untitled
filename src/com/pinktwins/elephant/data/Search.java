@@ -21,6 +21,8 @@ public class Search {
 		int progress = -1;
 
 		if (!ssi.ready()) {
+			ssi.start();
+
 			int noteCount = Vault.getInstance().getNoteCount();
 
 			for (Notebook nb : Vault.getInstance().getNotebooks()) {
@@ -50,6 +52,7 @@ public class Search {
 
 		String[] a = text.split(" ");
 		for (String q : a) {
+			q = q.trim();
 			HashSet<Note> notes = Factory.newHashSet();
 			notes.addAll(ssi.search(q));
 			sets.add(notes);
@@ -74,9 +77,15 @@ public class Search {
 			}
 		}
 
-		found.sortNotes();
-
 		int len = found.count();
+
+		found.sortNotes();
+		found.truncNotes(1000); // limit to 1000 results
+
+		if (SearchIndexer.useLucene && len >= 1000 && LuceneSearchIndex.lastSearchTotalHits > len) {
+			len = LuceneSearchIndex.lastSearchTotalHits;
+		}
+
 		String s = len + " note";
 		if (len != 1) {
 			s += "s";

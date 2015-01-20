@@ -323,7 +323,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getVerticalScrollBar().setUnitIncrement(10);
 		scroll.getHorizontalScrollBar().setUnitIncrement(10);
-
+		
 		scrollHolder.add(scroll, BorderLayout.CENTER);
 
 		main.add(scrollHolder);
@@ -398,7 +398,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				}
 			}
 		});
-
+		
 		main.setTransferHandler(new EditorAttachmentTransferHandler(this));
 	}
 
@@ -493,6 +493,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void _load(Note note) {
+
+		if (!note.file().exists()) {
+			// XXX Tell user what is going on.
+			clear();
+			return;
+		}
 
 		currentNote = note;
 		attachments = new NoteAttachments();

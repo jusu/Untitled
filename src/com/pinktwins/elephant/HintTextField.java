@@ -1,6 +1,7 @@
 package com.pinktwins.elephant;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,14 +15,22 @@ import javax.swing.JTextField;
 public class HintTextField extends JTextField {
 	private static final long serialVersionUID = 7575368067562925690L;
 
-	public HintTextField(String hint) {
+	private String _hint;
+	private Font _font;
+
+	public HintTextField(String hint, Font font) {
 		_hint = hint;
+		_font = font;
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 		if (getText().length() == 0) {
+			g.setFont(_font);
+
+			int adjust_y = _font == ElephantWindow.fontMediumPlus ? 2 : 0;
+
 			int h = getHeight();
 			((Graphics2D) g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			Insets ins = getInsets();
@@ -31,11 +40,10 @@ public class HintTextField extends JTextField {
 			int m = 0xfefefefe;
 			int c2 = ((c0 & m) >>> 1) + ((c1 & m) >>> 1);
 			g.setColor(new Color(c2, true));
-			g.drawString(_hint, ins.left, h / 2 + fm.getAscent() / 2 - 2);
+			g.drawString(_hint, ins.left, h / 2 + fm.getAscent() / 2 - 2 + adjust_y);
 		}
 	}
 
-	private String _hint;
 
 	public void setHintText(String hint) {
 		_hint = hint;

@@ -22,8 +22,6 @@ import com.pinktwins.elephant.util.Factory;
 // 'root' data provider
 public class Vault implements WatchDirListener {
 
-	public static final String vaultFolderSettingName = "noteFolder";
-
 	private static Vault instance = null;
 
 	static public Vault getInstance() {
@@ -47,7 +45,7 @@ public class Vault implements WatchDirListener {
 	private Vault() {
 		Elephant.eventBus.register(this);
 
-		String def = Elephant.settings.getString("defaultNotebook");
+		String def = Elephant.settings.getString(Settings.Keys.DEFAULT_NOTEBOOK);
 		if (!def.isEmpty()) {
 			defaultNotebook = def;
 		}
@@ -63,9 +61,19 @@ public class Vault implements WatchDirListener {
 
 	public void setLocation(String vaultPath) {
 		if (new File(vaultPath).exists()) {
-			Elephant.settings.set(vaultFolderSettingName, vaultPath);
+			Elephant.settings.set(Settings.Keys.VAULT_FOLDER, vaultPath);
 			HOME = vaultPath;
 			populate();
+
+			// When to use Lucene indexing?
+			// For now, use memory-based indexing up to 2000 notes. It's fast, doesn't create extra files.
+			// After 2k it starts consuming some memory so Lucene preferred.
+			// Can overwrite this by setting 'useLucene' to 0 or 1.
+
+			SearchIndexer.useLucene = getNoteCount() >= 2000;
+			if (Elephant.settings.has(Settings.Keys.USE_LUCENE)) {
+				SearchIndexer.useLucene = Elephant.settings.getInt(Settings.Keys.USE_LUCENE) == 1;
+			}
 		}
 	}
 
@@ -218,5 +226,9 @@ public class Vault implements WatchDirListener {
 				}
 			});
 		}
+	}
+
+	public String getLuceneIndexPath() {
+		return Elephant.settings.userHomePath() + File.separator + ".com.pinktwins.elephant.searchIndex";
 	}
 }

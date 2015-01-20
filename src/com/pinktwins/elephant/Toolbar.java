@@ -51,7 +51,7 @@ public class Toolbar extends BackgroundPanel {
 	private void createComponents() {
 		final int searchWidth = 360;
 
-		search = new SearchTextField(searchNotes);
+		search = new SearchTextField(searchNotes, ElephantWindow.fontMediumPlus);
 		search.setPreferredSize(new Dimension(searchWidth, 26));
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
 		search.setFocusable(false);

@@ -21,7 +21,7 @@ public class Elephant {
 
 	public static void main(String args[]) {
 		Elephant.args = args;
-		
+
 		try {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Elephant");
@@ -32,7 +32,7 @@ public class Elephant {
 			// irrelevant // e.printStackTrace();
 		}
 
-		String vaultPath = settings.getString(Vault.vaultFolderSettingName);
+		String vaultPath = settings.getString(Settings.Keys.VAULT_FOLDER);
 		Vault.getInstance().setLocation(vaultPath);
 
 		EventQueue.invokeLater(new Runnable() {

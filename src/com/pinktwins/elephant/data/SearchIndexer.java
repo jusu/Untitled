@@ -24,10 +24,19 @@ public class SearchIndexer {
 	// note file -> lastModified() of notefile when note digested
 	private HashMap<File, Long> digestTimes = Factory.newHashMap();
 
-	private MemorySearchIndex memoryIndex = new MemorySearchIndex();
+	private SearchIndexInterface memoryIndex = new MemorySearchIndex();
+	private SearchIndexInterface luceneIndex;
+
+	static boolean useLucene = true;
 
 	public SearchIndexer() {
 		Elephant.eventBus.register(this);
+	}
+
+	public void start() {
+		if (useLucene) {
+			luceneIndex = new LuceneSearchIndex();
+		}
 	}
 
 	public boolean ready() {
@@ -36,10 +45,6 @@ public class SearchIndexer {
 
 	public void markReady() {
 		isReady = true;
-	}
-
-	public void digestWord(Note n, String text) {
-		memoryIndex.digestWord(n, text);
 	}
 
 	public void digestTag(Note n, String tagId) {
@@ -59,11 +64,17 @@ public class SearchIndexer {
 	public List<Note> search(String text) {
 		ArrayList<Note> found = Factory.newArrayList();
 		found.addAll(memoryIndex.search(text));
+		if (useLucene) {
+			found.addAll(luceneIndex.search(text));
+		}
 		return found;
 	}
 
 	public void purgeNote(Note note) {
 		memoryIndex.purgeNote(note);
+		if (useLucene) {
+			luceneIndex.purgeNote(note);
+		}
 
 		for (Set<Note> set : tagMap.values()) {
 			set.remove(note);
@@ -72,13 +83,18 @@ public class SearchIndexer {
 
 	public void digestNote(Note note, Notebook nb) {
 		Meta meta = note.getMeta();
-		digestWord(note, meta.title());
+		memoryIndex.digestText(note, meta.title());
 
-		String contents = note.contents();
-		if (contents.startsWith("{\\rtf")) {
-			contents = Note.plainTextContents(contents);
+		if (useLucene) {
+			luceneIndex.digestText(note, null);
+		} else {
+			// Memory index
+			String contents = note.contents();
+			if (contents.startsWith("{\\rtf")) {
+				contents = Note.plainTextContents(contents);
+			}
+			memoryIndex.digestText(note, contents);
 		}
-		digestWord(note, contents);
 
 		List<String> tagIds = meta.tags();
 		if (!tagIds.isEmpty()) {
@@ -88,12 +104,12 @@ public class SearchIndexer {
 
 			List<String> tagNames = Vault.getInstance().resolveTagIds(tagIds);
 			for (String s : tagNames) {
-				digestWord(note, s + " tag:" + s + " t:" + s);
+				memoryIndex.digestText(note, s + " tag:" + s + " t:" + s);
 			}
 		}
 
 		if (nb != null) {
-			digestWord(note, "notebook:" + nb.name() + " nb:" + nb.name());
+			memoryIndex.digestText(note, "notebook:" + nb.name() + " nb:" + nb.name());
 		}
 
 		addDigestTimestamp(note);
@@ -127,6 +143,10 @@ public class SearchIndexer {
 	public void handleNoteChanged(NoteChangedEvent e) {
 		purgeNote(e.note);
 		digestNote(e.note, e.note.findContainingNotebook());
+
+		if (useLucene) {
+			luceneIndex.commit();
+		}
 
 		Elephant.eventBus.post(new SearchIndexChangedEvent());
 	}

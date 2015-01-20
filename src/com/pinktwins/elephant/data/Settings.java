@@ -9,6 +9,22 @@ import org.json.JSONObject;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class Settings {
+
+	public static enum Keys {
+		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene");
+
+		final private String str;
+
+		private Keys(String s) {
+			str = s;
+		}
+
+		@Override
+		public String toString() {
+			return str;
+		}
+	};
+
 	private String homeDir;
 	private JSONObject map;
 
@@ -21,16 +37,32 @@ public class Settings {
 		map = load();
 	}
 
+	public String userHomePath() {
+		return homeDir;
+	}
+
 	private JSONObject load() {
 		return IOUtil.loadJson(settingsFile());
 	}
 
-	public int getInt(String key) {
-		return map.optInt(key);
+	public boolean has(Keys key) {
+		return map.has(key.toString());
 	}
 
-	public String getString(String key) {
-		return map.optString(key, "");
+	public int getInt(Keys key) {
+		return getInt(key.toString());
+	}
+
+	public int getInt(String keyStr) {
+		return map.optInt(keyStr);
+	}
+
+	public String getString(Keys key) {
+		return map.optString(key.toString(), "");
+	}
+
+	public void set(Keys key, int value) {
+		set(key.toString(), value);
 	}
 
 	public void set(String key, int value) {
@@ -42,6 +74,10 @@ public class Settings {
 		}
 	}
 
+	public void set(Keys key, String value) {
+		set(key.toString(), value);
+	}
+
 	public void set(String key, String value) {
 		try {
 			map.put(key, value);
@@ -51,18 +87,26 @@ public class Settings {
 		}
 	}
 
+	public Settings setChain(Keys key, int value) {
+		return setChain(key.toString(), value);
+	}
+
 	public Settings setChain(String key, int value) {
 		try {
-			map.put(key, value);
+			map.put(key.toString(), value);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		return this;
 	}
 
+	public Settings setChain(Keys key, String value) {
+		return setChain(key.toString(), value);
+	}
+
 	public Settings setChain(String key, String value) {
 		try {
-			map.put(key, value);
+			map.put(key.toString(), value);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

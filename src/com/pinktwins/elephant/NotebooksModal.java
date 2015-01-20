@@ -110,7 +110,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		JPanel tools = new JPanel(null);
 		tools.setBounds(0, 0, 800, divY);
 
-		search = new SearchTextField("Find a notebook");
+		search = new SearchTextField("Find a notebook", ElephantWindow.fontMedium);
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
 		if (isJump) {
 			search.setBounds(14, 10, 414 - (NotebookChooser.fixedWidth - NotebookChooser.fixedWidthJump), 26);

@@ -2,7 +2,6 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +21,7 @@ public class Notebook implements Comparable<Notebook> {
 	private File folder;
 	private boolean isSearch, isTagSearch;
 
-	public ArrayList<Note> notes = Factory.newArrayList();
+	public List<Note> notes = Factory.newArrayList();
 
 	@Override
 	public boolean equals(Object o) {
@@ -160,6 +159,12 @@ public class Notebook implements Comparable<Notebook> {
 
 	public void sortNotes() {
 		Collections.sort(notes);
+	}
+
+	public void truncNotes(int limit) {
+		if (notes.size() > limit) {
+			notes = notes.subList(0, limit);
+		}
 	}
 
 	public List<Note> getNotes() {

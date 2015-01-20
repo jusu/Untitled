@@ -10,9 +10,9 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -43,7 +43,7 @@ class NoteItem extends JPanel implements MouseListener {
 	final static private DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
 	final static private long time_24h = 1000 * 60 * 60 * 24;
 	final static private Color kColorNoteBorder = Color.decode("#cdcdcd");
-	final static private HashMap<File, NoteItem> itemCache = Factory.newHashMap();
+	final static private Map<File, NoteItem> itemCache = Factory.newHashMap();
 
 	static private Image noteShadow, noteSelection;
 

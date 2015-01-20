@@ -46,12 +46,14 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 		super(tile, newTag, "Find a tag");
 		window = w;
 
+		initialize();
+
 		Elephant.eventBus.register(this);
 	}
 
 	// Called when initial SimpleSearchIndex run has completed
 	public void ssiDone() {
-		initialize();
+		refresh();
 	}
 
 	@Override
@@ -219,7 +221,9 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 			g.setColor(isSelected ? Color.WHITE : fontColor);
 			g.drawString(nameStr, hd2 - 2, yOff + hd2 + fm.getAscent() / 2 + 2);
-			g.drawString(String.valueOf(count), width + countOffsetX, yOff + hd2 + fm.getAscent() / 2 + 2);
+
+			String countStr = Search.ssi.ready() ? String.valueOf(count) : "-";
+			g.drawString(countStr, width + countOffsetX, yOff + hd2 + fm.getAscent() / 2 + 2);
 		}
 
 		@Override

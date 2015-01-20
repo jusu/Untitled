@@ -1,6 +1,7 @@
 package com.pinktwins.elephant;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.FocusEvent;
@@ -80,8 +81,8 @@ public class SearchTextField extends HintTextField {
 		searchLeft, searchMiddle, searchRight, searchLeftInactive, searchMiddleInactive, searchRightInactive, searchLeftHilite, searchMiddleHilite, searchRightHilite, searchRightHiliteCross
 	};
 
-	public SearchTextField(String hint) {
-		super(hint);
+	public SearchTextField(String hint, Font font) {
+		super(hint, font);
 
 		images[0] = searchLeft;
 		images[1] = searchMiddle;

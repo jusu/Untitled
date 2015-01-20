@@ -36,6 +36,7 @@ import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.MeasureUtil;
 import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteList extends BackgroundPanel implements NoteItemListener {
@@ -58,7 +59,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		tile = i.next();
 		iAllNotes = i.next();
 	}
-	
+
 	public static int separatorLineY = 41;
 
 	public NoteList(ElephantWindow w) {
@@ -139,7 +140,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 				fillerPanel.setPreferredSize(new Dimension(allNotesPanel.getWidth(), 10));
 				fillerPanel.revalidate();
-				
+
 				separatorLineY = sep.getBounds().y;
 			}
 		});
@@ -158,8 +159,12 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		}
 	}
 
+	Trigger loadCancelTriggers = new Trigger();
+
 	public void load(Notebook notebook) {
 		this.notebook = notebook;
+
+		loadCancelTriggers.triggerAll();
 
 		currentName.setText(notebook.name());
 
@@ -168,11 +173,56 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 		main.repaint();
 
-		List<Note> list = notebook.getNotes();
+		final List<Note> list = notebook.getNotes();
+		int idx = 0;
 		for (Note n : list) {
+			idx++;
+
 			NoteItem item = NoteItem.itemOf(n);
 			main.add(item);
 			noteItems.add(item);
+
+			if (idx == 50 && list.size() > 100) {
+				// Do the rest later
+				final Trigger cancelTrigger = loadCancelTriggers.get();
+				final int start = idx;
+
+				(new Thread() {
+					@Override
+					public void run() {
+						MeasureUtil.start();
+						for (int n = start, len = list.size(); n < len; n++) {
+							if (cancelTrigger.isDown) {
+								return;
+							}
+							NoteItem.itemOf(list.get(n));
+						}
+						MeasureUtil.stop("cache");
+
+						EventQueue.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								MeasureUtil.start();
+								for (int n = start, len = list.size(); n < len; n++) {
+									if (cancelTrigger.isDown) {
+										return;
+									}
+									NoteItem item = NoteItem.itemOf(list.get(n));
+									main.add(item);
+									noteItems.add(item);
+								}
+
+								initialScrollValue = scroll.getVerticalScrollBar().getValue();
+								layoutItems();
+								scroll.getVerticalScrollBar().revalidate();
+								MeasureUtil.stop("thumb");
+							}
+						});
+
+					}
+				}).start();
+				break;
+			}
 		}
 
 		allNotesPanel.setVisible(!notebook.isAllNotes());

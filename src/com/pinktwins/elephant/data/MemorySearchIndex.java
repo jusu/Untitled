@@ -29,7 +29,7 @@ public class MemorySearchIndex implements SearchIndexInterface {
 	Pattern splitter = Pattern.compile(StringUtils.join(splitChars, "|"));
 
 	@Override
-	public void digestWord(Note n, String text) {
+	public void digestText(Note n, String text) {
 		String[] a = splitter.split(text);
 		for (String s : a) {
 			s = s.toLowerCase().trim();
@@ -93,5 +93,9 @@ public class MemorySearchIndex implements SearchIndexInterface {
 		}
 
 		System.out.println("total of " + n + " set items.");
+	}
+
+	@Override
+	public void commit() {
 	}
 }

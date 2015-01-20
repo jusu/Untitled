@@ -18,6 +18,7 @@ import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -28,6 +29,9 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -38,7 +42,6 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 
 	Directory dir;
 	Analyzer analyzer = new StandardAnalyzer();
-	IndexWriterConfig iwc = new IndexWriterConfig(Version.LATEST, analyzer);
 	IndexWriter writer;
 
 	IndexReader reader;
@@ -46,17 +49,35 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 
 	QueryParser parser;
 
+	public static int lastSearchTotalHits = 0;
+
+	private final String indexPath;
+
+	// http://lucene.apache.org/core/4_10_3/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Escaping_Special_Characters
+	// not escaped: *
+	private String escapeChars = "+-&|!(){}[]^\"~?:\\/+";
+
 	public LuceneSearchIndex() {
-		try {
-			dir = FSDirectory.open(new File("/Users/jusu/Desktop/test.index"));
-			parser = new QueryParser(Version.LATEST, "contents", analyzer);
-		} catch (IOException e) {
-			e.printStackTrace();
+		indexPath = Vault.getInstance().getLuceneIndexPath();
+
+		if (SearchIndexer.useLucene) {
+			try {
+				File f = new File(indexPath);
+				f.mkdirs();
+				dir = FSDirectory.open(f);
+				parser = new QueryParser("contents", analyzer);
+				parser.setAllowLeadingWildcard(true);
+			} catch (IOException e) {
+				e.printStackTrace();
+
+				// Fail. Turn us off.
+				SearchIndexer.useLucene = false;
+			}
 		}
 	}
 
 	public void openWriter() throws IOException {
-		System.out.println("OPENWRITER");
+		IndexWriterConfig iwc = new IndexWriterConfig(Version.LATEST, analyzer);
 		iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		iwc.setRAMBufferSizeMB(256.0);
 
@@ -66,6 +87,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	public void closeWriter() {
 		if (writer != null) {
 			try {
+				writer.commit();
 				writer.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -92,11 +114,8 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	}
 
 	@Override
-	public void digestWord(Note n, String text) {
+	public void digestText(Note n, String text) {
 		try {
-			if (writer == null) {
-				openWriter();
-			}
 			indexFile(n.file());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -105,15 +124,31 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 
 	@Override
 	public Set<Note> search(String text) {
+		closeWriter();
+
+		if (text.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		StringBuffer b = new StringBuffer(text);
+		for (int n = b.length() - 1; n >= 0; n--) {
+			if (escapeChars.indexOf(b.charAt(n)) != -1) {
+				b.insert(n, '\\');
+			}
+		}
+		text = b.toString();
+
+		// Substring search always. May have performance considerations.
+		text = '*' + text + '*';
+
 		try {
 			if (reader == null) {
 				openReader();
 			}
-			Query query = parser.parse(text);
-			System.out.println("Searching for: " + query.toString("contents"));
-			Set<Note> found = searchNotes(query);
 
-			closeReader();
+			Query query = parser.parse(text);
+			// System.out.println("Searching for: " + query.toString("contents"));
+			Set<Note> found = searchNotes(query);
 
 			return found;
 		} catch (ParseException e) {
@@ -130,9 +165,9 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 			if (writer == null) {
 				openWriter();
 			}
+
 			Term term = new Term("path", note.file().getAbsolutePath());
 			writer.deleteDocuments(term);
-			// closeWriter();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -142,16 +177,39 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	public void debug() {
 	}
 
+	@Override
+	public void commit() {
+		closeWriter();
+		closeReader();
+	}
+
 	private void indexFile(File file) throws IOException {
-		if (reader == null) {
-			openReader();
+		if (file.getParentFile().getName().equals("Trash")) {
+			return;
 		}
 
-		// XXX FIX
-		// Note in index? Fine for initial startup, but how about next saved version of the note?
-		Term t = new Term("path", file.getPath());
-		if (reader.docFreq(t) > 0) {
-			return;
+		if (reader == null) {
+			try {
+				openReader();
+			} catch (IndexNotFoundException e) {
+				// Index not creatd yet
+			}
+		}
+
+		// Check if file already indexed and up-to-date
+		if (reader != null) {
+			Term t = new Term("path", file.getAbsolutePath());
+			if (reader.docFreq(t) > 0) {
+				Query q = new TermQuery(t);
+				ScoreDoc[] sd = searcher.search(q, 1).scoreDocs;
+				if (sd.length == 1) {
+					Number n = searcher.doc(sd[0].doc).getField("modified").numericValue();
+					if (n.equals(file.lastModified())) {
+						// File indexed and not changed, no need to reindex.
+						return;
+					}
+				}
+			}
 		}
 
 		FileInputStream fis;
@@ -163,29 +221,18 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 			return;
 		}
 		try {
-			// make a new, empty document
+			if (writer == null) {
+				openWriter();
+			}
+
 			Document doc = new Document();
 
-			// Add the path of the file as a field named "path". Use a
-			// field that is indexed (i.e. searchable), but don't tokenize
-			// the field into separate words and don't index term frequency
-			// or positional information:
-			Field pathField = new StringField("path", file.getAbsolutePath(), Field.Store.YES);
-			doc.add(pathField);
-
-			doc.add(new LongField("modified", file.lastModified(), Field.Store.NO));
-
-			// Add the contents of the file to a field named "contents". Specify a Reader,
-			// so that the text of the file is tokenized and indexed, but not stored.
-			// Note that FileReader expects the file to be in UTF-8 encoding.
-			// If that's not the case searching for special characters will fail.
+			doc.add(new StringField("path", file.getAbsolutePath(), Field.Store.YES));
+			doc.add(new LongField("modified", file.lastModified(), Field.Store.YES));
 			doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))));
 
-			// Existing index (an old copy of this document may have been indexed) so
-			// we use updateDocument instead to replace the old one matching the exact
-			// path, if present:
-			System.out.println("updating " + file);
-			writer.updateDocument(new Term("path", file.getPath()), doc);
+			// System.out.println("Updating: " + file);
+			writer.updateDocument(new Term("path", file.getAbsolutePath()), doc);
 		} finally {
 			fis.close();
 		}
@@ -196,17 +243,23 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 
 		int hitsPerPage = 1000;
 
-		int start = 0;
-		ScoreDoc[] hits = searcher.search(query, hitsPerPage).scoreDocs;
-		int end = Math.min(hits.length, start + hitsPerPage);
+		TotalHitCountCollector c = new TotalHitCountCollector();
+		searcher.search(query, c);
 
-		System.out.println("hits.length: " + hits.length);
+		TopDocs td = searcher.search(query, hitsPerPage);
+		ScoreDoc[] hits = td.scoreDocs;
+
+		int start = 0, end = Math.min(hits.length, start + hitsPerPage);
+		lastSearchTotalHits = td.totalHits;
 
 		for (int i = start; i < end; i++) {
 			Document doc = searcher.doc(hits[i].doc);
 			String path = doc.get("path");
 			if (path != null) {
-				found.add(new Note(new File(path)));
+				File f = new File(path);
+				if (f.exists()) {
+					found.add(new Note(f));
+				}
 			} else {
 				System.out.println((i + 1) + ". " + "No path for this document.");
 			}

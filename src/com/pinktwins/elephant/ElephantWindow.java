@@ -203,10 +203,12 @@ public class ElephantWindow extends JFrame {
 						return;
 					}
 
-					System.out.println("Thumbnail cache..");
-					start = System.currentTimeMillis();
-					noteList.cache(Notebook.getNotebookWithAllNotes());
-					System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
+					if (Vault.getInstance().getNoteCount() < 5000) {
+						System.out.println("Thumbnail cache..");
+						start = System.currentTimeMillis();
+						noteList.cache(Notebook.getNotebookWithAllNotes());
+						System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
+					}
 				}
 			}.start();
 		}

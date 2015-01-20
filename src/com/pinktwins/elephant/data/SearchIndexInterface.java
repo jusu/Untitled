@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface SearchIndexInterface {
 
-	public abstract void digestWord(Note n, String text);
+	public abstract void digestText(Note n, String text);
 
 	public abstract Set<Note> search(String text);
 

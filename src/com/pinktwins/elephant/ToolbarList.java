@@ -104,7 +104,7 @@ abstract public class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		bNew.setBorderPainted(false);
 		bNew.setBounds(10, 10, newButtonImage.getWidth(null), newButtonImage.getHeight(null));
 
-		search = new SearchTextField(searchHint);
+		search = new SearchTextField(searchHint, ElephantWindow.fontMedium);
 		search.setBorder(BorderFactory.createEmptyBorder(0, 22, 0, 20));
 		search.setBounds(newButtonImage.getWidth(null) + 10, 8, 160, 26);
 		search.setFont(ElephantWindow.fontMedium);
@@ -204,7 +204,7 @@ abstract public class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	}
 
 	public boolean isEditing() {
-		return isEditing || search.hasFocus();
+		return isEditing || (search != null && search.hasFocus());
 	}
 
 	protected void addComponentListeners() {
