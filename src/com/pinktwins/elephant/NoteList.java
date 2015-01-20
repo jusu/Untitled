@@ -11,6 +11,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -18,14 +20,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingWorker;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.NoteItem.NoteItemListener;
@@ -145,6 +150,22 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			}
 		});
 
+		scroll.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			@Override
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				// If we have reached the bottom of list, work more thumbs to screen
+				if (!isWorking && workers.size() > 0) {
+					JScrollBar v = scroll.getVerticalScrollBar();
+					float f = (v.getValue() + v.getModel().getExtent()) / (float) v.getMaximum();
+
+					if (f == 1.0f) {
+						isWorking = true;
+						workers.next();
+					}
+				}
+			}
+		});
+
 		currentName.addMouseListener(new CustomMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -159,12 +180,15 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		}
 	}
 
-	Trigger loadCancelTriggers = new Trigger();
+	final private Workers<Point> workers = new Workers<Point>();
+	private boolean isWorking = false;
+	final private Trigger loadCancelTriggers = new Trigger();
 
 	public void load(Notebook notebook) {
 		this.notebook = notebook;
 
 		loadCancelTriggers.triggerAll();
+		workers.clear();
 
 		currentName.setText(notebook.name());
 
@@ -172,60 +196,73 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		noteItems.clear();
 
 		main.repaint();
-		
-		final List<Note> list = notebook.getNotes();
-		int idx = 0;
-		for (Note n : list) {
-			idx++;
 
-			NoteItem item = NoteItem.itemOf(n);
+		final List<Note> list = notebook.getNotes();
+
+		final Trigger cancelTrigger = loadCancelTriggers.get();
+		final int uiStep = 50;
+
+		// First batch to screen NOW.
+		// This could come from SwingWorker too, but doing it here avoids some flickering.
+		for (int start = 0, end = Math.min(list.size(), uiStep); start < end; start++) {
+			NoteItem item = NoteItem.itemOf(list.get(start));
 			main.add(item);
 			noteItems.add(item);
-
-			if (idx == 50 && list.size() > 100) {
-				// Do the rest later
-				final Trigger cancelTrigger = loadCancelTriggers.get();
-				final int start = idx;
-
-				
-				(new Thread() {
-					@Override
-					public void run() {
-						MeasureUtil.start();
-						for (int n = start, len = list.size(); n < len; n++) {
-							if (cancelTrigger.isDown) {
-								return;
-							}
-							NoteItem.itemOf(list.get(n));
-						}
-						MeasureUtil.stop("cache");
-
-						EventQueue.invokeLater(new Runnable() {
-							@Override
-							public void run() {
-								MeasureUtil.start();
-								for (int n = start, len = list.size(); n < len; n++) {
-									if (cancelTrigger.isDown) {
-										return;
-									}
-									NoteItem item = NoteItem.itemOf(list.get(n));
-									main.add(item);
-									noteItems.add(item);
-								}
-
-								initialScrollValue = scroll.getVerticalScrollBar().getValue();
-								layoutItems();
-								scroll.getVerticalScrollBar().revalidate();
-								MeasureUtil.stop("thumb");
-							}
-						});
-
-					}
-				}).start();
-				break;
-			}
 		}
 
+		// Paging for remaining notes.
+		for (int start = uiStep, end = list.size(); start < end; start += uiStep) {
+
+			final Point range = new Point(start, Math.min(start + uiStep, list.size()));
+
+			workers.add(new SwingWorker<Point, Void>() {
+				@Override
+				protected Point doInBackground() throws Exception {
+					MeasureUtil.start();
+					for (int n = range.x, len = range.y; n < len; n++) {
+						if (cancelTrigger.isDown) {
+							MeasureUtil.stop("cache");
+							return null;
+						}
+						NoteItem.itemOf(list.get(n));
+					}
+					MeasureUtil.stop("cache");
+					return range;
+				}
+
+				@Override
+				protected void done() {
+					try {
+						Point range = get();
+						if (range != null) {
+							MeasureUtil.start();
+							for (int n = range.x, len = range.y; n < len; n++) {
+								if (cancelTrigger.isDown) {
+									MeasureUtil.stop("thumb");
+									return;
+								}
+								NoteItem item = NoteItem.itemOf(list.get(n));
+								main.add(item);
+								noteItems.add(item);
+							}
+
+							initialScrollValue = scroll.getVerticalScrollBar().getValue();
+							layoutItems();
+							scroll.getVerticalScrollBar().revalidate();
+							//NoteList.this.repaint();
+							MeasureUtil.stop("thumb");
+						}
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} finally {
+						isWorking = false;
+					}
+				}
+			});
+		}
+		
 		allNotesPanel.setVisible(!notebook.isAllNotes());
 		fillerPanel.setVisible(!notebook.isAllNotes());
 

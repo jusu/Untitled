@@ -23,7 +23,7 @@ public class MemorySearchIndex implements SearchIndexInterface {
 	// <([{\^-=$!|]})?*+.>
 
 	// Split by these chars. This hides them for search but reduces the wordMap size.
-	String[] splitChars = { " ", "\n", "\r", "\t", ",", "_", "\\)", "\\(", "\\>", "\\<", "'", "\\\"", "\\=", "\\*", "\\!", "\\[", "\\]", "\\?", ";", "\\+",
+	String[] splitChars = { " ", "\n", "\r", "\t", ",", "\\)", "\\(", "\\>", "\\<", "'", "\\\"", "\\=", "\\*", "\\!", "\\[", "\\]", "\\?", ";", "\\+",
 			"\\$", "&", "\\^", "\\{", "\\}", "\\|" };
 
 	Pattern splitter = Pattern.compile(StringUtils.join(splitChars, "|"));

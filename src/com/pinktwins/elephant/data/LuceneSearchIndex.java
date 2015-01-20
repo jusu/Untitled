@@ -31,7 +31,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -241,10 +240,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	private Set<Note> searchNotes(Query query) throws IOException {
 		Set<Note> found = Factory.newHashSet();
 
-		int hitsPerPage = 1000;
-
-		TotalHitCountCollector c = new TotalHitCountCollector();
-		searcher.search(query, c);
+		int hitsPerPage = 100000;
 
 		TopDocs td = searcher.search(query, hitsPerPage);
 		ScoreDoc[] hits = td.scoreDocs;

@@ -15,7 +15,6 @@ class Workers<T> {
 
 	public void next() {
 		if (workers.size() > 0) {
-			// editor.lockScrolling(true);
 			SwingWorker<T, Void> w = workers.get(0);
 			workers.remove(0);
 			w.execute();
@@ -36,5 +35,9 @@ class Workers<T> {
 
 	public int size() {
 		return workers.size();
+	}
+
+	public void clear() {
+		workers.clear();
 	}
 }
