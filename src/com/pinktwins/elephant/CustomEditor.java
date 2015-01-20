@@ -163,7 +163,7 @@ public class CustomEditor extends RoundPanel {
 		this.setDoubleBuffered(true);
 
 		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createEmptyBorder(14, 18, 18, 14));
+		setBorder(BorderFactory.createEmptyBorder(14, 18, 18, 18));
 		setLayout(new BorderLayout());
 
 		JPanel titlePanel = new JPanel();
