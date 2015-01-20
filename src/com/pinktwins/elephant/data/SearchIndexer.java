@@ -82,6 +82,11 @@ public class SearchIndexer {
 	}
 
 	public void digestNote(Note note, Notebook nb) {
+		// Dont index notes in Trash.
+		if (nb != null && nb.isTrash()) {
+			return;
+		}
+
 		Meta meta = note.getMeta();
 		memoryIndex.digestText(note, meta.title());
 

@@ -41,7 +41,6 @@ import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
-import com.pinktwins.elephant.util.MeasureUtil;
 import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteList extends BackgroundPanel implements NoteItemListener {
@@ -218,15 +217,12 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			workers.add(new SwingWorker<Point, Void>() {
 				@Override
 				protected Point doInBackground() throws Exception {
-					MeasureUtil.start();
 					for (int n = range.x, len = range.y; n < len; n++) {
 						if (cancelTrigger.isDown) {
-							MeasureUtil.stop("cache");
 							return null;
 						}
 						NoteItem.itemOf(list.get(n));
 					}
-					MeasureUtil.stop("cache");
 					return range;
 				}
 
@@ -235,10 +231,8 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 					try {
 						Point range = get();
 						if (range != null) {
-							MeasureUtil.start();
 							for (int n = range.x, len = range.y; n < len; n++) {
 								if (cancelTrigger.isDown) {
-									MeasureUtil.stop("thumb");
 									return;
 								}
 								NoteItem item = NoteItem.itemOf(list.get(n));
@@ -249,8 +243,6 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 							initialScrollValue = scroll.getVerticalScrollBar().getValue();
 							layoutItems();
 							scroll.getVerticalScrollBar().revalidate();
-							//NoteList.this.repaint();
-							MeasureUtil.stop("thumb");
 						}
 					} catch (ExecutionException e) {
 						e.printStackTrace();
@@ -262,7 +254,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 				}
 			});
 		}
-		
+
 		allNotesPanel.setVisible(!notebook.isAllNotes());
 		fillerPanel.setVisible(!notebook.isAllNotes());
 
