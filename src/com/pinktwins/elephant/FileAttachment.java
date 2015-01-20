@@ -358,39 +358,6 @@ public class FileAttachment extends JPanel {
 
 			final int noteHash = editor.noteHash();
 
-			class Workers {
-				private final ArrayList<SwingWorker<Image, Void>> workers = Factory.newArrayList();
-
-				public void add(SwingWorker<Image, Void> w) {
-					workers.add(w);
-				}
-
-				public void next() {
-					if (workers.size() > 0) {
-						// editor.lockScrolling(true);
-						SwingWorker<Image, Void> w = workers.get(0);
-						workers.remove(0);
-						w.execute();
-					}
-				}
-
-				public void last() {
-					if (workers.size() > 0) {
-						SwingWorker<Image, Void> w = workers.get(workers.size() - 1);
-						workers.clear();
-						w.execute();
-					}
-				}
-
-				public boolean isEmpty() {
-					return workers.isEmpty();
-				}
-
-				public int size() {
-					return workers.size();
-				}
-			}
-
 			// pageIcons - one icon per page
 			final ArrayList<ImageIcon> pageIcons = Factory.newArrayList();
 			Image page1 = pages.get(0).getPage();
@@ -443,7 +410,7 @@ public class FileAttachment extends JPanel {
 				}
 			}
 
-			final Workers workers = new Workers();
+			final Workers<Image> workers = new Workers<Image>();
 
 			for (PreviewPageProvider ppp : pages) {
 				final PreviewPageProvider page = ppp;

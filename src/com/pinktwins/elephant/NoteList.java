@@ -172,7 +172,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		noteItems.clear();
 
 		main.repaint();
-
+		
 		final List<Note> list = notebook.getNotes();
 		int idx = 0;
 		for (Note n : list) {
@@ -187,6 +187,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 				final Trigger cancelTrigger = loadCancelTriggers.get();
 				final int start = idx;
 
+				
 				(new Thread() {
 					@Override
 					public void run() {
