@@ -100,10 +100,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	class EditorWidthImageScaler implements ImageScaler {
 		public Image scale(Image i, File source) {
-			int adjust = -1;
+			int adjust = -12;
 
 			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
-				adjust = -9;
+				adjust = -20;
 			}
 
 			return getScaledImage(i, source, adjust, true);
@@ -323,7 +323,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getVerticalScrollBar().setUnitIncrement(10);
 		scroll.getHorizontalScrollBar().setUnitIncrement(10);
-		
+
 		scrollHolder.add(scroll, BorderLayout.CENTER);
 
 		main.add(scrollHolder);
@@ -398,12 +398,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				}
 			}
 		});
-		
+
 		main.setTransferHandler(new EditorAttachmentTransferHandler(this));
 	}
 
 	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
+		// what (editor.getTextPane().getWidth() - 2) will be
 		long w = getWidth() - kBorder * 4 - 12 + widthOffset;
+
 		long iw = i.getWidth(null);
 
 		if (useFullWidth || i.getWidth(null) > w) {
