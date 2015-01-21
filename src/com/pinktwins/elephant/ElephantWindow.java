@@ -107,11 +107,27 @@ public class ElephantWindow extends JFrame {
 		createSplit();
 		createToolbar();
 
+		Start start = null;
+
 		if (Vault.getInstance().hasLocation()) {
+			add(splitLeft, BorderLayout.CENTER);
+
 			Notebook b = Vault.getInstance().getDefaultNotebook();
 			if (b != null) {
 				showNotebook(b);
 			}
+		} else {
+			start = new Start(new Runnable() {
+				@Override
+				public void run() {
+					if (!Elephant.restartApplication()) {
+						JOptionPane.showMessageDialog(null, "Great! Now please restart.");
+						System.exit(0);
+					}
+				}
+			});
+
+			add(start, BorderLayout.CENTER);
 		}
 
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
@@ -179,7 +195,7 @@ public class ElephantWindow extends JFrame {
 
 		toolBar.indexingInProgress(true);
 
-		if (!Search.ssi.ready()) {
+		if (start == null && !Search.ssi.ready()) {
 			new Thread() {
 				@Override
 				public void run() {
@@ -809,21 +825,6 @@ public class ElephantWindow extends JFrame {
 
 		splitRight.setLeftComponent(noteList);
 		splitRight.setRightComponent(noteEditor);
-
-		if (!Vault.getInstance().hasLocation()) {
-			Start start = new Start(new Runnable() {
-				@Override
-				public void run() {
-					if (!Elephant.restartApplication()) {
-						JOptionPane.showMessageDialog(null, "Great! Now please restart.");
-						System.exit(0);
-					}
-				}
-			});
-			add(start);
-		} else {
-			add(splitLeft, BorderLayout.CENTER);
-		}
 	}
 
 	private void createToolbar() {
