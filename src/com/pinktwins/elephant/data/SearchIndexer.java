@@ -145,11 +145,16 @@ public class SearchIndexer {
 	}
 
 	@Subscribe
-	public void handleNoteChanged(NoteChangedEvent e) {
-		purgeNote(e.note);
-		digestNote(e.note, e.note.findContainingNotebook());
+	public void handleNoteChanged(NoteChangedEvent e) throws Exception {
+		try {
+			purgeNote(e.note);
+			digestNote(e.note, e.note.findContainingNotebook());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
 
-		if (useLucene) {
+		if (useLucene && ready()) {
 			luceneIndex.commit();
 		}
 

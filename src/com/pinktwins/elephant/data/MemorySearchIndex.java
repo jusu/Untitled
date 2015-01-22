@@ -22,9 +22,8 @@ public class MemorySearchIndex implements SearchIndexInterface {
 	// Escaped chars in regex patterns
 	// <([{\^-=$!|]})?*+.>
 
-	// Split by these chars. This hides them for search but reduces the wordMap size.
-	String[] splitChars = { " ", "\n", "\r", "\t", ",", "\\)", "\\(", "\\>", "\\<", "'", "\\\"", "\\=", "\\*", "\\!", "\\[", "\\]", "\\?", ";", "\\+",
-			"\\$", "&", "\\^", "\\{", "\\}", "\\|" };
+	// Split by these chars.
+	String[] splitChars = { " ", "\n", "\r", "\t" };
 
 	Pattern splitter = Pattern.compile(StringUtils.join(splitChars, "|"));
 
@@ -53,22 +52,26 @@ public class MemorySearchIndex implements SearchIndexInterface {
 				continue;
 			}
 
-			Set<Note> set = wordMap.get(s);
-			if (set == null) {
-				set = Factory.newHashSet();
-				wordMap.put(s, set);
+			synchronized (wordMap) {
+				Set<Note> set = wordMap.get(s);
+				if (set == null) {
+					set = Factory.newHashSet();
+					wordMap.put(s, set);
+				}
+				set.add(n);
 			}
-			set.add(n);
 		}
 	}
 
 	public Set<Note> search(String text) {
 		HashSet<Note> foundSet = Factory.newHashSet();
 
-		Set<String> strs = wordMap.keySet();
-		for (String s : strs) {
-			if (s.indexOf(text) >= 0) {
-				foundSet.addAll(wordMap.get(s));
+		synchronized (wordMap) {
+			Set<String> strs = wordMap.keySet();
+			for (String s : strs) {
+				if (s.indexOf(text) >= 0) {
+					foundSet.addAll(wordMap.get(s));
+				}
 			}
 		}
 
@@ -76,23 +79,27 @@ public class MemorySearchIndex implements SearchIndexInterface {
 	}
 
 	@Override
-	public void purgeNote(Note note) {
-		for (Set<Note> set : wordMap.values()) {
-			set.remove(note);
+	synchronized public void purgeNote(Note note) {
+		synchronized (wordMap) {
+			for (Set<Note> set : wordMap.values()) {
+				set.remove(note);
+			}
 		}
 	}
 
 	@Override
 	public void debug() {
-		System.out.println("SSI memoryIndex has " + wordMap.keySet().size() + " strings/sets");
-		long n = 0;
+		synchronized (wordMap) {
+			System.out.println("SSI memoryIndex has " + wordMap.keySet().size() + " strings/sets");
+			long n = 0;
 
-		for (String s : wordMap.keySet()) {
-			Set<Note> set = wordMap.get(s);
-			n += set.size();
+			for (String s : wordMap.keySet()) {
+				Set<Note> set = wordMap.get(s);
+				n += set.size();
+			}
+
+			System.out.println("total of " + n + " set items.");
 		}
-
-		System.out.println("total of " + n + " set items.");
 	}
 
 	@Override

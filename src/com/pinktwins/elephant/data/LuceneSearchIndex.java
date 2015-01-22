@@ -84,14 +84,16 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	}
 
 	public void closeWriter() {
-		if (writer != null) {
-			try {
-				writer.commit();
-				writer.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+		synchronized (this) {
+			if (writer != null) {
+				try {
+					writer.commit();
+					writer.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				writer = null;
 			}
-			writer = null;
 		}
 	}
 
@@ -161,12 +163,14 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	@Override
 	public void purgeNote(Note note) {
 		try {
-			if (writer == null) {
-				openWriter();
-			}
+			synchronized (this) {
+				if (writer == null) {
+					openWriter();
+				}
 
-			Term term = new Term("path", note.file().getAbsolutePath());
-			writer.deleteDocuments(term);
+				Term term = new Term("path", note.file().getAbsolutePath());
+				writer.deleteDocuments(term);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -220,18 +224,19 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 			return;
 		}
 		try {
-			if (writer == null) {
-				openWriter();
-			}
-
 			Document doc = new Document();
 
 			doc.add(new StringField("path", file.getAbsolutePath(), Field.Store.YES));
 			doc.add(new LongField("modified", file.lastModified(), Field.Store.YES));
 			doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))));
 
-			// System.out.println("Updating: " + file);
-			writer.updateDocument(new Term("path", file.getAbsolutePath()), doc);
+			synchronized (this) {
+				if (writer == null) {
+					openWriter();
+				}
+
+				writer.updateDocument(new Term("path", file.getAbsolutePath()), doc);
+			}
 		} finally {
 			fis.close();
 		}
