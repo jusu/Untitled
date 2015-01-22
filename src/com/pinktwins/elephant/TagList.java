@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -18,7 +19,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Notebook;
@@ -73,7 +76,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 	@Override
 	protected void newButtonAction() {
-		JOptionPane.showMessageDialog(null, "This view is still a work in progress. To create a tag just use the note editor.");
+		newTag();
 	}
 
 	@Override
@@ -82,7 +85,11 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 		// Small gap before each header
 		for (TagItem item : itemList) {
-			item.setDrawHeader(prev == null || !prev.nameStr.substring(0, 1).toLowerCase().equals(item.nameStr.substring(0, 1).toLowerCase()), false);
+			String startChar = item.nameStr.substring(0, 1).toLowerCase();
+			String prevStartChar = prev != null ? prev.nameStr.substring(0, 1).toLowerCase() : "";
+
+			item.setDrawHeader(!item.isEditable && (prevStartChar.isEmpty() || !prevStartChar.equals(startChar)), false);
+
 			if (prev != null && item.drawHeader) {
 				prev.size.height += 8;
 			}
@@ -143,7 +150,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 		private Dimension size = new Dimension(200, 34);
 		private String nameStr;
 		private int count;
-		private boolean isSelected;
+		private boolean isSelected, isEditable;
 		private boolean drawHeader, isContd;
 
 		private final Stroke STROKE = new BasicStroke(1f);
@@ -153,6 +160,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 		Color grayBg = Color.decode("#e3e3e3");
 		Color grayLine = Color.decode("#cecece");
+		Color darkGrayLine = Color.decode("#929292");
 		Color fontColor = Color.decode("#666666");
 
 		Color selectedBg = Color.decode("#32a5f3");
@@ -170,6 +178,10 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 			addMouseListener(this);
 		}
 
+		public String tagId() {
+			return tag.id();
+		}
+
 		public void setDrawHeader(boolean b, boolean contd) {
 			drawHeader = b;
 			isContd = contd;
@@ -183,15 +195,15 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 		@Override
 		public void paint(Graphics g) {
-			super.paint(g);
-
-			int countWidth = 2, countOffsetX = 21;
+			int countWidth = 2, countOffsetX = 21, maxWidth = 160;
 
 			Font font = ElephantWindow.fontMediumPlus;
 			g.setFont(font);
 			FontMetrics fm = g.getFontMetrics(font);
 			int width = fm.stringWidth(nameStr) + countWidth;
 			int h = 25, hd2 = h / 2;
+
+			width = Math.min(width, maxWidth);
 
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -208,22 +220,34 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 				g.drawString(nameStr.substring(0, 1).toUpperCase() + (isContd ? " (cont'd)" : ""), 10, hd2 + fm.getAscent() / 2);
 			}
 
-			g.setColor(isSelected ? selectedBg : grayBg);
+			g.setColor(isEditable ? Color.WHITE : (isSelected ? selectedBg : grayBg));
 			g.fillArc(0, yOff + 2, h, h, 90, 180);
 			g.fillArc(width + hd2, yOff + 2, h, h, 270, 180);
 			g.fillRect(hd2, yOff + 2, width + hd2 + 1, h);
 
-			g.setColor(isSelected ? selectedLine : grayLine);
+			g.setColor(isEditable ? darkGrayLine : (isSelected ? selectedLine : grayLine));
 			g.drawArc(0, yOff + 2, h, h, 90, 180);
 			g.drawArc(width + hd2, yOff + 2, h, h, 270, 180);
 			g.drawLine(hd2, yOff + 2, width + h, yOff + 2);
 			g.drawLine(hd2, yOff + h + 2, width + h, yOff + h + 2);
 
-			g.setColor(isSelected ? Color.WHITE : fontColor);
-			g.drawString(nameStr, hd2 - 2, yOff + hd2 + fm.getAscent() / 2 + 2);
+			if (!isEditable) {
+				if (width == maxWidth) {
+					// happens only on first draw - nameStr remains clipped. this is okay.
+					while (!nameStr.isEmpty() && fm.stringWidth(nameStr) + countWidth > maxWidth) {
+						nameStr = nameStr.substring(0, nameStr.length() - 1);
+					}
+					nameStr += "...";
+				}
 
-			String countStr = Search.ssi.ready() ? String.valueOf(count) : "-";
-			g.drawString(countStr, width + countOffsetX, yOff + hd2 + fm.getAscent() / 2 + 2);
+				g.setColor(isSelected ? Color.WHITE : fontColor);
+				g.drawString(nameStr, hd2 - 2, yOff + hd2 + fm.getAscent() / 2 + 2);
+
+				String countStr = Search.ssi.ready() ? String.valueOf(count) : "-";
+				g.drawString(countStr, width + countOffsetX, yOff + hd2 + fm.getAscent() / 2 + 2);
+			}
+
+			super.paint(g);
 		}
 
 		@Override
@@ -253,6 +277,10 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			if (isEditing) {
+				return;
+			}
+
 			selectItem(this);
 			if (e.getClickCount() == 2) {
 				openSelected();
@@ -281,5 +309,88 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 	@Subscribe
 	public void handleTagsChangedEvent(TagsChangedEvent event) {
 		refresh();
+	}
+
+	public void newTag() {
+		TagItem newTag = new TagItem(new Tag("New Tag"));
+		JTextField edit = setEditable(newTag, "New Tag");
+
+		edit.setBorder(null);
+		edit.setBounds(12, 5, 170, 20);
+		edit.setFont(ElephantWindow.fontMediumPlus);
+		edit.setMaximumSize(new Dimension(180, 30));
+
+		itemList.add(0, newTag);
+		main.add(newTag, 0);
+		layoutItems();
+
+		deselectAll();
+		edit.requestFocusInWindow();
+	}
+
+	@Override
+	protected JTextField setEditable(final TagItem item, String name) {
+		item.isEditable = true;
+		final JTextField edit = super.setEditable(item, name);
+
+		edit.getDocument().addDocumentListener(new DocumentListener() {
+			private void update() {
+				item.nameStr = edit.getText();
+				item.repaint();
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				update();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				update();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				update();
+			}
+		});
+
+		item.add(edit);
+		return edit;
+	}
+
+	@Override
+	protected void doneEditing(TagItem item, String text) {
+		Tag tag = null;
+
+		if (item.getComponentCount() > 0) {
+			Component c = item.getComponent(0);
+			if (c instanceof JTextField) {
+				JTextField t = (JTextField) c;
+				String s = t.getText().trim();
+				if (!s.isEmpty()) {
+					tag = new Tag(s);
+					Vault.getInstance().saveNewTag(tag);
+				}
+			}
+		}
+
+		update();
+		layoutItems();
+
+		if (tag != null) {
+			for (TagItem t : itemList) {
+				if (t.tagId().equals(tag.id())) {
+					selectItem(t);
+					break;
+				}
+			}
+		}
+	}
+
+	@Override
+	protected void cancelEditing(TagItem item) {
+		update();
+		layoutItems();
 	}
 }

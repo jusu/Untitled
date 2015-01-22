@@ -3,10 +3,6 @@ package com.pinktwins.elephant;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -86,17 +82,55 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		try {
 			Notebook nb = Notebook.createNotebook();
 			NotebookItem newItem = new NotebookItem(nb);
-			newItem.setEditable();
+			JTextField edit = setEditable(newItem, nb.name());
 			itemList.add(0, newItem);
 			main.add(newItem, 0);
 			layoutItems();
 
 			deselectAll();
-			newItem.edit.requestFocusInWindow();
-			isEditing = true;
+			edit.requestFocusInWindow();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected JTextField setEditable(NotebookItem item, String name) {
+		item.remove(item.name);
+		JTextField edit = super.setEditable(item, name);
+
+		edit.setMaximumSize(new Dimension(200, 30));
+		edit.setBounds(12, 10, 180, 31);
+
+		item.add(edit);
+		return edit;
+	}
+
+	@Override
+	protected void doneEditing(NotebookItem item, String text) {
+		if (item.notebook.rename(text)) {
+			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated, item.notebook));
+			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook));
+
+			for (NotebookItem i : itemList) {
+				if (i.notebook.equals(item.notebook.folder())) {
+					selectItem(i);
+				}
+			}
+		} else {
+			// XXX likely nonconforming characters in name. explain it.
+		}
+	}
+
+	@Override
+	protected void cancelEditing(NotebookItem item) {
+		try {
+			item.notebook.folder().delete();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook));
 	}
 
 	class NotebookItem extends BackgroundPanel implements ToolbarList.ToolbarListItem, MouseListener {
@@ -106,7 +140,6 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		private Dimension size = new Dimension(252, 51);
 		private JLabel name;
 		private JLabel count;
-		private JTextField edit;
 
 		public NotebookItem(Notebook nb) {
 			super(notebookBg);
@@ -131,71 +164,6 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			count.setBounds(202, 0, 60, 51);
 
 			addMouseListener(this);
-		}
-
-		public void setEditable() {
-			edit = new JTextField();
-			edit.setText(notebook.name());
-			edit.setSelectionStart(0);
-			edit.setSelectionEnd(notebook.name().length());
-			edit.setMaximumSize(new Dimension(200, 30));
-			remove(name);
-			add(edit);
-
-			edit.setBounds(12, 10, 180, 31);
-
-			edit.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					doneEditing();
-				}
-			});
-
-			edit.addKeyListener(new KeyListener() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-				}
-
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						cancelEditing();
-					}
-				}
-
-				@Override
-				public void keyReleased(KeyEvent e) {
-				}
-			});
-		}
-
-		protected void doneEditing() {
-			String s = edit.getText();
-			if (notebook.rename(s)) {
-				isEditing = false;
-				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated, notebook));
-				Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, notebook));
-
-				for (NotebookItem item : itemList) {
-					if (item.notebook.equals(notebook.folder())) {
-						selectItem(item);
-					}
-				}
-
-			} else {
-				// XXX likely nonconforming characters in name. explain it.
-			}
-		}
-
-		protected void cancelEditing() {
-			try {
-				notebook.folder().delete();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			isEditing = false;
-			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, notebook));
 		}
 
 		@Override

@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -288,6 +289,48 @@ abstract public class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 
 		lc.updateHorizontalScrollbar(item, scroll);
 	}
+
+	protected JTextField setEditable(final T item, String name) {
+		final JTextField edit = new JTextField();
+		edit.setText(name);
+		edit.setSelectionStart(0);
+		edit.setSelectionEnd(name.length());
+
+		edit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				isEditing = false;
+				doneEditing(item, edit.getText());
+			}
+		});
+
+		edit.addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					isEditing = false;
+					cancelEditing(item);
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+		});
+
+		isEditing = true;
+
+		return edit;
+
+	}
+
+	protected abstract void doneEditing(T item, String text);
+
+	protected abstract void cancelEditing(T item);
 
 	static final Timer t = new Timer();
 

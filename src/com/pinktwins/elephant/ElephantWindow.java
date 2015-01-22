@@ -579,6 +579,14 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener newTagAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showTags();
+			tagList.newTag();
+		}
+	};
+
 	ActionListener newWindowAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -722,6 +730,7 @@ public class ElephantWindow extends JFrame {
 		JMenu file = new JMenu("File");
 		file.add(menuItem("New Note", KeyEvent.VK_N, menuMask, newNoteAction));
 		file.add(menuItem("New Notebook", KeyEvent.VK_N, menuMask | KeyEvent.SHIFT_DOWN_MASK, newNotebookAction));
+		file.add(menuItem("New Tag", KeyEvent.VK_T, menuMask | KeyEvent.CTRL_DOWN_MASK, newTagAction));
 		file.add(menuItem("New Elephant Window", KeyEvent.VK_N, menuMask | KeyEvent.ALT_DOWN_MASK, newWindowAction));
 		file.addSeparator();
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));

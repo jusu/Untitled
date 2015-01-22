@@ -369,4 +369,12 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		}
 	}
 
+	@Override
+	protected void doneEditing(NotebookItem item, String text) {
+	}
+
+	@Override
+	protected void cancelEditing(NotebookItem item) {
+	}
+
 }

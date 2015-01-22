@@ -127,4 +127,10 @@ public class Tags {
 	public List<Tag> asList() {
 		return new ArrayList<Tag>(flatList);
 	}
+
+	public void saveTag(final Tag t) {
+		flatList.add(t);
+		Collections.sort(flatList);
+		save();
+	}
 }

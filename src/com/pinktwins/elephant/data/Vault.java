@@ -231,4 +231,8 @@ public class Vault implements WatchDirListener {
 	public String getLuceneIndexPath() {
 		return Elephant.settings.userHomePath() + File.separator + ".com.pinktwins.elephant.searchIndex";
 	}
+
+	public void saveNewTag(final Tag tag) {
+		tags.saveTag(tag);
+	}
 }
