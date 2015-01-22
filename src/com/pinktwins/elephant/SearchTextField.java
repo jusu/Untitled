@@ -179,10 +179,12 @@ public class SearchTextField extends HintTextField {
 
 	public void searchFocusGained() {
 		hasSearchFocus = true;
+		repaint();
 	}
 
 	public void searchFocusLost() {
 		hasSearchFocus = false;
+		repaint();
 	}
 
 	public void setFixedColor(Color c) {

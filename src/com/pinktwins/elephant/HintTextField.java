@@ -10,10 +10,14 @@ import java.awt.RenderingHints;
 
 import javax.swing.JTextField;
 
+import org.apache.commons.lang3.SystemUtils;
+
 // http://stackoverflow.com/questions/1738966/java-jtextfield-with-input-hint
 
 public class HintTextField extends JTextField {
 	private static final long serialVersionUID = 7575368067562925690L;
+
+	private static final int adjustOS = (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) ? -1 : 0;
 
 	private String _hint;
 	private Font _font;
@@ -40,10 +44,9 @@ public class HintTextField extends JTextField {
 			int m = 0xfefefefe;
 			int c2 = ((c0 & m) >>> 1) + ((c1 & m) >>> 1);
 			g.setColor(new Color(c2, true));
-			g.drawString(_hint, ins.left, h / 2 + fm.getAscent() / 2 - 2 + adjust_y);
+			g.drawString(_hint, ins.left, h / 2 + fm.getAscent() / 2 - 2 + adjust_y + adjustOS);
 		}
 	}
-
 
 	public void setHintText(String hint) {
 		_hint = hint;
