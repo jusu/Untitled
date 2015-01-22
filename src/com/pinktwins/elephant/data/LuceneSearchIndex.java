@@ -46,6 +46,9 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	IndexReader reader;
 	IndexSearcher searcher;
 
+	Object readerSync = new Object();
+	Object writerSync = new Object();
+
 	QueryParser parser;
 
 	public static int lastSearchTotalHits = 0;
@@ -84,7 +87,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	}
 
 	public void closeWriter() {
-		synchronized (this) {
+		synchronized (writerSync) {
 			if (writer != null) {
 				try {
 					writer.commit();
@@ -103,14 +106,16 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	}
 
 	public void closeReader() {
-		if (reader != null) {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		synchronized (readerSync) {
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				reader = null;
 			}
-			reader = null;
 		}
 	}
 
@@ -143,15 +148,14 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		text = '*' + text + '*';
 
 		try {
-			if (reader == null) {
-				openReader();
+			synchronized (readerSync) {
+				if (reader == null) {
+					openReader();
+				}
+
+				Query query = parser.parse(text);
+				return searchNotes(query);
 			}
-
-			Query query = parser.parse(text);
-			// System.out.println("Searching for: " + query.toString("contents"));
-			Set<Note> found = searchNotes(query);
-
-			return found;
 		} catch (ParseException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -163,7 +167,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	@Override
 	public void purgeNote(Note note) {
 		try {
-			synchronized (this) {
+			synchronized (writerSync) {
 				if (writer == null) {
 					openWriter();
 				}
@@ -191,25 +195,27 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 			return;
 		}
 
-		if (reader == null) {
-			try {
-				openReader();
-			} catch (IndexNotFoundException e) {
-				// Index not creatd yet
+		synchronized (readerSync) {
+			if (reader == null) {
+				try {
+					openReader();
+				} catch (IndexNotFoundException e) {
+					// Index not creatd yet
+				}
 			}
-		}
 
-		// Check if file already indexed and up-to-date
-		if (reader != null) {
-			Term t = new Term("path", file.getAbsolutePath());
-			if (reader.docFreq(t) > 0) {
-				Query q = new TermQuery(t);
-				ScoreDoc[] sd = searcher.search(q, 1).scoreDocs;
-				if (sd.length == 1) {
-					Number n = searcher.doc(sd[0].doc).getField("modified").numericValue();
-					if (n.equals(file.lastModified())) {
-						// File indexed and not changed, no need to reindex.
-						return;
+			// Check if file already indexed and up-to-date
+			if (reader != null) {
+				Term t = new Term("path", file.getAbsolutePath());
+				if (reader.docFreq(t) > 0) {
+					Query q = new TermQuery(t);
+					ScoreDoc[] sd = searcher.search(q, 1).scoreDocs;
+					if (sd.length == 1) {
+						Number n = searcher.doc(sd[0].doc).getField("modified").numericValue();
+						if (n.equals(file.lastModified())) {
+							// File indexed and not changed, no need to reindex.
+							return;
+						}
 					}
 				}
 			}
@@ -230,7 +236,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 			doc.add(new LongField("modified", file.lastModified(), Field.Store.YES));
 			doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))));
 
-			synchronized (this) {
+			synchronized (writerSync) {
 				if (writer == null) {
 					openWriter();
 				}
