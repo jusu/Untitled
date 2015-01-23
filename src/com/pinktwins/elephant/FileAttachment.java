@@ -213,7 +213,7 @@ public class FileAttachment extends JPanel {
 		}
 	}
 
-	static public File getPreviewDirectory(File f) {
+	public static File getPreviewDirectory(File f) {
 		String path = ImageScalingCache.getImageCacheDir() + File.separator + f.getName();
 		path += "_" + f.length() + ".preview";
 		return new File(path);
@@ -221,7 +221,7 @@ public class FileAttachment extends JPanel {
 
 	// get file for page#. arg File F is a directory previously got with
 	// getPreviewDirectory()
-	static public File getPreviewFileForPage(File f, int page) {
+	public static File getPreviewFileForPage(File f, int page) {
 		return new File(String.format("%s%spage_%05d.png", f.getAbsolutePath(), File.separator, page));
 	}
 
@@ -482,7 +482,7 @@ public class FileAttachment extends JPanel {
 		}
 	}
 
-	static public File[] previewFiles(File f) {
+	public static File[] previewFiles(File f) {
 		File pf = getPreviewDirectory(f);
 		if (pf.exists() && pf.isDirectory()) {
 			File[] files = pf.listFiles(new FileFilter() {
@@ -499,7 +499,7 @@ public class FileAttachment extends JPanel {
 		}
 	}
 
-	final static Color pageBreakColor = Color.decode("#c0c0c0");
+	static final Color pageBreakColor = Color.decode("#c0c0c0");
 
 	void addPageBreak(JTextPane tp, Style style) {
 		JPanel p = new JPanel(null);

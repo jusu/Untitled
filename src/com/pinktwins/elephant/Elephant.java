@@ -14,8 +14,8 @@ import com.pinktwins.elephant.data.Vault;
 
 public class Elephant {
 
-	public final static EventBus eventBus = new EventBus();
-	public final static Settings settings = new Settings();
+	public static final EventBus eventBus = new EventBus();
+	public static final Settings settings = new Settings();
 
 	public static String[] args;
 

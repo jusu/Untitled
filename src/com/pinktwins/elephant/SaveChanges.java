@@ -18,7 +18,7 @@ import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 
 public class SaveChanges {
 
-	static private void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
+	private static void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
 		try {
 			currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));
 		} catch (IOException e) {
@@ -26,7 +26,7 @@ public class SaveChanges {
 		}
 	}
 
-	static public void savechanges(Note currentNote, NoteAttachments attachments, NoteEditor noteEditor, TagEditorPane tagPane) {
+	public static void savechanges(Note currentNote, NoteAttachments attachments, NoteEditor noteEditor, TagEditorPane tagPane) {
 		if (currentNote != null) {
 			CustomEditor editor = noteEditor.editor;
 

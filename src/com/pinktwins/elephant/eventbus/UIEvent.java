@@ -3,7 +3,7 @@ package com.pinktwins.elephant.eventbus;
 import com.pinktwins.elephant.Elephant;
 
 public class UIEvent {
-	static public enum Kind {
+	public static enum Kind {
 		editorWillChangeNote
 	};
 
@@ -13,7 +13,7 @@ public class UIEvent {
 		this.kind = kind;
 	}
 
-	static public void post(Kind kind) {
+	public static void post(Kind kind) {
 		Elephant.eventBus.post(new UIEvent(kind));
 	}
 }

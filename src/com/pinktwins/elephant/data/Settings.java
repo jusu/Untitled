@@ -13,7 +13,7 @@ public class Settings {
 	public static enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene");
 
-		final private String str;
+		private final String str;
 
 		private Keys(String s) {
 			str = s;

@@ -43,43 +43,43 @@ import com.pinktwins.elephant.eventbus.VaultEvent;
 
 public class ElephantWindow extends JFrame {
 
-	final public static Font fontStart = Font.decode("Arial-ITALIC-18");
-	final public static Font fontTitle = Font.decode("Helvetica-BOLD-18");
-	final public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
-	final public static Font fontSmall = Font.decode("Helvetica-10");
-	final public static Font fontEditorTitle = Font.decode("Helvetica-15");
-	final public static Font fontEditor = Font.decode("Arial-13");
-	final public static Font fontBoldEditor = Font.decode("Arial-BOLD-13");
-	final public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
-	final public static Font fontNormal = Font.decode("Arial-14");
-	final public static Font fontMediumPlus = Font.decode("Arial-12");
-	final public static Font fontMedium = Font.decode("Arial-11");
-	final public static Font fontMediumMinus = Font.decode("Arial-10");
-	final public static Font fontModalHeader = Font.decode("Arial-BOLD-16");
-	final public static Font fontSideBarText = Font.decode("Arial-BOLD-13");
-	final public static Font fontNotebookChooser = Font.decode("Helvetica-12");
+	public static final Font fontStart = Font.decode("Arial-ITALIC-18");
+	public static final Font fontTitle = Font.decode("Helvetica-BOLD-18");
+	public static final Font fontH1 = Font.decode("Helvetica-BOLD-16");
+	public static final Font fontSmall = Font.decode("Helvetica-10");
+	public static final Font fontEditorTitle = Font.decode("Helvetica-15");
+	public static final Font fontEditor = Font.decode("Arial-13");
+	public static final Font fontBoldEditor = Font.decode("Arial-BOLD-13");
+	public static final Font fontBoldNormal = Font.decode("Arial-BOLD-14");
+	public static final Font fontNormal = Font.decode("Arial-14");
+	public static final Font fontMediumPlus = Font.decode("Arial-12");
+	public static final Font fontMedium = Font.decode("Arial-11");
+	public static final Font fontMediumMinus = Font.decode("Arial-10");
+	public static final Font fontModalHeader = Font.decode("Arial-BOLD-16");
+	public static final Font fontSideBarText = Font.decode("Arial-BOLD-13");
+	public static final Font fontNotebookChooser = Font.decode("Helvetica-12");
 
-	final public static Color colorTitle = Color.decode("#999999");
-	final public static Color colorTitleButton = Color.decode("#666666");
-	final public static Color colorGray5 = Color.decode("#555555");
-	final public static Color colorDB = Color.decode("#dbdbdb");
-	final public static Color colorGreen = Color.decode("#00a834");
-	final public static Color colorBlue = Color.decode("#0091e6");
-	final public static Color colorPreviewGray = Color.decode("#666663");
-	final public static Color colorPreviewGrayOlder = Color.decode("#b1b1b1");
+	public static final Color colorTitle = Color.decode("#999999");
+	public static final Color colorTitleButton = Color.decode("#666666");
+	public static final Color colorGray5 = Color.decode("#555555");
+	public static final Color colorDB = Color.decode("#dbdbdb");
+	public static final Color colorGreen = Color.decode("#00a834");
+	public static final Color colorBlue = Color.decode("#0091e6");
+	public static final Color colorPreviewGray = Color.decode("#666663");
+	public static final Color colorPreviewGrayOlder = Color.decode("#b1b1b1");
 
-	final public static int bigWidth = 1920;
+	public static final int bigWidth = 1920;
 
-	final public static Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
+	public static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
 	private CustomSplitPane splitLeft, splitRight;
 
-	final private Toolbar toolBar = new Toolbar(this);
-	final private Sidebar sideBar = new Sidebar(this);
-	final private NoteList noteList = new NoteList(this);
-	final private NoteEditor noteEditor = new NoteEditor(this);
-	final private Notebooks notebooks = new Notebooks(this);
-	final private TagList tagList = new TagList(this);
+	private final Toolbar toolBar = new Toolbar(this);
+	private final Sidebar sideBar = new Sidebar(this);
+	private final NoteList noteList = new NoteList(this);
+	private final NoteEditor noteEditor = new NoteEditor(this);
+	private final Notebooks notebooks = new Notebooks(this);
+	private final TagList tagList = new TagList(this);
 
 	private boolean hasWindowFocus;
 

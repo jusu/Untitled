@@ -9,7 +9,7 @@ public class IndexProgressEvent {
 		this.progress = progress;
 	}
 	
-	static public void post(float progress) {
+	public static void post(float progress) {
 		Elephant.eventBus.post(new IndexProgressEvent(progress));
 	}
 }

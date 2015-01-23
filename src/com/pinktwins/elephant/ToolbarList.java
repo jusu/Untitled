@@ -35,7 +35,7 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.ResizeListener;
 
-abstract public class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> extends BackgroundPanel {
+public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListItem> extends BackgroundPanel {
 
 	interface ToolbarListItem {
 		public void setSelected(boolean b);
@@ -128,9 +128,9 @@ abstract public class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		addComponentListeners();
 	}
 
-	abstract protected List<T> queryFilter(String text);
+	protected abstract List<T> queryFilter(String text);
 
-	abstract protected void newButtonAction();
+	protected abstract void newButtonAction();
 
 	protected void vkEnter() {
 	}

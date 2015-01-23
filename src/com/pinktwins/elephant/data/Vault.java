@@ -24,7 +24,7 @@ public class Vault implements WatchDirListener {
 
 	private static Vault instance = null;
 
-	static public Vault getInstance() {
+	public static Vault getInstance() {
 		if (instance == null) {
 			instance = new Vault();
 		}

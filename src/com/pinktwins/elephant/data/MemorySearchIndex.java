@@ -79,7 +79,7 @@ public class MemorySearchIndex implements SearchIndexInterface {
 	}
 
 	@Override
-	synchronized public void purgeNote(Note note) {
+	public synchronized void purgeNote(Note note) {
 		synchronized (wordMap) {
 			for (Set<Note> set : wordMap.values()) {
 				set.remove(note);

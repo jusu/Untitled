@@ -37,9 +37,9 @@ public class Note implements Comparable<Note> {
 
 	private boolean saveLocked = false;
 
-	static private DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
+	private static DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
 
-	static private File[] emptyFileList = new File[0];
+	private static File[] emptyFileList = new File[0];
 
 	public interface Meta {
 		public String title();
@@ -130,7 +130,7 @@ public class Note implements Comparable<Note> {
 		readInfo();
 	}
 
-	static public Notebook findContainingNotebook(File f) {
+	public static Notebook findContainingNotebook(File f) {
 		return Vault.getInstance().findNotebook(f.getParentFile());
 	}
 
@@ -178,7 +178,7 @@ public class Note implements Comparable<Note> {
 		return new String(contents, Charset.defaultCharset());
 	}
 
-	static public String plainTextContents(String contents) {
+	public static String plainTextContents(String contents) {
 		DefaultStyledDocument doc = new DefaultStyledDocument();
 		try {
 			RtfUtil.putRtf(doc, contents, 0);
@@ -508,7 +508,7 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
-	static public String getResourceNote(String name) {
+	public static String getResourceNote(String name) {
 		try {
 			return IOUtils.toString(Note.class.getClass().getResourceAsStream("/notes/" + name));
 		} catch (IOException e) {

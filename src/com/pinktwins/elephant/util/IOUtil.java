@@ -13,7 +13,7 @@ import com.google.common.io.Files;
 
 public class IOUtil {
 
-	private final static byte[] emptyBytes = new byte[0];
+	private static final byte[] emptyBytes = new byte[0];
 
 	public static byte[] readFile(String file) {
 		return readFile(new File(file));

@@ -11,7 +11,7 @@ import javax.swing.text.rtf.RTFEditorKit;
 public class RtfUtil {
 
 	// http://stackoverflow.com/questions/2725141/java-jtextpane-rtf-save
-	static public String getRtf(Document doc) {
+	public static String getRtf(Document doc) {
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			RTFEditorKit kit = new RTFEditorKit();

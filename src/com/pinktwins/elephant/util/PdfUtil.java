@@ -50,7 +50,7 @@ public class PdfUtil {
 	PDFFile pdffile;
 	int numPages;
 
-	final static int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
+	private static final int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
 
 	public PdfUtil(File f) {
 		try {

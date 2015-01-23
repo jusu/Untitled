@@ -14,8 +14,8 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class Notebook implements Comparable<Notebook> {
-	final static public String NAME_ALLNOTES = "All Notes";
-	final static public String NAME_SEARCH = "Search";
+	public static final String NAME_ALLNOTES = "All Notes";
+	public static final String NAME_SEARCH = "Search";
 
 	private String name = "";
 	private File folder;

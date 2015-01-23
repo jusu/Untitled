@@ -5,7 +5,7 @@ import java.io.File;
 import com.pinktwins.elephant.Elephant;
 
 public class NotebookEvent {
-	static public enum Kind {
+	public static enum Kind {
 		noteMoved, noteCreated, noteRenamed
 	};
 

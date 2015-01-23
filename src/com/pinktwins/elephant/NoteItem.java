@@ -64,7 +64,7 @@ class NoteItem extends JPanel implements MouseListener {
 		itemCache.remove(f);
 	}
 
-	static public NoteItem itemOf(Note n) {
+	public static NoteItem itemOf(Note n) {
 		NoteItem item = itemCache.get(n.file());
 
 		// If cached item is attached in another ElephantWindow,

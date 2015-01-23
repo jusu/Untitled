@@ -9,7 +9,7 @@ import javax.swing.TransferHandler;
 
 public class AttachmentTransferHandler extends TransferHandler {
 
-	final private EditorEventListener listener;
+	private final EditorEventListener listener;
 
 	public AttachmentTransferHandler(EditorEventListener listener) {
 		super();

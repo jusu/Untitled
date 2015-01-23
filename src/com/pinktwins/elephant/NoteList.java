@@ -179,9 +179,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		}
 	}
 
-	final private Workers<Point> workers = new Workers<Point>();
+	private final Workers<Point> workers = new Workers<Point>();
 	private boolean isWorking = false;
-	final private Trigger loadCancelTriggers = new Trigger();
+	private final Trigger loadCancelTriggers = new Trigger();
 
 	public void load(Notebook notebook) {
 		this.notebook = notebook;
