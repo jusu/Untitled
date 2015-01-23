@@ -34,7 +34,7 @@ import com.pinktwins.elephant.util.RtfUtil;
 public class Note implements Comparable<Note> {
 
 	private static final Logger log = Logger.getLogger(Note.class.getName());
-	
+
 	private File file, meta;
 	private String fileName = "";
 
@@ -73,12 +73,17 @@ public class Note implements Comparable<Note> {
 
 		@Override
 		public boolean equals(Object o) {
-			return this == o;
+			return super.equals(o);
 		}
 
 		@Override
 		public int compareTo(AttachmentInfo o) {
 			return position - o.position;
+		}
+
+		@Override
+		public int hashCode() {
+			return super.hashCode();
 		}
 	}
 

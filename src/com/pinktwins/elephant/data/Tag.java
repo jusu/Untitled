@@ -21,12 +21,17 @@ public class Tag implements Comparable<Tag> {
 
 	@Override
 	public boolean equals(Object o) {
-		return this == o;
+		return super.equals(o);
 	}
 
 	@Override
 	public int compareTo(Tag t) {
 		return name().toLowerCase().compareTo(t.name().toLowerCase());
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 	public String name() {
