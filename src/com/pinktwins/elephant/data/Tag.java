@@ -20,6 +20,11 @@ public class Tag implements Comparable<Tag> {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		return this == o;
+	}
+
+	@Override
 	public int compareTo(Tag t) {
 		return name().toLowerCase().compareTo(t.name().toLowerCase());
 	}

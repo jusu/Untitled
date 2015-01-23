@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -38,6 +40,8 @@ import org.apache.lucene.util.Version;
 import com.pinktwins.elephant.util.Factory;
 
 public class LuceneSearchIndex implements SearchIndexInterface {
+
+	private static final Logger log = Logger.getLogger(LuceneSearchIndex.class.getName());
 
 	Directory dir;
 	Analyzer analyzer = new StandardAnalyzer();
@@ -70,7 +74,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				parser = new QueryParser("contents", analyzer);
 				parser.setAllowLeadingWildcard(true);
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 
 				// Fail. Turn us off.
 				SearchIndexer.useLucene = false;
@@ -93,7 +97,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 					writer.commit();
 					writer.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				}
 				writer = null;
 			}
@@ -111,7 +115,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				}
 				reader = null;
 			}
@@ -123,7 +127,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		try {
 			indexFile(n.file());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
@@ -156,9 +160,9 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				return searchNotes(query);
 			}
 		} catch (ParseException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 		return Collections.emptySet();
 	}
@@ -175,7 +179,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				writer.deleteDocuments(term);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 

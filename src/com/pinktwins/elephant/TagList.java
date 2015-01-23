@@ -15,7 +15,6 @@ import java.awt.Stroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,7 +60,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 	@Override
 	protected List<TagItem> queryFilter(String text) {
-		ArrayList<TagItem> items = Factory.newArrayList();
+		List<TagItem> items = Factory.newArrayList();
 		for (Tag t : Vault.getInstance().getTagsWithFilter(search.getText())) {
 			items.add(new TagItem(t));
 		}

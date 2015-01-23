@@ -2,7 +2,6 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -21,7 +20,9 @@ public class RecentNotes {
 
 	private static final int MAX_NOTES = 5;
 
-	private ArrayList<Note> recent = Factory.newArrayList();
+	private static final String KEY_HISTORY = "history";
+	
+	private List<Note> recent = Factory.newArrayList();
 
 	public RecentNotes() {
 		Elephant.eventBus.register(this);
@@ -38,9 +39,9 @@ public class RecentNotes {
 
 	private void loadHistory() {
 		JSONObject o = IOUtil.loadJson(historyFile());
-		if (o.has("history")) {
+		if (o.has(KEY_HISTORY)) {
 			try {
-				JSONArray arr = o.getJSONArray("history");
+				JSONArray arr = o.getJSONArray(KEY_HISTORY);
 				for (int n = 0, len = arr.length(); n < len; n++) {
 					String notePathHomeBased = arr.getString(n);
 					File f = new File(Vault.getInstance().getHome() + File.separator + notePathHomeBased);
@@ -66,7 +67,7 @@ public class RecentNotes {
 
 		JSONObject o = new JSONObject();
 		try {
-			o.put("history", arr);
+			o.put(KEY_HISTORY, arr);
 			IOUtil.writeFile(historyFile(), o.toString());
 		} catch (JSONException e) {
 			e.printStackTrace();

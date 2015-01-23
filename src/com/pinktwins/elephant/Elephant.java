@@ -19,7 +19,7 @@ public class Elephant {
 
 	public static String[] args;
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		Elephant.args = args;
 
 		try {

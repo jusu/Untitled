@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,7 +64,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
 	@Override
 	protected List<NotebookItem> queryFilter(String text) {
-		ArrayList<NotebookItem> items = Factory.newArrayList();
+		List<NotebookItem> items = Factory.newArrayList();
 		for (Notebook nb : Vault.getInstance().getNotebooksWithFilter(search.getText())) {
 			items.add(new NotebookItem(nb));
 		}

@@ -3,7 +3,6 @@ package com.pinktwins.elephant.data;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +36,7 @@ public class Vault implements WatchDirListener {
 	private File home;
 	private File trash;
 
-	private ArrayList<Notebook> notebooks = Factory.newArrayList();
+	private List<Notebook> notebooks = Factory.newArrayList();
 	private Tags tags = new Tags();
 
 	WatchDir watchDir;

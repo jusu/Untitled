@@ -27,6 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
 import javax.swing.AbstractAction;
@@ -68,8 +70,8 @@ import com.pinktwins.elephant.util.TextComponentUtil;
 
 public class CustomEditor extends RoundPanel {
 
-	private static final long serialVersionUID = -6604641427725747091L;
-
+	private static final Logger log = Logger.getLogger(CustomEditor.class.getName());
+	
 	public static final String ELEM = AbstractDocument.ElementNameAttribute;
 	public static final String ICON = StyleConstants.IconElementName;
 	public static final String COMP = StyleConstants.ComponentElementName;
@@ -84,31 +86,10 @@ public class CustomEditor extends RoundPanel {
 	public boolean isRichText, isMarkdown;
 	private boolean maybeImporting;
 
-	public boolean isRichText() {
-		return isRichText;
-	}
-
-	public void setMarkdown(boolean b) {
-		isMarkdown = b;
-	}
-
-	public boolean maybeImporting() {
-		return maybeImporting;
-	}
-
 	final Color kDividerColor = Color.decode("#dbdbdb");
 
-	public JTextPane getTextPane() {
-		return note;
-	}
-
 	EditorEventListener eeListener;
-
-	public void setEditorEventListener(EditorEventListener l) {
-		eeListener = l;
-
-		attachmentTransferHandler = new NoteAttachmentTransferHandler(eeListener);
-	}
+	NoteAttachmentTransferHandler attachmentTransferHandler;
 
 	class NoteAttachmentTransferHandler extends AttachmentTransferHandler {
 		public NoteAttachmentTransferHandler(EditorEventListener listener) {
@@ -125,8 +106,6 @@ public class CustomEditor extends RoundPanel {
 			return true;
 		}
 	}
-
-	NoteAttachmentTransferHandler attachmentTransferHandler;
 
 	FocusListener editorFocusListener = new FocusListener() {
 		@Override
@@ -152,6 +131,34 @@ public class CustomEditor extends RoundPanel {
 			str = str.replaceAll("\t", "    ");
 			super.insertString(offs, str, a);
 		}
+	}
+
+	CustomMouseListener paddingClick = new CustomMouseListener() {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			note.requestFocusInWindow();
+		}
+	};
+
+	public boolean isRichText() {
+		return isRichText;
+	}
+
+	public void setMarkdown(boolean b) {
+		isMarkdown = b;
+	}
+
+	public boolean maybeImporting() {
+		return maybeImporting;
+	}
+
+	public JTextPane getTextPane() {
+		return note;
+	}
+
+	public void setEditorEventListener(EditorEventListener l) {
+		eeListener = l;
+		attachmentTransferHandler = new NoteAttachmentTransferHandler(eeListener);
 	}
 
 	@SuppressWarnings("serial")
@@ -240,20 +247,13 @@ public class CustomEditor extends RoundPanel {
 		try {
 			note.getDocument().insertString(position, "\n", null);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
 	AttributeSet getAttributes(int position) {
 		return ((CustomDocument) note.getDocument()).getCharacterElement(position).getAttributes();
 	}
-
-	CustomMouseListener paddingClick = new CustomMouseListener() {
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			note.requestFocusInWindow();
-		}
-	};
 
 	class CustomTextPane extends JTextPane implements ClipboardOwner {
 
@@ -276,7 +276,7 @@ public class CustomEditor extends RoundPanel {
 				DataHandler hand = new DataHandler(new ByteArrayInputStream(rtf.getBytes("UTF-8")), "text/rtf");
 				clipboard.setContents(hand, this);
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 			prevRtfCopy = rtf;
 		}
@@ -289,7 +289,7 @@ public class CustomEditor extends RoundPanel {
 			Transferable contents = clipboard.getContents(null);
 
 			DataFlavor[] fl = contents.getTransferDataFlavors();
-			ArrayList<DataFlavor> textFlavors = Factory.newArrayList();
+			List<DataFlavor> textFlavors = Factory.newArrayList();
 			for (DataFlavor df : fl) {
 				String mime = df.getMimeType();
 				if (mime.indexOf("text/rtf") >= 0 || mime.indexOf("text/plain") >= 0) {
@@ -308,9 +308,9 @@ public class CustomEditor extends RoundPanel {
 					BufferedReader br = new BufferedReader(r);
 					result = IOUtils.toString(br);
 				} catch (UnsupportedFlavorException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				}
 			}
 
@@ -345,7 +345,7 @@ public class CustomEditor extends RoundPanel {
 				try {
 					i.doc.remove(i.start, i.selLen);
 				} catch (BadLocationException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				}
 			}
 		}
@@ -373,9 +373,9 @@ public class CustomEditor extends RoundPanel {
 
 						setClipboardContentsRtf(rtf);
 					} catch (IOException e) {
-						e.printStackTrace();
+						log.log(Level.SEVERE, e.toString());
 					} catch (BadLocationException e) {
-						e.printStackTrace();
+						log.log(Level.SEVERE, e.toString());
 					}
 				}
 			}
@@ -437,11 +437,11 @@ public class CustomEditor extends RoundPanel {
 								}
 							}
 						} catch (IOException e) {
-							e.printStackTrace();
+							log.log(Level.SEVERE, e.toString());
 						}
 					}
 				} catch (BadLocationException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				}
 			}
 		}
@@ -511,8 +511,8 @@ public class CustomEditor extends RoundPanel {
 			try {
 				note.getDocument().insertString(note.getCaretPosition(), codeStart + codeEnd, null);
 				note.setCaretPosition(note.getCaretPosition() - lenEnd);
-			} catch (BadLocationException e1) {
-				e1.printStackTrace();
+			} catch (BadLocationException e) {
+				log.log(Level.SEVERE, e.toString());
 			}
 		} else {
 			try {
@@ -524,8 +524,8 @@ public class CustomEditor extends RoundPanel {
 					note.getDocument().insertString(note.getSelectionStart(), codeStart, null);
 					note.setSelectionStart(note.getSelectionStart() - lenStart);
 				}
-			} catch (BadLocationException e1) {
-				e1.printStackTrace();
+			} catch (BadLocationException e) {
+				log.log(Level.SEVERE, e.toString());
 			}
 		}
 	}
@@ -611,7 +611,7 @@ public class CustomEditor extends RoundPanel {
 					}
 				}
 			} catch (BadLocationException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 		}
 	}
@@ -696,11 +696,11 @@ public class CustomEditor extends RoundPanel {
 						rich = true;
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 					System.out.println("no rtf");
 					textPane.setText(s);
 				} catch (BadLocationException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 					System.out.println("no rtf");
 					textPane.setText(s);
 				}
@@ -761,7 +761,7 @@ public class CustomEditor extends RoundPanel {
 	}
 
 	public List<AttachmentInfo> getAttachmentInfo() {
-		ArrayList<AttachmentInfo> list = Factory.newArrayList();
+		List<AttachmentInfo> list = Factory.newArrayList();
 
 		ElementIterator iterator = new ElementIterator(note.getDocument());
 		Element element;
@@ -808,7 +808,7 @@ public class CustomEditor extends RoundPanel {
 					i.startPosition -= n;
 					i.endPosition -= n;
 				} catch (BadLocationException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				}
 			}
 		}

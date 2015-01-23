@@ -17,10 +17,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -45,6 +46,8 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteList extends BackgroundPanel implements NoteItemListener {
 
+	private static final Logger log = Logger.getLogger(NoteList.class.getName());
+
 	private static Image tile, iAllNotes;
 
 	private ElephantWindow window;
@@ -54,7 +57,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	private Notebook previousNotebook;
 	private int initialScrollValue;
 
-	private ArrayList<NoteItem> noteItems = Factory.newArrayList();
+	private List<NoteItem> noteItems = Factory.newArrayList();
 
 	private ListController<NoteItem> lc = ListController.newInstance();
 
@@ -156,8 +159,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 				if (!isWorking && workers.size() > 0) {
 					JScrollBar v = scroll.getVerticalScrollBar();
 					float f = (v.getValue() + v.getModel().getExtent()) / (float) v.getMaximum();
-
-					if (f == 1.0f) {
+					if (Float.valueOf(f).equals(Float.valueOf(1.0f))) {
 						isWorking = true;
 						workers.next();
 					}
@@ -245,9 +247,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 							scroll.getVerticalScrollBar().revalidate();
 						}
 					} catch (ExecutionException e) {
-						e.printStackTrace();
+						log.log(Level.SEVERE, e.toString());
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						log.log(Level.SEVERE, e.toString());
 					} finally {
 						isWorking = false;
 					}
@@ -376,7 +378,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			selectNote(newNote);
 			window.showNote(newNote);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 

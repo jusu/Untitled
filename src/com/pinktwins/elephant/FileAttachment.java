@@ -17,11 +17,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -47,7 +48,8 @@ import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.PdfUtil;
 
 public class FileAttachment extends JPanel {
-	private static final long serialVersionUID = 5444731416148596756L;
+
+	private static final Logger log = Logger.getLogger(FileAttachment.class.getName());
 
 	private static JFileChooser chooser = new JFileChooser();
 
@@ -157,12 +159,12 @@ public class FileAttachment extends JPanel {
 
 		icon.addMouseListener(new CustomMouseListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+			public void mouseClicked(MouseEvent event) {
+				if (event.getClickCount() == 2) {
 					try {
 						java.awt.Desktop.getDesktop().open(f);
-					} catch (IOException e1) {
-						e1.printStackTrace();
+					} catch (IOException e) {
+						log.log(Level.SEVERE, e.toString());
 					}
 
 				}
@@ -171,7 +173,7 @@ public class FileAttachment extends JPanel {
 
 		show.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent event) {
 				if (qlExists) {
 					try {
 						String[] cmd = new String[3];
@@ -180,14 +182,14 @@ public class FileAttachment extends JPanel {
 						cmd[2] = f.getAbsolutePath();
 
 						Runtime.getRuntime().exec(cmd, new String[0], null);
-					} catch (IOException e2) {
-						e2.printStackTrace();
+					} catch (IOException e) {
+						log.log(Level.SEVERE, e.toString());
 					}
 				} else {
 					try {
 						java.awt.Desktop.getDesktop().open(f.getParentFile());
-					} catch (IOException e1) {
-						e1.printStackTrace();
+					} catch (IOException e) {
+						log.log(Level.SEVERE, e.toString());
 					}
 				}
 			}
@@ -195,11 +197,11 @@ public class FileAttachment extends JPanel {
 
 		open.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent event) {
 				try {
 					java.awt.Desktop.getDesktop().open(f.getParentFile());
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				} catch (IOException e) {
+					log.log(Level.SEVERE, e.toString());
 				}
 			}
 		});
@@ -255,9 +257,9 @@ public class FileAttachment extends JPanel {
 				}
 				return img;
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			} catch (IndexOutOfBoundsException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 			return null;
 		}
@@ -300,7 +302,7 @@ public class FileAttachment extends JPanel {
 	}
 
 	private List<PreviewPageProvider> getPreviewPages(File f, PdfHolder pdfHolder) {
-		ArrayList<PreviewPageProvider> pages = Factory.newArrayList();
+		List<PreviewPageProvider> pages = Factory.newArrayList();
 
 		int pagesAdded = 0;
 		File[] files = previewFiles(f);
@@ -359,7 +361,7 @@ public class FileAttachment extends JPanel {
 			final int noteHash = editor.noteHash();
 
 			// pageIcons - one icon per page
-			final ArrayList<ImageIcon> pageIcons = Factory.newArrayList();
+			final List<ImageIcon> pageIcons = Factory.newArrayList();
 			Image page1 = pages.get(0).getPage();
 			int w = page1.getWidth(null);
 			int h = page1.getHeight(null);
@@ -406,7 +408,7 @@ public class FileAttachment extends JPanel {
 				try {
 					tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
 				} catch (BadLocationException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE, e.toString());
 				}
 			}
 
@@ -447,9 +449,9 @@ public class FileAttachment extends JPanel {
 								workers.last();
 							}
 						} catch (ExecutionException e) {
-							e.printStackTrace();
+							log.log(Level.SEVERE, e.toString());
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							log.log(Level.SEVERE, e.toString());
 						}
 
 					}
@@ -510,8 +512,8 @@ public class FileAttachment extends JPanel {
 
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
-		} catch (BadLocationException e1) {
-			e1.printStackTrace();
+		} catch (BadLocationException e) {
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 

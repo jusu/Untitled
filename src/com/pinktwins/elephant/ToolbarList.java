@@ -13,7 +13,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
@@ -41,7 +40,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		public void setSelected(boolean b);
 	}
 
-	protected ArrayList<T> itemList = Factory.newArrayList();
+	protected List<T> itemList = Factory.newArrayList();
 	protected ListController<T> lc = ListController.newInstance();
 
 	private static Image hLine;

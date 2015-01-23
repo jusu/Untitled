@@ -14,7 +14,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -212,7 +211,7 @@ public class TagEditorPane {
 	}
 
 	public List<String> getTagNames() {
-		ArrayList<String> list = Factory.newArrayList();
+		List<String> list = Factory.newArrayList();
 
 		ElementIterator iterator = new ElementIterator(editor.getDocument());
 		Element element;

@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -35,6 +37,8 @@ import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.PdfUtil;
 
 class NoteItem extends JPanel implements MouseListener {
+
+	private static final Logger log = Logger.getLogger(NoteItem.class.getName());
 
 	interface NoteItemListener {
 		public void noteClicked(NoteItem item, boolean doubleClick);
@@ -181,8 +185,8 @@ class NoteItem extends JPanel implements MouseListener {
 		StyleConstants.setForeground(style, col);
 		try {
 			preview.getDocument().insertString(0, ts + " ", style);
-		} catch (BadLocationException e1) {
-			e1.printStackTrace();
+		} catch (BadLocationException e) {
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		previewPane.add(preview);
@@ -258,7 +262,7 @@ class NoteItem extends JPanel implements MouseListener {
 				return true;
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		return false;

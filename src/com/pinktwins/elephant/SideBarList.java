@@ -7,7 +7,6 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import com.pinktwins.elephant.util.Images;
 public class SideBarList extends JPanel {
 	private static final long serialVersionUID = 2473401062148102911L;
 
-	ArrayList<SideBarListItem> items = Factory.newArrayList();
+	List<SideBarListItem> items = Factory.newArrayList();
 
 	private ElephantWindow window;
 	private String header;

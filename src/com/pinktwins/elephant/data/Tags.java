@@ -17,7 +17,7 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class Tags {
-	private ArrayList<Tag> flatList = Factory.newArrayList();
+	private List<Tag> flatList = Factory.newArrayList();
 
 	private String fileLoaded;
 
@@ -72,7 +72,7 @@ public class Tags {
 	}
 
 	public List<String> resolveNames(List<String> tagNames) {
-		ArrayList<String> ids = Factory.newArrayList();
+		List<String> ids = Factory.newArrayList();
 
 		boolean newTags = false;
 
@@ -113,7 +113,7 @@ public class Tags {
 	}
 
 	public List<String> resolveIds(List<String> tagIds) {
-		ArrayList<String> names = Factory.newArrayList();
+		List<String> names = Factory.newArrayList();
 
 		for (Tag t : flatList) {
 			if (tagIds.contains(t.id)) {

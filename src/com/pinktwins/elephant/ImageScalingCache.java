@@ -34,8 +34,7 @@ public class ImageScalingCache {
 		int n = cacheName.indexOf("." + FilenameUtils.getExtension(cacheName));
 		cacheName = cacheName.substring(0, n) + "_" + w + "_" + h + cacheName.substring(n);
 
-		File cache = new File(getImageCacheDir() + File.separator + cacheName);
-		return cache;
+		return new File(getImageCacheDir() + File.separator + cacheName);
 	}
 
 	// XXX purge old cache files

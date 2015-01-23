@@ -1,7 +1,7 @@
 package com.pinktwins.elephant.data;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.pinktwins.elephant.eventbus.IndexProgressEvent;
 import com.pinktwins.elephant.util.Factory;
@@ -42,7 +42,7 @@ public class Search {
 			ssi.markReady();
 		}
 
-		ArrayList<HashSet<Note>> sets = Factory.newArrayList();
+		List<Set<Note>> sets = Factory.newArrayList();
 
 		/*
 		 * List<String> keys = new ArrayList<String>(); Matcher m =
@@ -53,22 +53,22 @@ public class Search {
 		String[] a = text.split(" ");
 		for (String q : a) {
 			q = q.trim();
-			HashSet<Note> notes = Factory.newHashSet();
+			Set<Note> notes = Factory.newHashSet();
 			notes.addAll(ssi.search(q));
 			sets.add(notes);
 		}
 
-		HashSet<Note> smallest = null;
+		Set<Note> smallest = null;
 		int smallestSize = Integer.MAX_VALUE;
 
-		for (HashSet<Note> notes : sets) {
+		for (Set<Note> notes : sets) {
 			if (notes.size() < smallestSize) {
 				smallest = notes;
 			}
 		}
 
 		if (smallest != null) {
-			for (HashSet<Note> notes : sets) {
+			for (Set<Note> notes : sets) {
 				smallest.retainAll(notes);
 			}
 

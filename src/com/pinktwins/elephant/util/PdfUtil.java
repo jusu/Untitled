@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -46,6 +48,8 @@ import com.sun.pdfview.PDFPage;
 
 public class PdfUtil {
 
+	private static final Logger log = Logger.getLogger(PdfUtil.class.getName());
+	
 	RandomAccessFile raf;
 	PDFFile pdffile;
 	int numPages;
@@ -61,9 +65,9 @@ public class PdfUtil {
 			pdffile = new PDFFile(buf);
 			numPages = pdffile.getNumPages();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 

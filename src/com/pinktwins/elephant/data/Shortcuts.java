@@ -2,7 +2,6 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -18,7 +17,7 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Shortcuts {
 
-	private ArrayList<String> list = Factory.newArrayList();
+	private List<String> list = Factory.newArrayList();
 
 	public Shortcuts() {
 		Elephant.eventBus.register(this);

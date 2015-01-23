@@ -46,12 +46,7 @@ public class ListController<T> {
 			select = 0;
 		}
 
-		if (select >= 0 && select < len) {
-			T item = list.get(select);
-			return item;
-		} else {
-			return null;
-		}
+		return (select >= 0 && select < len) ? list.get(select) : null;
 	}
 
 	public <T2 extends Component> void updateVerticalScrollbar(T2 item, JScrollPane scroll) {

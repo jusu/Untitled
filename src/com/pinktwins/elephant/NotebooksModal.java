@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -194,7 +193,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 
 	@Override
 	protected List<NotebookItem> queryFilter(String text) {
-		ArrayList<NotebookItem> items = Factory.newArrayList();
+		List<NotebookItem> items = Factory.newArrayList();
 
 		if (isJump && search.getText().isEmpty()) {
 			items.add(this.createSpecialNotebookItem(SpecialItems.ALL_NOTES));

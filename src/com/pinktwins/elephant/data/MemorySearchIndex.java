@@ -1,7 +1,6 @@
 package com.pinktwins.elephant.data;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -17,7 +16,7 @@ import com.pinktwins.elephant.util.Factory;
 public class MemorySearchIndex implements SearchIndexInterface {
 
 	// word -> Set<Note>
-	private HashMap<String, Set<Note>> wordMap = Factory.newHashMap();
+	private Map<String, Set<Note>> wordMap = Factory.newHashMap();
 
 	// Escaped chars in regex patterns
 	// <([{\^-=$!|]})?*+.>
@@ -64,7 +63,7 @@ public class MemorySearchIndex implements SearchIndexInterface {
 	}
 
 	public Set<Note> search(String text) {
-		HashSet<Note> foundSet = Factory.newHashSet();
+		Set<Note> foundSet = Factory.newHashSet();
 
 		synchronized (wordMap) {
 			Set<String> strs = wordMap.keySet();

@@ -50,10 +50,10 @@ public class WatchDir {
 		if (trace) {
 			Path prev = keys.get(key);
 			if (prev == null) {
-				System.out.format("register: %s\n", dir);
+				System.out.format("register: %s%n", dir);
 			} else {
 				if (!dir.equals(prev)) {
-					System.out.format("update: %s -> %s\n", prev, dir);
+					System.out.format("update: %s -> %s%n", prev, dir);
 				}
 			}
 		}
@@ -158,7 +158,6 @@ public class WatchDir {
 
 	private boolean shouldRegister(Path child) {
 		String path = child.toString();
-		boolean b = path.indexOf(".meta") == -1 && path.indexOf(".imagecache") == -1 && !path.endsWith(".attachments");
-		return b;
+		return path.indexOf(".meta") == -1 && path.indexOf(".imagecache") == -1 && !path.endsWith(".attachments");
 	}
 }

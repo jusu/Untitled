@@ -138,10 +138,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	ImageAttachmentImageScaler imageAttachmentImageScaler = new ImageAttachmentImageScaler();
 	EditorController editorController = new EditorController();
 
-	public void addStateListener(NoteEditorStateListener l) {
-		stateListener = l;
-	}
-
 	NoteEditorStateListener stateListener;
 
 	private Note currentNote;
@@ -223,6 +219,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public boolean getScrollableTracksViewportHeight() {
 			return false;
 		}
+	}
+
+	public void addStateListener(NoteEditorStateListener l) {
+		stateListener = l;
 	}
 
 	public NoteEditor(ElephantWindow w) {

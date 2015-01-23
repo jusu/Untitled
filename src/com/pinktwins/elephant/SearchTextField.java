@@ -31,6 +31,7 @@ public class SearchTextField extends HintTextField {
 	boolean hasWindowFocus, hasSearchFocus;
 
 	private Color fixedColor;
+	private static final Color colorDefaultBg = Color.decode("#fafafa");
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "searchLeft", "searchMiddle", "searchRight", "searchLeftInactive", "searchMiddleInactive",
@@ -95,7 +96,7 @@ public class SearchTextField extends HintTextField {
 		images[8] = searchRightHilite;
 		images[9] = searchRightHiliteCross;
 
-		setBackground(Color.decode("#fafafa"));
+		setBackground(colorDefaultBg);
 
 		addMouseListener(new MouseListener() {
 
@@ -166,14 +167,14 @@ public class SearchTextField extends HintTextField {
 	public void windowFocusGained() {
 		hasWindowFocus = true;
 		if (fixedColor == null) {
-			setBackground(Color.decode("#fafafa"));
+			setBackground(colorDefaultBg);
 		}
 	}
 
 	public void windowFocusLost() {
 		hasWindowFocus = false;
 		if (fixedColor == null) {
-			setBackground(Color.decode("#fafafa"));
+			setBackground(colorDefaultBg);
 		}
 	}
 

@@ -6,11 +6,12 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import javax.swing.text.BadLocationException;
@@ -32,6 +33,8 @@ import com.pinktwins.elephant.util.RtfUtil;
 
 public class Note implements Comparable<Note> {
 
+	private static final Logger log = Logger.getLogger(Note.class.getName());
+	
 	private File file, meta;
 	private String fileName = "";
 
@@ -47,6 +50,7 @@ public class Note implements Comparable<Note> {
 		public long created();
 
 		public void title(String newTitle);
+
 		public void setCreatedTime();
 
 		public int getAttachmentPosition(File attachment);
@@ -65,6 +69,11 @@ public class Note implements Comparable<Note> {
 		public AttachmentInfo(File f, int position) {
 			this.f = f;
 			this.position = position;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return this == o;
 		}
 
 		@Override
@@ -184,9 +193,9 @@ public class Note implements Comparable<Note> {
 			RtfUtil.putRtf(doc, contents, 0);
 			return doc.getText(0, doc.getLength());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		return "";
@@ -200,7 +209,7 @@ public class Note implements Comparable<Note> {
 		try {
 			IOUtil.writeFile(file, newText);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
@@ -212,7 +221,7 @@ public class Note implements Comparable<Note> {
 			}
 
 			JSONObject o = new JSONObject(json);
-			HashMap<String, String> map = Factory.newHashMap();
+			Map<String, String> map = Factory.newHashMap();
 
 			@SuppressWarnings("unchecked")
 			Iterator<String> i = o.keys();
@@ -224,7 +233,7 @@ public class Note implements Comparable<Note> {
 
 			return map;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		return Collections.emptyMap();
@@ -241,9 +250,9 @@ public class Note implements Comparable<Note> {
 			o.put(key, value);
 			IOUtil.writeFile(meta, o.toString());
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
@@ -317,7 +326,7 @@ public class Note implements Comparable<Note> {
 
 		@Override
 		public List<String> tags() {
-			ArrayList<String> names = Factory.newArrayList();
+			List<String> names = Factory.newArrayList();
 
 			String ids = map.get("tagIds");
 			if (ids != null) {
@@ -357,7 +366,7 @@ public class Note implements Comparable<Note> {
 				moveTo(dest);
 				return;
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 				return;
 			}
 		}
@@ -385,7 +394,7 @@ public class Note implements Comparable<Note> {
 
 			NotebookEvent.post(NotebookEvent.Kind.noteMoved, file, destFile);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
@@ -504,7 +513,7 @@ public class Note implements Comparable<Note> {
 
 			FileUtils.moveFile(f, newDeletedFile);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
@@ -512,7 +521,7 @@ public class Note implements Comparable<Note> {
 		try {
 			return IOUtils.toString(Note.class.getClass().getResourceAsStream("/notes/" + name));
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 		return "";
 	}

@@ -1,13 +1,13 @@
 package com.pinktwins.elephant;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.SwingWorker;
 
 import com.pinktwins.elephant.util.Factory;
 
 class Workers<T> {
-	private final ArrayList<SwingWorker<T, Void>> workers = Factory.newArrayList();
+	private final List<SwingWorker<T, Void>> workers = Factory.newArrayList();
 
 	public void add(SwingWorker<T, Void> w) {
 		workers.add(w);

@@ -1,9 +1,8 @@
 package com.pinktwins.elephant.data;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.eventbus.Subscribe;
@@ -19,10 +18,10 @@ public class SearchIndexer {
 	private boolean isReady = false;
 
 	// tagId -> Set<Note>
-	private HashMap<String, Set<Note>> tagMap = Factory.newHashMap();
+	private Map<String, Set<Note>> tagMap = Factory.newHashMap();
 
 	// note file -> lastModified() of notefile when note digested
-	private HashMap<File, Long> digestTimes = Factory.newHashMap();
+	private Map<File, Long> digestTimes = Factory.newHashMap();
 
 	private SearchIndexInterface memoryIndex = new MemorySearchIndex();
 	private SearchIndexInterface luceneIndex;
@@ -62,7 +61,7 @@ public class SearchIndexer {
 	}
 
 	public List<Note> search(String text) {
-		ArrayList<Note> found = Factory.newArrayList();
+		List<Note> found = Factory.newArrayList();
 		found.addAll(memoryIndex.search(text));
 		if (useLucene) {
 			found.addAll(luceneIndex.search(text));
