@@ -76,9 +76,9 @@ public class IOUtil {
 
 			return new JSONObject(json);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		return new JSONObject();

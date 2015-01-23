@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.UIManager;
 
@@ -13,6 +15,8 @@ import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.data.Vault;
 
 public class Elephant {
+
+	private static final Logger log = Logger.getLogger(Elephant.class.getName());
 
 	public static final EventBus eventBus = new EventBus();
 	public static final Settings settings = new Settings();
@@ -70,9 +74,9 @@ public class Elephant {
 			System.out.println("Restarting...");
 			System.exit(0);
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		return false;

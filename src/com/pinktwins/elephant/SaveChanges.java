@@ -130,7 +130,7 @@ public class SaveChanges {
 				}
 
 			} catch (BadLocationException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 
 			if (changed) {
