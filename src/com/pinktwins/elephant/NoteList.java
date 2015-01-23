@@ -67,7 +67,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		iAllNotes = i.next();
 	}
 
-	public static int separatorLineY = 41;
+	private static int separatorLineY = 41;
 
 	public NoteList(ElephantWindow w) {
 		super(tile);
@@ -269,6 +269,10 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		layoutItems();
 
 		previousNotebook = notebook;
+	}
+
+	public static int separatorLineY() {
+		return separatorLineY;
 	}
 
 	private void layoutItems() {

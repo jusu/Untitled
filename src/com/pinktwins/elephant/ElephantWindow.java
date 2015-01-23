@@ -83,7 +83,7 @@ public class ElephantWindow extends JFrame {
 
 	private boolean hasWindowFocus;
 
-	public static int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+	public static final int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 	JMenuBar menuBar;
 	JMenuItem iUndo, iRedo;

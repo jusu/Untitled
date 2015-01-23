@@ -70,9 +70,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private Note loadAfterLayout = null;
 
-	public static ImageScalingCache scalingCache = new ImageScalingCache();
+	public static final ImageScalingCache scalingCache = new ImageScalingCache();
 
-	public static PegDownProcessor pegDown = new PegDownProcessor();
+	public static final PegDownProcessor pegDown = new PegDownProcessor();
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteeditor", "noteTopShadow", "noteToolsNotebook", "noteToolsTrash", "noteToolsDivider" });

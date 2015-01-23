@@ -55,8 +55,6 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 
 	QueryParser parser;
 
-	public static int lastSearchTotalHits = 0;
-
 	private final String indexPath;
 
 	// http://lucene.apache.org/core/4_10_3/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#Escaping_Special_Characters
@@ -260,7 +258,6 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		ScoreDoc[] hits = td.scoreDocs;
 
 		int start = 0, end = Math.min(hits.length, start + hitsPerPage);
-		lastSearchTotalHits = td.totalHits;
 
 		for (int i = start; i < end; i++) {
 			Document doc = searcher.doc(hits[i].doc);

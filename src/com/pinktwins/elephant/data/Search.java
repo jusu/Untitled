@@ -81,13 +81,6 @@ public class Search {
 
 		found.sortNotes();
 
-		// No need to limit, new NoteList does a good job paging.
-		// found.truncNotes(1000); // limit to 1000 results
-
-		// if (SearchIndexer.useLucene && len >= 1000 && LuceneSearchIndex.lastSearchTotalHits > len) {
-		// len = LuceneSearchIndex.lastSearchTotalHits;
-		// }
-
 		String s = len + " note";
 		if (len != 1) {
 			s += "s";

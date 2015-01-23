@@ -31,7 +31,7 @@ public class NotebookChooser extends JDialog {
 	public NotebookChooser(Frame owner, String title) {
 		super(owner, title, false);
 
-		Toolbar.skipNextFocusLost = true;
+		Toolbar.skipNextFocusLost();
 
 		setUndecorated(true);
 		setLayout(new BorderLayout());

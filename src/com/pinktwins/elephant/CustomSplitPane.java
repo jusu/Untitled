@@ -52,7 +52,7 @@ public class CustomSplitPane extends JSplitPane {
 
 					if (currentColor == color1) {
 						g.setColor(colorLine1);
-						g.drawLine(0, NoteList.separatorLineY, getWidth(), NoteList.separatorLineY);
+						g.drawLine(0, NoteList.separatorLineY(), getWidth(), NoteList.separatorLineY());
 					}
 					if (currentColor == color2) {
 						g.setColor(colorLine2);

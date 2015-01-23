@@ -30,7 +30,7 @@ public class Toolbar extends BackgroundPanel {
 	SearchTextField search;
 	private static final String searchNotes = "Search notes";
 
-	public static boolean skipNextFocusLost = false;
+	private static boolean skipNextFocusLost = false;
 	private boolean isIndexing = false;
 
 	static {
@@ -153,6 +153,10 @@ public class Toolbar extends BackgroundPanel {
 		search.setEnabled(!b);
 		clearSearch();
 		search.setHintText(searchNotes);
+	}
+	
+	public static void skipNextFocusLost() {
+		skipNextFocusLost = true;
 	}
 
 	@Subscribe
