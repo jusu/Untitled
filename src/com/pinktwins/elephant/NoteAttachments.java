@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -20,6 +22,8 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 
 public class NoteAttachments {
+
+	private static final Logger log = Logger.getLogger(NoteAttachments.class.getName());
 
 	private Map<Object, File> attachments = Factory.newHashMap();
 	private String loadMark;
@@ -64,7 +68,7 @@ public class NoteAttachments {
 					try {
 						notePane.setCaretPosition(position);
 					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
+						log.log(Level.SEVERE, e.toString());
 					}
 
 					notePane.insertIcon(ii);
@@ -72,7 +76,7 @@ public class NoteAttachments {
 					attachments.put(ii, f);
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 		} else {
 			FileAttachment aa = new FileAttachment(f, editor.editorWidthScaler, editor.editorController);

@@ -22,6 +22,8 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -53,6 +55,8 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
+	private static final Logger log = Logger.getLogger(NoteEditor.class.getName());
+	
 	public static final int kMinNoteSize = 288;
 
 	private static Image tile, noteTopShadow, noteToolsNotebook, noteToolsTrash, noteToolsDivider;
@@ -668,8 +672,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		String encName = name;
 		try {
 			encName = URLEncoder.encode(name, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			log.log(Level.SEVERE,  e.toString());
 		}
 		encName = encName.replace("+", "%20");
 
@@ -677,7 +681,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), String.format("%s[%s](%s \"\")\n", isImage ? "!" : "", name, encName), null);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 	}
 
@@ -702,7 +706,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						insertMarkdownLink(f);
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					log.log(Level.SEVERE,  e.toString());
 				}
 			}
 		}

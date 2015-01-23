@@ -2,6 +2,8 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +12,8 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Settings {
 
+	private static final Logger log = Logger.getLogger(Settings.class.getName());
+	
 	public static enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene");
 
@@ -70,7 +74,7 @@ public class Settings {
 			map.put(key, value);
 			save();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 	}
 
@@ -83,7 +87,7 @@ public class Settings {
 			map.put(key, value);
 			save();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 	}
 
@@ -95,7 +99,7 @@ public class Settings {
 		try {
 			map.put(key.toString(), value);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 		return this;
 	}
@@ -108,7 +112,7 @@ public class Settings {
 		try {
 			map.put(key.toString(), value);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 		return this;
 	}
@@ -117,7 +121,7 @@ public class Settings {
 		try {
 			IOUtil.writeFile(settingsFile(), map.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 	}
 }

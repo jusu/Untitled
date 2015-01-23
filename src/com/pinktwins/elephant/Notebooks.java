@@ -8,6 +8,8 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -23,6 +25,8 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 
 public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
+
+	private static final Logger log = Logger.getLogger(Notebooks.class.getName());
 
 	private static Image tile, notebookBg, notebookBgSelected, newNotebook;
 	private ElephantWindow window;
@@ -89,7 +93,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			deselectAll();
 			edit.requestFocusInWindow();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
@@ -126,7 +130,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		try {
 			item.notebook.folder().delete();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook));

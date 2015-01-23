@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -22,15 +24,16 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Start extends BackgroundPanel {
 
+	private static final Logger log = Logger.getLogger(Start.class.getName());
+
 	static Image tile;
 
 	static {
 		try {
 			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooks.png"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
-
 	}
 
 	public Start(final Runnable runWhenLocationSet) {
@@ -61,7 +64,7 @@ public class Start extends BackgroundPanel {
 
 		bLocation.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent event) {
 				JFileChooser ch = new JFileChooser();
 				ch.setCurrentDirectory(new File(System.getProperty("user.home")));
 				ch.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -86,8 +89,8 @@ public class Start extends BackgroundPanel {
 								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
 								try {
 									IOUtil.writeFile(shortcuts, "{\"list\": [\"Inbox\", \"Inbox/Welcome.txt\", \"search:Tip\", \"search:tag:Today\"]}");
-								} catch (IOException e1) {
-									e1.printStackTrace();
+								} catch (IOException e) {
+									log.log(Level.SEVERE, e.toString());
 								}
 							}
 

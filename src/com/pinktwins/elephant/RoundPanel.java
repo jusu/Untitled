@@ -5,12 +5,15 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class RoundPanel extends JPanel {
-	private static final long serialVersionUID = -5302697168120367777L;
+
+	private static final Logger log = Logger.getLogger(RoundPanel.class.getName());
 
 	static Image[] note9p = new Image[8];
 
@@ -20,7 +23,7 @@ public class RoundPanel extends JPanel {
 				note9p[n] = ImageIO.read(RoundPanel.class.getClass().getResourceAsStream(String.format("/images/note9p%d.png", n + 1)));
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 

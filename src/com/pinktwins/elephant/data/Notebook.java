@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -14,6 +16,9 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class Notebook implements Comparable<Notebook> {
+
+	private static final Logger log = Logger.getLogger(Notebook.class.getName());
+
 	public static final String NAME_ALLNOTES = "All Notes";
 	public static final String NAME_SEARCH = "Search";
 
@@ -144,7 +149,7 @@ public class Notebook implements Comparable<Notebook> {
 
 						}
 					} catch (SecurityException e) {
-						e.printStackTrace();
+						log.log(Level.SEVERE, e.toString());
 					}
 				}
 			}
@@ -261,7 +266,7 @@ public class Notebook implements Comparable<Notebook> {
 				return true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 		return false;
 	}
@@ -272,7 +277,7 @@ public class Notebook implements Comparable<Notebook> {
 		try {
 			IOUtil.writeFile(f, String.valueOf(System.currentTimeMillis()));
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 }

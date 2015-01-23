@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -17,6 +19,9 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class Tags {
+
+	private static final Logger log = Logger.getLogger(Tags.class.getName());
+	
 	private List<Tag> flatList = Factory.newArrayList();
 
 	private String fileLoaded;
@@ -35,7 +40,7 @@ public class Tags {
 					flatList.add(tag);
 				}
 			} catch (JSONException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE,  e.toString());
 			}
 		}
 
@@ -65,9 +70,9 @@ public class Tags {
 			o.put("tags", arr);
 			IOUtil.writeFile(new File(fileLoaded), o.toString(4));
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 	}
 

@@ -5,6 +5,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import javax.imageio.ImageIO;
@@ -14,6 +16,8 @@ import org.apache.commons.io.FilenameUtils;
 import com.pinktwins.elephant.data.Vault;
 
 public class ImageScalingCache {
+
+	private static final Logger log = Logger.getLogger(ImageScalingCache.class.getName());
 
 	public Image get(File sourceFile, int w, int h) {
 		return load(sourceFile, w, h);
@@ -45,7 +49,7 @@ public class ImageScalingCache {
 		try {
 			ImageIO.write(toBufferedImage(img, "PNG".equals(ext)), ext, cache);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 
@@ -58,7 +62,7 @@ public class ImageScalingCache {
 		try {
 			return ImageIO.read(cache);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 			return null;
 		}
 	}

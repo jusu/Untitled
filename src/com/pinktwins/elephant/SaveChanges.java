@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.text.BadLocationException;
@@ -18,11 +20,13 @@ import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 
 public class SaveChanges {
 
+	private static final Logger log = Logger.getLogger(SaveChanges.class.getName());
+
 	private static void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
 		try {
 			currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 	}
 

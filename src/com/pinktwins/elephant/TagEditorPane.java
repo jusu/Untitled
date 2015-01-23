@@ -16,6 +16,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -36,6 +38,8 @@ import com.pinktwins.elephant.util.TextComponentUtil;
 
 public class TagEditorPane {
 
+	private static final Logger log = Logger.getLogger(TagEditorPane.class.getName());
+
 	private JTextPane editor;
 	private JLabel tagHint;
 	private JScrollPane scroll;
@@ -49,7 +53,7 @@ public class TagEditorPane {
 	private List<String> loadedTags;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[]{ "tagLeft", "tagMiddle", "tagRight" });
+		Iterator<Image> i = Images.iterator(new String[] { "tagLeft", "tagMiddle", "tagRight" });
 		tagLeft = i.next();
 		tagMiddle = i.next();
 		tagRight = i.next();
@@ -79,7 +83,7 @@ public class TagEditorPane {
 								e.turnTextToTag(s);
 							}
 						} catch (BadLocationException e) {
-							e.printStackTrace();
+							log.log(Level.SEVERE, e.toString());
 						}
 					}
 				});
@@ -202,7 +206,7 @@ public class TagEditorPane {
 			try {
 				editor.getDocument().remove(n, tagText.length());
 			} catch (BadLocationException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 		}
 

@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +14,8 @@ import org.json.JSONObject;
 import com.google.common.io.Files;
 
 public class IOUtil {
+
+	private static final Logger log = Logger.getLogger(IOUtil.class.getName());
 
 	private static final byte[] emptyBytes = new byte[0];
 
@@ -41,15 +45,15 @@ public class IOUtil {
 		} catch (IOException e) {
 			try {
 				f.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} catch (IOException e2) {
+				log.log(Level.SEVERE, e2.toString());
 			}
 			return emptyBytes;
 		} finally {
 			try {
 				f.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 		}
 	}

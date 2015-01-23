@@ -3,6 +3,8 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +19,8 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Shortcuts {
 
+	private static final Logger log = Logger.getLogger(Shortcuts.class.getName());
+	
 	private List<String> list = Factory.newArrayList();
 
 	public Shortcuts() {
@@ -40,7 +44,7 @@ public class Shortcuts {
 					list.add(s);
 				}
 			} catch (JSONException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE,  e.toString());
 			}
 		}
 
@@ -104,9 +108,9 @@ public class Shortcuts {
 			o.put("list", arr);
 			IOUtil.writeFile(shortcutsFile(), o.toString());
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE,  e.toString());
 		}
 	}
 }

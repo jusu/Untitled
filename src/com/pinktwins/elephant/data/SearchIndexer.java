@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
@@ -15,6 +17,8 @@ import com.pinktwins.elephant.util.Factory;
 
 public class SearchIndexer {
 
+	private static final Logger log = Logger.getLogger(SearchIndexer.class.getName());
+	
 	private boolean isReady = false;
 
 	// tagId -> Set<Note>
@@ -144,13 +148,13 @@ public class SearchIndexer {
 	}
 
 	@Subscribe
-	public void handleNoteChanged(NoteChangedEvent e) throws Exception {
+	public void handleNoteChanged(NoteChangedEvent event) throws Exception {
 		try {
-			purgeNote(e.note);
-			digestNote(e.note, e.note.findContainingNotebook());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			throw ex;
+			purgeNote(event.note);
+			digestNote(event.note, event.note.findContainingNotebook());
+		} catch (Exception e) {
+			log.log(Level.SEVERE,  e.toString());
+			throw e;
 		}
 
 		if (useLucene && ready()) {

@@ -18,7 +18,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -43,8 +42,6 @@ import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 
 public class ElephantWindow extends JFrame {
-
-	private static final Logger log = Logger.getLogger(ElephantWindow.class.getName());
 
 	public static final Font fontStart = Font.decode("Arial-ITALIC-18");
 	public static final Font fontTitle = Font.decode("Helvetica-BOLD-18");

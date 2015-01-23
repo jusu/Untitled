@@ -1,6 +1,8 @@
 package com.pinktwins.elephant.util;
 
 import java.awt.EventQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -9,12 +11,14 @@ import javax.swing.text.JTextComponent;
 
 public class TextComponentUtil {
 
+	private static final Logger log = Logger.getLogger(TextComponentUtil.class.getName());
+
 	public static void insertListenerForHintText(final JTextComponent text, final String hintText) {
 
 		// When inserting first character, remove 'hintText' from document
 		text.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
-			public void insertUpdate(DocumentEvent e) {
+			public void insertUpdate(DocumentEvent event) {
 				if (text.getCaretPosition() == 0) {
 					String s = text.getText();
 					if (s.length() == hintText.length() + 1 && s.indexOf(hintText) == 1) {
@@ -23,8 +27,8 @@ public class TextComponentUtil {
 							public void run() {
 								try {
 									text.getDocument().remove(1, hintText.length());
-								} catch (BadLocationException e1) {
-									e1.printStackTrace();
+								} catch (BadLocationException e) {
+									log.log(Level.SEVERE, e.toString());
 								}
 							}
 						});

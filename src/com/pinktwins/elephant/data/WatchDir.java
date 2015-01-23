@@ -17,10 +17,14 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // http://docs.oracle.com/javase/tutorial/displayCode.html?code=http://docs.oracle.com/javase/tutorial/essential/io/examples/WatchDir.java
 
 public class WatchDir {
+
+	private static final Logger log = Logger.getLogger(WatchDir.class.getName());
 
 	interface WatchDirListener {
 		public void watchEvent(String kind, String file);
@@ -107,7 +111,7 @@ public class WatchDir {
 
 			Path dir = keys.get(key);
 			if (dir == null) {
-				System.err.println("WatchKey not recognized!!");
+				log.log(Level.SEVERE, "WatchKey not recognized!");
 				continue;
 			}
 
@@ -137,8 +141,8 @@ public class WatchDir {
 						if (Files.isDirectory(child, NOFOLLOW_LINKS)) {
 							registerAll(child);
 						}
-					} catch (IOException x) {
-						x.printStackTrace();
+					} catch (IOException e) {
+						log.log(Level.SEVERE, e.toString());
 					}
 				}
 			}

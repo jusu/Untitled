@@ -5,12 +5,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FilenameUtils;
 
 public class Images {
+
+	private static final Logger log = Logger.getLogger(Images.class.getName());
 
 	public static Iterator<Image> iterator(String[] names) {
 		ArrayList<Image> list = new ArrayList<Image>();
@@ -19,7 +23,7 @@ public class Images {
 			try {
 				img = ImageIO.read(Images.class.getClass().getResourceAsStream("/images/" + names[n] + ".png"));
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 			list.add(img);
 		}

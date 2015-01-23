@@ -49,7 +49,7 @@ import com.sun.pdfview.PDFPage;
 public class PdfUtil {
 
 	private static final Logger log = Logger.getLogger(PdfUtil.class.getName());
-	
+
 	RandomAccessFile raf;
 	PDFFile pdffile;
 	int numPages;
@@ -88,8 +88,7 @@ public class PdfUtil {
 		double adjust = (screenDpi / 72.0 - 1.0) / 2.0 + 1.0;
 
 		Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
-		Image img = page.getImage((int)(rect.width * adjust), (int)(rect.height * adjust),
-				rect, // clip rect
+		Image img = page.getImage((int) (rect.width * adjust), (int) (rect.height * adjust), rect, // clip rect
 				null, // null for the ImageObserver
 				true, // fill background with white
 				true // block until drawing is done
@@ -99,7 +98,7 @@ public class PdfUtil {
 		try {
 			ImageIO.write(bImg, "png", outPath);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		return bImg;
@@ -110,7 +109,7 @@ public class PdfUtil {
 			try {
 				raf.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 			}
 		}
 	}

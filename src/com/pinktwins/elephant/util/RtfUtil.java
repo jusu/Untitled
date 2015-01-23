@@ -3,12 +3,16 @@ package com.pinktwins.elephant.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
 
 public class RtfUtil {
+
+	private static final Logger log = Logger.getLogger(RtfUtil.class.getName());
 
 	// http://stackoverflow.com/questions/2725141/java-jtextpane-rtf-save
 	public static String getRtf(Document doc) {
@@ -36,7 +40,7 @@ public class RtfUtil {
 
 			return rtfContent;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 		return null;
 	}

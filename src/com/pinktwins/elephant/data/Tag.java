@@ -3,11 +3,15 @@ package com.pinktwins.elephant.data;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Tag implements Comparable<Tag> {
+
+	private static final Logger log = Logger.getLogger(Tag.class.getName());
 
 	final String name;
 	final String id;
@@ -49,7 +53,7 @@ public class Tag implements Comparable<Tag> {
 		try {
 			_name = URLDecoder.decode(_name, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 
 		name = _name;
@@ -63,12 +67,12 @@ public class Tag implements Comparable<Tag> {
 			try {
 				o.put("name", URLEncoder.encode(name, "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				log.log(Level.SEVERE, e.toString());
 				o.put("name", name);
 			}
 			o.put("parentId", parentId);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			log.log(Level.SEVERE, e.toString());
 		}
 		return o;
 	}
