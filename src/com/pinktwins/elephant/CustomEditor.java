@@ -611,7 +611,6 @@ public class CustomEditor extends RoundPanel {
 					}
 				}
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

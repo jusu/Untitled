@@ -94,6 +94,176 @@ public class ElephantWindow extends JFrame {
 
 	UiModes uiMode = UiModes.notes;
 
+	private String previousSearchText = "";
+
+	ActionListener newNoteAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// XXX if showing notebooks, open new note in solo window
+			showNotes();
+			newNote();
+		}
+	};
+
+	ActionListener saveNoteAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.focusEditor();
+			unfocusEditor();
+		}
+	};
+
+	ActionListener searchAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			toolBar.focusSearch();
+		}
+	};
+
+	ActionListener newNotebookAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showNotebooks();
+			notebooks.newNotebook();
+		}
+	};
+
+	ActionListener newTagAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showTags();
+			tagList.newTag();
+		}
+	};
+
+	ActionListener newWindowAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			newWindow();
+		}
+	};
+
+	ActionListener showNotesAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showNotes();
+		}
+	};
+
+	ActionListener showNotebooksAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showNotebooks();
+		}
+	};
+
+	ActionListener showTagsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showTags();
+		}
+	};
+
+	ActionListener showAllNotesAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showAllNotes();
+		}
+	};
+
+	ActionListener cutTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.cutAction();
+		}
+	};
+
+	ActionListener copyTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.copyAction();
+		}
+	};
+
+	ActionListener pasteTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.pasteAction();
+		}
+	};
+
+	ActionListener editTitleAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.editor.focusTitle();
+		}
+	};
+
+	ActionListener editTagsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.focusTags();
+		}
+	};
+
+	ActionListener moveNoteAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.openNotebookChooserForMoving();
+		}
+	};
+
+	ActionListener jumpToNotebookAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (uiMode == UiModes.notes) {
+				noteList.openNotebookChooserForJumping();
+			}
+		}
+	};
+
+	ActionListener settingsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showSettings();
+		}
+	};
+
+	ActionListener undoAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.undo();
+		}
+	};
+
+	ActionListener redoAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.redo();
+		}
+	};
+
+	ActionListener styleAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Elephant.eventBus.post(new StyleCommandEvent(e));
+		}
+	};
+
+	ActionListener plainTextAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.turnToPlainText();
+		}
+	};
+
+	ActionListener markdownAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// noteEditor.turnToMarkdown();
+		}
+	};
+
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
 
@@ -528,8 +698,6 @@ public class ElephantWindow extends JFrame {
 		focusEditor();
 	}
 
-	private String previousSearchText = "";
-
 	public void search(String text) {
 		previousSearchText = text;
 		if (text.length() == 0) {
@@ -546,174 +714,6 @@ public class ElephantWindow extends JFrame {
 	public boolean isShowingSearchResults() {
 		return noteList.isSearch();
 	}
-
-	ActionListener newNoteAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// XXX if showing notebooks, open new note in solo window
-			showNotes();
-			newNote();
-		}
-	};
-
-	ActionListener saveNoteAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.focusEditor();
-			unfocusEditor();
-		}
-	};
-
-	ActionListener searchAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			toolBar.focusSearch();
-		}
-	};
-
-	ActionListener newNotebookAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showNotebooks();
-			notebooks.newNotebook();
-		}
-	};
-
-	ActionListener newTagAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showTags();
-			tagList.newTag();
-		}
-	};
-
-	ActionListener newWindowAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			newWindow();
-		}
-	};
-
-	ActionListener showNotesAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showNotes();
-		}
-	};
-
-	ActionListener showNotebooksAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showNotebooks();
-		}
-	};
-
-	ActionListener showTagsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showTags();
-		}
-	};
-
-	ActionListener showAllNotesAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showAllNotes();
-		}
-	};
-
-	ActionListener cutTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.cutAction();
-		}
-	};
-
-	ActionListener copyTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.copyAction();
-		}
-	};
-
-	ActionListener pasteTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.pasteAction();
-		}
-	};
-
-	ActionListener editTitleAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.editor.focusTitle();
-		}
-	};
-
-	ActionListener editTagsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.focusTags();
-		}
-	};
-
-	ActionListener moveNoteAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.openNotebookChooserForMoving();
-		}
-	};
-
-	ActionListener jumpToNotebookAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (uiMode == UiModes.notes) {
-				noteList.openNotebookChooserForJumping();
-			}
-		}
-	};
-
-	ActionListener settingsAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showSettings();
-		}
-	};
-
-	ActionListener undoAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.undo();
-		}
-	};
-
-	ActionListener redoAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.redo();
-		}
-	};
-
-	ActionListener styleAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			Elephant.eventBus.post(new StyleCommandEvent(e));
-		}
-	};
-
-	ActionListener plainTextAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			noteEditor.turnToPlainText();
-		}
-	};
-
-	ActionListener markdownAction = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// noteEditor.turnToMarkdown();
-		}
-	};
 
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
