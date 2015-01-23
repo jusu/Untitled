@@ -53,7 +53,7 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
-	static public final int kMinNoteSize = 288;
+	public static final int kMinNoteSize = 288;
 
 	private static Image tile, noteTopShadow, noteToolsNotebook, noteToolsTrash, noteToolsDivider;
 
@@ -66,9 +66,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private Note loadAfterLayout = null;
 
-	static public ImageScalingCache scalingCache = new ImageScalingCache();
+	public static ImageScalingCache scalingCache = new ImageScalingCache();
 
-	static public PegDownProcessor pegDown = new PegDownProcessor();
+	public static PegDownProcessor pegDown = new PegDownProcessor();
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteeditor", "noteTopShadow", "noteToolsNotebook", "noteToolsTrash", "noteToolsDivider" });

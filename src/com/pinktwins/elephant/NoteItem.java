@@ -40,12 +40,12 @@ class NoteItem extends JPanel implements MouseListener {
 		public void noteClicked(NoteItem item, boolean doubleClick);
 	}
 
-	final static private DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
-	final static private long time_24h = 1000 * 60 * 60 * 24;
-	final static private Color kColorNoteBorder = Color.decode("#cdcdcd");
-	final static private Map<File, NoteItem> itemCache = Factory.newHashMap();
+	private static final DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
+	private static final long time_24h = 1000 * 60 * 60 * 24;
+	private static final Color kColorNoteBorder = Color.decode("#cdcdcd");
+	private static final Map<File, NoteItem> itemCache = Factory.newHashMap();
 
-	static private Image noteShadow, noteSelection;
+	private static Image noteShadow, noteSelection;
 
 	public Note note;
 	private Dimension size = new Dimension(196, 196);
@@ -60,7 +60,7 @@ class NoteItem extends JPanel implements MouseListener {
 		noteSelection = i.next();
 	}
 
-	static public void removeCacheKey(File f) {
+	public static void removeCacheKey(File f) {
 		itemCache.remove(f);
 	}
 

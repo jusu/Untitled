@@ -28,7 +28,7 @@ public class Toolbar extends BackgroundPanel {
 	private static Image toolbarBg, toolbarBgInactive;
 
 	SearchTextField search;
-	final private static String searchNotes = "Search notes";
+	private static final String searchNotes = "Search notes";
 
 	public static boolean skipNextFocusLost = false;
 	private boolean isIndexing = false;

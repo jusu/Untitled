@@ -23,7 +23,7 @@ public class ImageScalingCache {
 		store(sourceFile, img, w, h);
 	}
 
-	static public String getImageCacheDir() {
+	public static String getImageCacheDir() {
 		return Vault.getInstance().getHome().getAbsolutePath() + File.separator + ".imagecache";
 	}
 
