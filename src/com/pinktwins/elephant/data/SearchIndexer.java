@@ -146,6 +146,13 @@ public class SearchIndexer {
 		return notes;
 	}
 
+	// Release Lucene write lock.
+	public void commit() {
+		if (useLucene && ready()) {
+			luceneIndex.commit();
+		}
+	}
+
 	@Subscribe
 	public void handleNoteChanged(NoteChangedEvent event) throws Exception {
 		try {
@@ -156,9 +163,7 @@ public class SearchIndexer {
 			throw e;
 		}
 
-		if (useLucene && ready()) {
-			luceneIndex.commit();
-		}
+		commit();
 
 		new SearchIndexChangedEvent().post();
 	}

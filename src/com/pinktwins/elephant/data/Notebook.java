@@ -124,6 +124,8 @@ public class Notebook implements Comparable<Notebook> {
 	}
 
 	private void populate() {
+		boolean didDigest = false;
+
 		if (folder != null) {
 			notes.clear();
 			for (File f : folder.listFiles()) {
@@ -143,6 +145,7 @@ public class Notebook implements Comparable<Notebook> {
 								long digestTime = Search.ssi.getDigestTime(f);
 								if (f.lastModified() != digestTime) {
 									Search.ssi.digestNote(note, this);
+									didDigest = true;
 								}
 							}
 
@@ -155,6 +158,10 @@ public class Notebook implements Comparable<Notebook> {
 		}
 
 		sortNotes();
+		
+		if (didDigest) {
+			Search.ssi.commit();
+		}
 	}
 
 	public void addNote(Note n) {
