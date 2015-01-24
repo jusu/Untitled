@@ -13,7 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 
 public class Images {
 
-	private static final Logger log = Logger.getLogger(Images.class.getName());
+	private static final Logger LOG = Logger.getLogger(Images.class.getName());
 
 	private Images() {
 	}
@@ -25,7 +25,7 @@ public class Images {
 			try {
 				img = ImageIO.read(Images.class.getClass().getResourceAsStream("/images/" + names[n] + ".png"));
 			} catch (IOException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 			list.add(img);
 		}

@@ -16,7 +16,7 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Notebook implements Comparable<Notebook> {
 
-	private static final Logger log = Logger.getLogger(Notebook.class.getName());
+	private static final Logger LOG = Logger.getLogger(Notebook.class.getName());
 
 	public static final String NAME_ALLNOTES = "All Notes";
 	public static final String NAME_SEARCH = "Search";
@@ -148,7 +148,7 @@ public class Notebook implements Comparable<Notebook> {
 
 						}
 					} catch (SecurityException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					}
 				}
 			}
@@ -265,7 +265,7 @@ public class Notebook implements Comparable<Notebook> {
 				return true;
 			}
 		} catch (Exception e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 		return false;
 	}
@@ -276,7 +276,7 @@ public class Notebook implements Comparable<Notebook> {
 		try {
 			IOUtil.writeFile(f, String.valueOf(System.currentTimeMillis()));
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 }

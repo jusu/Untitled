@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 public class WatchDir {
 
-	private static final Logger log = Logger.getLogger(WatchDir.class.getName());
+	private static final Logger LOG = Logger.getLogger(WatchDir.class.getName());
 
 	interface WatchDirListener {
 		public void watchEvent(String kind, String file);
@@ -110,7 +110,7 @@ public class WatchDir {
 
 			Path dir = keys.get(key);
 			if (dir == null) {
-				log.severe("WatchKey not recognized!");
+				LOG.severe("WatchKey not recognized!");
 				continue;
 			}
 
@@ -141,7 +141,7 @@ public class WatchDir {
 							registerAll(child);
 						}
 					} catch (IOException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					}
 				}
 			}

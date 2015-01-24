@@ -22,7 +22,7 @@ import com.pinktwins.elephant.util.Images;
 
 public class NoteAttachments {
 
-	private static final Logger log = Logger.getLogger(NoteAttachments.class.getName());
+	private static final Logger LOG = Logger.getLogger(NoteAttachments.class.getName());
 
 	private Map<Object, File> attachments = Factory.newHashMap();
 	private String loadMark;
@@ -67,7 +67,7 @@ public class NoteAttachments {
 					try {
 						notePane.setCaretPosition(position);
 					} catch (IllegalArgumentException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					}
 
 					notePane.insertIcon(ii);
@@ -75,7 +75,7 @@ public class NoteAttachments {
 					attachments.put(ii, f);
 				}
 			} catch (IOException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 		} else {
 			FileAttachment aa = new FileAttachment(f, editor.editorWidthScaler, editor.editorController);

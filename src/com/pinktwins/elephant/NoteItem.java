@@ -37,7 +37,7 @@ import com.pinktwins.elephant.util.PdfUtil;
 
 class NoteItem extends JPanel implements MouseListener {
 
-	private static final Logger log = Logger.getLogger(NoteItem.class.getName());
+	private static final Logger LOG = Logger.getLogger(NoteItem.class.getName());
 
 	interface NoteItemListener {
 		public void noteClicked(NoteItem item, boolean doubleClick);
@@ -185,7 +185,7 @@ class NoteItem extends JPanel implements MouseListener {
 		try {
 			preview.getDocument().insertString(0, ts + " ", style);
 		} catch (BadLocationException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		previewPane.add(preview);
@@ -261,7 +261,7 @@ class NoteItem extends JPanel implements MouseListener {
 				return true;
 			}
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		return false;

@@ -47,7 +47,7 @@ import com.sun.pdfview.PDFPage;
 
 public class PdfUtil {
 
-	private static final Logger log = Logger.getLogger(PdfUtil.class.getName());
+	private static final Logger LOG = Logger.getLogger(PdfUtil.class.getName());
 
 	RandomAccessFile raf;
 	PDFFile pdffile;
@@ -64,9 +64,9 @@ public class PdfUtil {
 			pdffile = new PDFFile(buf);
 			numPages = pdffile.getNumPages();
 		} catch (FileNotFoundException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class PdfUtil {
 		try {
 			ImageIO.write(bImg, "png", outPath);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		return bImg;
@@ -108,7 +108,7 @@ public class PdfUtil {
 			try {
 				raf.close();
 			} catch (IOException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 		}
 	}

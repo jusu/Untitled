@@ -14,7 +14,7 @@ import com.google.common.io.Files;
 
 public class IOUtil {
 
-	private static final Logger log = Logger.getLogger(IOUtil.class.getName());
+	private static final Logger LOG = Logger.getLogger(IOUtil.class.getName());
 
 	private static final byte[] emptyBytes = new byte[0];
 
@@ -48,14 +48,14 @@ public class IOUtil {
 			try {
 				f.close();
 			} catch (IOException e2) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 			return emptyBytes;
 		} finally {
 			try {
 				f.close();
 			} catch (IOException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 		}
 	}
@@ -78,9 +78,9 @@ public class IOUtil {
 
 			return new JSONObject(json);
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		return new JSONObject();

@@ -45,7 +45,7 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteList extends BackgroundPanel implements NoteItemListener {
 
-	private static final Logger log = Logger.getLogger(NoteList.class.getName());
+	private static final Logger LOG = Logger.getLogger(NoteList.class.getName());
 
 	private static Image tile, iAllNotes;
 
@@ -246,9 +246,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 							scroll.getVerticalScrollBar().revalidate();
 						}
 					} catch (ExecutionException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					} catch (InterruptedException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					} finally {
 						isWorking = false;
 					}
@@ -381,7 +381,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			selectNote(newNote);
 			window.showNote(newNote);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 

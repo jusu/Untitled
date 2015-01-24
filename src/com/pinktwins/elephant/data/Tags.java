@@ -19,7 +19,7 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Tags {
 
-	private static final Logger log = Logger.getLogger(Tags.class.getName());
+	private static final Logger LOG = Logger.getLogger(Tags.class.getName());
 	
 	private List<Tag> flatList = Factory.newArrayList();
 
@@ -39,7 +39,7 @@ public class Tags {
 					flatList.add(tag);
 				}
 			} catch (JSONException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 		}
 
@@ -69,9 +69,9 @@ public class Tags {
 			o.put("tags", arr);
 			IOUtil.writeFile(new File(fileLoaded), o.toString(4));
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 

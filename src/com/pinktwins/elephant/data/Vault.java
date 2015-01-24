@@ -22,7 +22,7 @@ import com.pinktwins.elephant.util.Factory;
 // 'root' data provider
 public class Vault implements WatchDirListener {
 
-	private static final Logger log = Logger.getLogger(Vault.class.getName());
+	private static final Logger LOG = Logger.getLogger(Vault.class.getName());
 
 	private static Vault instance = null;
 
@@ -126,7 +126,7 @@ public class Vault implements WatchDirListener {
 						watchDir = new WatchDir(HOME, watchRecursive, Vault.this);
 						watchDir.processEvents();
 					} catch (IOException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					}
 				}
 			}.start();

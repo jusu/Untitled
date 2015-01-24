@@ -54,7 +54,7 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
-	private static final Logger log = Logger.getLogger(NoteEditor.class.getName());
+	private static final Logger LOG = Logger.getLogger(NoteEditor.class.getName());
 	
 	public static final int kMinNoteSize = 288;
 
@@ -672,7 +672,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		try {
 			encName = URLEncoder.encode(name, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 		encName = encName.replace("+", "%20");
 
@@ -680,7 +680,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), String.format("%s[%s](%s \"\")\n", isImage ? "!" : "", name, encName), null);
 		} catch (BadLocationException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -705,7 +705,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						insertMarkdownLink(f);
 					}
 				} catch (IOException e) {
-					log.severe("Fail: " + e);
+					LOG.severe("Fail: " + e);
 				}
 			}
 		}

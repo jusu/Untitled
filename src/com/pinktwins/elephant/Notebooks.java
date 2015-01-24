@@ -25,7 +25,7 @@ import com.pinktwins.elephant.util.Images;
 
 public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
-	private static final Logger log = Logger.getLogger(Notebooks.class.getName());
+	private static final Logger LOG = Logger.getLogger(Notebooks.class.getName());
 
 	private static Image tile, notebookBg, notebookBgSelected, newNotebook;
 	private ElephantWindow window;
@@ -92,7 +92,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			deselectAll();
 			edit.requestFocusInWindow();
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		try {
 			item.notebook.folder().delete();
 		} catch (Exception e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook).post();

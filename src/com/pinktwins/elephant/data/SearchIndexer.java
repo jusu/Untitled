@@ -16,7 +16,7 @@ import com.pinktwins.elephant.util.Factory;
 
 public class SearchIndexer {
 
-	private static final Logger log = Logger.getLogger(SearchIndexer.class.getName());
+	private static final Logger LOG = Logger.getLogger(SearchIndexer.class.getName());
 	
 	private boolean isReady = false;
 
@@ -152,7 +152,7 @@ public class SearchIndexer {
 			purgeNote(event.note);
 			digestNote(event.note, event.note.findContainingNotebook());
 		} catch (Exception e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 			throw e;
 		}
 

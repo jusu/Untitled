@@ -15,7 +15,7 @@ import com.pinktwins.elephant.data.Vault;
 
 public class Elephant {
 
-	private static final Logger log = Logger.getLogger(Elephant.class.getName());
+	private static final Logger LOG = Logger.getLogger(Elephant.class.getName());
 
 	public static final EventBus eventBus = new EventBus();
 	public static final Settings settings = new Settings();
@@ -73,9 +73,9 @@ public class Elephant {
 			System.out.println("Restarting...");
 			System.exit(0);
 		} catch (URISyntaxException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		return false;

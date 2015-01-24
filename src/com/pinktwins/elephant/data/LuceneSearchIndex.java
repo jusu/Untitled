@@ -40,7 +40,7 @@ import com.pinktwins.elephant.util.Factory;
 
 public class LuceneSearchIndex implements SearchIndexInterface {
 
-	private static final Logger log = Logger.getLogger(LuceneSearchIndex.class.getName());
+	private static final Logger LOG = Logger.getLogger(LuceneSearchIndex.class.getName());
 
 	Directory dir;
 	Analyzer analyzer = new StandardAnalyzer();
@@ -71,7 +71,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				parser = new QueryParser("contents", analyzer);
 				parser.setAllowLeadingWildcard(true);
 			} catch (IOException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 
 				// Fail. Turn us off.
 				SearchIndexer.useLucene = false;
@@ -94,7 +94,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 					writer.commit();
 					writer.close();
 				} catch (IOException e) {
-					log.severe("Fail: " + e);
+					LOG.severe("Fail: " + e);
 				}
 				writer = null;
 			}
@@ -112,7 +112,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					log.severe("Fail: " + e);
+					LOG.severe("Fail: " + e);
 				}
 				reader = null;
 			}
@@ -124,7 +124,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		try {
 			indexFile(n.file());
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -157,9 +157,9 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				return searchNotes(query);
 			}
 		} catch (ParseException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 		return Collections.emptySet();
 	}
@@ -176,7 +176,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				writer.deleteDocuments(term);
 			}
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 

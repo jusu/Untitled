@@ -48,7 +48,7 @@ import com.pinktwins.elephant.util.PdfUtil;
 
 public class FileAttachment extends JPanel {
 
-	private static final Logger log = Logger.getLogger(FileAttachment.class.getName());
+	private static final Logger LOG = Logger.getLogger(FileAttachment.class.getName());
 
 	private static JFileChooser chooser = new JFileChooser();
 
@@ -163,7 +163,7 @@ public class FileAttachment extends JPanel {
 					try {
 						java.awt.Desktop.getDesktop().open(f);
 					} catch (IOException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					}
 
 				}
@@ -182,13 +182,13 @@ public class FileAttachment extends JPanel {
 
 						Runtime.getRuntime().exec(cmd, new String[0], null);
 					} catch (IOException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					}
 				} else {
 					try {
 						java.awt.Desktop.getDesktop().open(f.getParentFile());
 					} catch (IOException e) {
-						log.severe("Fail: " + e);
+						LOG.severe("Fail: " + e);
 					}
 				}
 			}
@@ -200,7 +200,7 @@ public class FileAttachment extends JPanel {
 				try {
 					java.awt.Desktop.getDesktop().open(f.getParentFile());
 				} catch (IOException e) {
-					log.severe("Fail: " + e);
+					LOG.severe("Fail: " + e);
 				}
 			}
 		});
@@ -256,9 +256,9 @@ public class FileAttachment extends JPanel {
 				}
 				return img;
 			} catch (IOException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			} catch (IndexOutOfBoundsException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 			return null;
 		}
@@ -407,7 +407,7 @@ public class FileAttachment extends JPanel {
 				try {
 					tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
 				} catch (BadLocationException e) {
-					log.severe("Fail: " + e);
+					LOG.severe("Fail: " + e);
 				}
 			}
 
@@ -448,9 +448,9 @@ public class FileAttachment extends JPanel {
 								workers.last();
 							}
 						} catch (ExecutionException e) {
-							log.severe("Fail: " + e);
+							LOG.severe("Fail: " + e);
 						} catch (InterruptedException e) {
-							log.severe("Fail: " + e);
+							LOG.severe("Fail: " + e);
 						}
 
 					}
@@ -512,7 +512,7 @@ public class FileAttachment extends JPanel {
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), "\n", style);
 		} catch (BadLocationException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 

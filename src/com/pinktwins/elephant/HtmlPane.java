@@ -11,7 +11,7 @@ import javax.swing.text.html.HTMLDocument;
 
 public class HtmlPane extends JTextPane {
 
-	private static final Logger log = Logger.getLogger(HtmlPane.class.getName());
+	private static final Logger LOG = Logger.getLogger(HtmlPane.class.getName());
 
 	public HtmlPane(File noteFile, Runnable onTerminalClick) {
 		super();
@@ -32,7 +32,7 @@ public class HtmlPane extends JTextPane {
 				d.setBase(baseUrl);
 			}
 		} catch (MalformedURLException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));

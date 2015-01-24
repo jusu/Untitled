@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class Tag implements Comparable<Tag> {
 
-	private static final Logger log = Logger.getLogger(Tag.class.getName());
+	private static final Logger LOG = Logger.getLogger(Tag.class.getName());
 
 	final String name;
 	final String id;
@@ -52,7 +52,7 @@ public class Tag implements Comparable<Tag> {
 		try {
 			_name = URLDecoder.decode(_name, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 
 		name = _name;
@@ -66,12 +66,12 @@ public class Tag implements Comparable<Tag> {
 			try {
 				o.put("name", URLEncoder.encode(name, "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 				o.put("name", name);
 			}
 			o.put("parentId", parentId);
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 		return o;
 	}

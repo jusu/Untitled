@@ -37,7 +37,7 @@ import com.pinktwins.elephant.util.TextComponentUtil;
 
 public class TagEditorPane {
 
-	private static final Logger log = Logger.getLogger(TagEditorPane.class.getName());
+	private static final Logger LOG = Logger.getLogger(TagEditorPane.class.getName());
 
 	private JTextPane editor;
 	private JLabel tagHint;
@@ -82,7 +82,7 @@ public class TagEditorPane {
 								e.turnTextToTag(s);
 							}
 						} catch (BadLocationException e) {
-							log.severe("Fail: " + e);
+							LOG.severe("Fail: " + e);
 						}
 					}
 				});
@@ -205,7 +205,7 @@ public class TagEditorPane {
 			try {
 				editor.getDocument().remove(n, tagText.length());
 			} catch (BadLocationException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 		}
 

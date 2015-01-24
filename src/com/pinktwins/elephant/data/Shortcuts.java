@@ -18,7 +18,7 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Shortcuts {
 
-	private static final Logger log = Logger.getLogger(Shortcuts.class.getName());
+	private static final Logger LOG = Logger.getLogger(Shortcuts.class.getName());
 	
 	private List<String> list = Factory.newArrayList();
 
@@ -43,7 +43,7 @@ public class Shortcuts {
 					list.add(s);
 				}
 			} catch (JSONException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 		}
 
@@ -107,9 +107,9 @@ public class Shortcuts {
 			o.put("list", arr);
 			IOUtil.writeFile(shortcutsFile(), o.toString());
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 }

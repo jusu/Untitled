@@ -10,7 +10,7 @@ import javax.swing.text.JTextComponent;
 
 public class TextComponentUtil {
 
-	private static final Logger log = Logger.getLogger(TextComponentUtil.class.getName());
+	private static final Logger LOG = Logger.getLogger(TextComponentUtil.class.getName());
 
 	public static void insertListenerForHintText(final JTextComponent text, final String hintText) {
 
@@ -27,7 +27,7 @@ public class TextComponentUtil {
 								try {
 									text.getDocument().remove(1, hintText.length());
 								} catch (BadLocationException e) {
-									log.severe("Fail: " + e);
+									LOG.severe("Fail: " + e);
 								}
 							}
 						});

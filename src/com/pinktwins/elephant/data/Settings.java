@@ -11,7 +11,7 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Settings {
 
-	private static final Logger log = Logger.getLogger(Settings.class.getName());
+	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 	
 	public static enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene");
@@ -73,7 +73,7 @@ public class Settings {
 			map.put(key, value);
 			save();
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class Settings {
 			map.put(key, value);
 			save();
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class Settings {
 		try {
 			map.put(key.toString(), value);
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 		return this;
 	}
@@ -111,7 +111,7 @@ public class Settings {
 		try {
 			map.put(key.toString(), value);
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 		return this;
 	}
@@ -120,7 +120,7 @@ public class Settings {
 		try {
 			IOUtil.writeFile(settingsFile(), map.toString());
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 }

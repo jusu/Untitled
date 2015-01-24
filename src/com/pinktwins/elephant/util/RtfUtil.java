@@ -11,7 +11,7 @@ import javax.swing.text.rtf.RTFEditorKit;
 
 public class RtfUtil {
 
-	private static final Logger log = Logger.getLogger(RtfUtil.class.getName());
+	private static final Logger LOG = Logger.getLogger(RtfUtil.class.getName());
 
 	// http://stackoverflow.com/questions/2725141/java-jtextpane-rtf-save
 	public static String getRtf(Document doc) {
@@ -39,7 +39,7 @@ public class RtfUtil {
 
 			return rtfContent;
 		} catch (Exception e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 		return null;
 	}

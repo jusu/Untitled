@@ -23,7 +23,7 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class Start extends BackgroundPanel {
 
-	private static final Logger log = Logger.getLogger(Start.class.getName());
+	private static final Logger LOG = Logger.getLogger(Start.class.getName());
 
 	static Image tile;
 
@@ -31,7 +31,7 @@ public class Start extends BackgroundPanel {
 		try {
 			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooks.png"));
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class Start extends BackgroundPanel {
 								try {
 									IOUtil.writeFile(shortcuts, "{\"list\": [\"Inbox\", \"Inbox/Welcome.txt\", \"search:Tip\", \"search:tag:Today\"]}");
 								} catch (IOException e) {
-									log.severe("Fail: " + e);
+									LOG.severe("Fail: " + e);
 								}
 							}
 

@@ -19,13 +19,13 @@ import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 
 public class SaveChanges {
 
-	private static final Logger log = Logger.getLogger(SaveChanges.class.getName());
+	private static final Logger LOG = Logger.getLogger(SaveChanges.class.getName());
 
 	private static void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
 		try {
 			currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class SaveChanges {
 				}
 
 			} catch (BadLocationException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 
 			if (changed) {

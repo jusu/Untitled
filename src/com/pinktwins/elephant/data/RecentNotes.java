@@ -19,7 +19,7 @@ import com.pinktwins.elephant.util.IOUtil;
 
 public class RecentNotes {
 
-	private static final Logger log = Logger.getLogger(RecentNotes.class.getName());
+	private static final Logger LOG = Logger.getLogger(RecentNotes.class.getName());
 
 	private static final int MAX_NOTES = 5;
 
@@ -52,7 +52,7 @@ public class RecentNotes {
 					recent.add(note);
 				}
 			} catch (JSONException e) {
-				log.severe("Fail: " + e);
+				LOG.severe("Fail: " + e);
 			}
 		}
 	}
@@ -73,9 +73,9 @@ public class RecentNotes {
 			o.put(KEY_HISTORY, arr);
 			IOUtil.writeFile(historyFile(), o.toString());
 		} catch (JSONException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 

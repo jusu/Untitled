@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 public class RoundPanel extends JPanel {
 
-	private static final Logger log = Logger.getLogger(RoundPanel.class.getName());
+	private static final Logger LOG = Logger.getLogger(RoundPanel.class.getName());
 
 	static Image[] note9p = new Image[8];
 
@@ -22,7 +22,7 @@ public class RoundPanel extends JPanel {
 				note9p[n] = ImageIO.read(RoundPanel.class.getClass().getResourceAsStream(String.format("/images/note9p%d.png", n + 1)));
 			}
 		} catch (IOException e) {
-			log.severe("Fail: " + e);
+			LOG.severe("Fail: " + e);
 		}
 	}
 
