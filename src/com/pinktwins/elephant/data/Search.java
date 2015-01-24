@@ -34,7 +34,7 @@ public class Search {
 						int p = (int) (totalNotes / (float) noteCount * 100);
 						if (progress != p / 10) {
 							progress = p;
-							IndexProgressEvent.post(p);
+							new IndexProgressEvent(p).post();
 						}
 					}
 				}

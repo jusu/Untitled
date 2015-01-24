@@ -1,4 +1,4 @@
 package com.pinktwins.elephant.eventbus;
 
-public class SearchIndexChangedEvent {
+public class SearchIndexChangedEvent extends ElephantEvent {
 }

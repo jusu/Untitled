@@ -1,15 +1,9 @@
 package com.pinktwins.elephant.eventbus;
 
-import com.pinktwins.elephant.Elephant;
-
-public class IndexProgressEvent {
-	public float progress;
+public class IndexProgressEvent extends ElephantEvent {
+	public final float progress;
 
 	public IndexProgressEvent(final float progress) {
 		this.progress = progress;
-	}
-	
-	public static void post(float progress) {
-		Elephant.eventBus.post(new IndexProgressEvent(progress));
 	}
 }

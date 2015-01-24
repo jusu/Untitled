@@ -133,7 +133,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (!e.isPopupTrigger()) {
-					Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
+					new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 					window.onNoteListClicked(e);
 				}
 			}
@@ -326,7 +326,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		if (doubleClick) {
 			window.openNoteWindow(item.note);
 		} else {
-			Elephant.eventBus.post(new UIEvent(UIEvent.Kind.editorWillChangeNote));
+			new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 			selectNote(item.note);
 			window.showNote(item.note);
 		}

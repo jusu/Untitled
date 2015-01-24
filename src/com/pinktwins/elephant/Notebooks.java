@@ -111,8 +111,8 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 	@Override
 	protected void doneEditing(NotebookItem item, String text) {
 		if (item.notebook.rename(text)) {
-			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookCreated, item.notebook));
-			Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook));
+			new VaultEvent(VaultEvent.Kind.notebookCreated, item.notebook).post();
+			new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook).post();
 
 			for (NotebookItem i : itemList) {
 				if (i.notebook.equals(item.notebook.folder())) {
@@ -132,7 +132,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			log.severe("Fail: " + e);
 		}
 
-		Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook));
+		new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook).post();
 	}
 
 	class NotebookItem extends BackgroundPanel implements ToolbarList.ToolbarListItem, MouseListener {

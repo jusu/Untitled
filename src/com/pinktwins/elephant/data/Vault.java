@@ -112,7 +112,7 @@ public class Vault implements WatchDirListener {
 		Collections.sort(notebooks);
 
 		tags.reload(home.getAbsolutePath() + File.separator + ".tags");
-		Elephant.eventBus.post(new TagsChangedEvent());
+		new TagsChangedEvent().post();
 
 		if (watchDir == null) {
 			new Thread() {
@@ -222,8 +222,8 @@ public class Vault implements WatchDirListener {
 						tags.refresh();
 
 						nb.refresh();
-						Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb));
-						Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, nb));
+						new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb).post();
+						new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
 					}
 				}
 			});

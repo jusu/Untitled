@@ -20,11 +20,11 @@ import com.pinktwins.elephant.util.IOUtil;
 public class RecentNotes {
 
 	private static final Logger log = Logger.getLogger(RecentNotes.class.getName());
-	
+
 	private static final int MAX_NOTES = 5;
 
 	private static final String KEY_HISTORY = "history";
-	
+
 	private List<Note> recent = Factory.newArrayList();
 
 	public RecentNotes() {
@@ -95,7 +95,7 @@ public class RecentNotes {
 	public void handleNoteChange(NoteChangedEvent event) {
 		addRecentNote(event.note);
 
-		Elephant.eventBus.post(new RecentNotesChangedEvent());
+		new RecentNotesChangedEvent().post();
 		saveHistory();
 	}
 
@@ -110,7 +110,7 @@ public class RecentNotes {
 
 			addRecentNote(new Note(event.dest));
 
-			Elephant.eventBus.post(new RecentNotesChangedEvent());
+			new RecentNotesChangedEvent().post();
 			saveHistory();
 		}
 	}

@@ -85,7 +85,7 @@ public class Shortcuts {
 
 			if (modified) {
 				save();
-				ShortcutsChangedEvent.post();
+				new ShortcutsChangedEvent().post();
 			}
 
 			break;

@@ -133,7 +133,7 @@ public class SaveChanges {
 			}
 
 			if (changed) {
-				Elephant.eventBus.post(new NoteChangedEvent(currentNote, contentChanged));
+				new NoteChangedEvent(currentNote, contentChanged).post();
 			}
 		}
 

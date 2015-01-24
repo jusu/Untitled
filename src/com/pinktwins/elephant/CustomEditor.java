@@ -817,7 +817,7 @@ public class CustomEditor extends RoundPanel {
 		public void undoableEditHappened(UndoableEditEvent e) {
 			// Remember the edit and update the menus
 			undoManager.addEdit(e.getEdit());
-			Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+			new UndoRedoStateUpdateRequest(undoManager).post();
 		}
 	}
 
@@ -825,19 +825,19 @@ public class CustomEditor extends RoundPanel {
 		if (undoManager.canUndo()) {
 			undoManager.undo();
 		}
-		Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+		new UndoRedoStateUpdateRequest(undoManager).post();
 	}
 
 	public void redo() {
 		if (undoManager.canRedo()) {
 			undoManager.redo();
 		}
-		Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+		new UndoRedoStateUpdateRequest(undoManager).post();
 	}
 
 	public void discardUndoBuffer() {
 		undoManager.discardAllEdits();
-		Elephant.eventBus.post(new UndoRedoStateUpdateRequest(undoManager));
+		new UndoRedoStateUpdateRequest(undoManager).post();
 	}
 
 	public void displayHtml(final File noteFile, final String html) {

@@ -394,7 +394,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				// If we switch out from markdown-editing to rich display,
 				// the unfocus happens too late to actually save edits.
 				// This UIEvent marks a savepoint.
-				UIEvent.post(UIEvent.Kind.editorWillChangeNote);
+				new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 
 				if (currentNote.isMarkdown()) {
 					window.showNote(currentNote);

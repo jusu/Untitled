@@ -220,7 +220,7 @@ public class Notebook implements Comparable<Notebook> {
 
 		notes.add(0, n);
 
-		NotebookEvent.post(NotebookEvent.Kind.noteCreated, f, f);
+		new NotebookEvent(NotebookEvent.Kind.noteCreated, f, f).post();
 
 		return n;
 	}

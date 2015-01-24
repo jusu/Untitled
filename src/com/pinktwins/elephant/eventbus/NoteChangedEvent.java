@@ -2,7 +2,7 @@ package com.pinktwins.elephant.eventbus;
 
 import com.pinktwins.elephant.data.Note;
 
-public class NoteChangedEvent {
+public class NoteChangedEvent extends ElephantEvent {
 	public Note note;
 	public boolean contentChanged;
 

@@ -246,7 +246,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener styleAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Elephant.eventBus.post(new StyleCommandEvent(e));
+			new StyleCommandEvent(e).post();
 		}
 	};
 
@@ -565,7 +565,7 @@ public class ElephantWindow extends JFrame {
 			String search = target.substring("search:".length());
 			toolBar.search.setText(search);
 
-			UIEvent.post(UIEvent.Kind.editorWillChangeNote);
+			new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 
 			search(search);
 			return true;
@@ -574,7 +574,7 @@ public class ElephantWindow extends JFrame {
 		File f = new File(target);
 		if (f.exists()) {
 
-			UIEvent.post(UIEvent.Kind.editorWillChangeNote);
+			new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 
 			if (f.isDirectory()) {
 				Notebook notebook = Vault.getInstance().findNotebook(f);

@@ -396,7 +396,7 @@ public class Note implements Comparable<Note> {
 				nb.refresh();
 			}
 
-			NotebookEvent.post(NotebookEvent.Kind.noteMoved, file, destFile);
+			new NotebookEvent(NotebookEvent.Kind.noteMoved, file, destFile).post();
 		} catch (IOException e) {
 			log.severe("Fail: " + e);
 		}
@@ -435,7 +435,7 @@ public class Note implements Comparable<Note> {
 		file = newFile;
 		meta = newMeta;
 
-		NotebookEvent.post(NotebookEvent.Kind.noteRenamed, oldFile, newFile);
+		new NotebookEvent(NotebookEvent.Kind.noteRenamed, oldFile, newFile).post();
 
 		if (newAtts != null) {
 			FileUtils.moveDirectory(atts, newAtts);

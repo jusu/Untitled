@@ -160,7 +160,7 @@ public class SearchIndexer {
 			luceneIndex.commit();
 		}
 
-		Elephant.eventBus.post(new SearchIndexChangedEvent());
+		new SearchIndexChangedEvent().post();
 	}
 
 	@Subscribe

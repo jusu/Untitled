@@ -2,25 +2,17 @@ package com.pinktwins.elephant.eventbus;
 
 import java.io.File;
 
-import com.pinktwins.elephant.Elephant;
-
-public class NotebookEvent {
+public class NotebookEvent extends ElephantEvent {
 	public static enum Kind {
 		noteMoved, noteCreated, noteRenamed
 	};
 
-	public Kind kind;
+	public final Kind kind;
+	public final File source, dest;
 
-	public File source, dest;
-
-	public NotebookEvent(Kind k) {
-		this.kind = k;
-	}
-
-	public static void post(final Kind kind, final File source, final File dest) {
-		NotebookEvent e = new NotebookEvent(kind);
-		e.source = source;
-		e.dest = dest;
-		Elephant.eventBus.post(e);
+	public NotebookEvent(Kind kind, File source, File dest) {
+		this.kind = kind;
+		this.source = source;
+		this.dest = dest;
 	}
 }
