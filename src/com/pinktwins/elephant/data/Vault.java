@@ -26,13 +26,6 @@ public class Vault implements WatchDirListener {
 
 	private static Vault instance = null;
 
-	public static Vault getInstance() {
-		if (instance == null) {
-			instance = new Vault();
-		}
-		return instance;
-	}
-
 	private String HOME = "";
 	private String defaultNotebook = "Inbox";
 
@@ -43,6 +36,13 @@ public class Vault implements WatchDirListener {
 	private Tags tags = new Tags();
 
 	WatchDir watchDir;
+
+	public static Vault getInstance() {
+		if (instance == null) {
+			instance = new Vault();
+		}
+		return instance;
+	}
 
 	private Vault() {
 		Elephant.eventBus.register(this);

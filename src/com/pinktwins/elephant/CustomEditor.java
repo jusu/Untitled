@@ -87,8 +87,80 @@ public class CustomEditor extends RoundPanel {
 
 	final Color kDividerColor = Color.decode("#dbdbdb");
 
-	EditorEventListener eeListener;
-	NoteAttachmentTransferHandler attachmentTransferHandler;
+	private final FocusListener editorFocusListener = new FocusListener() {
+		@Override
+		public void focusGained(FocusEvent e) {
+			if (eeListener != null) {
+				eeListener.editingFocusGained();
+			}
+		}
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			if (eeListener != null) {
+				eeListener.editingFocusLost();
+			}
+		}
+	};
+
+	private final AbstractAction boldAction = new AbstractAction() {
+		StyledEditorKit.BoldAction a = new StyledEditorKit.BoldAction();
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (!isMarkdown) {
+				isRichText = true;
+				a.actionPerformed(e);
+			} else {
+				markdownStyleCommand("**", "**");
+			}
+		}
+	};
+
+	private final AbstractAction italicAction = new AbstractAction() {
+		StyledEditorKit.ItalicAction a = new StyledEditorKit.ItalicAction();
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (!isMarkdown) {
+				isRichText = true;
+				a.actionPerformed(e);
+			} else {
+				markdownStyleCommand("_", "_");
+			}
+		}
+	};
+
+	private final AbstractAction underlineAction = new AbstractAction() {
+		StyledEditorKit.UnderlineAction a = new StyledEditorKit.UnderlineAction();
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (!isMarkdown) {
+				isRichText = true;
+				a.actionPerformed(e);
+			} else {
+				markdownStyleCommand("<u>", "</u>");
+			}
+		}
+	};
+
+	private final AbstractAction increaseFontSizeAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			shiftFontSize(1);
+		}
+	};
+
+	private final AbstractAction decreaseFontSizeAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			shiftFontSize(-1);
+		}
+	};
+
+	private EditorEventListener eeListener;
+	private NoteAttachmentTransferHandler attachmentTransferHandler;
 
 	class NoteAttachmentTransferHandler extends AttachmentTransferHandler {
 		public NoteAttachmentTransferHandler(EditorEventListener listener) {
@@ -106,23 +178,7 @@ public class CustomEditor extends RoundPanel {
 		}
 	}
 
-	FocusListener editorFocusListener = new FocusListener() {
-		@Override
-		public void focusGained(FocusEvent e) {
-			if (eeListener != null) {
-				eeListener.editingFocusGained();
-			}
-		}
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			if (eeListener != null) {
-				eeListener.editingFocusLost();
-			}
-		}
-	};
-
-	static class CustomDocument extends DefaultStyledDocument {
+	private static class CustomDocument extends DefaultStyledDocument {
 		private static final long serialVersionUID = 2807153134148093523L;
 
 		@Override
@@ -132,7 +188,7 @@ public class CustomEditor extends RoundPanel {
 		}
 	}
 
-	CustomMouseListener paddingClick = new CustomMouseListener() {
+	private final CustomMouseListener paddingClick = new CustomMouseListener() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			note.requestFocusInWindow();
@@ -529,48 +585,6 @@ public class CustomEditor extends RoundPanel {
 		}
 	}
 
-	private AbstractAction boldAction = new AbstractAction() {
-		StyledEditorKit.BoldAction a = new StyledEditorKit.BoldAction();
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (!isMarkdown) {
-				isRichText = true;
-				a.actionPerformed(e);
-			} else {
-				markdownStyleCommand("**", "**");
-			}
-		}
-	};
-
-	private AbstractAction italicAction = new AbstractAction() {
-		StyledEditorKit.ItalicAction a = new StyledEditorKit.ItalicAction();
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (!isMarkdown) {
-				isRichText = true;
-				a.actionPerformed(e);
-			} else {
-				markdownStyleCommand("_", "_");
-			}
-		}
-	};
-
-	private AbstractAction underlineAction = new AbstractAction() {
-		StyledEditorKit.UnderlineAction a = new StyledEditorKit.UnderlineAction();
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (!isMarkdown) {
-				isRichText = true;
-				a.actionPerformed(e);
-			} else {
-				markdownStyleCommand("<u>", "</u>");
-			}
-		}
-	};
-
 	private void shiftFontSize(final int delta) {
 		if (!isMarkdown) {
 			int start = note.getSelectionStart();
@@ -614,20 +628,6 @@ public class CustomEditor extends RoundPanel {
 			}
 		}
 	}
-
-	private AbstractAction increaseFontSizeAction = new AbstractAction() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			shiftFontSize(1);
-		}
-	};
-
-	private AbstractAction decreaseFontSizeAction = new AbstractAction() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			shiftFontSize(-1);
-		}
-	};
 
 	@Subscribe
 	public void handleStyleCommandEvent(StyleCommandEvent e) {

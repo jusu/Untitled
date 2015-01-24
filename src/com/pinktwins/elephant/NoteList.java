@@ -60,13 +60,21 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	private ListController<NoteItem> lc = ListController.newInstance();
 
+	private static int separatorLineY = 41;
+
+	private JScrollPane scroll;
+	private JPanel main, allNotesPanel, fillerPanel;
+	private JLabel currentName;
+
+	private final Workers<Point> workers = new Workers<Point>();
+	private boolean isWorking = false;
+	private final Trigger loadCancelTriggers = new Trigger();
+
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "notelist", "allNotes" });
 		tile = i.next();
 		iAllNotes = i.next();
 	}
-
-	private static int separatorLineY = 41;
 
 	public NoteList(ElephantWindow w) {
 		super(tile);
@@ -76,10 +84,6 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 		createComponents();
 	}
-
-	JScrollPane scroll;
-	JPanel main, allNotesPanel, fillerPanel;
-	JLabel currentName;
 
 	private void createComponents() {
 		// title bar
@@ -179,10 +183,6 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			NoteItem.itemOf(n);
 		}
 	}
-
-	private final Workers<Point> workers = new Workers<Point>();
-	private boolean isWorking = false;
-	private final Trigger loadCancelTriggers = new Trigger();
 
 	public void load(Notebook notebook) {
 		this.notebook = notebook;

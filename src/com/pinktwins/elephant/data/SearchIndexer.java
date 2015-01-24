@@ -17,7 +17,7 @@ import com.pinktwins.elephant.util.Factory;
 public class SearchIndexer {
 
 	private static final Logger LOG = Logger.getLogger(SearchIndexer.class.getName());
-	
+
 	private boolean isReady = false;
 
 	// tagId -> Set<Note>
