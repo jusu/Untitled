@@ -400,7 +400,7 @@ public class CustomEditor extends RoundPanel {
 
 					i.pos -= i.adjust;
 
-					if (!s.substring(0, 5).equals("{\\rtf")) {
+					if (!"{\\rtf".equals(s.substring(0, 5))) {
 						i.doc.insertString(i.pos, s, null);
 					} else {
 						if (isMarkdown) {

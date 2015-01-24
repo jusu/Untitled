@@ -10,6 +10,9 @@ public class Search {
 
 	public static final SearchIndexer ssi = new SearchIndexer();
 
+	private Search() {
+	}
+	
 	public static Notebook search(String text) {
 		text = text.toLowerCase();
 

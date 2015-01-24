@@ -9,6 +9,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Factory {
+
+	private Factory() {
+	}
+
 	public static <T> Set<T> newHashSet() {
 		return new HashSet<T>();
 	}

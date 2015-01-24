@@ -12,6 +12,9 @@ public class TextComponentUtil {
 
 	private static final Logger LOG = Logger.getLogger(TextComponentUtil.class.getName());
 
+	private TextComponentUtil() {
+	}
+	
 	public static void insertListenerForHintText(final JTextComponent text, final String hintText) {
 
 		// When inserting first character, remove 'hintText' from document

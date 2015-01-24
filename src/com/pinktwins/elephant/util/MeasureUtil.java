@@ -3,6 +3,9 @@ package com.pinktwins.elephant.util;
 public class MeasureUtil {
 	static long start;
 
+	private MeasureUtil() {
+	}
+
 	public static void start() {
 		start = System.currentTimeMillis();
 	}

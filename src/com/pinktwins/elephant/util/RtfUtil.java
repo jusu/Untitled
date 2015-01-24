@@ -13,6 +13,9 @@ public class RtfUtil {
 
 	private static final Logger LOG = Logger.getLogger(RtfUtil.class.getName());
 
+	private RtfUtil() {
+	}
+
 	// http://stackoverflow.com/questions/2725141/java-jtextpane-rtf-save
 	public static String getRtf(Document doc) {
 		try {

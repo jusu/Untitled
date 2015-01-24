@@ -191,7 +191,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	}
 
 	private void indexFile(File file) throws IOException {
-		if (file.getParentFile().getName().equals("Trash")) {
+		if ("Trash".equals(file.getParentFile().getName())) {
 			return;
 		}
 

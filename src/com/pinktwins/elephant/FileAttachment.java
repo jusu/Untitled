@@ -324,7 +324,7 @@ public class FileAttachment extends JPanel {
 
 		int gotPages = pages.size();
 
-		if (FilenameUtils.getExtension(f.getName()).toLowerCase().equals("pdf")) {
+		if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
 			PdfUtil pdf = new PdfUtil(f);
 
 			if (pdf.numPages() > gotPages) {

@@ -21,6 +21,9 @@ public class SaveChanges {
 
 	private static final Logger LOG = Logger.getLogger(SaveChanges.class.getName());
 
+	private SaveChanges() {
+	}
+
 	private static void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
 		try {
 			currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));

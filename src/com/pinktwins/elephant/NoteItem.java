@@ -44,7 +44,7 @@ class NoteItem extends JPanel implements MouseListener {
 	}
 
 	private static final DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
-	private static final long time_24h = 1000 * 60 * 60 * 24;
+	private static final long time_24h = 1000L * 60 * 60 * 24;
 	private static final Color kColorNoteBorder = Color.decode("#cdcdcd");
 	private static final Map<File, NoteItem> itemCache = Factory.newHashMap();
 

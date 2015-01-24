@@ -1,6 +1,10 @@
 package com.pinktwins.elephant;
 
 public class ProgressBars {
+
+	private ProgressBars() {
+	}
+
 	public static String getCharacterBar(int progress) {
 		String s = "";
 		for (int n = 0; n < 10; n++) {

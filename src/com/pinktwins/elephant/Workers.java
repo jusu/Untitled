@@ -7,37 +7,37 @@ import javax.swing.SwingWorker;
 import com.pinktwins.elephant.util.Factory;
 
 class Workers<T> {
-	private final List<SwingWorker<T, Void>> workers = Factory.newArrayList();
+	private final List<SwingWorker<T, Void>> list = Factory.newArrayList();
 
 	public void add(SwingWorker<T, Void> w) {
-		workers.add(w);
+		list.add(w);
 	}
 
 	public void next() {
-		if (workers.size() > 0) {
-			SwingWorker<T, Void> w = workers.get(0);
-			workers.remove(0);
+		if (!list.isEmpty()) {
+			SwingWorker<T, Void> w = list.get(0);
+			list.remove(0);
 			w.execute();
 		}
 	}
 
 	public void last() {
-		if (workers.size() > 0) {
-			SwingWorker<T, Void> w = workers.get(workers.size() - 1);
-			workers.clear();
+		if (!list.isEmpty()) {
+			SwingWorker<T, Void> w = list.get(list.size() - 1);
+			clear();
 			w.execute();
 		}
 	}
 
 	public boolean isEmpty() {
-		return workers.isEmpty();
+		return list.isEmpty();
 	}
 
 	public int size() {
-		return workers.size();
+		return list.size();
 	}
 
 	public void clear() {
-		workers.clear();
+		list.clear();
 	}
 }
