@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.eventbus.Subscribe;
@@ -153,7 +152,7 @@ public class SearchIndexer {
 			purgeNote(event.note);
 			digestNote(event.note, event.note.findContainingNotebook());
 		} catch (Exception e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 			throw e;
 		}
 

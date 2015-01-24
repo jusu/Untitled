@@ -3,7 +3,6 @@ package com.pinktwins.elephant.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.text.BadLocationException;
@@ -40,7 +39,7 @@ public class RtfUtil {
 
 			return rtfContent;
 		} catch (Exception e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 		return null;
 	}

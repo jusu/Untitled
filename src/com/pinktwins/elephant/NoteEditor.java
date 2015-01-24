@@ -22,7 +22,6 @@ import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -673,7 +672,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		try {
 			encName = URLEncoder.encode(name, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 		encName = encName.replace("+", "%20");
 
@@ -681,7 +680,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), String.format("%s[%s](%s \"\")\n", isImage ? "!" : "", name, encName), null);
 		} catch (BadLocationException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -706,7 +705,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						insertMarkdownLink(f);
 					}
 				} catch (IOException e) {
-					log.log(Level.SEVERE,  e.toString());
+					log.severe("Fail: " + e);
 				}
 			}
 		}

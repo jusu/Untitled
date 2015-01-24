@@ -5,7 +5,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -49,7 +48,7 @@ public class ImageScalingCache {
 		try {
 			ImageIO.write(toBufferedImage(img, "PNG".equals(ext)), ext, cache);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -62,7 +61,7 @@ public class ImageScalingCache {
 		try {
 			return ImageIO.read(cache);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 			return null;
 		}
 	}

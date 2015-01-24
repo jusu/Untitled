@@ -3,7 +3,6 @@ package com.pinktwins.elephant;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JTextPane;
@@ -33,7 +32,7 @@ public class HtmlPane extends JTextPane {
 				d.setBase(baseUrl);
 			}
 		} catch (MalformedURLException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));

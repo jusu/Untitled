@@ -1,7 +1,6 @@
 package com.pinktwins.elephant.util;
 
 import java.awt.EventQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.event.DocumentEvent;
@@ -28,7 +27,7 @@ public class TextComponentUtil {
 								try {
 									text.getDocument().remove(1, hintText.length());
 								} catch (BadLocationException e) {
-									log.log(Level.SEVERE, e.toString());
+									log.severe("Fail: " + e);
 								}
 							}
 						});

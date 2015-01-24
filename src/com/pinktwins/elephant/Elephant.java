@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.UIManager;
@@ -74,9 +73,9 @@ public class Elephant {
 			System.out.println("Restarting...");
 			System.exit(0);
 		} catch (URISyntaxException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		return false;

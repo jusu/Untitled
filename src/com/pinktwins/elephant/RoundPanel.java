@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -23,7 +22,7 @@ public class RoundPanel extends JPanel {
 				note9p[n] = ImageIO.read(RoundPanel.class.getClass().getResourceAsStream(String.format("/images/note9p%d.png", n + 1)));
 			}
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 

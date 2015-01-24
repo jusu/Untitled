@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -186,7 +185,7 @@ class NoteItem extends JPanel implements MouseListener {
 		try {
 			preview.getDocument().insertString(0, ts + " ", style);
 		} catch (BadLocationException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		previewPane.add(preview);
@@ -262,7 +261,7 @@ class NoteItem extends JPanel implements MouseListener {
 				return true;
 			}
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		return false;

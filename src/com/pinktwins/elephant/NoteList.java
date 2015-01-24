@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -247,9 +246,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 							scroll.getVerticalScrollBar().revalidate();
 						}
 					} catch (ExecutionException e) {
-						log.log(Level.SEVERE, e.toString());
+						log.severe("Fail: " + e);
 					} catch (InterruptedException e) {
-						log.log(Level.SEVERE, e.toString());
+						log.severe("Fail: " + e);
 					} finally {
 						isWorking = false;
 					}
@@ -382,7 +381,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			selectNote(newNote);
 			window.showNote(newNote);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 

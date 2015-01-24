@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONException;
@@ -18,6 +17,9 @@ public class IOUtil {
 	private static final Logger log = Logger.getLogger(IOUtil.class.getName());
 
 	private static final byte[] emptyBytes = new byte[0];
+
+	private IOUtil() {
+	}
 
 	public static byte[] readFile(String file) {
 		return readFile(new File(file));
@@ -46,14 +48,14 @@ public class IOUtil {
 			try {
 				f.close();
 			} catch (IOException e2) {
-				log.log(Level.SEVERE, e2.toString());
+				log.severe("Fail: " + e);
 			}
 			return emptyBytes;
 		} finally {
 			try {
 				f.close();
 			} catch (IOException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 		}
 	}
@@ -76,9 +78,9 @@ public class IOUtil {
 
 			return new JSONObject(json);
 		} catch (JSONException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		return new JSONObject();

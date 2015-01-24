@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -198,9 +197,9 @@ public class Note implements Comparable<Note> {
 			RtfUtil.putRtf(doc, contents, 0);
 			return doc.getText(0, doc.getLength());
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		} catch (BadLocationException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		return "";
@@ -214,7 +213,7 @@ public class Note implements Comparable<Note> {
 		try {
 			IOUtil.writeFile(file, newText);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -238,7 +237,7 @@ public class Note implements Comparable<Note> {
 
 			return map;
 		} catch (JSONException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		return Collections.emptyMap();
@@ -255,9 +254,9 @@ public class Note implements Comparable<Note> {
 			o.put(key, value);
 			IOUtil.writeFile(meta, o.toString());
 		} catch (JSONException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -371,7 +370,7 @@ public class Note implements Comparable<Note> {
 				moveTo(dest);
 				return;
 			} catch (IOException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 				return;
 			}
 		}
@@ -399,7 +398,7 @@ public class Note implements Comparable<Note> {
 
 			NotebookEvent.post(NotebookEvent.Kind.noteMoved, file, destFile);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -518,7 +517,7 @@ public class Note implements Comparable<Note> {
 
 			FileUtils.moveFile(f, newDeletedFile);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -526,7 +525,7 @@ public class Note implements Comparable<Note> {
 		try {
 			return IOUtils.toString(Note.class.getClass().getResourceAsStream("/notes/" + name));
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 		return "";
 	}

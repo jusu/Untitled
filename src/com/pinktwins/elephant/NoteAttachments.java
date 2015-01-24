@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -68,7 +67,7 @@ public class NoteAttachments {
 					try {
 						notePane.setCaretPosition(position);
 					} catch (IllegalArgumentException e) {
-						log.log(Level.SEVERE, e.toString());
+						log.severe("Fail: " + e);
 					}
 
 					notePane.insertIcon(ii);
@@ -76,7 +75,7 @@ public class NoteAttachments {
 					attachments.put(ii, f);
 				}
 			} catch (IOException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 		} else {
 			FileAttachment aa = new FileAttachment(f, editor.editorWidthScaler, editor.editorController);

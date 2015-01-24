@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -26,7 +25,7 @@ public class SaveChanges {
 		try {
 			currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -130,7 +129,7 @@ public class SaveChanges {
 				}
 
 			} catch (BadLocationException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 
 			if (changed) {

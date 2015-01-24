@@ -2,7 +2,6 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONException;
@@ -74,7 +73,7 @@ public class Settings {
 			map.put(key, value);
 			save();
 		} catch (JSONException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -87,7 +86,7 @@ public class Settings {
 			map.put(key, value);
 			save();
 		} catch (JSONException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -99,7 +98,7 @@ public class Settings {
 		try {
 			map.put(key.toString(), value);
 		} catch (JSONException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 		return this;
 	}
@@ -112,7 +111,7 @@ public class Settings {
 		try {
 			map.put(key.toString(), value);
 		} catch (JSONException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 		return this;
 	}
@@ -121,7 +120,7 @@ public class Settings {
 		try {
 			IOUtil.writeFile(settingsFile(), map.toString());
 		} catch (IOException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 }

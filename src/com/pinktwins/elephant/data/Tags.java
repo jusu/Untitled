@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,7 +39,7 @@ public class Tags {
 					flatList.add(tag);
 				}
 			} catch (JSONException e) {
-				log.log(Level.SEVERE,  e.toString());
+				log.severe("Fail: " + e);
 			}
 		}
 
@@ -70,9 +69,9 @@ public class Tags {
 			o.put("tags", arr);
 			IOUtil.writeFile(new File(fileLoaded), o.toString(4));
 		} catch (JSONException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 

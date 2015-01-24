@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -127,7 +126,7 @@ public class Vault implements WatchDirListener {
 						watchDir = new WatchDir(HOME, watchRecursive, Vault.this);
 						watchDir.processEvents();
 					} catch (IOException e) {
-						log.log(Level.SEVERE, e.toString());
+						log.severe("Fail: " + e);
 					}
 				}
 			}.start();

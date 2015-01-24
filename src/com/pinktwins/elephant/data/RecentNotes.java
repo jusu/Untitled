@@ -3,7 +3,6 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
@@ -53,7 +52,7 @@ public class RecentNotes {
 					recent.add(note);
 				}
 			} catch (JSONException e) {
-				log.log(Level.SEVERE,  e.toString());
+				log.severe("Fail: " + e);
 			}
 		}
 	}
@@ -74,9 +73,9 @@ public class RecentNotes {
 			o.put(KEY_HISTORY, arr);
 			IOUtil.writeFile(historyFile(), o.toString());
 		} catch (JSONException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE,  e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 

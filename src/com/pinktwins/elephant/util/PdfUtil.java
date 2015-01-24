@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -65,9 +64,9 @@ public class PdfUtil {
 			pdffile = new PDFFile(buf);
 			numPages = pdffile.getNumPages();
 		} catch (FileNotFoundException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -98,7 +97,7 @@ public class PdfUtil {
 		try {
 			ImageIO.write(bImg, "png", outPath);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		return bImg;
@@ -109,7 +108,7 @@ public class PdfUtil {
 			try {
 				raf.close();
 			} catch (IOException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 		}
 	}

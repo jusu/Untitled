@@ -8,7 +8,6 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -93,7 +92,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			deselectAll();
 			edit.requestFocusInWindow();
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -130,7 +129,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		try {
 			item.notebook.folder().delete();
 		} catch (Exception e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 
 		Elephant.eventBus.post(new VaultEvent(VaultEvent.Kind.notebookListChanged, item.notebook));

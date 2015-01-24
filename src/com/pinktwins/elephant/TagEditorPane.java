@@ -16,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
@@ -83,7 +82,7 @@ public class TagEditorPane {
 								e.turnTextToTag(s);
 							}
 						} catch (BadLocationException e) {
-							log.log(Level.SEVERE, e.toString());
+							log.severe("Fail: " + e);
 						}
 					}
 				});
@@ -206,7 +205,7 @@ public class TagEditorPane {
 			try {
 				editor.getDocument().remove(n, tagText.length());
 			} catch (BadLocationException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 		}
 

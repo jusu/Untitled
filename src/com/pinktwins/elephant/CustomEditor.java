@@ -27,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.activation.DataHandler;
@@ -247,7 +246,7 @@ public class CustomEditor extends RoundPanel {
 		try {
 			note.getDocument().insertString(position, "\n", null);
 		} catch (BadLocationException e) {
-			log.log(Level.SEVERE, "insertString: " + e);
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -276,7 +275,7 @@ public class CustomEditor extends RoundPanel {
 				DataHandler hand = new DataHandler(new ByteArrayInputStream(rtf.getBytes("UTF-8")), "text/rtf");
 				clipboard.setContents(hand, this);
 			} catch (UnsupportedEncodingException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 			prevRtfCopy = rtf;
 		}
@@ -308,9 +307,9 @@ public class CustomEditor extends RoundPanel {
 					BufferedReader br = new BufferedReader(r);
 					result = IOUtils.toString(br);
 				} catch (UnsupportedFlavorException e) {
-					log.log(Level.SEVERE, e.toString());
+					log.severe("Fail: " + e);
 				} catch (IOException e) {
-					log.log(Level.SEVERE, e.toString());
+					log.severe("Fail: " + e);
 				}
 			}
 
@@ -345,7 +344,7 @@ public class CustomEditor extends RoundPanel {
 				try {
 					i.doc.remove(i.start, i.selLen);
 				} catch (BadLocationException e) {
-					log.log(Level.SEVERE, e.toString());
+					log.severe("Fail: " + e);
 				}
 			}
 		}
@@ -373,9 +372,9 @@ public class CustomEditor extends RoundPanel {
 
 						setClipboardContentsRtf(rtf);
 					} catch (IOException e) {
-						log.log(Level.SEVERE, e.toString());
+						log.severe("Fail: " + e);
 					} catch (BadLocationException e) {
-						log.log(Level.SEVERE, e.toString());
+						log.severe("Fail: " + e);
 					}
 				}
 			}
@@ -437,11 +436,11 @@ public class CustomEditor extends RoundPanel {
 								}
 							}
 						} catch (IOException e) {
-							log.log(Level.SEVERE, e.toString());
+							log.severe("Fail: " + e);
 						}
 					}
 				} catch (BadLocationException e) {
-					log.log(Level.SEVERE, e.toString());
+					log.severe("Fail: " + e);
 				}
 			}
 		}
@@ -512,7 +511,7 @@ public class CustomEditor extends RoundPanel {
 				note.getDocument().insertString(note.getCaretPosition(), codeStart + codeEnd, null);
 				note.setCaretPosition(note.getCaretPosition() - lenEnd);
 			} catch (BadLocationException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 		} else {
 			try {
@@ -525,7 +524,7 @@ public class CustomEditor extends RoundPanel {
 					note.setSelectionStart(note.getSelectionStart() - lenStart);
 				}
 			} catch (BadLocationException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 		}
 	}
@@ -611,7 +610,7 @@ public class CustomEditor extends RoundPanel {
 					}
 				}
 			} catch (BadLocationException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 			}
 		}
 	}
@@ -696,12 +695,10 @@ public class CustomEditor extends RoundPanel {
 						rich = true;
 					}
 				} catch (IOException e) {
-					log.log(Level.SEVERE, e.toString());
-					System.out.println("no rtf");
+					log.severe("Fail: " + e);
 					textPane.setText(s);
 				} catch (BadLocationException e) {
-					log.log(Level.SEVERE, e.toString());
-					System.out.println("no rtf");
+					log.severe("Fail: " + e);
 					textPane.setText(s);
 				}
 			} else {
@@ -808,7 +805,7 @@ public class CustomEditor extends RoundPanel {
 					i.startPosition -= n;
 					i.endPosition -= n;
 				} catch (BadLocationException e) {
-					log.log(Level.SEVERE, e.toString());
+					log.severe("Fail: " + e);
 				}
 			}
 		}

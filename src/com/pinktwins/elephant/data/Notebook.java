@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
@@ -149,7 +148,7 @@ public class Notebook implements Comparable<Notebook> {
 
 						}
 					} catch (SecurityException e) {
-						log.log(Level.SEVERE, e.toString());
+						log.severe("Fail: " + e);
 					}
 				}
 			}
@@ -266,7 +265,7 @@ public class Notebook implements Comparable<Notebook> {
 				return true;
 			}
 		} catch (Exception e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 		return false;
 	}
@@ -277,7 +276,7 @@ public class Notebook implements Comparable<Notebook> {
 		try {
 			IOUtil.writeFile(f, String.valueOf(System.currentTimeMillis()));
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 }

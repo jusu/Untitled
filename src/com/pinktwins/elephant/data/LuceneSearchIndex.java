@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -72,7 +71,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				parser = new QueryParser("contents", analyzer);
 				parser.setAllowLeadingWildcard(true);
 			} catch (IOException e) {
-				log.log(Level.SEVERE, e.toString());
+				log.severe("Fail: " + e);
 
 				// Fail. Turn us off.
 				SearchIndexer.useLucene = false;
@@ -95,7 +94,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 					writer.commit();
 					writer.close();
 				} catch (IOException e) {
-					log.log(Level.SEVERE, e.toString());
+					log.severe("Fail: " + e);
 				}
 				writer = null;
 			}
@@ -113,7 +112,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				try {
 					reader.close();
 				} catch (IOException e) {
-					log.log(Level.SEVERE, e.toString());
+					log.severe("Fail: " + e);
 				}
 				reader = null;
 			}
@@ -125,7 +124,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		try {
 			indexFile(n.file());
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
@@ -158,9 +157,9 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				return searchNotes(query);
 			}
 		} catch (ParseException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 		return Collections.emptySet();
 	}
@@ -177,7 +176,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				writer.deleteDocuments(term);
 			}
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.severe("Fail: " + e);
 		}
 	}
 
