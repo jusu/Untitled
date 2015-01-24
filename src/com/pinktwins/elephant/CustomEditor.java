@@ -247,7 +247,7 @@ public class CustomEditor extends RoundPanel {
 		try {
 			note.getDocument().insertString(position, "\n", null);
 		} catch (BadLocationException e) {
-			log.log(Level.SEVERE, e.toString());
+			log.log(Level.SEVERE, "insertString: " + e);
 		}
 	}
 
