@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.util.logging.Logger;
 
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
@@ -17,6 +18,8 @@ import javax.swing.text.html.HTMLDocument;
 import com.pinktwins.elephant.util.CustomMouseListener;
 
 public class HtmlPaneMouseListener extends CustomMouseListener {
+
+	private static final Logger LOG = Logger.getLogger(HtmlPaneMouseListener.class.getName());
 
 	JTextPane htmlPane;
 	String noteAttachmentBasedir;
@@ -55,12 +58,21 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 						Desktop.getDesktop().browse(new URI(href));
 					} catch (IOException e1) {
 						try {
-							Desktop.getDesktop().edit(new File(URLDecoder.decode(noteAttachmentBasedir + href, "UTF-8")));
+							File f = new File(URLDecoder.decode(noteAttachmentBasedir + href, "UTF-8"));
+							if (!f.exists()) {
+								// Look under parent. Some ENEX -> markdown importer might put the resource here.
+								f = new File(URLDecoder.decode(new File(noteAttachmentBasedir).getParent() + File.separator + href, "UTF-8"));
+							}
+							if (f.exists()) {
+								Desktop.getDesktop().edit(f);
+							} else {
+								LOG.severe("Link \"" + href + "\" not found.");
+							}
 						} catch (IOException e2) {
-							System.out.println("Link \"" + href + "\" is unsupported for now.");
+							LOG.severe("Link \"" + href + "\" is unsupported for now.");
 						}
 					} catch (URISyntaxException e1) {
-						System.out.println("Malformed link: " + href);
+						LOG.severe("Malformed link: " + href);
 					}
 				}
 			}
