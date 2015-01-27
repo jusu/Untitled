@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="libs/lucene-analyzers-common-4.10.3.jar"/>
 	<classpathentry kind="lib" path="libs/lucene-core-4.10.3.jar"/>
 	<classpathentry kind="lib" path="libs/lucene-queryparser-4.10.3.jar"/>
+	<classpathentry kind="lib" path="libs/com.pinktwins.rtf.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

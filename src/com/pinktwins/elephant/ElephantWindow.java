@@ -777,6 +777,7 @@ public class ElephantWindow extends JFrame {
 		style.add(menuItem("Bold", KeyEvent.VK_B, menuMask, styleAction));
 		style.add(menuItem("Italic", KeyEvent.VK_I, menuMask, styleAction));
 		style.add(menuItem("Underline", KeyEvent.VK_U, menuMask, styleAction));
+		style.add(menuItem("Strikethrough", KeyEvent.VK_K, menuMask | KeyEvent.CTRL_DOWN_MASK, styleAction));
 		style.addSeparator();
 		style.add(menuItem("Bigger", KeyEvent.VK_PLUS, menuMask, styleAction));
 		style.add(menuItem("Smaller", KeyEvent.VK_MINUS, menuMask, styleAction));

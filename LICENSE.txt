@@ -112,4 +112,9 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 THE POSSIBILITY OF SUCH DAMAGE.
 
+com.pinktwins.rtf.jar: Source code derived from javax.swing.text.rtf.*,
+Copyright (c) 1997, 2010, Oracle and/or its affiliates.
+
+Licensed under "CLASSPATH EXCEPTION TO THE GPL.":
+http://openjdk.java.net/legal/gplv2+ce.html
 

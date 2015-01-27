@@ -7,7 +7,8 @@ import java.util.logging.Logger;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.rtf.RTFEditorKit;
+
+import com.pinktwins.rtf.RTFEditorKit;
 
 public class RtfUtil {
 
