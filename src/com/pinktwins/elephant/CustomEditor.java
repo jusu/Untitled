@@ -49,9 +49,9 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
+import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.undo.UndoManager;
 
@@ -141,6 +141,23 @@ public class CustomEditor extends RoundPanel {
 				a.actionPerformed(e);
 			} else {
 				markdownStyleCommand("<u>", "</u>");
+			}
+		}
+	};
+
+	private final AbstractAction strikethroughAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (!isMarkdown) {
+				StyledEditorKit kit = (StyledEditorKit) note.getEditorKit();
+				MutableAttributeSet as = kit.getInputAttributes();
+				boolean b = (StyleConstants.isStrikeThrough(as)) ? false : true;
+				StyleConstants.setStrikeThrough(as, b);
+				note.setCharacterAttributes(as, false);
+
+				isRichText = true;
+			} else {
+				markdownStyleCommand("<strike>", "</strike>");
 			}
 		}
 	};
@@ -547,6 +564,8 @@ public class CustomEditor extends RoundPanel {
 		inputMap.put(ks, italicAction);
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_U, ElephantWindow.menuMask);
 		inputMap.put(ks, underlineAction);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_K, ElephantWindow.menuMask | KeyEvent.CTRL_DOWN_MASK);
+		inputMap.put(ks, strikethroughAction);
 
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ElephantWindow.menuMask);
 		inputMap.put(ks, increaseFontSizeAction);
@@ -587,23 +606,11 @@ public class CustomEditor extends RoundPanel {
 
 	private void shiftFontSize(final int delta) {
 		if (!isMarkdown) {
-			int start = note.getSelectionStart();
-			int end = note.getSelectionEnd();
-
-			StyledDocument doc = note.getStyledDocument();
-
-			if (start == end) {
-				return;
-			}
-
-			AttributeSet attrs = doc.getCharacterElement(start).getAttributes();
-			SimpleAttributeSet as = new SimpleAttributeSet();
-			as.addAttributes(attrs);
-
-			int size = StyleConstants.getFontSize(attrs);
+			StyledEditorKit kit = (StyledEditorKit) note.getEditorKit();
+			MutableAttributeSet as = kit.getInputAttributes();
+			int size = StyleConstants.getFontSize(as);
 			StyleConstants.setFontSize(as, size + delta);
-
-			doc.setCharacterAttributes(start, end - start, as, false);
+			note.setCharacterAttributes(as, false);
 
 			isRichText = true;
 		} else {
@@ -642,6 +649,10 @@ public class CustomEditor extends RoundPanel {
 		}
 		if ("Underline".equals(cmd)) {
 			underlineAction.actionPerformed(e.event);
+			return;
+		}
+		if ("Strikethrough".equals(cmd)) {
+			strikethroughAction.actionPerformed(e.event);
 			return;
 		}
 		if ("Bigger".equals(cmd)) {
