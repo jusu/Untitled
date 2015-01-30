@@ -162,6 +162,37 @@ public class CustomEditor extends RoundPanel {
 		}
 	};
 
+	// Rearrange lines based on strikethrough. ST lines will 'fall' to bottom of document.
+	private final AbstractAction strikethroughRearrangeAction = new AbstractAction() {
+		@Override
+		public void actionPerformed(ActionEvent event) {
+			if (isRichText) {
+				try {
+					Document doc = note.getDocument();
+					int pos = doc.getLength() - 1;
+					int insertPoint = pos;
+
+					for (; pos >= 0; pos--) {
+						String s = doc.getText(pos > 0 ? pos - 1 : pos, 1);
+						if ("\n".equals(s) || pos == 0) {
+							AttributeSet as = getAttributes(pos);
+							if (StyleConstants.isStrikeThrough(as)) {
+								s = doc.getText(pos, doc.getLength() - pos).split("\n")[0];
+								int len = s.length();
+								doc.insertString(insertPoint, "\n", null);
+								doc.insertString(insertPoint, s, as);
+								doc.remove(pos > 0 ? pos - 1 : pos, len + 1);
+								insertPoint -= len + 1;
+							}
+						}
+					}
+				} catch (BadLocationException e) {
+					LOG.severe("Fail: " + e);
+				}
+			}
+		}
+	};
+
 	private final AbstractAction increaseFontSizeAction = new AbstractAction() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -566,6 +597,8 @@ public class CustomEditor extends RoundPanel {
 		inputMap.put(ks, underlineAction);
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_K, ElephantWindow.menuMask | KeyEvent.CTRL_DOWN_MASK);
 		inputMap.put(ks, strikethroughAction);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_K, ElephantWindow.menuMask | KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK);
+		inputMap.put(ks, strikethroughRearrangeAction);
 
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ElephantWindow.menuMask);
 		inputMap.put(ks, increaseFontSizeAction);
