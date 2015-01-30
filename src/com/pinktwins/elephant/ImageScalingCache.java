@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.data.Vault;
@@ -34,10 +35,15 @@ public class ImageScalingCache {
 		String relativePath = f.getAbsolutePath().replace(Vault.getInstance().getHome().getAbsolutePath() + File.separator, "");
 		String cacheName = relativePath.replaceAll(Matcher.quoteReplacement(File.separator), "_");
 
-		int n = cacheName.indexOf("." + FilenameUtils.getExtension(cacheName));
-		cacheName = cacheName.substring(0, n) + "_" + w + "_" + h + cacheName.substring(n);
+		long lastMod = f.lastModified();
+		long fileSize = f.length();
 
-		return new File(getImageCacheDir() + File.separator + cacheName);
+		String ext = FilenameUtils.getExtension(cacheName);
+		int n = cacheName.indexOf("." + ext);
+		cacheName = cacheName.substring(0, n) + "_" + lastMod + "_" + fileSize + "_" + w + "_" + h + cacheName.substring(n);
+		String hash = DigestUtils.md5Hex(cacheName);
+
+		return new File(getImageCacheDir() + File.separator + hash + "." + ext);
 	}
 
 	// XXX purge old cache files

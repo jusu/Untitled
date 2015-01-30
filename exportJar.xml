@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/Users/jusu/Desktop/Elephant-collection/package/build/elephantapp.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="/Users/jusu/Desktop/Dropbox/src/Elephant-collection/package/build/elephantapp.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.pinktwins.elephant.Elephant"/>
                 <attribute name="Class-Path" value="."/>
@@ -16,6 +16,7 @@
             <zipfileset excludes="META-INF/*.SF" src="/Users/jusu/Desktop/Dropbox/src/Elephant/libs/joda-time-2.6.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jusu/Desktop/Dropbox/src/Elephant/libs/commons-collections4-4.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jusu/Desktop/Dropbox/src/Elephant/libs/commons-lang3-3.3.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/jusu/Desktop/Dropbox/src/Elephant/libs/commons-codec-1.10.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jusu/Desktop/Dropbox/src/Elephant/libs/PDFRenderer-0.9.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jusu/Desktop/Dropbox/src/Elephant/libs/parboiled-java-1.1.6.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="/Users/jusu/Desktop/Dropbox/src/Elephant/libs/pegdown-1.4.2.jar"/>
