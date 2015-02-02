@@ -493,12 +493,6 @@ public class Note implements Comparable<Note> {
 			FileUtils.moveFile(file, newFile);
 		}
 
-		File oldFile = file;
-		file = newFile;
-		meta = newMeta;
-
-		new NotebookEvent(NotebookEvent.Kind.noteRenamed, oldFile, newFile).post();
-
 		for (NoteBoundDirectory d : boundDirs) {
 			File bound = new File(d.getPath(file));
 			if (bound.exists() && bound.isDirectory()) {
@@ -506,6 +500,12 @@ public class Note implements Comparable<Note> {
 				FileUtils.moveDirectory(bound, newBound);
 			}
 		}
+
+		File oldFile = file;
+		file = newFile;
+		meta = newMeta;
+
+		new NotebookEvent(NotebookEvent.Kind.noteRenamed, oldFile, newFile).post();
 	}
 
 	public File importAttachment(File f) throws IOException {
