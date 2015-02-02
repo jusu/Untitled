@@ -9,10 +9,8 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelEvent;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
@@ -168,23 +166,9 @@ public class BrowserPane extends JPanel {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				String tmp = toURL(url);
-
-				if (tmp == null) {
-					tmp = toURL("http://" + url);
-				}
-
-				engine.load(tmp);
+				engine.load(url);
 			}
 		});
-	}
-
-	private static String toURL(String str) {
-		try {
-			return new URL(str).toExternalForm();
-		} catch (MalformedURLException exception) {
-			return null;
-		}
 	}
 
 	private void setHeightTo(int h) {

@@ -107,6 +107,10 @@ public class Start extends BackgroundPanel {
 		File note = new File(filePath);
 		Note n = new Note(note);
 		n.getMeta().title(title);
-		n.save(contents);
+		try {
+			IOUtil.writeFile(note, contents);
+		} catch (IOException e) {
+			LOG.severe("Fail: " + e);
+		}
 	}
 }

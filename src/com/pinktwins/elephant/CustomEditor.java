@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -931,9 +933,15 @@ public class CustomEditor extends RoundPanel {
 			});
 		}
 
-		browserPane.loadURL("file://" + noteFile.getAbsolutePath());
+		try {
+			URL url = noteFile.toURI().toURL();
+			browserPane.loadURL(url.toExternalForm());
 
-		remove(note);
-		add(browserPane, BorderLayout.CENTER);
+			remove(note);
+			add(browserPane, BorderLayout.CENTER);
+		} catch (MalformedURLException e) {
+			LOG.severe("Fail: " + e);
+			clear();
+		}
 	}
 }
