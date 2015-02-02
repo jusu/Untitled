@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
@@ -18,6 +19,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -58,6 +60,7 @@ import javax.swing.undo.UndoManager;
 import org.apache.commons.io.IOUtils;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.BrowserPane.BrowserEventListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
@@ -78,6 +81,7 @@ public class CustomEditor extends RoundPanel {
 	private JTextField title;
 	private CustomTextPane note;
 	private HtmlPane htmlPane;
+	private BrowserPane browserPane;
 	private JPanel padding;
 
 	private UndoManager undoManager = new UndoManager();
@@ -565,6 +569,11 @@ public class CustomEditor extends RoundPanel {
 			htmlPane = null;
 		}
 
+		if (browserPane != null && browserPane.getParent() != null) {
+			remove(browserPane);
+			browserPane.clear();
+		}
+
 		note = new CustomTextPane();
 		note.setDocument(new CustomDocument());
 		note.addFocusListener(editorFocusListener);
@@ -908,5 +917,23 @@ public class CustomEditor extends RoundPanel {
 
 	public boolean isShowingMarkdown() {
 		return htmlPane != null;
+	}
+
+	public void displayBrowser(final File noteFile) {
+		if (browserPane == null) {
+			browserPane = new BrowserPane();
+			browserPane.setBrowserEventListener(new BrowserEventListener() {
+				@Override
+				public void mouseWheelEvent(MouseWheelEvent e) {
+					Container c = CustomEditor.this.getParent();
+					c.dispatchEvent(e);
+				}
+			});
+		}
+
+		browserPane.loadURL("file://" + noteFile.getAbsolutePath());
+
+		remove(note);
+		add(browserPane, BorderLayout.CENTER);
 	}
 }

@@ -152,8 +152,13 @@ public class Note implements Comparable<Note> {
 	}
 
 	public boolean isMarkdown() {
-		String s = file.getName();
+		String s = file.getName().toLowerCase();
 		return s.endsWith(".md.txt") || s.endsWith(".md");
+	}
+
+	public boolean isHtml() {
+		String s = file.getName().toLowerCase();
+		return s.endsWith(".htm") || s.endsWith(".html");
 	}
 
 	public String createdStr() {
@@ -182,13 +187,25 @@ public class Note implements Comparable<Note> {
 		return file.lastModified();
 	}
 
-	public String contents() {
-		if (saveLocked) {
-			return "(binary)";
-		}
-
+	private String readFileAsString() {
 		byte[] contents = IOUtil.readFile(file);
 		return new String(contents, Charset.defaultCharset());
+	}
+
+	public String contents() {
+		if (saveLocked) {
+			return isHtml() ? "(html content)" : "(binary)";
+		}
+
+		return readFileAsString();
+	}
+
+	public String contentsIncludingRawHtml() {
+		if (isHtml()) {
+			return readFileAsString();
+		} else {
+			return contents();
+		}
 	}
 
 	public static String plainTextContents(String contents) {
@@ -363,8 +380,9 @@ public class Note implements Comparable<Note> {
 		File destFile = new File(dest + File.separator + file.getName());
 		File destMeta = metaFromFile(destFile);
 		File destAtts = new File(attachmentFolderPath(destFile));
+		File destResc = new File(resourceFolderPath(destFile));
 
-		if (destFile.exists() || destMeta.exists() || destAtts.exists()) {
+		if (destFile.exists() || destMeta.exists() || destAtts.exists() || destResc.exists()) {
 			try {
 				attemptSafeRename(file.getName());
 				moveTo(dest);
@@ -384,6 +402,11 @@ public class Note implements Comparable<Note> {
 			File atts = new File(attachmentFolderPath(file));
 			if (atts.exists() && atts.isDirectory()) {
 				FileUtils.moveDirectoryToDirectory(atts, dest, true);
+			}
+
+			File resc = new File(resourceFolderPath(file));
+			if (resc.exists() && resc.isDirectory()) {
+				FileUtils.moveDirectoryToDirectory(resc, dest, true);
 			}
 
 			Notebook source = findContainingNotebook();
@@ -415,7 +438,13 @@ public class Note implements Comparable<Note> {
 			newAtts = new File(attachmentFolderPath(newFile));
 		}
 
-		if (newFile.exists() || newMeta.exists() || (newAtts != null && newAtts.exists())) {
+		File resc = new File(resourceFolderPath(file));
+		File newResc = null;
+		if (resc.exists() && resc.isDirectory()) {
+			newResc = new File(resourceFolderPath(newFile));
+		}
+
+		if (newFile.exists() || newMeta.exists() || (newAtts != null && newAtts.exists()) || (newResc != null && newResc.exists())) {
 			// fallback
 			String base = FilenameUtils.getBaseName(newName);
 			String ext = FilenameUtils.getExtension(newName);
@@ -439,6 +468,10 @@ public class Note implements Comparable<Note> {
 
 		if (newAtts != null) {
 			FileUtils.moveDirectory(atts, newAtts);
+		}
+
+		if (newResc != null) {
+			FileUtils.moveDirectory(resc, newResc);
 		}
 	}
 
@@ -464,6 +497,13 @@ public class Note implements Comparable<Note> {
 
 	private String attachmentFolderPath(File f) {
 		return f.getAbsolutePath() + ".attachments";
+	}
+
+	private String resourceFolderPath(File f) {
+		String s = f.getAbsolutePath();
+		String ext = FilenameUtils.getExtension(s);
+		s = s.substring(0, s.length() - ext.length()) + "resources";
+		return s;
 	}
 
 	private File attachmentFolder() throws IOException {

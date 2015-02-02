@@ -55,7 +55,7 @@ import com.pinktwins.elephant.util.ResizeListener;
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	private static final Logger LOG = Logger.getLogger(NoteEditor.class.getName());
-	
+
 	public static final int kMinNoteSize = 288;
 
 	private static Image tile, noteTopShadow, noteToolsNotebook, noteToolsTrash, noteToolsDivider;
@@ -547,6 +547,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			String contents = note.contents();
 			String html = pegDown.markdownToHtml(editor.isRichText ? Note.plainTextContents(contents) : contents);
 			editor.displayHtml(currentNote.file(), html);
+		}
+
+		if (note.isHtml()) {
+			editor.displayBrowser(currentNote.file());
 		}
 
 		visible(true);

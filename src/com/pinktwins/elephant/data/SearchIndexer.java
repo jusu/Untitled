@@ -96,7 +96,7 @@ public class SearchIndexer {
 			luceneIndex.digestText(note, null);
 		} else {
 			// Memory index
-			String contents = note.contents();
+			String contents = note.contentsIncludingRawHtml();
 			if (contents.startsWith("{\\rtf")) {
 				contents = Note.plainTextContents(contents);
 			}

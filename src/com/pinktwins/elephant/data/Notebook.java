@@ -18,6 +18,8 @@ public class Notebook implements Comparable<Notebook> {
 
 	private static final Logger LOG = Logger.getLogger(Notebook.class.getName());
 
+	private static final String[] POPULATE_EXTENSIONS = { "txt", "rtf", "md", "html", "htm" };
+
 	public static final String NAME_ALLNOTES = "All Notes";
 	public static final String NAME_SEARCH = "Search";
 
@@ -123,6 +125,15 @@ public class Notebook implements Comparable<Notebook> {
 		return nb;
 	}
 
+	private boolean isNoteExtension(String ext) {
+		for (String s : POPULATE_EXTENSIONS) {
+			if (s.equalsIgnoreCase(ext)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void populate() {
 		boolean didDigest = false;
 
@@ -132,7 +143,7 @@ public class Notebook implements Comparable<Notebook> {
 				String name = f.getName();
 				String ext = FilenameUtils.getExtension(f.getName()).toLowerCase();
 
-				if (name.charAt(0) != '.' && !name.endsWith("~") && (ext.equals("txt") || ext.equals("rtf") || ext.equals("md"))) {
+				if (name.charAt(0) != '.' && !name.endsWith("~") && isNoteExtension(ext)) {
 					try {
 						if (f.isFile()) {
 							Note note = new Note(f);
@@ -158,7 +169,7 @@ public class Notebook implements Comparable<Notebook> {
 		}
 
 		sortNotes();
-		
+
 		if (didDigest) {
 			Search.ssi.commit();
 		}

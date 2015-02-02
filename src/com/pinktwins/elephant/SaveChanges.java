@@ -25,10 +25,12 @@ public class SaveChanges {
 	}
 
 	private static void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
-		try {
-			currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));
-		} catch (IOException e) {
-			LOG.severe("Fail: " + e);
+		if (!currentNote.isHtml()) {
+			try {
+				currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));
+			} catch (IOException e) {
+				LOG.severe("Fail: " + e);
+			}
 		}
 	}
 

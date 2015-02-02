@@ -84,6 +84,7 @@ public class Start extends BackgroundPanel {
 								addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #2 - Shortcuts", Note.getResourceNote("shortcuts.txt"));
 								addBuiltInNote(inbox + File.separator + "Welcome.txt", "Welcome!", Note.getResourceNote("welcome.txt"));
 								addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #1 - Markdown", Note.getResourceNote("markdown.md"));
+								addBuiltInNote(inbox + File.separator + "html_example.html", "HTML Example", Note.getResourceNote("html_example.html"));
 
 								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
 								try {
