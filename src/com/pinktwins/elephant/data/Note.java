@@ -86,6 +86,31 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
+	interface NoteBoundDirectory {
+		public String getPath(File noteFile);
+	}
+
+	private static final NoteBoundDirectory[] boundDirs = { new NoteBoundDirectory() {
+		@Override
+		public String getPath(File noteFile) {
+			return attachmentFolderPath(noteFile);
+		}
+	},
+
+	new NoteBoundDirectory() {
+		@Override
+		public String getPath(File noteFile) {
+			return resourceFolderPath(noteFile);
+		}
+	},
+
+	new NoteBoundDirectory() {
+		@Override
+		public String getPath(File noteFile) {
+			return filesFolderPath(noteFile);
+		}
+	} };
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == null) {
@@ -379,10 +404,19 @@ public class Note implements Comparable<Note> {
 
 		File destFile = new File(dest + File.separator + file.getName());
 		File destMeta = metaFromFile(destFile);
-		File destAtts = new File(attachmentFolderPath(destFile));
-		File destResc = new File(resourceFolderPath(destFile));
+		boolean destExists = destFile.exists() || destMeta.exists();
 
-		if (destFile.exists() || destMeta.exists() || destAtts.exists() || destResc.exists()) {
+		if (!destExists) {
+			for (NoteBoundDirectory d : boundDirs) {
+				File f = new File(d.getPath(destFile));
+				if (f.exists()) {
+					destExists = true;
+					break;
+				}
+			}
+		}
+
+		if (destExists) {
 			try {
 				attemptSafeRename(file.getName());
 				moveTo(dest);
@@ -399,14 +433,11 @@ public class Note implements Comparable<Note> {
 				FileUtils.moveFile(meta, destMeta);
 			}
 
-			File atts = new File(attachmentFolderPath(file));
-			if (atts.exists() && atts.isDirectory()) {
-				FileUtils.moveDirectoryToDirectory(atts, dest, true);
-			}
-
-			File resc = new File(resourceFolderPath(file));
-			if (resc.exists() && resc.isDirectory()) {
-				FileUtils.moveDirectoryToDirectory(resc, dest, true);
+			for (NoteBoundDirectory d : boundDirs) {
+				File bound = new File(d.getPath(file));
+				if (bound.exists() && bound.isDirectory()) {
+					FileUtils.moveDirectoryToDirectory(bound, dest, true);
+				}
 			}
 
 			Notebook source = findContainingNotebook();
@@ -432,19 +463,21 @@ public class Note implements Comparable<Note> {
 		File newFile = new File(file.getParentFile().getAbsolutePath() + File.separator + newName);
 		File newMeta = metaFromFile(newFile);
 
-		File atts = new File(attachmentFolderPath(file));
-		File newAtts = null;
-		if (atts.exists() && atts.isDirectory()) {
-			newAtts = new File(attachmentFolderPath(newFile));
+		boolean exists = newFile.exists() || newMeta.exists();
+		if (!exists) {
+			for (NoteBoundDirectory d : boundDirs) {
+				File bound = new File(d.getPath(file));
+				if (bound.exists() && bound.isDirectory()) {
+					File newBound = new File(d.getPath(newFile));
+					if (newBound.exists() && newBound.isDirectory()) {
+						exists = true;
+						break;
+					}
+				}
+			}
 		}
 
-		File resc = new File(resourceFolderPath(file));
-		File newResc = null;
-		if (resc.exists() && resc.isDirectory()) {
-			newResc = new File(resourceFolderPath(newFile));
-		}
-
-		if (newFile.exists() || newMeta.exists() || (newAtts != null && newAtts.exists()) || (newResc != null && newResc.exists())) {
+		if (exists) {
 			// fallback
 			String base = FilenameUtils.getBaseName(newName);
 			String ext = FilenameUtils.getExtension(newName);
@@ -466,12 +499,12 @@ public class Note implements Comparable<Note> {
 
 		new NotebookEvent(NotebookEvent.Kind.noteRenamed, oldFile, newFile).post();
 
-		if (newAtts != null) {
-			FileUtils.moveDirectory(atts, newAtts);
-		}
-
-		if (newResc != null) {
-			FileUtils.moveDirectory(resc, newResc);
+		for (NoteBoundDirectory d : boundDirs) {
+			File bound = new File(d.getPath(file));
+			if (bound.exists() && bound.isDirectory()) {
+				File newBound = new File(d.getPath(newFile));
+				FileUtils.moveDirectory(bound, newBound);
+			}
 		}
 	}
 
@@ -495,14 +528,24 @@ public class Note implements Comparable<Note> {
 		return attachmentFolderPath(file);
 	}
 
-	private String attachmentFolderPath(File f) {
+	// Elephant's own 'attachments' folder for note attachments
+	private static String attachmentFolderPath(File f) {
 		return f.getAbsolutePath() + ".attachments";
 	}
 
-	private String resourceFolderPath(File f) {
+	// note's .resources folder created when exporting html from EN
+	private static String resourceFolderPath(File f) {
 		String s = f.getAbsolutePath();
 		String ext = FilenameUtils.getExtension(s);
 		s = s.substring(0, s.length() - ext.length()) + "resources";
+		return s;
+	}
+
+	// note's _files folder created by Chrome when saving webpages in 'Complete format'
+	private static String filesFolderPath(File f) {
+		String s = f.getAbsolutePath();
+		String ext = FilenameUtils.getExtension(s);
+		s = s.substring(0, s.length() - ext.length() - 1) + "_files";
 		return s;
 	}
 
