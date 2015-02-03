@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -37,7 +38,15 @@ public class BrowserPane extends JPanel {
 
 	private static final Logger LOG = Logger.getLogger(BrowserPane.class.getName());
 
-	private static final String HEIGHT_SCRIPT = "window.getComputedStyle(document.body, null).getPropertyValue('height')";
+	private static String HEIGHT_SCRIPT;
+
+	static {
+		try {
+			HEIGHT_SCRIPT = IOUtils.toString(BrowserPane.class.getClass().getResourceAsStream("/style/documentHeight.js"));
+		} catch (IOException e) {
+			LOG.severe("Fail: " + e);
+		}
+	}
 
 	interface BrowserEventListener {
 		public void mouseWheelEvent(MouseWheelEvent e);
@@ -127,28 +136,34 @@ public class BrowserPane extends JPanel {
 							for (int i = 0; i < list.getLength(); i++) {
 								((EventTarget) list.item(i)).addEventListener("click", clickListener, false);
 							}
-
-							final Runnable resizer = new Runnable() {
-								@Override
-								public void run() {
-									String heightText = engine.executeScript(HEIGHT_SCRIPT).toString();
-									double height = Double.valueOf(heightText.replace("px", ""));
-
-									final double extra = 20;
-									view.resize(view.getWidth(), height + extra);
-
-									final int h = (int) (height + extra);
-									EventQueue.invokeLater(new Runnable() {
-										@Override
-										public void run() {
-											setHeightTo(h);
-										}
-									});
-								}
-							};
-
-							Platform.runLater(resizer);
 						}
+					}
+				});
+
+				engine.documentProperty().addListener(new ChangeListener<Document>() {
+					@Override
+					public void changed(ObservableValue<? extends Document> prop, Document oldDoc, Document newDoc) {
+						final Runnable resizer = new Runnable() {
+							@Override
+							public void run() {
+								String heightText = engine.executeScript(HEIGHT_SCRIPT).toString();
+								double height = Double.valueOf(heightText.replace("px", ""));
+
+								// System.out.println("height " + height);
+
+								view.resize(view.getWidth(), height);
+
+								final int h = (int) (height);
+								EventQueue.invokeLater(new Runnable() {
+									@Override
+									public void run() {
+										setHeightTo(h);
+									}
+								});
+							}
+						};
+
+						Platform.runLater(resizer);
 					}
 				});
 
