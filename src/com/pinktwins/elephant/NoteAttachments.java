@@ -44,20 +44,28 @@ public class NoteAttachments {
 	}
 
 	void insertFileIntoNote(NoteEditor editor, File f, int position) {
+		if (editor.getWidth() <= 0) {
+			throw new AssertionError();
+		}
+
 		JTextPane notePane = editor.editor.getTextPane();
 
 		int caret = notePane.getCaretPosition();
 
 		if (Images.isImage(f)) {
 			try {
-				Image i = ImageIO.read(f);
-				if (i != null) {
-					if (editor.getWidth() > 0) {
-						i = editor.imageAttachmentImageScaler.scale(i, f);
-					} else {
-						throw new AssertionError();
-					}
+				Image i = null;
 
+				i = editor.imageAttachmentImageScaler.getCachedScale(f);
+
+				if (i == null) {
+					i = ImageIO.read(f);
+					if (i != null) {
+						i = editor.imageAttachmentImageScaler.scale(i, f);
+					}
+				}
+
+				if (i != null) {
 					ImageIcon ii = new ImageIcon(i);
 
 					if (position > notePane.getDocument().getLength()) {

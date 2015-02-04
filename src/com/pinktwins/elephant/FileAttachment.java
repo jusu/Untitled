@@ -227,6 +227,7 @@ public class FileAttachment extends JPanel {
 	}
 
 	class FilePageProvider implements PreviewPageProvider {
+
 		File page;
 
 		public FilePageProvider(File page) {
@@ -237,23 +238,30 @@ public class FileAttachment extends JPanel {
 		public Image getPage() {
 			try {
 				Image img = null;
-				try {
-					img = ImageIO.read(page);
-				} catch (IndexOutOfBoundsException e) {
-					// XXX suspect method of resilience
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e1) {
-					}
+
+				img = scaler.getCachedScale(page);
+
+				if (img == null) {
 					try {
 						img = ImageIO.read(page);
-					} catch (IndexOutOfBoundsException e2) {
-						System.out.println("Failed reading pdf page file " + page.getAbsolutePath());
+					} catch (IndexOutOfBoundsException e) {
+						// XXX suspect method of resilience
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {
+						}
+						try {
+							img = ImageIO.read(page);
+						} catch (IndexOutOfBoundsException e2) {
+							System.out.println("Failed reading pdf page file " + page.getAbsolutePath());
+						}
+					}
+
+					if (img != null) {
+						img = scaler.scale(img, page);
 					}
 				}
-				if (img != null) {
-					img = scaler.scale(img, page);
-				}
+
 				return img;
 			} catch (IOException e) {
 				LOG.severe("Fail: " + e);

@@ -51,6 +51,7 @@ import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.ResizeListener;
+import com.pinktwins.elephant.util.SimpleImageInfo;
 
 public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
@@ -102,20 +103,27 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	class EditorWidthImageScaler implements ImageScaler {
+		int adjust = (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) ? -20 : -12;
+
+		@Override
 		public Image scale(Image i, File source) {
-			int adjust = -12;
-
-			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
-				adjust = -20;
-			}
-
 			return getScaledImage(i, source, adjust, true);
+		}
+
+		@Override
+		public Image getCachedScale(File source) {
+			return getScaledImageCacheOnly(source, adjust, true);
 		}
 	}
 
 	class ImageAttachmentImageScaler implements ImageScaler {
 		public Image scale(Image i, File source) {
 			return getScaledImage(i, source, 0, false);
+		}
+
+		@Override
+		public Image getCachedScale(File source) {
+			return getScaledImageCacheOnly(source, 0, false);
 		}
 	}
 
@@ -405,13 +413,38 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		main.setTransferHandler(new EditorAttachmentTransferHandler(this));
 	}
 
-	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
-		// what (editor.getTextPane().getWidth() - 2) will be
-		long w = getWidth() - kBorder * 4 - 12 + widthOffset;
+	private long getUsableEditorWidth() {
+		return getWidth() - kBorder * 4 - 12;
+	}
 
+	private Image getScaledImageCacheOnly(File sourceFile, int widthOffset, boolean useFullWidth) {
+		SimpleImageInfo info;
+		try {
+			info = new SimpleImageInfo(sourceFile);
+		} catch (IOException e) {
+			LOG.severe("Fail: " + e);
+			return null;
+		}
+
+		long w = getUsableEditorWidth() + widthOffset;
+		long iw = info.getWidth();
+
+		if (useFullWidth || iw > w) {
+			float f = w / (float) iw;
+			int scaledWidth = (int) (f * (float) iw);
+			int scaledHeight = (int) (f * (float) info.getHeight());
+
+			return scalingCache.get(sourceFile, scaledWidth, scaledHeight);
+		}
+
+		return null;
+	}
+
+	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
+		long w = getUsableEditorWidth() + widthOffset;
 		long iw = i.getWidth(null);
 
-		if (useFullWidth || i.getWidth(null) > w) {
+		if (useFullWidth || iw > w) {
 			float f = w / (float) iw;
 			int scaledWidth = (int) (f * (float) iw);
 			int scaledHeight = (int) (f * (float) i.getHeight(null));

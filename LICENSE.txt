@@ -118,3 +118,6 @@ Copyright (c) 1997, 2010, Oracle and/or its affiliates.
 Licensed under "CLASSPATH EXCEPTION TO THE GPL.":
 http://openjdk.java.net/legal/gplv2+ce.html
 
+SimpleImageInfo.java by Jaimon Mathew <http://www.jaimon.co.uk>
+Apache 2.0
+
