@@ -309,7 +309,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 				}
 				if (index > -1) {
 					int min = Math.min(index, itemIndex), max = Math.max(index, itemIndex);
-					for (int n = min; n <= max; n++) {
+					for (int n = Math.max(min, 0); n <= max; n++) {
 						selectNote(noteItems.get(n), true);
 					}
 				}

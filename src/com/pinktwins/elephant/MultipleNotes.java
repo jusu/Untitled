@@ -212,11 +212,13 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 
 					m.setTags(allIds, allNames);
 
-					new NoteChangedEvent(n, false).post();
+					new NoteChangedEvent(n, true).post();
 				}
 			}
 			new TagsChangedEvent().post();
 		}
+
+		currentNotes.clear();
 	}
 
 	@Override
