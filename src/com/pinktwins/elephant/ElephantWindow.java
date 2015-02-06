@@ -78,6 +78,7 @@ public class ElephantWindow extends JFrame {
 	private final Sidebar sideBar = new Sidebar(this);
 	private final NoteList noteList = new NoteList(this);
 	private final NoteEditor noteEditor = new NoteEditor(this);
+	private final MultipleNotes multipleNotes = new MultipleNotes(this);
 	private final Notebooks notebooks = new Notebooks(this);
 	private final TagList tagList = new TagList(this);
 
@@ -443,16 +444,16 @@ public class ElephantWindow extends JFrame {
 					case KeyEvent.KEY_PRESSED:
 						switch (e.getKeyCode()) {
 						case KeyEvent.VK_UP:
-							noteList.changeSelection(-1, e.getKeyCode());
+							noteList.changeSelection(-1, e);
 							break;
 						case KeyEvent.VK_DOWN:
-							noteList.changeSelection(1, e.getKeyCode());
+							noteList.changeSelection(1, e);
 							break;
 						case KeyEvent.VK_LEFT:
-							noteList.changeSelection(-1, e.getKeyCode());
+							noteList.changeSelection(-1, e);
 							break;
 						case KeyEvent.VK_RIGHT:
-							noteList.changeSelection(1, e.getKeyCode());
+							noteList.changeSelection(1, e);
 							break;
 						case KeyEvent.VK_BACK_SPACE:
 							deleteSelectedNote();
@@ -589,7 +590,7 @@ public class ElephantWindow extends JFrame {
 					Note note = notebook.find(f.getName());
 					if (note != null) {
 						showNotebook(notebook);
-						noteList.selectNote(note);
+						noteList.selectNote(note, false);
 						showNote(note);
 						toolBar.clearSearch();
 					}
@@ -636,16 +637,24 @@ public class ElephantWindow extends JFrame {
 		showNotes();
 		noteEditor.clear();
 		noteList.load(notebook);
-		noteList.changeSelection(0, 0);
+		noteList.changeSelection(0, null);
 	}
 
 	public void showNote(Note note) {
 		showNotes();
+		splitRight.setRightComponent(noteEditor);
 		noteEditor.clear();
 		noteEditor.load(note);
 		if (!toolBar.isEditing()) {
 			noteEditor.focusQuickLook();
 		}
+	}
+
+	public void showMultipleNotes() {
+		showNotes();
+		noteEditor.clear();
+		splitRight.setRightComponent(multipleNotes);
+		multipleNotes.load(noteList.getSelection());
 	}
 
 	public boolean isEditorDirty() {

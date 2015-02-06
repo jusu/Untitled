@@ -1,10 +1,7 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
@@ -19,17 +16,12 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingWorker;
 
 import com.google.common.eventbus.Subscribe;
@@ -47,33 +39,29 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	private static final Logger LOG = Logger.getLogger(NoteList.class.getName());
 
-	private static Image tile, iAllNotes;
+	private static Image tile;
 
 	private ElephantWindow window;
 
 	private Notebook notebook;
-	private NoteItem selectedNote;
-	private Notebook previousNotebook;
-	private int initialScrollValue;
-
 	private List<NoteItem> noteItems = Factory.newArrayList();
+	private SortedSet<NoteItem> selectedNotes = Factory.newSortedSet();
 
 	private ListController<NoteItem> lc = ListController.newInstance();
 
+	private Notebook previousNotebook;
+	private int initialScrollValue;
 	private static int separatorLineY = 41;
-
-	private JScrollPane scroll;
-	private JPanel main, allNotesPanel, fillerPanel;
-	private JLabel currentName;
 
 	private final Workers<Point> workers = new Workers<Point>();
 	private boolean isWorking = false;
 	private final Trigger loadCancelTriggers = new Trigger();
 
+	private NoteListUI ui;
+
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notelist", "allNotes" });
+		Iterator<Image> i = Images.iterator(new String[] { "notelist" });
 		tile = i.next();
-		iAllNotes = i.next();
 	}
 
 	public NoteList(ElephantWindow w) {
@@ -86,54 +74,17 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	}
 
 	private void createComponents() {
-		// title bar
-		final JPanel title = new JPanel(new BorderLayout());
-		title.setBorder(ElephantWindow.emptyBorder);
 
-		final JButton allNotes = new JButton("");
-		allNotes.setIcon(new ImageIcon(iAllNotes));
-		allNotes.setBorderPainted(false);
-		allNotes.setContentAreaFilled(false);
-		allNotes.addActionListener(new ActionListener() {
+		ui = new NoteListUI(this);
+
+		ui.allNotes.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				window.showAllNotes();
 			}
 		});
 
-		allNotesPanel = new JPanel(new GridLayout(1, 1));
-		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		allNotesPanel.add(allNotes);
-
-		fillerPanel = new JPanel(new GridLayout(1, 1));
-
-		currentName = new JLabel("", JLabel.CENTER);
-		currentName.setBorder(BorderFactory.createEmptyBorder(13, 0, 9, 0));
-		currentName.setFont(ElephantWindow.fontTitle);
-		currentName.setForeground(ElephantWindow.colorTitle);
-
-		final JPanel sep = new JPanel(null);
-		sep.setBounds(0, 0, 1920, 1);
-		sep.setBackground(Color.decode("#cccccc"));
-
-		title.add(allNotesPanel, BorderLayout.WEST);
-		title.add(currentName, BorderLayout.CENTER);
-		title.add(fillerPanel, BorderLayout.EAST);
-		title.add(sep, BorderLayout.SOUTH);
-
-		// main notes area
-		main = new JPanel();
-		main.setLayout(null);
-
-		scroll = new JScrollPane(main);
-		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setBorder(ElephantWindow.emptyBorder);
-		scroll.getVerticalScrollBar().setUnitIncrement(5);
-
-		add(title, BorderLayout.NORTH);
-		add(scroll, BorderLayout.CENTER);
-
-		main.addMouseListener(new CustomMouseListener() {
+		ui.main.addMouseListener(new CustomMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (!e.isPopupTrigger()) {
@@ -143,24 +94,24 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			}
 		});
 
-		main.addComponentListener(new ResizeListener() {
+		ui.main.addComponentListener(new ResizeListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				layoutItems();
 
-				fillerPanel.setPreferredSize(new Dimension(allNotesPanel.getWidth(), 10));
-				fillerPanel.revalidate();
+				ui.fillerPanel.setPreferredSize(new Dimension(ui.allNotesPanel.getWidth(), 10));
+				ui.fillerPanel.revalidate();
 
-				separatorLineY = sep.getBounds().y;
+				separatorLineY = ui.sep.getBounds().y;
 			}
 		});
 
-		scroll.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+		ui.scroll.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				// If we have reached the bottom of list, work more thumbs to screen
 				if (!isWorking && workers.size() > 0) {
-					JScrollBar v = scroll.getVerticalScrollBar();
+					JScrollBar v = ui.scroll.getVerticalScrollBar();
 					float f = (v.getValue() + v.getModel().getExtent()) / (float) v.getMaximum();
 					if (Float.valueOf(f).equals(Float.valueOf(1.0f))) {
 						isWorking = true;
@@ -170,7 +121,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			}
 		});
 
-		currentName.addMouseListener(new CustomMouseListener() {
+		ui.currentName.addMouseListener(new CustomMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				window.jumpToNotebookAction.actionPerformed(null);
@@ -190,12 +141,12 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		loadCancelTriggers.triggerAll();
 		workers.clear();
 
-		currentName.setText(notebook.name());
+		ui.currentName.setText(notebook.name());
 
-		main.removeAll();
+		ui.main.removeAll();
 		noteItems.clear();
 
-		main.repaint();
+		ui.main.repaint();
 
 		final List<Note> list = notebook.getNotes();
 
@@ -206,7 +157,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		// This could come from SwingWorker too, but doing it here avoids some flickering.
 		for (int start = 0, end = Math.min(list.size(), uiStep); start < end; start++) {
 			NoteItem item = NoteItem.itemOf(list.get(start));
-			main.add(item);
+			ui.main.add(item);
 			noteItems.add(item);
 		}
 
@@ -237,13 +188,13 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 									return;
 								}
 								NoteItem item = NoteItem.itemOf(list.get(n));
-								main.add(item);
+								ui.main.add(item);
 								noteItems.add(item);
 							}
 
-							initialScrollValue = scroll.getVerticalScrollBar().getValue();
+							initialScrollValue = ui.scroll.getVerticalScrollBar().getValue();
 							layoutItems();
-							scroll.getVerticalScrollBar().revalidate();
+							ui.scroll.getVerticalScrollBar().revalidate();
 						}
 					} catch (ExecutionException e) {
 						LOG.severe("Fail: " + e);
@@ -256,11 +207,11 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			});
 		}
 
-		allNotesPanel.setVisible(!notebook.isAllNotes());
-		fillerPanel.setVisible(!notebook.isAllNotes());
+		ui.allNotesPanel.setVisible(!notebook.isAllNotes());
+		ui.fillerPanel.setVisible(!notebook.isAllNotes());
 
 		if (notebook.equals(previousNotebook)) {
-			initialScrollValue = scroll.getVerticalScrollBar().getValue();
+			initialScrollValue = ui.scroll.getVerticalScrollBar().getValue();
 		} else {
 			initialScrollValue = 0;
 		}
@@ -275,12 +226,12 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	}
 
 	private void layoutItems() {
-		Insets insets = main.getInsets();
+		Insets insets = ui.main.getInsets();
 		Dimension size = new Dimension(192, 192);
 		int x = 2; // 6?
 		int y = 12;
 
-		Rectangle mainBounds = main.getBounds();
+		Rectangle mainBounds = ui.main.getBounds();
 
 		int itemAtRow = 0;
 		int lastOffset = 0;
@@ -309,44 +260,101 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			}
 		}
 
-		Dimension d = main.getPreferredSize();
+		Dimension d = ui.main.getPreferredSize();
 		d.height = y + 12 + lastOffset;
-		main.setPreferredSize(d);
+		ui.main.setPreferredSize(d);
 
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				scroll.getVerticalScrollBar().setValue(initialScrollValue);
+				ui.scroll.getVerticalScrollBar().setValue(initialScrollValue);
 			}
 		});
 	}
 
 	@Override
-	public void noteClicked(NoteItem item, boolean doubleClick) {
+	public void noteClicked(NoteItem item, boolean doubleClick, MouseEvent e) {
 		if (doubleClick) {
 			window.openNoteWindow(item.note);
 		} else {
 			new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
-			selectNote(item.note);
-			window.showNote(item.note);
+
+			boolean addToSelection = e.isMetaDown() || e.isControlDown();
+
+			if (addToSelection && item.isSelected() && selectedNotes.size() > 1) {
+				deselectNote(item);
+			} else {
+				selectNote(item.note, addToSelection);
+				showSelectedNote();
+			}
 		}
 	}
 
-	private void selectNote(NoteItem item) {
-		selectedNote = item;
+	private void selectNote(NoteItem item, boolean addToSelection) {
+		if (!addToSelection) {
+			deselectAll();
+		}
+
+		selectedNotes.add(item);
 		item.setSelected(true);
 
-		lc.updateVerticalScrollbar(item, scroll);
+		lc.updateVerticalScrollbar(item, ui.scroll);
 	}
 
-	public void changeSelection(int delta, int keyCode) {
+	private void deselectNote(NoteItem item) {
+		item.setSelected(false);
+		selectedNotes.remove(item);
+	}
+
+	public void changeSelection(int delta, KeyEvent event) {
+		int keyCode = 0;
+		boolean addToSelection = false;
+
+		if (event != null) {
+			keyCode = event.getKeyCode();
+			addToSelection = event.isShiftDown();
+
+		}
+
 		boolean sideways = keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN;
 
-		NoteItem item = lc.changeSelection(noteItems, selectedNote, delta, sideways);
+		// Get first or last selected note, depending on key pressed
+		NoteItem selected = null;
+		if (!selectedNotes.isEmpty()) {
+			selected = (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_LEFT) ? selectedNotes.first() : selectedNotes.last();
+		}
+
+		NoteItem item = lc.changeSelection(noteItems, selected, delta, sideways);
 		if (item != null) {
-			deselectAll();
-			selectNote(item);
-			window.showNote(item.note);
+			if (!addToSelection) {
+				deselectAll();
+			}
+
+			selectNote(item, addToSelection);
+
+			// Select all notes between previous and new selection when shift pressed
+			if (sideways && addToSelection && selected != null) {
+				int from = noteItems.indexOf(selected), to = noteItems.indexOf(item);
+				int min = Math.min(from, to), max = Math.max(from, to);
+
+				for (int n = min + 1; n < max; n++) {
+					selectNote(noteItems.get(n), addToSelection);
+				}
+			}
+
+			showSelectedNote();
+		}
+	}
+
+	private void showSelectedNote() {
+		if (selectedNotes.isEmpty()) {
+			throw new AssertionError();
+		}
+
+		if (selectedNotes.size() == 1) {
+			window.showNote(selectedNotes.first().note);
+		} else {
+			// XXX MULTI
 		}
 	}
 
@@ -354,23 +362,22 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		for (NoteItem i : noteItems) {
 			i.setSelected(false);
 		}
-		selectedNote = null;
+		selectedNotes.clear();
 	}
 
-	public void selectNote(Note n) {
-		deselectAll();
+	public void selectNote(Note n, boolean addToSelection) {
 		for (NoteItem item : noteItems) {
 			if (item.note.equals(n)) {
-				selectNote(item);
+				selectNote(item, addToSelection);
 				return;
 			}
 		}
 	}
 
 	public void unfocusEditor() {
-		if (selectedNote != null) {
+		if (!selectedNotes.isEmpty()) {
 			this.requestFocusInWindow();
-			selectedNote.requestFocusInWindow();
+			selectedNotes.first().requestFocusInWindow();
 		}
 	}
 
@@ -378,7 +385,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		try {
 			Note newNote = notebook.newNote();
 			load(notebook);
-			selectNote(newNote);
+			selectNote(newNote, false);
 			window.showNote(newNote);
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
@@ -386,17 +393,23 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	}
 
 	public void deleteSelected() {
-		if (selectedNote != null) {
-			int index = noteItems.indexOf(selectedNote);
-			notebook.deleteNote(selectedNote.note);
+		if (!selectedNotes.isEmpty()) {
+			int index = noteItems.indexOf(selectedNotes.first());
+
+			Iterator<NoteItem> i = selectedNotes.iterator();
+			while (i.hasNext()) {
+				NoteItem item = i.next();
+				notebook.deleteNote(item.note);
+			}
+
 			load(notebook);
 
 			if (index >= 0 && index < noteItems.size()) {
 				NoteItem item = noteItems.get(index);
 				window.showNote(item.note);
-				selectNote(item);
+				selectNote(item, false);
 			} else {
-				selectedNote = null;
+				selectedNotes.clear();
 				window.showNotebook(notebook);
 			}
 		}
@@ -417,15 +430,15 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public void updateLoad() {
 		Note n = null;
-		if (selectedNote != null) {
-			n = selectedNote.note;
+		if (!selectedNotes.isEmpty()) {
+			n = selectedNotes.first().note;
 		}
 
 		load(notebook);
 
 		if (n != null) {
-			selectNote(n);
-			if (selectedNote != null && !window.isEditorDirty()) {
+			selectNote(n, false);
+			if (!selectedNotes.isEmpty() && !window.isEditorDirty()) {
 				window.showNote(n);
 			}
 		}
@@ -440,9 +453,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		NotebookChooser nbc = new NotebookChooser(window, "");
 
 		// Center on window
-		Point p = currentName.getLocationOnScreen();
-		int x = (p.x + currentName.getWidth() / 2) - NotebookChooser.fixedWidthJump / 2;
-		nbc.setBounds(x, p.y + currentName.getHeight(), NotebookChooser.fixedWidthJump, NotebookChooser.fixedHeight);
+		Point p = ui.currentName.getLocationOnScreen();
+		int x = (p.x + ui.currentName.getWidth() / 2) - NotebookChooser.fixedWidthJump / 2;
+		nbc.setBounds(x, p.y + ui.currentName.getHeight(), NotebookChooser.fixedWidthJump, NotebookChooser.fixedHeight);
 
 		nbc.setVisible(true);
 
@@ -468,6 +481,14 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public boolean isShowingNotebook(Notebook nb) {
 		return notebook.equals(nb);
+	}
+
+	public Set<Note> getSelection() {
+		Set<Note> sel = Factory.newHashSet();
+		for (NoteItem item : selectedNotes) {
+			sel.add(item.note);
+		}
+		return sel;
 	}
 
 	@Subscribe

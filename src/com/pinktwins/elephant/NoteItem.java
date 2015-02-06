@@ -35,12 +35,12 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.PdfUtil;
 
-class NoteItem extends JPanel implements MouseListener {
+class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 
 	private static final Logger LOG = Logger.getLogger(NoteItem.class.getName());
 
 	interface NoteItemListener {
-		public void noteClicked(NoteItem item, boolean doubleClick);
+		public void noteClicked(NoteItem item, boolean doubleClick, MouseEvent e);
 	}
 
 	private static final DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
@@ -57,10 +57,17 @@ class NoteItem extends JPanel implements MouseListener {
 	private JPanel previewPane;
 	private BackgroundPanel root;
 
+	private boolean isSelected = false;
+
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteShadow", "noteSelection" });
 		noteShadow = i.next();
 		noteSelection = i.next();
+	}
+
+	@Override
+	public int compareTo(NoteItem o) {
+		return note.compareTo(o.note);
 	}
 
 	public static void removeCacheKey(File f) {
@@ -289,7 +296,12 @@ class NoteItem extends JPanel implements MouseListener {
 		} else {
 			root.setImage(noteShadow);
 		}
+		isSelected = b;
 		repaint();
+	}
+
+	public boolean isSelected() {
+		return isSelected;
 	}
 
 	@Override
@@ -315,7 +327,7 @@ class NoteItem extends JPanel implements MouseListener {
 	public void mousePressed(MouseEvent e) {
 		NoteItemListener l = getNoteItemListenerFromParentTree();
 		if (l != null) {
-			l.noteClicked(this, e.getClickCount() == 2);
+			l.noteClicked(this, e.getClickCount() == 2, e);
 		}
 	}
 
