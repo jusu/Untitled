@@ -16,6 +16,7 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 
 import com.pinktwins.elephant.util.CustomMouseListener;
+import com.pinktwins.elephant.util.LaunchUtil;
 
 public class HtmlPaneMouseListener extends CustomMouseListener {
 
@@ -64,7 +65,7 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 								f = new File(URLDecoder.decode(new File(noteAttachmentBasedir).getParent() + File.separator + href, "UTF-8"));
 							}
 							if (f.exists()) {
-								Desktop.getDesktop().edit(f);
+								LaunchUtil.launch(f);
 							} else {
 								LOG.severe("Link \"" + href + "\" not found.");
 							}
