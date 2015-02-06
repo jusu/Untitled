@@ -47,6 +47,7 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Images;
@@ -599,6 +600,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		caretChanged(editor.getTextPane());
 	}
 
+	private void reloadTags() {
+		Meta m = currentNote.getMeta();
+		tagPane.load(Vault.getInstance().resolveTagIds(m.tags()));
+	}
+
 	public void focusQuickLook() {
 		for (Object o : attachments.keySet()) {
 			if (o instanceof FileAttachment) {
@@ -623,6 +629,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void unfocus() {
 		window.unfocusEditor();
+	}
+
+	@Subscribe
+	public void handleTagsChangedEvent(TagsChangedEvent event) {
+		// some tags were added/changed. Not neccessarily this note's tags,
+		// but might have, so reload tags.
+		reloadTags();
 	}
 
 	@Subscribe

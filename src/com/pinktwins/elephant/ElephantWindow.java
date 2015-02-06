@@ -444,7 +444,7 @@ public class ElephantWindow extends JFrame {
 
 			switch (uiMode) {
 			case notes:
-				if (!noteEditor.hasFocus() && !toolBar.isEditing()) {
+				if (!noteEditor.hasFocus() && !multipleNotes.hasFocus() && !toolBar.isEditing()) {
 					switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						switch (e.getKeyCode()) {

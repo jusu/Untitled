@@ -45,18 +45,22 @@ public class TagEditorPane {
 	private JPanel p;
 
 	private static int prefH1 = 14, prefH2 = 20;
-	private static final String clickToAddTags = "click to add tags";
+	private String clickToAddTags = "click to add tags";
 
-	private static Image tagLeft, tagMiddle, tagRight;
+	private static Image tagLeft, tagMiddle, tagRight, tagLeftWhite, tagRightWhite;
 
 	private List<String> loadedTags;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "tagLeft", "tagMiddle", "tagRight" });
+		Iterator<Image> i = Images.iterator(new String[] { "tagLeft", "tagMiddle", "tagRight", "tagLeftWhite", "tagRightWhite" });
 		tagLeft = i.next();
 		tagMiddle = i.next();
 		tagRight = i.next();
+		tagLeftWhite = i.next();
+		tagRightWhite = i.next();
 	}
+
+	private boolean isV2 = false;
 
 	static class TagDocument extends DefaultStyledDocument {
 		private static final long serialVersionUID = 2807153134148093523L;
@@ -157,6 +161,11 @@ public class TagEditorPane {
 		});
 
 		hideEditor();
+	}
+
+	public void makeV2() {
+		editor.setBackground(Color.WHITE);
+		isV2 = true;
 	}
 
 	public boolean isDirty() {
@@ -308,11 +317,11 @@ public class TagEditorPane {
 			g.setColor(Color.decode("#101010"));
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-			g.drawImage(tagLeft, 3, 0, null);
+			g.drawImage(!isV2 ? tagLeft : tagLeftWhite, 3, 0, null);
 			for (int n = 13; n < width + 9; n += 10) {
 				g.drawImage(tagMiddle, n, 0, null);
 			}
-			g.drawImage(tagRight, width + 9, 0, null);
+			g.drawImage(!isV2 ? tagRight : tagRightWhite, width + 9, 0, null);
 
 			g.drawString(name, 11, 9);
 			g.dispose();

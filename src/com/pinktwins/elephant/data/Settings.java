@@ -12,7 +12,7 @@ import com.pinktwins.elephant.util.IOUtil;
 public class Settings {
 
 	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
-	
+
 	public static enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene");
 

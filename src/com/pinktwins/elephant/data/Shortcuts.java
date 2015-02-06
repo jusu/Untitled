@@ -19,7 +19,7 @@ import com.pinktwins.elephant.util.IOUtil;
 public class Shortcuts {
 
 	private static final Logger LOG = Logger.getLogger(Shortcuts.class.getName());
-	
+
 	private List<String> list = Factory.newArrayList();
 
 	public Shortcuts() {
