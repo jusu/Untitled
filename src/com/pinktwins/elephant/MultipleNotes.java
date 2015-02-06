@@ -93,16 +93,7 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 		addComponentListener(new ResizeListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				int x = (getWidth() - multiSelection.getWidth(null)) / 2;
-				int y = getHeight() / 2;
-				frame.setBounds(x, y, multiSelection.getWidth(null), multiSelection.getHeight(null));
-
-				int w = header.getPreferredSize().width;
-				x = (getWidth() - w) / 2;
-				y = getHeight() / 2 - 30;
-				header.setBounds(x, y, w, 20);
-
-				tagPane.updateWidth(280 + 128);
+				updateLayout();
 			}
 		});
 
@@ -114,10 +105,24 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 		});
 	}
 
+	private void updateLayout() {
+		int x = (getWidth() - multiSelection.getWidth(null)) / 2;
+		int y = getHeight() / 2;
+		frame.setBounds(x, y, multiSelection.getWidth(null), multiSelection.getHeight(null));
+
+		int w = header.getPreferredSize().width;
+		x = (getWidth() - w) / 2;
+		y = getHeight() / 2 - 30;
+		header.setBounds(x, y, w, 20);
+
+		tagPane.updateWidth(280 + 128);
+	}
+
 	public void load(Set<Note> selection) {
 		currentNotes = selection;
 		header.setText(String.valueOf(selection.size()) + " notes selected");
 		tagPane.load(emptyList);
+		updateLayout();
 	}
 
 	public boolean hasFocus() {
