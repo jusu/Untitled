@@ -25,6 +25,7 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
@@ -210,6 +211,8 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 					allIds.addAll(ids);
 
 					m.setTags(allIds, allNames);
+
+					new NoteChangedEvent(n, false).post();
 				}
 			}
 			new TagsChangedEvent().post();
