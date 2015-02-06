@@ -279,14 +279,43 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		} else {
 			new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 
-			boolean addToSelection = e.isMetaDown() || e.isControlDown();
+			boolean addToSelection = e.isMetaDown() || e.isControlDown() || e.isShiftDown();
 
 			if (addToSelection && item.isSelected() && selectedNotes.size() > 1) {
 				deselectNote(item);
 			} else {
 				selectNote(item.note, addToSelection);
-				showSelectedNote();
 			}
+
+			if (e.isShiftDown()) {
+				// Select range between clicked note and notes above/below
+				int itemIndex = noteItems.indexOf(item);
+				int index = -1;
+				for (int n = itemIndex - 1; n >= 0; n--) {
+					NoteItem ni = noteItems.get(n);
+					if (ni.isSelected()) {
+						index = n;
+						break;
+					}
+				}
+				if (index == -1) {
+					for (int n = itemIndex + 1; n < noteItems.size(); n++) {
+						NoteItem ni = noteItems.get(n);
+						if (ni.isSelected()) {
+							index = n;
+							break;
+						}
+					}
+				}
+				if (index > -1) {
+					int min = Math.min(index, itemIndex), max = Math.max(index, itemIndex);
+					for (int n = min; n <= max; n++) {
+						selectNote(noteItems.get(n), true);
+					}
+				}
+			}
+
+			showSelectedNote();
 		}
 	}
 
@@ -354,7 +383,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		if (selectedNotes.size() == 1) {
 			window.showNote(selectedNotes.first().note);
 		} else {
-			// XXX MULTI
+			window.showMultipleNotes();
 		}
 	}
 
