@@ -605,6 +605,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		tagPane.load(Vault.getInstance().resolveTagIds(m.tags()));
 	}
 
+	private void reloadDates() {
+		noteCreated.setText("Created: " + currentNote.createdStr());
+		noteUpdated.setText("Updated: " + currentNote.updatedStr());
+	}
+
 	public void focusQuickLook() {
 		for (Object o : attachments.keySet()) {
 			if (o instanceof FileAttachment) {
@@ -657,6 +662,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		scroll.setLocked(true);
 		scroll.unlockAfter(100);
+
+		reloadDates();
 	}
 
 	public void focusTitle() {

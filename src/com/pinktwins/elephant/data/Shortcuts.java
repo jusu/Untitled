@@ -91,7 +91,6 @@ public class Shortcuts {
 			break;
 		default:
 			break;
-
 		}
 	}
 
