@@ -210,7 +210,12 @@ public class ElephantWindow extends JFrame {
 	ActionListener moveNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			noteEditor.openNotebookChooserForMoving();
+			if (splitRight.getRightComponent() == noteEditor) {
+				noteEditor.openNotebookChooserForMoving();
+			}
+			if (splitRight.getRightComponent() == multipleNotes) {
+				multipleNotes.openNotebookChooserForMoving();
+			}
 		}
 	};
 

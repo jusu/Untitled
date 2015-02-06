@@ -5,9 +5,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -16,17 +19,23 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.ResizeListener;
 
 public class MultipleNotes extends BackgroundPanel {
 
+	private final ElephantWindow window;
+
 	private static Image tile, multiSelection, moveToNotebook;
+
 	private final Font headerFont = Font.decode("Helvetica-BOLD-16");
 	private final Color headerColor = Color.decode("#7a7a7a");
 	private final Color lineColor = Color.decode("#b4b4b4");
 
 	JLabel header;
+
+	private Set<Note> currentNotes;
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "notebooks", "multiSelection", "moveToNotebook" });
@@ -37,6 +46,7 @@ public class MultipleNotes extends BackgroundPanel {
 
 	public MultipleNotes(ElephantWindow w) {
 		super(tile);
+		window = w;
 		createComponents();
 	}
 
@@ -76,12 +86,13 @@ public class MultipleNotes extends BackgroundPanel {
 		bMove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("move");
+				openNotebookChooserForMoving();
 			}
 		});
 	}
 
 	public void load(Set<Note> selection) {
+		currentNotes = selection;
 		header.setText(String.valueOf(selection.size()) + " notes selected");
 	}
 
@@ -90,6 +101,54 @@ public class MultipleNotes extends BackgroundPanel {
 		super.paint(g);
 		g.setColor(lineColor);
 		g.drawLine(0, 0, 0, getHeight());
+	}
+
+	public void openNotebookChooserForMoving() {
+		NotebookChooser nbc = new NotebookChooser(window, String.format("Move %s notes", currentNotes.size()));
+
+		// Center on window
+		Point p = this.getLocationOnScreen();
+		Rectangle r = window.getBounds();
+		int x = r.x + r.width / 2 - NotebookChooser.fixedWidth / 2;
+		nbc.setBounds(x, p.y, NotebookChooser.fixedWidth, NotebookChooser.fixedHeight);
+
+		nbc.setVisible(true);
+
+		nbc.setNotebookActionListener(new NotebookActionListener() {
+			@Override
+			public void didCancelSelection() {
+			}
+
+			@Override
+			public void didSelect(Notebook nb) {
+				moveNoteAction(nb);
+			}
+		});
+	}
+
+	protected void moveNoteAction(Notebook destination) {
+		if (currentNotes == null || destination == null) {
+			throw new AssertionError();
+		}
+
+		for (Note n : currentNotes) {
+			File source = n.file().getParentFile();
+			if (destination.folder().equals(source)) {
+				continue;
+			}
+
+			System.out.println("move " + n.getMeta().title() + " -> " + destination.name() + " (" + destination.folder() + ")");
+
+			n.moveTo(destination.folder());
+		}
+
+		window.sortAndUpdate();
+
+		if (window.isShowingSearchResults()) {
+			window.redoSearch();
+		}
+
+		currentNotes.clear();
 	}
 
 }
