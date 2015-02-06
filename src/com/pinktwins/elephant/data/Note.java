@@ -294,7 +294,7 @@ public class Note implements Comparable<Note> {
 
 			JSONObject o = new JSONObject(json);
 			o.put(key, value);
-			IOUtil.writeFile(meta, o.toString());
+			IOUtil.writeFile(meta, o.toString(4));
 		} catch (JSONException e) {
 			LOG.severe("Fail: " + e);
 		} catch (IOException e) {

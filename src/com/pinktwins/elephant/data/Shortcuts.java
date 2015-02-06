@@ -105,7 +105,7 @@ public class Shortcuts {
 		JSONObject o = new JSONObject();
 		try {
 			o.put("list", arr);
-			IOUtil.writeFile(shortcutsFile(), o.toString());
+			IOUtil.writeFile(shortcutsFile(), o.toString(4));
 		} catch (JSONException e) {
 			LOG.severe("Fail: " + e);
 		} catch (IOException e) {

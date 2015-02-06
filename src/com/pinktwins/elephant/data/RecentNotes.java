@@ -71,7 +71,7 @@ public class RecentNotes {
 		JSONObject o = new JSONObject();
 		try {
 			o.put(KEY_HISTORY, arr);
-			IOUtil.writeFile(historyFile(), o.toString());
+			IOUtil.writeFile(historyFile(), o.toString(4));
 		} catch (JSONException e) {
 			LOG.severe("Fail: " + e);
 		} catch (IOException e) {

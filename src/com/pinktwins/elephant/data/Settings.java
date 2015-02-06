@@ -118,8 +118,10 @@ public class Settings {
 
 	private void save() {
 		try {
-			IOUtil.writeFile(settingsFile(), map.toString());
+			IOUtil.writeFile(settingsFile(), map.toString(4));
 		} catch (IOException e) {
+			LOG.severe("Fail: " + e);
+		} catch (JSONException e) {
 			LOG.severe("Fail: " + e);
 		}
 	}
