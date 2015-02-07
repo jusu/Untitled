@@ -640,7 +640,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public void handleTagsChangedEvent(TagsChangedEvent event) {
 		// some tags were added/changed. Not neccessarily this note's tags,
 		// but might have, so reload tags.
-		reloadTags();
+		if (currentNote != null) {
+			reloadTags();
+		}
 	}
 
 	@Subscribe
