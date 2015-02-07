@@ -111,7 +111,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent e) {
 				// If we have reached the bottom of list, work more thumbs to screen
-				if (!isWorking && workers.size() > 0) {
+				if (!isWorking && !workers.isEmpty()) {
 					JScrollBar v = ui.scroll.getVerticalScrollBar();
 					float f = (v.getValue() + v.getModel().getExtent()) / (float) v.getMaximum();
 					if (Float.valueOf(f).equals(Float.valueOf(1.0f))) {
