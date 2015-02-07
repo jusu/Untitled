@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -425,7 +426,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		if (!selectedNotes.isEmpty()) {
 			int index = noteItems.indexOf(selectedNotes.first());
 
-			Iterator<NoteItem> i = selectedNotes.iterator();
+			Iterator<NoteItem> i = new TreeSet<NoteItem>(selectedNotes).iterator();
 			while (i.hasNext()) {
 				NoteItem item = i.next();
 				notebook.deleteNote(item.note);
