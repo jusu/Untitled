@@ -634,7 +634,11 @@ public class CustomEditor extends RoundPanel {
 			}
 		} else {
 			try {
-				if (note.getText(note.getSelectionStart(), lenStart).equals(codeStart) && note.getText(note.getSelectionEnd() - lenEnd, lenEnd).equals(codeEnd)) {
+				int codeEnding = Math.max(note.getSelectionStart() + lenStart, note.getSelectionEnd());
+				boolean codeCouldFit = codeEnding < note.getDocument().getLength();
+
+				if (codeCouldFit && note.getText(note.getSelectionStart(), lenStart).equals(codeStart)
+						&& note.getText(note.getSelectionEnd() - lenEnd, lenEnd).equals(codeEnd)) {
 					note.getDocument().remove(note.getSelectionEnd() - lenEnd, lenEnd);
 					note.getDocument().remove(note.getSelectionStart(), lenStart);
 				} else {
