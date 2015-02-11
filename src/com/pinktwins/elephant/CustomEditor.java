@@ -366,8 +366,6 @@ public class CustomEditor extends RoundPanel {
 
 	class CustomTextPane extends JTextPane implements ClipboardOwner {
 
-		private static final long serialVersionUID = -5388021236896195540L;
-
 		// http://www.javapractices.com/topic/TopicAction.do?Id=82
 
 		private String prevRtfCopy = "";
@@ -597,6 +595,8 @@ public class CustomEditor extends RoundPanel {
 		});
 
 		note.getDocument().addUndoableEditListener(new UndoEditListener());
+
+		note.addMouseListener(new AttachmentDragMouseListener(this, note));
 
 		InputMap inputMap = note.getInputMap();
 
