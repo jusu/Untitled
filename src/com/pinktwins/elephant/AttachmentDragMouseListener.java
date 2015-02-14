@@ -39,8 +39,11 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 	private final JTextPane note;
 
 	private Object attachmentDragObject = null;
+	private Point mouseDownPoint;
 	private final Highlighter defaultHighlighter;
 	private final Cursor defaultCursor;
+
+	protected Object attachmentObject = null;
 
 	public AttachmentDragMouseListener(CustomEditor editor, JTextPane note) {
 		this.editor = editor;
@@ -98,6 +101,8 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 		int i = note.viewToModel(event.getPoint());
 		checkIconAtPosition(i);
 		checkIconAtPosition(i - 1);
+
+		mouseDownPoint = event.getPoint();
 	}
 
 	@Override
@@ -110,13 +115,23 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 					AttributeSet as = editor.getAttributes(i.startPosition);
 					int len = i.endPosition - i.startPosition;
 					Document doc = note.getDocument();
-					try {
-						String s = doc.getText(i.startPosition, len);
-						doc.remove(i.startPosition, len);
-						doc.insertString(note.getCaretPosition(), s, as);
-					} catch (BadLocationException e) {
-						LOG.severe("Fail: " + e);
+
+					if (!event.getPoint().equals(mouseDownPoint)) {
+						try {
+							String s = doc.getText(i.startPosition, len);
+							doc.remove(i.startPosition, len);
+							doc.insertString(note.getCaretPosition(), s, as);
+						} catch (BadLocationException e) {
+							LOG.severe("Fail: " + e);
+						}
 					}
+
+					if (i.object instanceof ImageIcon) {
+						attachmentObject = i.object;
+					} else {
+						attachmentObject = null;
+					}
+
 					break;
 				}
 			}

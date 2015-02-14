@@ -596,7 +596,14 @@ public class CustomEditor extends RoundPanel {
 
 		note.getDocument().addUndoableEditListener(new UndoEditListener());
 
-		note.addMouseListener(new AttachmentDragMouseListener(this, note));
+		note.addMouseListener(new AttachmentDragMouseListener(this, note) {
+			@Override
+			public void mouseClicked(MouseEvent event) {
+				if (eeListener != null && attachmentObject != null) {
+					eeListener.attachmentClicked(event, attachmentObject);
+				}
+			}
+		});
 
 		InputMap inputMap = note.getInputMap();
 

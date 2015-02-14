@@ -9,12 +9,12 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,7 +33,7 @@ import com.pinktwins.elephant.util.ResizeListener;
 
 public class MultipleNotes extends BackgroundPanel implements EditorEventListener {
 
-	private static final Logger LOG = Logger.getLogger(MultipleNotes.class.getName());
+	// private static final Logger LOG = Logger.getLogger(MultipleNotes.class.getName());
 
 	private final ElephantWindow window;
 
@@ -234,4 +234,7 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 	public void filesDropped(List<File> files) {
 	}
 
+	@Override
+	public void attachmentClicked(MouseEvent event, Object attachmentObject) {
+	}
 }

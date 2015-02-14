@@ -51,6 +51,7 @@ import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.LaunchUtil;
 import com.pinktwins.elephant.util.ResizeListener;
 import com.pinktwins.elephant.util.SimpleImageInfo;
 
@@ -823,6 +824,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				// insert.. will map a new Object -> File
 				attachments.insertFileIntoNote(this, ff, i.startPosition);
 			}
+		}
+	}
+
+	@Override
+	public void attachmentClicked(MouseEvent event, Object attachmentObject) {
+		if (attachmentObject != null && event.getClickCount() == 2) {
+			LaunchUtil.launch(attachments.get(attachmentObject));
 		}
 	}
 }

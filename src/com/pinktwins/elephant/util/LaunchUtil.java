@@ -15,6 +15,10 @@ public class LaunchUtil {
 	}
 
 	public static void launch(File f) {
+		if (f == null || !f.exists()) {
+			return;
+		}
+
 		if (SystemUtils.IS_OS_WINDOWS) {
 			final List<String> command = Factory.newArrayList();
 			command.add("rundll32");

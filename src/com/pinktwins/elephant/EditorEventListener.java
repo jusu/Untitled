@@ -1,5 +1,6 @@
 package com.pinktwins.elephant;
 
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface EditorEventListener {
 	public void caretChanged(JTextPane text);
 
 	public void filesDropped(List<File> files);
+
+	public void attachmentClicked(MouseEvent event, Object attachmentObject);
 }
