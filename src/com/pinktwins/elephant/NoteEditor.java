@@ -503,6 +503,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		System.out.println("move " + n.getMeta().title() + " -> " + destination.name() + " (" + destination.folder() + ")");
 
 		n.moveTo(destination.folder());
+
+		int index = window.getIndexOfFirstSelectedNoteInNoteList();
+
 		window.sortAndUpdate();
 
 		if (window.isShowingSearchResults()) {
@@ -510,6 +513,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		}
 
 		clear();
+
+		if (index >= 0) {
+			window.selectNoteByIndex(index);
+		}
 	}
 
 	public boolean isDirty() {

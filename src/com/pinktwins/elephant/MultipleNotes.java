@@ -175,6 +175,8 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 			n.moveTo(destination.folder());
 		}
 
+		int index = window.getIndexOfFirstSelectedNoteInNoteList();
+
 		window.sortAndUpdate();
 
 		if (window.isShowingSearchResults()) {
@@ -182,6 +184,10 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 		}
 
 		currentNotes.clear();
+
+		if (index >= 0) {
+			window.selectNoteByIndex(index);
+		}
 	}
 
 	@Override

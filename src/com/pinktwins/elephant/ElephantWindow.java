@@ -863,6 +863,17 @@ public class ElephantWindow extends JFrame {
 		splitLeft.revalidate();
 	}
 
+	public int getIndexOfFirstSelectedNoteInNoteList() {
+		return noteList.getIndexOfFirstSelectedNote();
+	}
+
+	public void selectNoteByIndex(int index) {
+		Note note = noteList.selectNote(index);
+		if (note != null) {
+			showNote(note);
+		}
+	}
+
 	public void updateThumb(Note note) {
 		noteList.updateThumb(note);
 		splitLeft.revalidate();

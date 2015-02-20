@@ -404,6 +404,16 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		}
 	}
 
+	public Note selectNote(int index) {
+		if (index >= 0 && index < noteItems.size()) {
+			NoteItem item = noteItems.get(index);
+			selectNote(item, false);
+			return item.note;
+		}
+
+		return null;
+	}
+
 	public void unfocusEditor() {
 		if (!selectedNotes.isEmpty()) {
 			this.requestFocusInWindow();
@@ -519,6 +529,10 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			sel.add(item.note);
 		}
 		return sel;
+	}
+
+	public int getIndexOfFirstSelectedNote() {
+		return selectedNotes.isEmpty() ? -1 : noteItems.indexOf(selectedNotes.first());
 	}
 
 	@Subscribe
