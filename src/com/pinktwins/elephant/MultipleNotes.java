@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
+import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.data.Notebook;
@@ -242,5 +243,9 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 
 	@Override
 	public void attachmentClicked(MouseEvent event, Object attachmentObject) {
+	}
+
+	@Override
+	public void attachmentMoved(AttachmentInfo info) {
 	}
 }

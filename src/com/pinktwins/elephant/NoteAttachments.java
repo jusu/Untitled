@@ -24,6 +24,8 @@ public class NoteAttachments {
 
 	private static final Logger LOG = Logger.getLogger(NoteAttachments.class.getName());
 
+	private static final String ATTACHMENTSTRING_DIRTY = "*d";
+
 	private Map<Object, File> attachments = Factory.newHashMap();
 	private String loadMark;
 
@@ -110,6 +112,10 @@ public class NoteAttachments {
 
 	public void loaded() {
 		loadMark = getAttachmentString();
+	}
+
+	public void makeDirty() {
+		loadMark = ATTACHMENTSTRING_DIRTY;
 	}
 
 	public boolean didChange() {

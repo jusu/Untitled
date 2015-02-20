@@ -20,6 +20,8 @@ import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.StyleConstants;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Images;
@@ -64,34 +66,42 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 				attachmentDragObject = hasIcon ? StyleConstants.getIcon(as) : StyleConstants.getComponent(as);
 				note.setHighlighter(null);
 
-				Image ref = null;
-
-				if (attachmentDragObject instanceof ImageIcon) {
-					ImageIcon img = (ImageIcon) attachmentDragObject;
-					ref = img.getImage();
+				if (SystemUtils.IS_OS_WINDOWS) {
+					// Cursor is more limited on Windows, cannot use the image.
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+					Cursor c = toolkit.createCustomCursor(dragHand, new Point(0, 8), "img");
+					note.setCursor(c);
 				} else {
-					ref = dragFile;
+					// On Mac, use a scaled version of image next to dragHand.
+					Image ref = null;
+
+					if (attachmentDragObject instanceof ImageIcon) {
+						ImageIcon img = (ImageIcon) attachmentDragObject;
+						ref = img.getImage();
+					} else {
+						ref = dragFile;
+					}
+
+					float f = 96.0f / ref.getHeight(null);
+					Image scaled = ref.getScaledInstance((int) (f * ref.getWidth(null)), (int) (f * ref.getHeight(null)), Image.SCALE_FAST);
+
+					int dhWidth = dragHand.getWidth(null), dhHeight = dragHand.getHeight(null);
+
+					BufferedImage composite = new BufferedImage(scaled.getWidth(null) + dhWidth, Math.max(scaled.getHeight(null), dhHeight),
+							BufferedImage.TYPE_INT_ARGB);
+
+					int yOffset = (composite.getHeight() - dhHeight) / 2;
+
+					Graphics2D g = composite.createGraphics();
+					g.drawImage(dragHand, 0, yOffset, null);
+					g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.4f));
+					g.drawImage(scaled, dhWidth, 0, null);
+					g.dispose();
+
+					Toolkit toolkit = Toolkit.getDefaultToolkit();
+					Cursor c = toolkit.createCustomCursor(composite, new Point(0, yOffset + 8), "img");
+					note.setCursor(c);
 				}
-
-				float f = 96.0f / ref.getHeight(null);
-				Image scaled = ref.getScaledInstance((int) (f * ref.getWidth(null)), (int) (f * ref.getHeight(null)), Image.SCALE_FAST);
-
-				int dhWidth = dragHand.getWidth(null), dhHeight = dragHand.getHeight(null);
-
-				BufferedImage composite = new BufferedImage(scaled.getWidth(null) + dhWidth, Math.max(scaled.getHeight(null), dhHeight),
-						BufferedImage.TYPE_INT_ARGB);
-
-				int yOffset = (composite.getHeight() - dhHeight) / 2;
-
-				Graphics2D g = composite.createGraphics();
-				g.drawImage(dragHand, 0, yOffset, null);
-				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 0.4f));
-				g.drawImage(scaled, dhWidth, 0, null);
-				g.dispose();
-
-				Toolkit toolkit = Toolkit.getDefaultToolkit();
-				Cursor c = toolkit.createCustomCursor(composite, new Point(0, yOffset + 8), "img");
-				note.setCursor(c);
 			}
 		}
 	}
@@ -121,6 +131,7 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 							String s = doc.getText(i.startPosition, len);
 							doc.remove(i.startPosition, len);
 							doc.insertString(note.getCaretPosition(), s, as);
+							attachmentMoved(i);
 						} catch (BadLocationException e) {
 							LOG.severe("Fail: " + e);
 						}
@@ -140,5 +151,8 @@ public class AttachmentDragMouseListener extends CustomMouseListener {
 			note.setHighlighter(defaultHighlighter);
 			note.setCursor(defaultCursor);
 		}
+	}
+
+	protected void attachmentMoved(AttachmentInfo info) {
 	}
 }

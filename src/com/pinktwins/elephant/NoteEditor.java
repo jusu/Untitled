@@ -840,4 +840,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			LaunchUtil.launch(attachments.get(attachmentObject));
 		}
 	}
+
+	@Override
+	public void attachmentMoved(AttachmentInfo info) {
+		attachments.makeDirty();
+	}
 }

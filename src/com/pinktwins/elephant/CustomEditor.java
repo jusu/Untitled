@@ -603,6 +603,13 @@ public class CustomEditor extends RoundPanel {
 					eeListener.attachmentClicked(event, attachmentObject);
 				}
 			}
+
+			@Override
+			public void attachmentMoved(AttachmentInfo info) {
+				if (eeListener != null) {
+					eeListener.attachmentMoved(info);
+				}
+			}
 		});
 
 		InputMap inputMap = note.getInputMap();
