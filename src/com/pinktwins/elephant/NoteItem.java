@@ -1,9 +1,7 @@
 package com.pinktwins.elephant;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,8 +15,6 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -34,8 +30,9 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.PdfUtil;
+import com.pinktwins.elephant.util.SimpleImageInfo;
 
-class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
+abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 
 	private static final Logger LOG = Logger.getLogger(NoteItem.class.getName());
 
@@ -45,19 +42,18 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 
 	private static final DateTimeFormatter df = DateTimeFormat.forPattern("dd/MM/yy").withLocale(Locale.getDefault());
 	private static final long time_24h = 1000L * 60 * 60 * 24;
-	private static final Color kColorNoteBorder = Color.decode("#cdcdcd");
 	private static final Map<File, NoteItem> itemCache = Factory.newHashMap();
+	protected static final Color kColorNoteBorder = Color.decode("#cdcdcd");
 
-	private static Image noteShadow, noteSelection;
+	protected static Image noteShadow, noteSelection;
 
 	public Note note;
-	private Dimension size = new Dimension(196, 196);
-	private JLabel name;
-	private JTextPane preview;
-	private JPanel previewPane;
-	private BackgroundPanel root;
+	protected NoteList.ListModes listMode;
 
-	private boolean isSelected = false;
+	protected JTextPane preview;
+	protected BackgroundPanel root;
+
+	protected boolean isSelected = false;
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteShadow", "noteSelection" });
@@ -74,7 +70,11 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 		itemCache.remove(f);
 	}
 
-	public static NoteItem itemOf(Note n) {
+	public static void clearItemCache() {
+		itemCache.clear();
+	}
+
+	public static NoteItem itemOf(Note n, NoteList.ListModes listMode) {
 		NoteItem item = itemCache.get(n.file());
 
 		// If cached item is attached in another ElephantWindow,
@@ -84,7 +84,7 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 		}
 
 		if (item == null) {
-			item = new NoteItem(n);
+			item = itemOfNoteForListMode(n, listMode);
 			itemCache.put(n.file(), item);
 		}
 
@@ -104,42 +104,24 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 		return item;
 	}
 
-	private NoteItem(Note n) {
-		super();
-
-		note = n;
-
-		setLayout(new BorderLayout());
-
-		root = new BackgroundPanel(noteShadow, 2);
-		root.setBorder(BorderFactory.createEmptyBorder(7, 7, 7, 7));
-		root.setMinimumSize(size);
-		root.setMaximumSize(size);
-
-		JPanel p = new JPanel();
-		p.setLayout(new BorderLayout());
-		p.setBackground(Color.WHITE);
-		p.setBorder(BorderFactory.createLineBorder(kColorNoteBorder, 1));
-
-		name = new JLabel(n.getMeta().title());
-		name.setFont(ElephantWindow.fontH1);
-		name.setBorder(BorderFactory.createEmptyBorder(12, 12, 8, 12));
-		p.add(name, BorderLayout.NORTH);
-
-		previewPane = new JPanel();
-		previewPane.setLayout(null);
-		previewPane.setBackground(Color.WHITE);
-
-		createPreviewComponents();
-
-		p.add(previewPane, BorderLayout.CENTER);
-		root.addOpaque(p, BorderLayout.CENTER);
-		add(root, BorderLayout.CENTER);
-
-		p.addMouseListener(this);
+	private static NoteItem itemOfNoteForListMode(Note n, NoteList.ListModes listMode) {
+		switch (listMode) {
+		case CARDVIEW:
+			return new CardViewNoteItem(n);
+		case SNIPPETVIEW:
+			return new SnippetViewNoteItem(n);
+		default:
+			throw new AssertionError("Invalid listMode!");
+		}
 	}
 
-	private void createPreviewComponents() {
+	protected NoteItem(Note n, NoteList.ListModes listMode) {
+		super();
+		note = n;
+		this.listMode = listMode;
+	}
+
+	protected void createPreviewComponents(JPanel previewPane) {
 		previewPane.removeAll();
 
 		if (note.isMarkdown()) {
@@ -200,7 +182,8 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 		// Picture thumbnail.
 		for (Note.AttachmentInfo i : note.getAttachmentList()) {
 			String ext = FilenameUtils.getExtension(i.f.getAbsolutePath()).toLowerCase();
-			if ("png".equals(ext) || "jpg".equals(ext) || "gif".equals(ext)) {
+
+			if (Images.isImage(i.f)) {
 				if (addPictureThumbnail(i.f)) {
 					break;
 				}
@@ -210,8 +193,7 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 				File[] files = FileAttachment.previewFiles(i.f);
 				boolean done = false;
 				for (File ff : files) {
-					ext = FilenameUtils.getExtension(ff.getAbsolutePath()).toLowerCase();
-					if ("png".equals(ext) || "jpg".equals(ext) || "jpeg".equals(ext) || "gif".equals(ext)) {
+					if (Images.isImage(ff)) {
 						if (addPictureThumbnail(ff)) {
 							done = true;
 							break;
@@ -238,41 +220,44 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 		}
 	}
 
-	private boolean addPictureThumbnail(File f) {
+	protected Image getPictureThumbnail(File f) {
 		try {
-			Image i = ImageIO.read(f);
-			if (i != null) {
-				float scale = i.getWidth(null) / (float) (196 - 12 - 4);
-				int w = (int) (i.getWidth(null) / scale);
-				int h = (int) ((float) i.getHeight(null) / scale);
+			int w, h;
 
-				Image scaled = NoteEditor.scalingCache.get(f, w, h);
-				if (scaled == null) {
+			switch (listMode) {
+			case CARDVIEW:
+				SimpleImageInfo info = new SimpleImageInfo(f);
+
+				float scale = info.getWidth() / (float) (196 - 12 - 4);
+				w = (int) (info.getWidth() / scale);
+				h = (int) ((float) info.getHeight() / scale);
+				break;
+			case SNIPPETVIEW:
+				w = 75;
+				h = 75;
+				break;
+			default:
+				throw new AssertionError();
+			}
+
+			Image scaled = NoteEditor.scalingCache.get(f, w, h);
+			if (scaled == null) {
+				Image i = ImageIO.read(f);
+				if (i != null) {
 					scaled = i.getScaledInstance(w, h, Image.SCALE_AREA_AVERAGING);
 					NoteEditor.scalingCache.put(f, w, h, scaled);
 				}
-
-				JLabel l = new JLabel("");
-				l.setIcon(new ImageIcon(scaled));
-				l.setBounds(0, 4, 190, 99);
-
-				JPanel pa = new JPanel(null);
-				pa.setBorder(ElephantWindow.emptyBorder);
-				pa.setBackground(Color.WHITE);
-				pa.add(l);
-
-				preview.setBounds(0, 0, 176, 40);
-				pa.setBounds(0, 40, 190, 103);
-
-				previewPane.add(pa);
-				return true;
 			}
+
+			return scaled;
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}
 
-		return false;
+		return null;
 	}
+
+	abstract protected boolean addPictureThumbnail(File f);
 
 	private NoteItemListener getNoteItemListenerFromParentTree() {
 		Container c = getParent();
@@ -282,13 +267,7 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 		return (NoteItemListener) c;
 	}
 
-	private String getContentPreview() {
-		String contents = note.contents().trim();
-		if (contents.length() > 200) {
-			contents = contents.substring(0, 200) + "…";
-		}
-		return contents;
-	}
+	abstract protected String getContentPreview();
 
 	public void setSelected(boolean b) {
 		if (b) {
@@ -302,21 +281,6 @@ class NoteItem extends JPanel implements Comparable<NoteItem>, MouseListener {
 
 	public boolean isSelected() {
 		return isSelected;
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return size;
-	}
-
-	@Override
-	public Dimension getMinimumSize() {
-		return size;
-	}
-
-	@Override
-	public Dimension getMaximumSize() {
-		return size;
 	}
 
 	@Override

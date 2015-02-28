@@ -29,6 +29,7 @@ import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.NoteItem.NoteItemListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
+import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.CustomMouseListener;
@@ -39,6 +40,8 @@ import com.pinktwins.elephant.util.ResizeListener;
 public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	private static final Logger LOG = Logger.getLogger(NoteList.class.getName());
+
+	private static final int SNIPPETVIEW_ITEMHEIGHT = 86;
 
 	private static Image tile;
 
@@ -65,11 +68,19 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		tile = i.next();
 	}
 
+	public static enum ListModes {
+		CARDVIEW, SNIPPETVIEW
+	};
+
+	private ListModes listMode = ListModes.CARDVIEW;
+
 	public NoteList(ElephantWindow w) {
 		super(tile);
 		window = w;
 
 		Elephant.eventBus.register(this);
+
+		listMode = Elephant.settings.getNoteListMode();
 
 		createComponents();
 	}
@@ -98,6 +109,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		ui.main.addComponentListener(new ResizeListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
+				// added in v17 - layout need not jump to initial value on resize?
+				initialScrollValue = ui.scroll.getVerticalScrollBar().getValue();
+
 				layoutItems();
 
 				ui.fillerPanel.setPreferredSize(new Dimension(ui.allNotesPanel.getWidth(), 10));
@@ -132,7 +146,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public void cache(Notebook notebook) {
 		for (Note n : notebook.getNotes()) {
-			NoteItem.itemOf(n);
+			NoteItem.itemOf(n, listMode);
 		}
 	}
 
@@ -157,7 +171,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		// First batch to screen NOW.
 		// This could come from SwingWorker too, but doing it here avoids some flickering.
 		for (int start = 0, end = Math.min(list.size(), uiStep); start < end; start++) {
-			NoteItem item = NoteItem.itemOf(list.get(start));
+			NoteItem item = NoteItem.itemOf(list.get(start), listMode);
 			ui.main.add(item);
 			noteItems.add(item);
 		}
@@ -174,7 +188,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 						if (cancelTrigger.isDown) {
 							return null;
 						}
-						NoteItem.itemOf(list.get(n));
+						NoteItem.itemOf(list.get(n), listMode);
 					}
 					return range;
 				}
@@ -188,7 +202,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 								if (cancelTrigger.isDown) {
 									return;
 								}
-								NoteItem item = NoteItem.itemOf(list.get(n));
+								NoteItem item = NoteItem.itemOf(list.get(n), listMode);
 								ui.main.add(item);
 								noteItems.add(item);
 							}
@@ -229,8 +243,19 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	private void layoutItems() {
 		Insets insets = ui.main.getInsets();
 		Dimension size = new Dimension(192, 192);
-		int x = 2; // 6?
-		int y = 12;
+
+		int x = 0, y = 0;
+
+		switch (listMode) {
+		case CARDVIEW:
+			x = 2;
+			y = 12;
+			break;
+		case SNIPPETVIEW:
+			x = 0;
+			y = 0;
+			break;
+		}
 
 		Rectangle mainBounds = ui.main.getBounds();
 
@@ -239,23 +264,37 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		for (NoteItem item : noteItems) {
 			size = item.getPreferredSize();
 
-			lc.itemsPerRow = mainBounds.width / size.width;
-			int extra = mainBounds.width - (size.width * lc.itemsPerRow);
-			extra /= 2;
+			int linedX = 0;
+			int itemWidth = size.width;
+			int itemHeight = size.height;
 
-			int linedX = x + insets.left + (itemAtRow * size.width);
-			if (lc.itemsPerRow > 0) {
-				int add = extra / lc.itemsPerRow;
-				linedX += (itemAtRow + 1) * add;
+			switch (listMode) {
+			case CARDVIEW:
+				lc.itemsPerRow = mainBounds.width / size.width;
+
+				int extra = mainBounds.width - (size.width * lc.itemsPerRow);
+				extra /= 2;
+
+				linedX = x + insets.left + (itemAtRow * size.width);
+				if (lc.itemsPerRow > 0) {
+					int add = extra / lc.itemsPerRow;
+					linedX += (itemAtRow + 1) * add;
+				}
+				break;
+			case SNIPPETVIEW:
+				lc.itemsPerRow = 1;
+				itemWidth = mainBounds.width;
+				itemHeight = SNIPPETVIEW_ITEMHEIGHT;
+				break;
 			}
 
-			item.setBounds(linedX, y + insets.top, size.width, size.height);
+			item.setBounds(linedX, y + insets.top, itemWidth, itemHeight);
 
 			if (itemAtRow < lc.itemsPerRow - 1) {
 				itemAtRow++;
 				lastOffset = size.height;
 			} else {
-				y += size.height;
+				y += itemHeight;
 				itemAtRow = 0;
 				lastOffset = 0;
 			}
@@ -269,6 +308,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			@Override
 			public void run() {
 				ui.scroll.getVerticalScrollBar().setValue(initialScrollValue);
+				NoteList.this.repaint();
 			}
 		});
 	}
@@ -462,7 +502,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 				noteItems.remove(item);
 
 				NoteItem.removeCacheKey(note.file());
-				noteItems.add(index, NoteItem.itemOf(note));
+				noteItems.add(index, NoteItem.itemOf(note, listMode));
 				return;
 			}
 		}
@@ -533,6 +573,14 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public int getIndexOfFirstSelectedNote() {
 		return selectedNotes.isEmpty() ? -1 : noteItems.indexOf(selectedNotes.first());
+	}
+
+	public void changeMode(ListModes newMode) {
+		listMode = newMode;
+		NoteItem.clearItemCache();
+		updateLoad();
+
+		Elephant.settings.set(Settings.Keys.NOTELIST_MODE, newMode.toString());
 	}
 
 	@Subscribe

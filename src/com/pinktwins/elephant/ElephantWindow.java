@@ -20,6 +20,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -46,6 +47,7 @@ public class ElephantWindow extends JFrame {
 	public static final Font fontStart = Font.decode("Arial-ITALIC-18");
 	public static final Font fontTitle = Font.decode("Helvetica-BOLD-18");
 	public static final Font fontH1 = Font.decode("Helvetica-BOLD-16");
+	public static final Font fontH2 = Font.decode("Helvetica-BOLD-14");
 	public static final Font fontSmall = Font.decode("Helvetica-10");
 	public static final Font fontEditorTitle = Font.decode("Helvetica-15");
 	public static final Font fontEditor = Font.decode("Arial-13");
@@ -86,8 +88,9 @@ public class ElephantWindow extends JFrame {
 
 	public static final int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
-	JMenuBar menuBar;
-	JMenuItem iUndo, iRedo;
+	private JMenuBar menuBar;
+	private JMenuItem iUndo, iRedo;
+	private JCheckBoxMenuItem iCard, iSnippet;
 
 	enum UiModes {
 		notebooks, notes, tags
@@ -162,6 +165,26 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			showTags();
+		}
+	};
+
+	ActionListener noteListCardViewAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			iCard.setSelected(true);
+			iSnippet.setSelected(false);
+			splitLeft.setDividerSize(6);
+			noteList.changeMode(NoteList.ListModes.CARDVIEW);
+		}
+	};
+
+	ActionListener noteListSnippetViewAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			iCard.setSelected(false);
+			iSnippet.setSelected(true);
+			splitLeft.setDividerSize(2);
+			noteList.changeMode(NoteList.ListModes.SNIPPETVIEW);
 		}
 	};
 
@@ -776,6 +799,25 @@ public class ElephantWindow extends JFrame {
 		view.add(menuItem("Notebooks", KeyEvent.VK_3, menuMask | KeyEvent.ALT_DOWN_MASK, showNotebooksAction));
 		view.add(menuItem("Tags", KeyEvent.VK_4, menuMask | KeyEvent.ALT_DOWN_MASK, showTagsAction));
 		view.addSeparator();
+
+		iCard = new JCheckBoxMenuItem("Card View");
+		iCard.addActionListener(noteListCardViewAction);
+		iSnippet = new JCheckBoxMenuItem("Snippet View");
+		iSnippet.addActionListener(noteListSnippetViewAction);
+
+		view.add(iCard);
+		view.add(iSnippet);
+		view.addSeparator();
+
+		switch (Elephant.settings.getNoteListMode()) {
+		case CARDVIEW:
+			iCard.setSelected(true);
+			break;
+		case SNIPPETVIEW:
+			iSnippet.setSelected(true);
+			break;
+		}
+
 		view.add(menuItem("Show All Notes", KeyEvent.VK_A, menuMask | KeyEvent.SHIFT_DOWN_MASK, showAllNotesAction));
 		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, menuMask, jumpToNotebookAction));
 
@@ -834,6 +876,10 @@ public class ElephantWindow extends JFrame {
 		splitLeft.initLocationWithKey("divider1", 150);
 		splitLeft.limitLocation(250);
 		splitLeft.setDividerSize(6);
+
+		if (Elephant.settings.getNoteListMode() == NoteList.ListModes.SNIPPETVIEW) {
+			splitLeft.setDividerSize(2);
+		}
 
 		splitRight = new CustomSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitRight.setResizeWeight(0.5);

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pinktwins.elephant.NoteList.ListModes;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class Settings {
@@ -14,7 +15,7 @@ public class Settings {
 	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
 	public static enum Keys {
-		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene");
+		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode");
 
 		private final String str;
 
@@ -124,5 +125,24 @@ public class Settings {
 		} catch (JSONException e) {
 			LOG.severe("Fail: " + e);
 		}
+	}
+
+	public ListModes getNoteListMode() {
+		String mode = getString(Keys.NOTELIST_MODE);
+
+		if (mode.isEmpty()) {
+			return ListModes.CARDVIEW;
+		}
+
+		if (ListModes.CARDVIEW.toString().equals(mode)) {
+			return ListModes.CARDVIEW;
+		}
+
+		if (ListModes.SNIPPETVIEW.toString().equals(mode)) {
+			return ListModes.SNIPPETVIEW;
+		}
+
+		LOG.severe("Unknown listmode: " + mode);
+		return ListModes.CARDVIEW;
 	}
 }
