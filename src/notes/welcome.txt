@@ -4,4 +4,4 @@ Hit CMD-N to create a new note.
 
 Drag an image or file here to attach it.
 
-This is Elephant release #17. You're an early bird!
+This is Elephant release #18. You're an early bird!
