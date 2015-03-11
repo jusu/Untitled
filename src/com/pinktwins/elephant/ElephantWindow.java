@@ -32,6 +32,8 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.NoteEditor.NoteEditorStateListener;
 import com.pinktwins.elephant.data.Note;
@@ -305,7 +307,10 @@ public class ElephantWindow extends JFrame {
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
 
-		setIconImage(elephantIcon);
+		// Mac packages the icon just fine. Windows needs this for taskbar icon. Linux?
+		if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
+			setIconImage(elephantIcon);
+		}
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(loadBounds());
