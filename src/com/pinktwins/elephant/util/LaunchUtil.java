@@ -19,10 +19,17 @@ public class LaunchUtil {
 			return;
 		}
 
-		if (SystemUtils.IS_OS_WINDOWS) {
+		if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
 			final List<String> command = Factory.newArrayList();
-			command.add("rundll32");
-			command.add("SHELL32.DLL,ShellExec_RunDLL");
+
+			if (SystemUtils.IS_OS_WINDOWS) {
+				command.add("rundll32");
+				command.add("SHELL32.DLL,ShellExec_RunDLL");
+			} else {
+				command.add("/usr/bin/env");
+				command.add("xdg-open");
+			}
+
 			command.add(f.getAbsolutePath());
 
 			final ProcessBuilder builder = new ProcessBuilder(command);
