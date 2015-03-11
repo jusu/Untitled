@@ -13,6 +13,8 @@ import com.pinktwins.elephant.data.Vault;
 
 public class Elephant {
 
+	public static final int VERSION = 18;
+
 	private static final Logger LOG = Logger.getLogger(Elephant.class.getName());
 
 	public static final EventBus eventBus = new EventBus();

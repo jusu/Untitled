@@ -845,11 +845,17 @@ public class ElephantWindow extends JFrame {
 		// somehow I dont like this menuitem. It should be much easier.
 		// format.add(menuItem("Make Markdown", 0, 0, markdownAction));
 
+		JMenu help = new JMenu("Help");
+		JMenuItem version = menuItem("Elephant version " + Elephant.VERSION, 0, 0, null);
+		version.setEnabled(false);
+		help.add(version);
+
 		menuBar.add(file);
 		menuBar.add(edit);
 		menuBar.add(view);
 		menuBar.add(note);
 		menuBar.add(format);
+		menuBar.add(help);
 
 		setJMenuBar(menuBar);
 
