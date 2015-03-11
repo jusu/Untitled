@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
@@ -18,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
@@ -41,6 +43,7 @@ import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
+import com.pinktwins.elephant.util.Images;
 
 public class ElephantWindow extends JFrame {
 
@@ -92,6 +95,8 @@ public class ElephantWindow extends JFrame {
 	private JMenuItem iUndo, iRedo;
 	private JCheckBoxMenuItem iCard, iSnippet;
 
+	private static final Image elephantIcon;
+
 	enum UiModes {
 		notebooks, notes, tags
 	};
@@ -99,6 +104,11 @@ public class ElephantWindow extends JFrame {
 	UiModes uiMode = UiModes.notes;
 
 	private String previousSearchText = "";
+
+	static {
+		Iterator<Image> i = Images.iterator(new String[] { "elephantIcon" });
+		elephantIcon = i.next();
+	}
 
 	ActionListener newNoteAction = new ActionListener() {
 		@Override
@@ -295,8 +305,9 @@ public class ElephantWindow extends JFrame {
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
 
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setIconImage(elephantIcon);
 
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(loadBounds());
 
 		Elephant.eventBus.register(this);
