@@ -44,6 +44,7 @@ import com.pinktwins.elephant.NoteEditor.EditorController;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.LaunchUtil;
 import com.pinktwins.elephant.util.PdfUtil;
 
 public class FileAttachment extends JPanel {
@@ -160,12 +161,7 @@ public class FileAttachment extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent event) {
 				if (event.getClickCount() == 2) {
-					try {
-						java.awt.Desktop.getDesktop().open(f);
-					} catch (IOException e) {
-						LOG.severe("Fail: " + e);
-					}
-
+					LaunchUtil.launch(f);
 				}
 			}
 		});
