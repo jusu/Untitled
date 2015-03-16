@@ -648,12 +648,10 @@ public class CustomEditor extends RoundPanel {
 	}
 
 	public void restoreSelection() {
-		if (note != null) {
+		if (note != null && frozenSelectionStart != frozenSelectionEnd) {
 			note.setSelectionStart(frozenSelectionStart);
 			note.setSelectionEnd(frozenSelectionEnd);
-			if (frozenSelectionStart != frozenSelectionEnd) {
-				((DefaultCaret) note.getCaret()).setSelectionVisible(true);
-			}
+			((DefaultCaret) note.getCaret()).setSelectionVisible(true);
 		}
 	}
 
