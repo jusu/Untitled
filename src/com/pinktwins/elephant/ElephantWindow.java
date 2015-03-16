@@ -878,9 +878,9 @@ public class ElephantWindow extends JFrame {
 		noteEditor.addStateListener(new NoteEditorStateListener() {
 			@Override
 			public void stateChange(boolean hasFocus, boolean hasSelection) {
-				iCut.setEnabled(hasFocus && hasSelection);
-				iCopy.setEnabled(hasFocus && hasSelection);
-				iPaste.setEnabled(hasFocus);
+				iCut.setEnabled(hasSelection);
+				iCopy.setEnabled(hasSelection);
+				iPaste.setEnabled(true);
 			}
 		});
 	}
