@@ -795,6 +795,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void pasteAction() {
 		editor.getTextPane().paste();
+		editor.getTextPane().requestFocusInWindow();
 	}
 
 	public void undo() {
