@@ -4,4 +4,5 @@ Hit CMD-N to create a new note. (Ctrl-n in Windows)
 
 Drag an image or file here to attach it.
 
-This is Elephant release #18. The second mouse gets the cheese!
+
+
