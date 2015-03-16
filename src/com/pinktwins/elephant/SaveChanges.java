@@ -34,9 +34,11 @@ public class SaveChanges {
 		}
 	}
 
-	public static void savechanges(Note currentNote, NoteAttachments attachments, NoteEditor noteEditor, TagEditorPane tagPane) {
+	public static void saveChanges(Note currentNote, NoteAttachments attachments, NoteEditor noteEditor, TagEditorPane tagPane) {
 		if (currentNote != null) {
 			CustomEditor editor = noteEditor.editor;
+
+			editor.saveSelection();
 
 			boolean changed = false;
 			boolean contentChanged = false;
@@ -136,6 +138,8 @@ public class SaveChanges {
 			} catch (BadLocationException e) {
 				LOG.severe("Fail: " + e);
 			}
+
+			editor.restoreSelection();
 
 			if (changed) {
 				new NoteChangedEvent(currentNote, contentChanged).post();

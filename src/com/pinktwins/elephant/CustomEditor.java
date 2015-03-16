@@ -91,6 +91,8 @@ public class CustomEditor extends RoundPanel {
 	public boolean isRichText, isMarkdown;
 	private boolean maybeImporting;
 
+	private int frozenSelectionStart, frozenSelectionEnd;
+
 	final Color kDividerColor = Color.decode("#dbdbdb");
 
 	private final FocusListener editorFocusListener = new FocusListener() {
@@ -635,6 +637,20 @@ public class CustomEditor extends RoundPanel {
 		add(note, BorderLayout.CENTER);
 
 		createPadding();
+	}
+
+	public void saveSelection() {
+		if (note != null) {
+			frozenSelectionStart = note.getSelectionStart();
+			frozenSelectionEnd = note.getSelectionEnd();
+		}
+	}
+
+	public void restoreSelection() {
+		if (note != null) {
+			note.setSelectionStart(frozenSelectionStart);
+			note.setSelectionEnd(frozenSelectionEnd);
+		}
 	}
 
 	private void markdownStyleCommand(String codeStart, String codeEnd) {

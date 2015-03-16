@@ -665,7 +665,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			return;
 		}
 
-		SaveChanges.savechanges(currentNote, attachments, this, tagPane);
+		SaveChanges.saveChanges(currentNote, attachments, this, tagPane);
 
 		attachments.loaded();
 		isDirty = false;
