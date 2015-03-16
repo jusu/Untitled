@@ -153,7 +153,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	NoteEditorStateListener stateListener;
 
-	private Note currentNote;
+	private Note currentNote, previousNote;
 	private NoteAttachments attachments = new NoteAttachments();
 
 	JPanel main, area;
@@ -526,6 +526,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public void clear() {
 		currentNote = null;
 		attachments = new NoteAttachments();
+		editor.saveSelection();
 		editor.clear();
 		isDirty = false;
 		visible(false);
@@ -606,6 +607,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		noteUpdated.setText("Updated: " + note.updatedStr());
 
 		caretChanged(editor.getTextPane());
+
+		if (previousNote != null && previousNote.equals(note)) {
+			editor.restoreSelection();
+		}
+
+		previousNote = currentNote;
 	}
 
 	private void reloadTags() {

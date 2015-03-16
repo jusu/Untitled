@@ -49,6 +49,7 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
@@ -650,6 +651,9 @@ public class CustomEditor extends RoundPanel {
 		if (note != null) {
 			note.setSelectionStart(frozenSelectionStart);
 			note.setSelectionEnd(frozenSelectionEnd);
+			if (frozenSelectionStart != frozenSelectionEnd) {
+				((DefaultCaret) note.getCaret()).setSelectionVisible(true);
+			}
 		}
 	}
 
