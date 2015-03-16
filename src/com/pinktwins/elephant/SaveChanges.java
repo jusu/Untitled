@@ -130,9 +130,11 @@ public class SaveChanges {
 				noteEditor.importAttachments(info_reverse);
 
 				// update last note save time to help sync efforts
-				Notebook nb = currentNote.findContainingNotebook();
-				if (nb != null) {
-					nb.markNoteSavedTimestamp();
+				if (changed) {
+					Notebook nb = currentNote.findContainingNotebook();
+					if (nb != null) {
+						nb.markNoteSavedTimestamp();
+					}
 				}
 
 			} catch (BadLocationException e) {
