@@ -585,6 +585,8 @@ public class CustomEditor extends RoundPanel {
 
 		note.setTransferHandler(attachmentTransferHandler);
 
+		note.setCaret(new SelectionPreservingCaret());
+
 		note.addCaretListener(new CaretListener() {
 			@Override
 			public void caretUpdate(CaretEvent e) {
