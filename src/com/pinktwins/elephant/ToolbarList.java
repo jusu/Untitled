@@ -141,6 +141,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 
 		main.removeAll();
 		itemList.clear();
+		deselectAll();
 
 		List<T> list = queryFilter(search.getText());
 
