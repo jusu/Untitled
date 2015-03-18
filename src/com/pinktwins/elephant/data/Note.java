@@ -370,19 +370,20 @@ public class Note implements Comparable<Note> {
 			reload();
 		}
 
+		/* Return list of tagIds. */
 		@Override
 		public List<String> tags() {
-			List<String> names = Factory.newArrayList();
+			List<String> list = Factory.newArrayList();
 
 			String ids = map.get("tagIds");
 			if (ids != null) {
 				String[] a = ids.split(",");
 				for (String s : a) {
-					names.add(s);
+					list.add(s);
 				}
 			}
 
-			return names;
+			return list;
 		}
 
 		@Override
