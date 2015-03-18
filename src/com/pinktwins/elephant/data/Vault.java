@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.SystemUtils;
@@ -236,5 +238,44 @@ public class Vault implements WatchDirListener {
 
 	public void saveNewTag(final Tag tag) {
 		tags.saveTag(tag);
+	}
+
+	public void deleteTag(final String tagId, final String tagName) {
+		Notebook nb = Notebook.getNotebookWithTag(tagId, tagName);
+
+		// Confirm deletion IF tag assigned to notes
+		int count = nb.count();
+		if (count > 0) {
+			String message = String.format("The tag will be removed from %d note%s.", count, count == 1 ? "" : "s");
+			if (JOptionPane.showConfirmDialog(null, message, String.format("Delete tag %s?", tagName), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+				return;
+			}
+		}
+
+		// Remove tag from notes
+		for (Note n : nb.notes) {
+			Note.Meta m = n.getMeta();
+			List<String> ids = m.tags();
+			List<String> names = resolveTagIds(ids);
+
+			int idIndex = ids.indexOf(tagId);
+			int nameIndex = names.indexOf(tagName);
+
+			if (idIndex >= 0 && nameIndex >= 0) {
+				String name = names.get(nameIndex);
+				if (tagName.equals(name)) {
+					ids.remove(idIndex);
+					names.remove(nameIndex);
+					m.setTags(ids, names);
+				} else {
+					LOG.info("Fail: name mismatch while deleting tag: wanted to delete " + tagName + " but found " + name
+							+ " + instead. Not deleting tag from note " + m.title());
+				}
+			} else {
+				LOG.info("Fail: id lookup while deleting tag: " + idIndex + ", " + nameIndex + ". Not deleting tag from note " + m.title());
+			}
+		}
+
+		tags.deleteTag(tagId, tagName);
 	}
 }

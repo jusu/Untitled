@@ -73,6 +73,13 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 		}
 	}
 
+	public void deleteSelected() {
+		if (selectedItem != null) {
+			Vault.getInstance().deleteTag(selectedItem.tag.id(), selectedItem.tag.name());
+			refresh();
+		}
+	}
+
 	@Override
 	protected void newButtonAction() {
 		newTag();

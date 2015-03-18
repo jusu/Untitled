@@ -563,6 +563,12 @@ public class ElephantWindow extends JFrame {
 						case KeyEvent.VK_ENTER:
 							tagList.openSelected();
 							break;
+						case KeyEvent.VK_BACK_SPACE:
+							if (!tagList.isEditing) {
+								tagList.deleteSelected();
+								break;
+							}
+							// intentional fallthru to default
 						default:
 							tagList.handleKeyEvent(e);
 						}

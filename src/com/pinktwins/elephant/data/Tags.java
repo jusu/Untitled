@@ -20,7 +20,7 @@ import com.pinktwins.elephant.util.IOUtil;
 public class Tags {
 
 	private static final Logger LOG = Logger.getLogger(Tags.class.getName());
-	
+
 	private List<Tag> flatList = Factory.newArrayList();
 
 	private String fileLoaded;
@@ -136,5 +136,23 @@ public class Tags {
 		flatList.add(t);
 		Collections.sort(flatList);
 		save();
+	}
+
+	public void deleteTag(final String id, final String name) {
+		if (fileLoaded == null) {
+			throw new IllegalStateException();
+		}
+
+		Tag toDelete = null;
+		for (Tag t : flatList) {
+			if (t.id.equals(id) && t.name.equals(name)) {
+				toDelete = t;
+				break;
+			}
+		}
+		if (toDelete != null) {
+			flatList.remove(toDelete);
+			save();
+		}
 	}
 }
