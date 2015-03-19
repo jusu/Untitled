@@ -53,6 +53,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	protected boolean isEditing;
 
 	protected T selectedItem;
+	protected int selectedIndex;
 
 	protected int layoutItemHeightAdjustment = 0;
 	protected int layoutXOffAdjustment = 0;
@@ -286,6 +287,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		deselectAll();
 		item.setSelected(true);
 		selectedItem = item;
+		selectedIndex = itemList.indexOf(selectedItem);
 
 		lc.updateHorizontalScrollbar(item, scroll);
 	}

@@ -71,12 +71,32 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		for (Notebook nb : Vault.getInstance().getNotebooksWithFilter(search.getText())) {
 			items.add(new NotebookItem(nb));
 		}
+
+		if (selectedIndex >= 0 && selectedIndex < items.size() && selectedItem == null) {
+			selectItem(items.get(selectedIndex));
+		}
+
 		return items;
 	}
 
 	public void openSelected() {
 		if (selectedItem != null) {
 			window.showNotebook(selectedItem.notebook);
+		}
+	}
+
+	public void deleteSelected() {
+		if (selectedItem != null) {
+			int index = itemList.indexOf(selectedItem);
+
+			Vault.getInstance().deleteNotebook(selectedItem.notebook);
+
+			if (index >= itemList.size()) {
+				index = itemList.size() - 1;
+			}
+			if (index >= 0) {
+				selectItem(itemList.get(index));
+			}
 		}
 	}
 

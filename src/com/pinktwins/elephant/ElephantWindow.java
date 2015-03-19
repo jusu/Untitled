@@ -540,6 +540,9 @@ public class ElephantWindow extends JFrame {
 						case KeyEvent.VK_ENTER:
 							notebooks.openSelected();
 							break;
+						case KeyEvent.VK_BACK_SPACE:
+							notebooks.deleteSelected();
+							break;
 						default:
 							notebooks.handleKeyEvent(e);
 						}

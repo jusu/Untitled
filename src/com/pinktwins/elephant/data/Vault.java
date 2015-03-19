@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import com.google.common.eventbus.Subscribe;
@@ -192,46 +193,6 @@ public class Vault implements WatchDirListener {
 		return tags.resolveIds(tagIds);
 	}
 
-	@Subscribe
-	public void handleVaultEvent(VaultEvent event) {
-		switch (event.kind) {
-		case notebookCreated:
-			populate();
-			break;
-		case notebookListChanged:
-			populate();
-			break;
-		case notebookRefreshed:
-			break;
-		default:
-			break;
-		}
-	}
-
-	@Override
-	public void watchEvent(final String kind, final String file) {
-		if ("ENTRY_MODIFY".equals(kind)) {
-			EventQueue.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					File f = new File(file);
-					if (f.isFile()) {
-						f = f.getParentFile();
-					}
-					Notebook nb = findNotebook(f);
-					if (nb != null) {
-						// need latest tags loaded when refreshing notebook.
-						tags.refresh();
-
-						nb.refresh();
-						new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb).post();
-						new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
-					}
-				}
-			});
-		}
-	}
-
 	public String getLuceneIndexPath() {
 		return Elephant.settings.userHomePath() + File.separator + ".com.pinktwins.elephant.searchIndex";
 	}
@@ -278,4 +239,94 @@ public class Vault implements WatchDirListener {
 
 		tags.deleteTag(tagId, tagName);
 	}
+
+	public void deleteNotebook(Notebook nb) {
+		if (nb.isTrash()) {
+			return;
+		}
+
+		if (nb.isDynamicallyCreatedNotebook()) {
+			LOG.info("Fail: tried to delete dynamically created notebook: " + nb.name() + ". Doing nothing.");
+			return;
+		}
+
+		if (nb.folder().exists()) {
+			// Confirm deletion IF any notes
+			int count = nb.count();
+			if (count > 0) {
+				String message = String.format("The notebook directory (with %d note%s) will be moved to Trash. It will no longer be visible in Elephant.",
+						count, count == 1 ? "" : "s");
+				if (JOptionPane.showConfirmDialog(null, message, String.format("Delete notebook %s?", nb.name()), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+					return;
+				}
+			}
+
+			// Check if dest directory already exists, rename to unique if needed
+			File source = nb.folder();
+			File dest = new File(getTrash().getAbsoluteFile() + File.separator + source.getName());
+
+			if (dest.exists()) {
+				File renamed = new File(source.getAbsoluteFile() + "_" + Long.toString(System.currentTimeMillis(), 36));
+				try {
+					FileUtils.moveDirectory(source, renamed);
+				} catch (IOException e) {
+					LOG.severe("Fail: cannot rename " + source + " -> " + renamed + " e: " + e);
+					return;
+				}
+				source = renamed;
+			}
+
+			// Move
+			try {
+				FileUtils.moveDirectoryToDirectory(source, getTrash(), false);
+			} catch (IOException e) {
+				LOG.severe("Fail: " + e);
+			}
+		}
+
+		notebooks.remove(nb);
+
+		new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
+	}
+
+	@Subscribe
+	public void handleVaultEvent(VaultEvent event) {
+		switch (event.kind) {
+		case notebookCreated:
+			populate();
+			break;
+		case notebookListChanged:
+			populate();
+			break;
+		case notebookRefreshed:
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void watchEvent(final String kind, final String file) {
+		if ("ENTRY_MODIFY".equals(kind)) {
+			EventQueue.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					File f = new File(file);
+					if (f.isFile()) {
+						f = f.getParentFile();
+					}
+					Notebook nb = findNotebook(f);
+					if (nb != null) {
+						// need latest tags loaded when refreshing notebook.
+						tags.refresh();
+
+						nb.refresh();
+						new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb).post();
+						new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
+					}
+				}
+			});
+		}
+	}
+
 }

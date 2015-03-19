@@ -221,6 +221,10 @@ public class Notebook implements Comparable<Notebook> {
 		return isTagSearch;
 	}
 
+	public boolean isDynamicallyCreatedNotebook() {
+		return isAllNotes() || isTrash() || isSearch() || isTagSearch();
+	}
+
 	public Note newNote() throws IOException {
 		if (folder == null) {
 			throw new IllegalStateException();
