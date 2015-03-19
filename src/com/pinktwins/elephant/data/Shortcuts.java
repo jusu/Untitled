@@ -113,9 +113,13 @@ public class Shortcuts implements SideBarItemModifier {
 		}
 	}
 
-	public void addNote(Note note) {
-		list.add(note.file().getParentFile().getName() + File.separator + note.file().getName());
+	public void add(String s) {
+		list.add(s);
 		save();
+	}
+
+	public void addNote(Note note) {
+		add(note.file().getParentFile().getName() + File.separator + note.file().getName());
 	}
 
 	@Override

@@ -95,7 +95,7 @@ public class ElephantWindow extends JFrame {
 	public static final int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 	private JMenuBar menuBar;
-	private JMenuItem iUndo, iRedo;
+	private JMenuItem iUndo, iRedo, iSaveSearch;
 	private JCheckBoxMenuItem iCard, iSnippet;
 
 	private static final Image elephantIcon;
@@ -251,6 +251,17 @@ public class ElephantWindow extends JFrame {
 			}
 			if (splitRight.getRightComponent() == multipleNotes) {
 				multipleNotes.openNotebookChooserForMoving();
+			}
+		}
+	};
+
+	ActionListener addSearchToShortcutsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String s = toolBar.search.getText();
+			if (!s.isEmpty()) {
+				sideBar.addToShortcuts("search:" + s);
+				new ShortcutsChangedEvent().post();
 			}
 		}
 	};
@@ -773,8 +784,10 @@ public class ElephantWindow extends JFrame {
 		previousSearchText = text;
 		if (text.length() == 0) {
 			showNotebook(Vault.getInstance().getDefaultNotebook());
+			iSaveSearch.setEnabled(false);
 		} else {
 			showNotebook(Search.search(text));
+			iSaveSearch.setEnabled(true);
 		}
 	}
 
@@ -829,6 +842,9 @@ public class ElephantWindow extends JFrame {
 
 		edit.addSeparator();
 		edit.add(menuItem("Search Notes...", KeyEvent.VK_F, menuMask | KeyEvent.ALT_DOWN_MASK, searchAction));
+		iSaveSearch = menuItem("Save Search to Shortcuts", 0, 0, addSearchToShortcutsAction);
+		iSaveSearch.setEnabled(false);
+		edit.add(iSaveSearch);
 
 		JMenu view = new JMenu("View");
 		view.add(menuItem("Notes", KeyEvent.VK_2, menuMask | KeyEvent.ALT_DOWN_MASK, showNotesAction));

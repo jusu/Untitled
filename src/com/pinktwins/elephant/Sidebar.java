@@ -100,4 +100,8 @@ public class Sidebar extends BackgroundPanel {
 	public void addToShortcuts(Note note) {
 		shortcuts.addNote(note);
 	}
+
+	public void addToShortcuts(String s) {
+		shortcuts.add(s);
+	}
 }
