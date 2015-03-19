@@ -11,12 +11,13 @@ import org.json.JSONObject;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
+import com.pinktwins.elephant.SideBarList.SideBarItemModifier;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
 
-public class Shortcuts {
+public class Shortcuts implements SideBarItemModifier {
 
 	private static final Logger LOG = Logger.getLogger(Shortcuts.class.getName());
 
@@ -109,6 +110,32 @@ public class Shortcuts {
 			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
+		}
+	}
+
+	public void addNote(Note note) {
+		list.add(note.file().getParentFile().getName() + File.separator + note.file().getName());
+		save();
+	}
+
+	@Override
+	public void swap(String a, String b) {
+		int indexA = list.indexOf(a), indexB = list.indexOf(b);
+		if (indexA >= 0 && indexB >= 0) {
+			list.remove(indexA);
+			list.add(indexA, b);
+			list.remove(indexB);
+			list.add(indexB, a);
+			save();
+		}
+	}
+
+	@Override
+	public void remove(String s) {
+		int index = list.indexOf(s);
+		if (index >= 0) {
+			list.remove(index);
+			save();
 		}
 	}
 }

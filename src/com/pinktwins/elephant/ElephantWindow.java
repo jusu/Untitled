@@ -41,6 +41,7 @@ import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
@@ -251,6 +252,16 @@ public class ElephantWindow extends JFrame {
 			if (splitRight.getRightComponent() == multipleNotes) {
 				multipleNotes.openNotebookChooserForMoving();
 			}
+		}
+	};
+
+	ActionListener addToShortcutsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (Note n : noteList.getSelection()) {
+				sideBar.addToShortcuts(n);
+			}
+			new ShortcutsChangedEvent().post();
 		}
 	};
 
@@ -851,6 +862,7 @@ public class ElephantWindow extends JFrame {
 		note.add(menuItem("Edit Note Tags", KeyEvent.VK_QUOTE, menuMask, editTagsAction));
 		note.addSeparator();
 		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, menuMask | KeyEvent.CTRL_DOWN_MASK, moveNoteAction));
+		note.add(menuItem("Add Note to Shortcuts", 0, 0, addToShortcutsAction));
 
 		JMenu format = new JMenu("Format");
 		JMenu style = new JMenu("Style");

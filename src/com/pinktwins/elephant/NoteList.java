@@ -315,6 +315,11 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	@Override
 	public void noteClicked(NoteItem item, boolean doubleClick, MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			// JPopupMenu is buggy.
+			return;
+		}
+
 		if (doubleClick) {
 			window.openNoteWindow(item.note);
 		} else {

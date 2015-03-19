@@ -104,7 +104,7 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		return item;
 	}
 
-	private static NoteItem itemOfNoteForListMode(Note n, NoteList.ListModes listMode) {
+	synchronized private static NoteItem itemOfNoteForListMode(Note n, NoteList.ListModes listMode) {
 		switch (listMode) {
 		case CARDVIEW:
 			return new CardViewNoteItem(n);

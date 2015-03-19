@@ -9,6 +9,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.RecentNotes;
 import com.pinktwins.elephant.data.Shortcuts;
 import com.pinktwins.elephant.eventbus.RecentNotesChangedEvent;
@@ -43,11 +44,12 @@ public class Sidebar extends BackgroundPanel {
 
 		Elephant.eventBus.register(this);
 
-		shortcutList = new SideBarList(window, "SHORTCUTS");
+		shortcutList = new SideBarList(window, "SHORTCUTS", true);
 		shortcutList.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
 		shortcutList.load(shortcuts.load());
+		shortcutList.setItemModifier(shortcuts);
 
-		recentList = new SideBarList(window, "RECENT NOTES");
+		recentList = new SideBarList(window, "RECENT NOTES", false);
 		recentList.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
 		recentList.load(recentNotes.list());
 
@@ -56,7 +58,7 @@ public class Sidebar extends BackgroundPanel {
 		div.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
 		div.setMaximumSize(new Dimension(1920, 2));
 
-		navigationList = new SideBarList(window, "");
+		navigationList = new SideBarList(window, "", false);
 		navigationList.addNavigation();
 		navigationList.setOpaque(false);
 		navigationList.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
@@ -93,5 +95,9 @@ public class Sidebar extends BackgroundPanel {
 	public void handleRecentNotesChanged(RecentNotesChangedEvent event) {
 		recentList.load(recentNotes.list());
 		revalidate();
+	}
+
+	public void addToShortcuts(Note note) {
+		shortcuts.addNote(note);
 	}
 }

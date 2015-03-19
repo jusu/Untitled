@@ -1,5 +1,8 @@
-To add shortcuts, edit the file ".shortcuts" in your note folder.
-UI coming eventually!
+To add shortcuts, select "Add Note to Shortcuts" from Note menu.
+Drag shortcuts with mouse to rearrange, and drag right to remove.
+
+Shortcuts are stored in file ".shortcuts" in your note folder.
+Edit with a text editor to add these special shortcuts:
 
 To add a search shortcut, add "search:welcome".
 

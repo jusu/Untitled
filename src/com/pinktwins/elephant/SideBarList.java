@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -24,20 +25,22 @@ import com.pinktwins.elephant.util.Images;
 public class SideBarList extends JPanel {
 	private static final long serialVersionUID = 2473401062148102911L;
 
-	List<SideBarListItem> items = Factory.newArrayList();
+	private List<SideBarListItem> items = Factory.newArrayList();
+	private JPanel itemGrid;
 
 	private ElephantWindow window;
 	private String header;
+	private boolean allowModifying;
 	public boolean highlightSelection = false;
 
 	private final String fileMovedStr = "(file moved)";
 
 	private static ImageIcon sidebarNote, sidebarNotebook, sidebarTag, sidebarSearch, sidebarNotesLarge, sidebarNotebooksLarge, sidebarTagsLarge;
-	private static Image sidebarTile, largeHighlight;
+	private static Image sidebarTile, largeHighlight, grayMinus;
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "sidebarNote", "sidebarNotebook", "sidebarTag", "sidebarSearch", "sidebarNotesLarge",
-				"sidebarNotebooksLarge", "sidebarTagsLarge", "sidebar", "sidebarLargeHilight" });
+				"sidebarNotebooksLarge", "sidebarTagsLarge", "sidebar", "sidebarLargeHilight", "grayMinus" });
 		sidebarNote = new ImageIcon(i.next());
 		sidebarNotebook = new ImageIcon(i.next());
 		sidebarTag = new ImageIcon(i.next());
@@ -47,12 +50,29 @@ public class SideBarList extends JPanel {
 		sidebarTagsLarge = new ImageIcon(i.next());
 		sidebarTile = i.next();
 		largeHighlight = i.next();
+		grayMinus = i.next();
 	}
 
-	public SideBarList(ElephantWindow w, String header) {
+	public interface SideBarItemModifier {
+		public void swap(String a, String b);
+
+		public void remove(String s);
+	}
+
+	final SidebarModifyingMouseListener modifyingListener;
+
+	public void setItemModifier(SideBarItemModifier m) {
+		modifyingListener.setItemModifier(m);
+	}
+
+	public SideBarList(ElephantWindow w, String header, boolean allowModifying) {
 		window = w;
 		this.header = header;
+		this.allowModifying = allowModifying;
+
 		setOpaque(false);
+
+		modifyingListener = allowModifying ? new SidebarModifyingMouseListener(this, getCursor()) : null;
 	}
 
 	public String getTarget(int n) {
@@ -101,9 +121,9 @@ public class SideBarList extends JPanel {
 
 		setLayout(new BorderLayout());
 
-		JPanel grid = new JPanel();
-		grid.setOpaque(false);
-		grid.setLayout(new GridLayout(0, 1));
+		itemGrid = new JPanel();
+		itemGrid.setOpaque(false);
+		itemGrid.setLayout(new GridLayout(0, 1));
 
 		if (useHeader) {
 			JLabel lHeader = new JLabel(header);
@@ -113,10 +133,14 @@ public class SideBarList extends JPanel {
 			add(lHeader, BorderLayout.NORTH);
 		}
 
-		add(grid, BorderLayout.CENTER);
+		add(itemGrid, BorderLayout.CENTER);
 
 		for (SideBarListItem item : items) {
-			grid.add(item);
+			if (allowModifying) {
+				item.addMouseListener(modifyingListener);
+				item.addMouseMotionListener(modifyingListener);
+			}
+			itemGrid.add(item);
 		}
 	}
 
@@ -143,8 +167,11 @@ public class SideBarList extends JPanel {
 
 		File file;
 		String target;
+		String rawInitString;
 		JButton icon = new JButton();
 		JLabel label = new JLabel("");
+
+		public boolean drawMinus = false;
 
 		public void refresh() {
 			String s;
@@ -242,13 +269,14 @@ public class SideBarList extends JPanel {
 			super(image);
 		}
 
-		public SideBarListItem(String targetFileName) {
+		public SideBarListItem(String str) {
 			init();
 
-			String path = Vault.getInstance().getHome() + File.separator + targetFileName;
+			String path = Vault.getInstance().getHome() + File.separator + str;
 
 			file = new File(path);
 			target = file.getAbsolutePath();
+			rawInitString = str;
 
 			refresh();
 		}
@@ -270,6 +298,15 @@ public class SideBarList extends JPanel {
 			label.setText(title);
 			icon.setIcon(imageIcon);
 			icon.setBorder(BorderFactory.createEmptyBorder(5, 0, 4, 0));
+		}
+
+		@Override
+		public void paint(Graphics g) {
+			super.paint(g);
+
+			if (drawMinus) {
+				g.drawImage(grayMinus, getWidth() - grayMinus.getWidth(null) - 8, (getHeight() - grayMinus.getHeight(null)) / 2, null);
+			}
 		}
 	}
 }
