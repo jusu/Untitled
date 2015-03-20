@@ -718,11 +718,15 @@ public class ElephantWindow extends JFrame {
 	public void showNote(Note note) {
 		showNotes();
 		splitRight.setRightComponent(noteEditor);
-		noteEditor.clear();
-		noteEditor.load(note);
+		refreshNote(note);
 		if (!toolBar.isEditing()) {
 			noteEditor.focusQuickLook();
 		}
+	}
+
+	public void refreshNote(Note note) {
+		noteEditor.clear();
+		noteEditor.load(note);
 	}
 
 	public void showMultipleNotes() {

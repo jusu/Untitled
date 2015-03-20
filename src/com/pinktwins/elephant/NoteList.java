@@ -524,7 +524,11 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		if (n != null) {
 			selectNote(n, false);
 			if (!selectedNotes.isEmpty() && !window.isEditorDirty()) {
-				window.showNote(n);
+				if (window.uiMode == ElephantWindow.UiModes.notes) {
+					window.showNote(n);
+				} else {
+					window.refreshNote(n);
+				}
 			}
 		}
 	}
