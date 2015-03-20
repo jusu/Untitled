@@ -18,6 +18,7 @@ import org.apache.commons.lang3.SystemUtils;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.WatchDir.WatchDirListener;
+import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Factory;
@@ -235,6 +236,8 @@ public class Vault implements WatchDirListener {
 			} else {
 				LOG.info("Fail: id lookup while deleting tag: " + idIndex + ", " + nameIndex + ". Not deleting tag from note " + m.title());
 			}
+
+			new NoteChangedEvent(n, true).post();
 		}
 
 		tags.deleteTag(tagId, tagName);
@@ -274,6 +277,11 @@ public class Vault implements WatchDirListener {
 					return;
 				}
 				source = renamed;
+			}
+
+			// Purge notes from search index
+			for (Note n : nb.notes) {
+				Search.ssi.purgeNote(n);
 			}
 
 			// Move
