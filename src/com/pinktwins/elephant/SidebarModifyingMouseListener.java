@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import com.pinktwins.elephant.SideBarList.SideBarItemModifier;
 import com.pinktwins.elephant.SideBarList.SideBarListItem;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
@@ -17,11 +19,12 @@ import com.pinktwins.elephant.util.Images;
 
 class SidebarModifyingMouseListener extends CustomMouseListener implements MouseMotionListener {
 
-	private static final Image rearrangeArrow, redMinus;
+	private static final Image rearrangeArrow, rearrangeArrow_win, redMinus;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "rearrangeArrow", "redMinus" });
+		Iterator<Image> i = Images.iterator(new String[] { "rearrangeArrow", "rearrangeArrow_win", "redMinus" });
 		rearrangeArrow = i.next();
+		rearrangeArrow_win = i.next();
 		redMinus = i.next();
 	}
 
@@ -39,7 +42,7 @@ class SidebarModifyingMouseListener extends CustomMouseListener implements Mouse
 		this.defaultCursor = defaultCursor;
 
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		rearrangeCursor = toolkit.createCustomCursor(rearrangeArrow, new Point(0, 10), "rearrangeCursor");
+		rearrangeCursor = toolkit.createCustomCursor(SystemUtils.IS_OS_WINDOWS ? rearrangeArrow_win : rearrangeArrow, new Point(0, 10), "rearrangeCursor");
 		redMinusCursor = toolkit.createCustomCursor(redMinus, new Point(7, 7), "redMinusCursor");
 	}
 
