@@ -276,6 +276,32 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener addNotebookToShortcutsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Notebook nb = null;
+
+			switch (uiMode) {
+			case notes:
+				nb = noteList.currentNotebook();
+				break;
+			case notebooks:
+				if (notebooks.selectedItem != null) {
+					nb = notebooks.selectedItem.getNotebook();
+				}
+				break;
+			case tags:
+				break;
+			default:
+				break;
+			}
+			if (nb != null && !nb.isDynamicallyCreatedNotebook()) {
+				sideBar.addToShortcuts(nb);
+				new ShortcutsChangedEvent().post();
+			}
+		}
+	};
+
 	ActionListener jumpToNotebookAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -883,6 +909,7 @@ public class ElephantWindow extends JFrame {
 		note.addSeparator();
 		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, menuMask | KeyEvent.CTRL_DOWN_MASK, moveNoteAction));
 		note.add(menuItem("Add Note to Shortcuts", 0, 0, addToShortcutsAction));
+		note.add(menuItem("Add Notebook to Shortcuts", 0, 0, addNotebookToShortcutsAction));
 
 		JMenu format = new JMenu("Format");
 		JMenu style = new JMenu("Style");

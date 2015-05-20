@@ -118,6 +118,10 @@ public class Shortcuts implements SideBarItemModifier {
 		save();
 	}
 
+	public void addNotebook(Notebook nb) {
+		add(nb.folder().getName());
+	}
+
 	public void addNote(Note note) {
 		add(note.file().getParentFile().getName() + File.separator + note.file().getName());
 	}

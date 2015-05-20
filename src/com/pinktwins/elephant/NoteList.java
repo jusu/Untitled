@@ -150,6 +150,10 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		}
 	}
 
+	public Notebook currentNotebook() {
+		return notebook;
+	}
+
 	public void load(Notebook notebook) {
 		this.notebook = notebook;
 

@@ -188,6 +188,10 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 			addMouseListener(this);
 		}
 
+		public Notebook getNotebook() {
+			return notebook;
+		}
+
 		@Override
 		public void setSelected(boolean b) {
 			if (b) {

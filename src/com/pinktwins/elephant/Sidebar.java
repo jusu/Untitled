@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.RecentNotes;
 import com.pinktwins.elephant.data.Shortcuts;
 import com.pinktwins.elephant.eventbus.RecentNotesChangedEvent;
@@ -99,6 +100,10 @@ public class Sidebar extends BackgroundPanel {
 
 	public void addToShortcuts(Note note) {
 		shortcuts.addNote(note);
+	}
+
+	public void addToShortcuts(Notebook nb) {
+		shortcuts.addNotebook(nb);
 	}
 
 	public void addToShortcuts(String s) {
