@@ -35,7 +35,7 @@ public class AutoIndentAction extends AbstractAction {
         if(!comp.isEditable()) 
             return; 
         try {
-            String str = ActionUtils.getTextUntilCursor(comp);
+            String str = getTextUntilCursor(comp);
             String whiteSpace = getLeadingWhiteSpace(str); 
             String additionalBullet = determineAdditionalBullets(str);
             doc.insertString(comp.getCaretPosition(), '\n' + whiteSpace + additionalBullet, null);
@@ -68,7 +68,7 @@ public class AutoIndentAction extends AbstractAction {
         }
     }
 
-	/**
+    /**
      *  Returns leading white space characters in the specified string. 
      */ 
     private String getLeadingWhiteSpace(String str) { 
@@ -89,4 +89,12 @@ public class AutoIndentAction extends AbstractAction {
         } 
         return whitespace; 
     } 
+
+    private static String getTextUntilCursor(JTextPane comp) throws BadLocationException {
+        int caretPosition = comp.getCaretPosition();
+        int start = Utilities.getRowStart(comp, caretPosition);
+        Document doc = comp.getDocument();
+        String str = doc.getText(start, caretPosition - start);
+        return str;
+    }
 } 

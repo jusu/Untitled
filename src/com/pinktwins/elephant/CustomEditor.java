@@ -69,6 +69,8 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.ui.AutoIndentAction;
+import com.pinktwins.elephant.ui.ShiftTabAction;
+import com.pinktwins.elephant.ui.TabAction;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.ResizeListener;
@@ -588,6 +590,10 @@ public class CustomEditor extends RoundPanel {
 
 		// enable AutoIndent as described at http://www.jroller.com/santhosh/entry/autoindent_for_jtextarea
 		note.registerKeyboardAction(new AutoIndentAction(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
+
+		// enable Tab and Shift-Tab behavior for bullet lists
+		note.registerKeyboardAction(new TabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), JComponent.WHEN_FOCUSED);
+		note.registerKeyboardAction(new ShiftTabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, java.awt.event.InputEvent.SHIFT_DOWN_MASK), JComponent.WHEN_FOCUSED);
 
 		maybeImporting = false;
 
