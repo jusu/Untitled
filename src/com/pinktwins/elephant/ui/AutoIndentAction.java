@@ -38,9 +38,10 @@ public class AutoIndentAction extends AbstractAction {
             int caretPosition = comp.getCaretPosition();
             int start = Utilities.getRowStart(comp, caretPosition);
             int end = Utilities.getRowEnd(comp, caretPosition);
-            String str = doc.getText(start, end - start - 1); 
+            String str = doc.getText(start, end - start);
             String whiteSpace = getLeadingWhiteSpace(str); 
-            doc.insertString(comp.getCaretPosition(), '\n' + whiteSpace, null); 
+            String additionalBullet = determineAdditionalBullets(str);
+            doc.insertString(comp.getCaretPosition(), '\n' + whiteSpace + additionalBullet, null);
         } catch(BadLocationException ex) { 
             try { 
                 doc.insertString(comp.getCaretPosition(), "\n", null); 
@@ -49,15 +50,35 @@ public class AutoIndentAction extends AbstractAction {
             } 
         } 
     } 
- 
-    /** 
+
+    /**
+     * Checks if the given string begins with "* ", "- ", or "+ " (after removing the white spaces before)
+     * If yes, that string is returned
+     * If not, "" is returned
+     * @param str
+     * @return
+     */
+    private String determineAdditionalBullets(String str) {
+        String trimmed = str.trim();
+        if (trimmed.startsWith("* ")) {
+            return "* ";
+        } else if (trimmed.startsWith("- ")) {
+            return "- ";
+        } else if (trimmed.startsWith("+ ")) {
+            return "+ ";
+        } else {
+            return "";
+        }
+    }
+
+	/**
      *  Returns leading white space characters in the specified string. 
      */ 
     private String getLeadingWhiteSpace(String str) { 
         return str.substring(0, getLeadingWhiteSpaceWidth(str)); 
     } 
  
-    /** 
+    /**
      *  Returns the number of leading white space characters in the specified string. 
      */ 
     private int getLeadingWhiteSpaceWidth(String str) { 
