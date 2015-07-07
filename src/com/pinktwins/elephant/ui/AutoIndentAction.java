@@ -35,10 +35,7 @@ public class AutoIndentAction extends AbstractAction {
         if(!comp.isEditable()) 
             return; 
         try {
-            int caretPosition = comp.getCaretPosition();
-            int start = Utilities.getRowStart(comp, caretPosition);
-            int end = Utilities.getRowEnd(comp, caretPosition);
-            String str = doc.getText(start, end - start);
+            String str = ActionUtils.getTextUntilCursor(comp);
             String whiteSpace = getLeadingWhiteSpace(str); 
             String additionalBullet = determineAdditionalBullets(str);
             doc.insertString(comp.getCaretPosition(), '\n' + whiteSpace + additionalBullet, null);
@@ -83,7 +80,7 @@ public class AutoIndentAction extends AbstractAction {
      */ 
     private int getLeadingWhiteSpaceWidth(String str) { 
         int whitespace = 0; 
-        while(whitespace<str.length()) { 
+        while(whitespace<str.length()) {
             char ch = str.charAt(whitespace); 
             if(ch==' ' || ch=='\t') 
                 whitespace++; 
