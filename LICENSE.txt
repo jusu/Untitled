@@ -121,3 +121,5 @@ http://openjdk.java.net/legal/gplv2+ce.html
 SimpleImageInfo.java by Jaimon Mathew <http://www.jaimon.co.uk>
 Apache 2.0
 
+AutoIndentAction.java by Santhosh Kumar T <santhosh@fiorano.com>
+LGPL 2.1 or later
