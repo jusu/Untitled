@@ -16,26 +16,28 @@ package com.pinktwins.elephant.ui;
  */ 
  
 import javax.swing.*; 
-import javax.swing.text.Document; 
+import javax.swing.text.Document;
+import javax.swing.text.Utilities;
 import javax.swing.text.BadLocationException; 
 import java.awt.event.ActionEvent; 
  
 /** 
  * @author Santhosh Kumar T 
- * @email santhosh@fiorano.com 
+ * @email santhosh@fiorano.com
+ *
+ * Updated from JTextArea to JTextPane
  */ 
 public class AutoIndentAction extends AbstractAction { 
     public void actionPerformed(ActionEvent ae) { 
-        JTextArea comp = (JTextArea)ae.getSource(); 
+        JTextPane comp = (JTextPane)ae.getSource();
         Document doc = comp.getDocument(); 
  
         if(!comp.isEditable()) 
             return; 
-        try { 
-            int line = comp.getLineOfOffset(comp.getCaretPosition()); 
- 
-            int start = comp.getLineStartOffset(line); 
-            int end = comp.getLineEndOffset(line); 
+        try {
+            int caretPosition = comp.getCaretPosition();
+            int start = Utilities.getRowStart(comp, caretPosition);
+            int end = Utilities.getRowEnd(comp, caretPosition);
             String str = doc.getText(start, end - start - 1); 
             String whiteSpace = getLeadingWhiteSpace(str); 
             doc.insertString(comp.getCaretPosition(), '\n' + whiteSpace, null); 
