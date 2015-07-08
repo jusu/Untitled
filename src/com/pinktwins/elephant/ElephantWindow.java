@@ -548,6 +548,7 @@ public class ElephantWindow extends JFrame {
 							noteList.changeSelection(1, e);
 							break;
 						case KeyEvent.VK_BACK_SPACE:
+						case KeyEvent.VK_DELETE:
 							deleteSelectedNote();
 							break;
 						}
