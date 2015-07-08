@@ -37,7 +37,7 @@ public class AutoIndentAction extends AbstractAction {
         try {
             String str = getTextUntilCursor(comp);
             String whiteSpace = getLeadingWhiteSpace(str); 
-            String additionalBullet = determineAdditionalBullets(str);
+            String additionalBullet = determineAdditionalBullet(str);
             doc.insertString(comp.getCaretPosition(), '\n' + whiteSpace + additionalBullet, null);
         } catch(BadLocationException ex) { 
             try { 
@@ -55,7 +55,7 @@ public class AutoIndentAction extends AbstractAction {
      * @param str
      * @return
      */
-    private String determineAdditionalBullets(String str) {
+    private String determineAdditionalBullet(String str) {
         String trimmed = str.trim();
         if (trimmed.startsWith("* ")) {
             return "* ";
