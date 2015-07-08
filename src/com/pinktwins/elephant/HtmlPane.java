@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLDocument;
@@ -30,6 +31,8 @@ public class HtmlPane extends JTextPane {
 			if (doc instanceof HTMLDocument) {
 				d = (HTMLDocument) doc;
 				d.setBase(baseUrl);
+				// hint by http://stackoverflow.com/a/19785465/873282
+				this.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			}
 		} catch (MalformedURLException e) {
 			LOG.severe("Fail: " + e);
