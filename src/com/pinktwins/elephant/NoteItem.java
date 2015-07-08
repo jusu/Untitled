@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -141,6 +142,8 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		if (note.isMarkdown()) {
 			String contents = note.contents();
 			String html = NoteEditor.pegDown.markdownToHtml(contents);
+			// hint by http://stackoverflow.com/a/19785465/873282
+			preview.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			preview.setText(html);
 		} else {
 			CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
