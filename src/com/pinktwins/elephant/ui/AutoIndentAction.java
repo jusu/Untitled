@@ -36,8 +36,15 @@ public class AutoIndentAction extends AbstractAction {
             return; 
         try {
             String str = getTextUntilCursor(comp);
-            String whiteSpace = getLeadingWhiteSpace(str); 
-            String additionalBullet = determineAdditionalBullet(str);
+            String whiteSpace = getLeadingWhiteSpace(str);
+            String strAtCaret = doc.getText(comp.getCaretPosition(), 1);
+            String additionalBullet;
+            if ("*-+".contains(strAtCaret)) {
+                // special case: cursor right before bullet sign --> do not insert additional bullet sign
+                additionalBullet = "";
+            } else {
+                additionalBullet = determineAdditionalBullet(str);
+            }
             doc.insertString(comp.getCaretPosition(), '\n' + whiteSpace + additionalBullet, null);
         } catch(BadLocationException ex) { 
             try { 
