@@ -4,7 +4,6 @@ import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Utilities;
-import static com.pinktwins.elephant.ui.UIConstants.COUNT_OF_SPACES_FOR_LIST_INDENT;
 
 public class TabAction extends GenericTabAction {
 
@@ -23,23 +22,13 @@ public class TabAction extends GenericTabAction {
 	void bulletListBehavior(JTextPane comp, int caretPosition) throws BadLocationException {
 		int start = Utilities.getRowStart(comp, caretPosition);
 		Document doc = comp.getDocument();
-		String spaces;
-		switch (COUNT_OF_SPACES_FOR_LIST_INDENT) {
-		case 2:
-			spaces = "  ";
-			break;
-		default:
-			// even if COUNT_OF_SPACES_FOR_LIST_INDENT is not 4, fall back to four spaces
-			spaces = "    ";
-			break;
-		}
-		doc.insertString(start, spaces, null);
+		// assumption: COUNT_OF_SPACES_FOR_LIST_INDENT == 4;
+		doc.insertString(start, "    ", null);
 	}
 
 	@Override
 	int getMinSpaceCount() {
-		// two spaces
-		return COUNT_OF_SPACES_FOR_LIST_INDENT;
+		return 0;
 	}
 
 }

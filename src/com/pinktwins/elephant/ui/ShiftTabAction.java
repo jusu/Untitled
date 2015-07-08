@@ -34,9 +34,8 @@ public class ShiftTabAction extends GenericTabAction {
 
 	@Override
 	int getMinSpaceCount() {
-		// four spaces (in the case of COUNT_OF_SPACES_FOR_LIST_INDENT==2)
-		// in case there were two spaces only, the resulting bullet list entry was not a valid entry, because of the missing leading two spaces 
-		return 2*COUNT_OF_SPACES_FOR_LIST_INDENT;
+		// four spaces (in the case of COUNT_OF_SPACES_FOR_LIST_INDENT==4)
+		return COUNT_OF_SPACES_FOR_LIST_INDENT;
 	}
 
 }

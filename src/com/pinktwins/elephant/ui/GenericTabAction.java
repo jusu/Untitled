@@ -27,29 +27,28 @@ public abstract class GenericTabAction extends AbstractAction {
 			int start = Utilities.getRowStart(comp, caretPosition);
 			int end = Utilities.getRowEnd(comp, caretPosition);
 			String line = doc.getText(start, end - start);
-			if (line.length() < 3) {
-				// line is empty or not starting with two spaces and a possible bullet item character --> default behavior
+			if (line.isEmpty()) {
+				// line is empty --> default behavior
 				defaultBehavior(doc, caretPosition);
 				return;
 			}
 			char seperator = line.charAt(0);
-			if ((seperator != ' ') && (seperator != '\t')) {
-				// line does not start with space or tab --> default behavior
-				defaultBehavior(doc, caretPosition);
-				return;
-			}
-			int curPos = 1;
-			while ((curPos < line.length()) && (line.charAt(curPos) == seperator)) {
-				curPos++;
-			}
-			if (curPos == line.length()) {
-				// only tabs/spaces --> default behavior
-				defaultBehavior(doc, caretPosition);
-				return;
-			}
+			int curPos = 0;
 			int minWhiteSpaceCount = getMinSpaceCount();
-			if (seperator == '\t') {
-				minWhiteSpaceCount = minWhiteSpaceCount / 2;
+			if ((seperator == ' ') || (seperator == '\t')) {
+				// first character is really a separator
+				// go to first char not being a separator
+				while ((curPos < line.length()) && (line.charAt(curPos) == seperator)) {
+					curPos++;
+				}
+				if (curPos == line.length()) {
+					// only tabs/spaces --> default behavior
+					defaultBehavior(doc, caretPosition);
+					return;
+				}
+				if (seperator == '\t') {
+					minWhiteSpaceCount = minWhiteSpaceCount / 2;
+				}
 			}
 			if (curPos < minWhiteSpaceCount) {
 				// too less white spaces --> default behavior
@@ -58,6 +57,7 @@ public abstract class GenericTabAction extends AbstractAction {
 			}
 			char curChar = line.charAt(curPos);
 			if ((curChar == '*') || (curChar == '-') || (curChar == '+')) {
+				// we found a bullet list marker
 				if (curPos+1 < line.length()) {
 					// not EOL -> check for next char
 					if (line.charAt(curPos+1) != ' ') {
