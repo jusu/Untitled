@@ -160,6 +160,28 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener switchNoteLocationAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// show start in a new frame
+			JFrame startFrame = new JFrame();
+			startFrame.setTitle("Elephant Note Location Switch");
+
+			// Mac packages the icon just fine. Windows needs this for taskbar icon. Linux?
+			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
+				startFrame.setIconImage(elephantIcon);
+			}
+
+			startFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			// wild guessing for the coordinates
+			Rectangle bounds = new Rectangle(130, 121, 495, 548);
+			startFrame.setBounds(bounds);
+
+			callStart(startFrame);
+			startFrame.setVisible(true);
+		}
+	};
+
 	ActionListener showNotesAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -369,7 +391,7 @@ public class ElephantWindow extends JFrame {
 		createSplit();
 		createToolbar();
 
-		Start start = null;
+		boolean startCalled = false;
 
 		if (Vault.getInstance().hasLocation()) {
 			add(splitLeft, BorderLayout.CENTER);
@@ -379,17 +401,8 @@ public class ElephantWindow extends JFrame {
 				showNotebook(b);
 			}
 		} else {
-			start = new Start(new Runnable() {
-				@Override
-				public void run() {
-					if (!Elephant.restartApplication()) {
-						JOptionPane.showMessageDialog(null, "Great! Now please restart.");
-						System.exit(0);
-					}
-				}
-			});
-
-			add(start, BorderLayout.CENTER);
+			callStart(this);
+			startCalled = true;
 		}
 
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
@@ -457,7 +470,7 @@ public class ElephantWindow extends JFrame {
 
 		toolBar.indexingInProgress(true);
 
-		if (start == null && !Search.ssi.ready()) {
+		if (!startCalled && !Search.ssi.ready()) {
 			new Thread() {
 				@Override
 				public void run() {
@@ -490,6 +503,20 @@ public class ElephantWindow extends JFrame {
 				}
 			}.start();
 		}
+	}
+
+	private void callStart(JFrame frame) {
+		Start start = new Start(new Runnable() {
+			@Override
+			public void run() {
+				if (!Elephant.restartApplication()) {
+					JOptionPane.showMessageDialog(null, "Great! Now please restart.");
+					System.exit(0);
+				}
+			}
+		});
+
+		frame.add(start, BorderLayout.CENTER);
 	}
 
 	private Rectangle loadBounds() {
@@ -849,6 +876,7 @@ public class ElephantWindow extends JFrame {
 		file.add(menuItem("New Notebook", KeyEvent.VK_N, menuMask | KeyEvent.SHIFT_DOWN_MASK, newNotebookAction));
 		file.add(menuItem("New Tag", KeyEvent.VK_T, menuMask | KeyEvent.CTRL_DOWN_MASK, newTagAction));
 		file.add(menuItem("New Elephant Window", KeyEvent.VK_N, menuMask | KeyEvent.ALT_DOWN_MASK, newWindowAction));
+		file.add(menuItem("Switch Note Location", KeyEvent.VK_L, menuMask | KeyEvent.ALT_DOWN_MASK, switchNoteLocationAction));
 		file.addSeparator();
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
 		// file.addSeparator();
