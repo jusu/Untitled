@@ -873,7 +873,7 @@ public class ElephantWindow extends JFrame {
 		file.add(menuItem("New Notebook", KeyEvent.VK_N, menuMask | KeyEvent.SHIFT_DOWN_MASK, newNotebookAction));
 		file.add(menuItem("New Tag", KeyEvent.VK_T, menuMask | KeyEvent.CTRL_DOWN_MASK, newTagAction));
 		file.add(menuItem("New Elephant Window", KeyEvent.VK_N, menuMask | KeyEvent.ALT_DOWN_MASK, newWindowAction));
-		file.add(menuItem("Switch Note Location", KeyEvent.VK_L, menuMask, switchNoteLocationAction));
+		file.add(menuItem("Switch Note Location", KeyEvent.VK_L, menuMask | KeyEvent.ALT_DOWN_MASK, switchNoteLocationAction));
 		file.addSeparator();
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
 		// file.addSeparator();
