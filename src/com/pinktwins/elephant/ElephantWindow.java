@@ -590,6 +590,7 @@ public class ElephantWindow extends JFrame {
 							notebooks.openSelected();
 							break;
 						case KeyEvent.VK_BACK_SPACE:
+						case KeyEvent.VK_DELETE:
 							notebooks.deleteSelected();
 							break;
 						default:
@@ -616,6 +617,7 @@ public class ElephantWindow extends JFrame {
 							tagList.openSelected();
 							break;
 						case KeyEvent.VK_BACK_SPACE:
+						case KeyEvent.VK_DELETE:
 							if (!tagList.isEditing) {
 								tagList.deleteSelected();
 								break;
