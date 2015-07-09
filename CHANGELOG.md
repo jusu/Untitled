@@ -2,8 +2,10 @@
 
 ##v20
 
+with contributions from Oliver Kopp, thanks!
+Contributors are listed in CONTRIBUTING.md.
+
 - "Add Notebook to Shortcuts" command under Note menu
-Contributions from koppor:
 - Bullet list handling: automatically insert bullet char *+- when making lists
 - Automatic list indenting with Tab and Shift-Tab
 - Enabled delete key to delete a note, notebook and tag
