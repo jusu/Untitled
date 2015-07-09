@@ -27,10 +27,12 @@ import javax.swing.text.Utilities;
  * @author Santhosh Kumar T
  * @email santhosh@fiorano.com
  *
- *  * Updated from JTextArea to JTextPane
- *  * Added bullet list handling
+ *        * Updated from JTextArea to JTextPane * Added bullet list handling
  */
 public class AutoIndentAction extends AbstractAction {
+
+	private static final String bulletChars = "*-+";
+
 	public void actionPerformed(ActionEvent ae) {
 		JTextPane comp = (JTextPane) ae.getSource();
 		Document doc = comp.getDocument();
@@ -38,6 +40,7 @@ public class AutoIndentAction extends AbstractAction {
 		if (!comp.isEditable()) {
 			return;
 		}
+
 		try {
 			int caretPosition = comp.getCaretPosition();
 
@@ -47,18 +50,24 @@ public class AutoIndentAction extends AbstractAction {
 			int end = Utilities.getRowEnd(comp, caretPosition);
 			String line = doc.getText(start, end - start);
 
+			if (line.isEmpty()) {
+				doc.insertString(caretPosition, "\n", null);
+				return;
+			}
+
 			// determine whiteSpace and additionalBullet
 			String whiteSpace = getLeadingWhiteSpace(line);
 			String strAtCaret = doc.getText(caretPosition, 1);
 			String additionalBullet;
-			if ("*-+".contains(strAtCaret)) {
+			if (bulletChars.contains(strAtCaret)) {
 				// special case: cursor right before bullet sign --> do not insert additional bullet sign
 				additionalBullet = "";
-			} else if ("*-+".contains(line.trim())) {
+			} else if (bulletChars.contains(line.trim())) {
 				// special case: pressing enter after an empty bullet item
 				// remove bullet instead of adding something
-				// This is in contrast to MS office behavior: remove indent by one level; if no minor level avalible: remove bullet
-				doc.remove(start, end-start);
+				// This is in contrast to MS office behavior: remove indent by one level; if no minor level avalible:
+				// remove bullet
+				doc.remove(start, end - start);
 				return;
 			} else {
 				additionalBullet = determineAdditionalBullet(line);
