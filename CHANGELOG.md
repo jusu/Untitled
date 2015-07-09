@@ -11,6 +11,7 @@ Contributors are listed in CONTRIBUTING.md.
 - Enabled delete key to delete a note, notebook and tag
 - Added File - Switch Note Location
 - Convert plain links to markdown links
+- HOME key jumps to beginning of text in line instead of beginning of line
 
 ##v19
 
