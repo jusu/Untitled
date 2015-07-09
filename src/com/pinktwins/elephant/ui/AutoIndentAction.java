@@ -27,34 +27,47 @@ import javax.swing.text.Utilities;
  * @author Santhosh Kumar T
  * @email santhosh@fiorano.com
  *
- *        Updated from JTextArea to JTextPane
+ *  * Updated from JTextArea to JTextPane
+ *  * Added bullet list handling
  */
 public class AutoIndentAction extends AbstractAction {
 	public void actionPerformed(ActionEvent ae) {
 		JTextPane comp = (JTextPane) ae.getSource();
 		Document doc = comp.getDocument();
 
-		if (!comp.isEditable())
+		if (!comp.isEditable()) {
 			return;
+		}
 		try {
 			int caretPosition = comp.getCaretPosition();
-			String str = getTextUntilCursor(comp);
-			String whiteSpace = getLeadingWhiteSpace(str);
+
+			// we need the text form the beginning until the first bullet plus space plus first character
+			// it is easier to just read the complete line
+			int start = Utilities.getRowStart(comp, caretPosition);
+			int end = Utilities.getRowEnd(comp, caretPosition);
+			String line = doc.getText(start, end - start);
+
+			// determine whiteSpace and additionalBullet
+			String whiteSpace = getLeadingWhiteSpace(line);
 			String strAtCaret = doc.getText(caretPosition, 1);
 			String additionalBullet;
 			if ("*-+".contains(strAtCaret)) {
 				// special case: cursor right before bullet sign --> do not insert additional bullet sign
 				additionalBullet = "";
+			} else if ("*-+".contains(line.trim())) {
+				// special case: pressing enter after an empty bullet item
+				// remove bullet instead of adding something
+				// This is in contrast to MS office behavior: remove indent by one level; if no minor level avalible: remove bullet
+				doc.remove(start, end-start);
+				return;
 			} else {
-				additionalBullet = determineAdditionalBullet(str);
-			}
-
-			// pressing enter twice removes the extraneous bullet sign
-			if (caretPosition > 1) {
-				String strBeforeCaret = doc.getText(caretPosition - 2, 1);
-				if ("*-+".contains(strBeforeCaret) && str.length() == whiteSpace.length() + 2 && str.charAt(str.length() - 1) == ' ') {
-					doc.remove(caretPosition - whiteSpace.length() - 2, whiteSpace.length() + 2);
-					whiteSpace = "";
+				additionalBullet = determineAdditionalBullet(line);
+				if (!additionalBullet.isEmpty()) {
+					boolean caretDirectlyAfterBulletSign = (caretPosition == start + whiteSpace.length() + 1);
+					if (caretDirectlyAfterBulletSign) {
+						// strip trailing space
+						additionalBullet = additionalBullet.substring(0, 1);
+					}
 				}
 			}
 
@@ -110,11 +123,4 @@ public class AutoIndentAction extends AbstractAction {
 		return whitespace;
 	}
 
-	private static String getTextUntilCursor(JTextPane comp) throws BadLocationException {
-		int caretPosition = comp.getCaretPosition();
-		int start = Utilities.getRowStart(comp, caretPosition);
-		Document doc = comp.getDocument();
-		String str = doc.getText(start, caretPosition - start);
-		return str;
-	}
 }
