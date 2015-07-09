@@ -50,7 +50,7 @@ public class AutoIndentAction extends AbstractAction {
 			int end = Utilities.getRowEnd(comp, caretPosition);
 			String line = doc.getText(start, end - start);
 
-			if (line.isEmpty()) {
+			if (line.length() <= 1) {
 				doc.insertString(caretPosition, "\n", null);
 				return;
 			}
