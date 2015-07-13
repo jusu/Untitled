@@ -124,8 +124,10 @@ public class AutoIndentAction extends AbstractAction {
 
 	/**
 	 * Returns the number of leading white space characters in the specified string.
+	 * 
+	 * QUICK HACK: static, because HomeAction also uses it
 	 */
-	private int getLeadingWhiteSpaceWidth(String str) {
+	static int getLeadingWhiteSpaceWidth(String str) {
 		int whitespace = 0;
 		while (whitespace < str.length()) {
 			char ch = str.charAt(whitespace);
