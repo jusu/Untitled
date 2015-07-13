@@ -50,13 +50,18 @@ public class AutoIndentAction extends AbstractAction {
 			int end = Utilities.getRowEnd(comp, caretPosition);
 			String line = doc.getText(start, end - start);
 
-			if (line.length() <= 1) {
+			// determine whitespace
+			String whiteSpace = getLeadingWhiteSpace(line);
+
+			// Default to inserting \n on these cases:
+			if (start == caretPosition || // Caret at beginning of line
+					line.length() <= 1 || // empty line or single char (bullet without space is not a list item)
+					caretPosition - start < whiteSpace.length()) { // Caret between line start and bullet
 				doc.insertString(caretPosition, "\n", null);
 				return;
 			}
 
-			// determine whiteSpace and additionalBullet
-			String whiteSpace = getLeadingWhiteSpace(line);
+			// determine additionalBullet
 			String strAtCaret = doc.getText(caretPosition, 1);
 			String additionalBullet;
 			if (bulletChars.contains(strAtCaret)) {
