@@ -1,0 +1,43 @@
+// Things to improve:
+// 1. dependancies from mavenCentral
+// 2. make jar files working, currently need some more adjusting
+// 3. make documentaton for build process (gradle build, gradle run + also can import as gradle project to eclipse)
+// 4. put test folder inside project
+// 5. put sikuli somewhere. must think how
+// 6. also there was some talks about gradle wrapper and circleci must look them also
+// Author: Harri Saar
+// Last update: 2015-09-29 7pm
+
+
+
+apply plugin:'java'
+apply plugin:'application'
+
+mainClassName = 'com.pinktwins.elephant.Elephant'
+
+
+// we need to specify new source location, because this project does not follow conventional project structure
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+		}
+		resources {
+			srcDir 'src'
+		}
+	}
+}
+
+
+// we could take most of them from maven central
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+jar {
+        version = '1.0'
+        manifest {
+                attributes 'Main-Class' : 'com.pinktwins.elephant.Elephant'
+        }
+}
+
