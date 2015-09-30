@@ -1,10 +1,10 @@
 src/com.pinktwins.elephant:
-CustomEditor.java rida 569 create note
-CustomEditor.java rida 672 markdowni teisendus (kogu see klass on markdowni/rtf/plain stiiliga seotud)
-NoteEditor.java rida 535 load note
-NoteEditor.java rida 670 save changes
-NoteList.java rida 321 notele vajutamine ja selle valimine
-NoteList.java rida 473 uue note loomine  (kutsub välja Notebook.java rida 228 funktsiooni)
-SaveChanges.java rida 37 muutuste salvestamine
+CustomEditor.java line 569 create note
+CustomEditor.java line 672 markdown (this entire class is mainly assosiated with markdown/rtf/plain)
+NoteEditor.java line 535 load note
+NoteEditor.java line 670 save changes
+NoteList.java line 321 clicking on note and selecting it
+NoteList.java line 473 note creation  (calls Notebook.java line 228 function)
+SaveChanges.java line 37 saving changes
 src/com.pinktwins.elephant.data:
-Notebook.java rida 228 uue note loomine
+Notebook.java line 228 note creation
