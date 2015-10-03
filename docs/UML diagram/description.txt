@@ -1,0 +1,10 @@
+src/com.pinktwins.elephant:
+CustomEditor.java line 569 create note
+CustomEditor.java line 672 markdown (this entire class is mainly assosiated with markdown/rtf/plain)
+NoteEditor.java line 535 load note
+NoteEditor.java line 670 save changes
+NoteList.java line 321 clicking on note and selecting it
+NoteList.java line 473 note creation  (calls Notebook.java line 228 function)
+SaveChanges.java line 37 saving changes
+src/com.pinktwins.elephant.data:
+Notebook.java line 228 note creation
