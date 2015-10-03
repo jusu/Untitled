@@ -7,7 +7,7 @@
 // Author: Harri Saar
 // Last update: 2015-09-29 11pm
 
-
+group = "com.pinktwins"
 
 apply {
 	plugin 'java'
@@ -15,7 +15,6 @@ apply {
     plugin 'idea'
     plugin 'eclipse'
 }
-//apply plugin:'eclipse' // for cleaning it up, if you open it there
 
 mainClassName = 'com.pinktwins.elephant.Elephant'
 
@@ -66,11 +65,19 @@ dependencies {
 	testCompile group:'junit', name: 'junit', version: '4.+'
 }
 
-/*
-jar {
-	manifest{
-		attributes 'Main-Class' : 'com.pinktwins.elephant.Elephant'
-	}
+jar { //makes executable 'fat jar' with compile- and runtime dependencies
+  	manifest { 
+    	attributes "Main-Class": "$mainClassName"
+  	}
+  	  
+  	from {
+              configurations.compile.collect {
+                  it.isDirectory() ? it : zipTree(it)
+              }
+              configurations.runtime.collect {
+                  it.isDirectory() ? it : zipTree(it)
+              }
+          }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA' /*need to exclude signatures or throws java.lang.SecurityException on start
+    Basically the problem is that when uber-jar is created it picks up signature files from the META-INF of the corresponding jar. */
 }
-*/
-
