@@ -9,8 +9,12 @@
 
 
 
-apply plugin:'java'
-apply plugin:'application'
+apply {
+	plugin:'java'
+	plugin:'application'
+    plugin 'idea'
+    plugin 'eclipse'
+}
 //apply plugin:'eclipse' // for cleaning it up, if you open it there
 
 mainClassName = 'com.pinktwins.elephant.Elephant'
