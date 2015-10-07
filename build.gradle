@@ -1,11 +1,3 @@
-// Things to improve:
-// 1. dependancies from mavenCentral
-// 2. make jar files working, currently need some more adjusting
-// 3. make documentaton for build process (gradle build, gradle run + also can import as gradle project to eclipse)
-// 4. put sikuli somewhere. must think how. (two projects?)
-// 5. look into gradle wrapper and circleci
-// Author: Harri Saar
-// Last update: 2015-09-29 11pm
 
 group = "com.pinktwins"
 
