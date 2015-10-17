@@ -15,7 +15,7 @@ public class Settings {
 	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
 	public static enum Keys {
-		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode");
+		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet");
 
 		private final String str;
 
@@ -144,5 +144,12 @@ public class Settings {
 
 		LOG.severe("Unknown listmode: " + mode);
 		return ListModes.CARDVIEW;
+	}
+
+	public boolean getAutoBullet() {
+		if (!has(Keys.AUTOBULLET)) {
+			return true;
+		}
+		return getInt(Keys.AUTOBULLET) > 0;
 	}
 }
