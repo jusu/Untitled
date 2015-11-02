@@ -117,6 +117,7 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// XXX if showing notebooks, open new note in solo window
+			saveChanges();
 			showNotes();
 			newNote();
 		}
@@ -226,6 +227,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener showAllNotesAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			saveChanges();
 			showAllNotes();
 		}
 	};
