@@ -67,6 +67,9 @@ public class PdfUtil {
 			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
+		} catch (NullPointerException e) {
+			LOG.severe("Fail: " + e);
+			LOG.severe("Got NPE on file " + f);
 		}
 	}
 

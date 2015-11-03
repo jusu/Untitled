@@ -590,11 +590,14 @@ public class CustomEditor extends RoundPanel {
 		note.setDragEnabled(true);
 
 		// enable AutoIndent as described at http://www.jroller.com/santhosh/entry/autoindent_for_jtextarea
-		note.registerKeyboardAction(new AutoIndentAction(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
+		if (Elephant.settings.getAutoBullet()) {
+			note.registerKeyboardAction(new AutoIndentAction(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
+		}
 
 		// enable Tab and Shift-Tab behavior for bullet lists
 		note.registerKeyboardAction(new TabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), JComponent.WHEN_FOCUSED);
-		note.registerKeyboardAction(new ShiftTabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, java.awt.event.InputEvent.SHIFT_DOWN_MASK), JComponent.WHEN_FOCUSED);
+		note.registerKeyboardAction(new ShiftTabAction(), KeyStroke.getKeyStroke(KeyEvent.VK_TAB, java.awt.event.InputEvent.SHIFT_DOWN_MASK),
+				JComponent.WHEN_FOCUSED);
 
 		note.registerKeyboardAction(new HomeAction(), KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), JComponent.WHEN_FOCUSED);
 
