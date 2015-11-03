@@ -120,7 +120,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		trash.setBorderPainted(false);
 		trash.setContentAreaFilled(false);
 		trash.setIcon(new ImageIcon(noteToolsTrash));
-		trash.setVisible(true);
+		trash.setVisible(this instanceof Notebooks );
 		trash.setBounds(newButtonImage.getWidth(null) + 175, 10, noteToolsTrash.getWidth(null), noteToolsTrash.getHeight(null));
 		
 		tools.add(bNew);
@@ -142,6 +142,8 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	protected abstract List<T> queryFilter(String text);
 
 	protected abstract void newButtonAction();
+	
+	protected abstract void trashButtonAction();
 
 	protected void vkEnter() {
 	}
@@ -283,13 +285,14 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 			}
 		});
 		
-		trash.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//window.deleteSelectedNote();
-				System.out.println("delete");
-			}
-		});
+		if(this instanceof Notebooks) {
+			trash.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					trashButtonAction();
+				}
+			});
+		}
 
 	}
 
