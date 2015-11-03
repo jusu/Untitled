@@ -64,6 +64,11 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 	protected void newButtonAction() {
 		window.newNotebookAction.actionPerformed(null);
 	}
+	
+	@Override
+	protected void trashButtonAction() {
+		deleteSelected();
+	}
 
 	@Override
 	protected List<NotebookItem> queryFilter(String text) {
