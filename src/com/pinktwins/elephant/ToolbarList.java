@@ -1,5 +1,6 @@
 package com.pinktwins.elephant;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -43,12 +44,13 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	protected List<T> itemList = Factory.newArrayList();
 	protected ListController<T> lc = ListController.newInstance();
 
-	private static Image hLine;
+	private static Image hLine, noteToolsTrash;
 
 	protected JPanel main;
 	protected JButton bNew;
 	protected SearchTextField search;
 	protected JScrollPane scroll;
+	protected JButton trash;
 
 	protected boolean isEditing;
 
@@ -64,8 +66,9 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	private String searchHint;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notebooksHLine" });
+		Iterator<Image> i = Images.iterator(new String[] { "notebooksHLine", "noteToolsTrash" });
 		hLine = i.next();
+		noteToolsTrash = i.next();
 	}
 
 	public ToolbarList(Image img, Image newButtonImage, String searchHint) {
@@ -112,9 +115,17 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		search.setFixedColor(Color.decode("#e9e9e9"));
 		search.useV2();
 		search.windowFocusGained();
-
+		
+		trash = new JButton("");
+		trash.setBorderPainted(false);
+		trash.setContentAreaFilled(false);
+		trash.setIcon(new ImageIcon(noteToolsTrash));
+		trash.setVisible(true);
+		trash.setBounds(newButtonImage.getWidth(null) + 175, 10, noteToolsTrash.getWidth(null), noteToolsTrash.getHeight(null));
+		
 		tools.add(bNew);
 		tools.add(search);
+		tools.add(trash);
 
 		scroll = new JScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
@@ -269,6 +280,14 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+			}
+		});
+		
+		trash.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//window.deleteSelectedNote();
+				System.out.println("delete");
 			}
 		});
 
