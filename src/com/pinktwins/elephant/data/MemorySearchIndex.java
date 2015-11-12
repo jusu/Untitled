@@ -1,5 +1,7 @@
 package com.pinktwins.elephant.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -62,6 +64,16 @@ public class MemorySearchIndex implements SearchIndexInterface {
 		}
 	}
 
+	@Override
+	public void digestDate(Note note, long dateValue) {
+		Date date = new Date (dateValue);
+		
+		// create date format for search
+		SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE MMMM z a");// dd yyyy yy");
+
+		digestText(note, dateFormat.format(date));
+	}
+	
 	public Set<Note> search(String text) {
 		Set<Note> foundSet = Factory.newHashSet();
 

@@ -129,6 +129,10 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	}
 
 	@Override
+	public void digestDate(Note note, long dateValue) {
+	}
+	
+	@Override
 	public Set<Note> search(String text) {
 		closeWriter();
 
