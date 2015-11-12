@@ -44,15 +44,11 @@ public class MemorySearchIndex implements SearchIndexInterface {
 			if (s.indexOf("\uFFFD") > -1) {
 				continue;
 			}
-
-			if (NumberUtils.isNumber(s.replace("#", ""))) {
-				continue;
-			}
-
+			
 			if (s.indexOf("##") > -1) {
 				continue;
 			}
-
+			
 			synchronized (wordMap) {
 				Set<Note> set = wordMap.get(s);
 				if (set == null) {
@@ -66,12 +62,13 @@ public class MemorySearchIndex implements SearchIndexInterface {
 
 	@Override
 	public void digestDate(Note note, long dateValue) {
-		Date date = new Date (dateValue);
+		String formats = "EEE EEE, EEEE EEEE, MMM MMM, MMMM MMMM, a dd dd, yyyy dd/MM/yyyy dd/MM/yy";
 		
+		Date date = new Date (dateValue);
 		// create date format for search
-		SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE MMMM z a");// dd yyyy yy");
-
-		digestText(note, dateFormat.format(date));
+		SimpleDateFormat wordFormat = new SimpleDateFormat(formats);
+		
+		digestText(note, wordFormat.format(date));
 	}
 	
 	public Set<Note> search(String text) {
