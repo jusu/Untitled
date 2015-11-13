@@ -87,7 +87,6 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 	
 	@Override
 	protected void trashButtonAction() {
-		//System.out.println("Tag delete button");
 	}
 
 	@Override

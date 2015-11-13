@@ -193,7 +193,6 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	
 	@Override
 	protected void trashButtonAction() {
-		//System.out.println("Modal Delete");
 	}
 
 	@Override
