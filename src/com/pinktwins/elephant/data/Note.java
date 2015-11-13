@@ -59,6 +59,11 @@ public class Note implements Comparable<Note> {
 		public List<String> tags();
 
 		public void setTags(List<String> tagIds, List<String> tagNames);
+		
+		public String wordCount();
+		
+		public void setWordCount();
+		
 	}
 
 	public class AttachmentInfo implements Comparable<AttachmentInfo> {
@@ -194,6 +199,14 @@ public class Note implements Comparable<Note> {
 
 	public String updatedStr() {
 		return df.print(lastModified());
+	}
+	
+	public String wordCountStr(){
+		return findWordCount();
+	}
+	
+	public String findWordCount(){
+		return "test";
 	}
 
 	private void readInfo() {
@@ -393,6 +406,19 @@ public class Note implements Comparable<Note> {
 			setMeta("tagIds", StringUtils.join(tagIds, ","));
 			setMeta("tagNames", StringUtils.join(tagNames, ","));
 			reload();
+		}
+		
+		@Override
+		public String wordCount(){
+			String wordCount = map.get("wordCount");
+			return wordCount == null ? "0" : wordCount;
+		}
+		
+		@Override
+		public void wordCount(){
+			setMeta("wordCount", wordCount());
+			reload();
+			
 		}
 
 	}
