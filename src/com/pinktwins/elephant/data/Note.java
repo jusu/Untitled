@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-
+import java.util.regex.Pattern;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
@@ -201,12 +201,14 @@ public class Note implements Comparable<Note> {
 		return df.print(lastModified());
 	}
 	
-	public String wordCountStr(){
-		return findWordCount();
-	}
-	
-	public String findWordCount(){
-		return "test";
+	public String updateWordCount(){
+		List<String> words = new ArrayList<String>();
+		Matcher matcher = Pattern.compile("\\S+").matcher(contents());
+		while(matcher.find()){
+			words.add(matcher.group());
+		}
+		
+		return Integer.toString(words.size());
 	}
 
 	private void readInfo() {
@@ -415,10 +417,9 @@ public class Note implements Comparable<Note> {
 		}
 		
 		@Override
-		public void wordCount(){
+		public void setWordCount(){
 			setMeta("wordCount", wordCount());
 			reload();
-			
 		}
 
 	}

@@ -611,7 +611,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());
-		noteWordCount.setText("Word Count: " + currentNote.wordCountStr();
+		noteWordCount.setText("Word Count: " + currentNote.updateWordCount());
 
 		caretChanged(editor.getTextPane());
 
@@ -633,7 +633,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 	
 	private void reloadWordCount() {
-		noteWordCount.setText("Word Count: " + currentNote.wordCountStr();
+		noteWordCount.setText("Word Count: " + currentNote.updateWordCount());
 	}
 
 	public void focusQuickLook() {
@@ -692,6 +692,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		scroll.unlockAfter(100);
 
 		reloadDates();
+		reloadWordCount();
 	}
 
 	public void focusTitle() {
