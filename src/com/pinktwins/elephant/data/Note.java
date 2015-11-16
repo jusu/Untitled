@@ -3,6 +3,10 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -59,11 +63,6 @@ public class Note implements Comparable<Note> {
 		public List<String> tags();
 
 		public void setTags(List<String> tagIds, List<String> tagNames);
-		
-		public String wordCount();
-		
-		public void setWordCount();
-		
 	}
 
 	public class AttachmentInfo implements Comparable<AttachmentInfo> {
@@ -201,14 +200,15 @@ public class Note implements Comparable<Note> {
 		return df.print(lastModified());
 	}
 	
-	public String updateWordCount(){
-		List<String> words = new ArrayList<String>();
-		Matcher matcher = Pattern.compile("\\S+").matcher(contents());
-		while(matcher.find()){
-			words.add(matcher.group());
-		}
+	public String accessedStr(){
+		BasicFileAttributes basicFileAttributes;
+		try{
+	    basicFileAttributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class).readAttributes();
+	    } catch (IOException e){
+	    	return "";
+	    }
 		
-		return Integer.toString(words.size());
+	    return df.print(basicFileAttributes.lastAccessTime().toMillis());
 	}
 
 	private void readInfo() {
@@ -409,19 +409,6 @@ public class Note implements Comparable<Note> {
 			setMeta("tagNames", StringUtils.join(tagNames, ","));
 			reload();
 		}
-		
-		@Override
-		public String wordCount(){
-			String wordCount = map.get("wordCount");
-			return wordCount == null ? "0" : wordCount;
-		}
-		
-		@Override
-		public void setWordCount(){
-			setMeta("wordCount", wordCount());
-			reload();
-		}
-
 	}
 
 	private String ts() {

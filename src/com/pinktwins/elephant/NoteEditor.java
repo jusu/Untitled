@@ -164,7 +164,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	TagEditorPane tagPane;
 	BackgroundPanel topShadow;
 	JButton currNotebook, trash;
-	JLabel noteCreated, noteUpdated, noteWordCount;
+	JLabel noteCreated, noteUpdated, noteAccessed;
 	BorderLayout areaHolderLayout;
 
 	private class DividedPanel extends BackgroundPanel {
@@ -302,14 +302,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		noteUpdated.setForeground(ElephantWindow.colorTitleButton);
 		noteUpdated.setFont(ElephantWindow.fontMedium);
 		
-		noteWordCount = new JLabel("Word Count: xxxxxx");
-		noteWordCount.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 20));
-		noteWordCount.setForeground(ElephantWindow.colorTitleButton);
-		noteWordCount.setFont(ElephantWindow.fontMedium);
+		noteAccessed = new JLabel("Accesesd: xxxxxx");
+		noteAccessed.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 20));
+		noteAccessed.setForeground(ElephantWindow.colorTitleButton);
+		noteAccessed.setFont(ElephantWindow.fontMedium);
 
 		toolsBot.add(noteCreated);
 		toolsBot.add(noteUpdated);
-		toolsBot.add(noteWordCount);
+		toolsBot.add(noteAccessed);
 
 		tools.add(toolsTop, BorderLayout.NORTH);
 		tools.add(toolsBot, BorderLayout.SOUTH);
@@ -611,7 +611,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());
-		noteWordCount.setText("Word Count: " + currentNote.updateWordCount());
+		noteAccessed.setText("Accessed: " + currentNote.accessedStr());
 
 		caretChanged(editor.getTextPane());
 
@@ -630,12 +630,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private void reloadDates() {
 		noteCreated.setText("Created: " + currentNote.createdStr());
 		noteUpdated.setText("Updated: " + currentNote.updatedStr());
+		noteUpdated.setText("Updated: " + currentNote.accessedStr());
 	}
 	
-	private void reloadWordCount() {
-		noteWordCount.setText("Word Count: " + currentNote.updateWordCount());
-	}
-
 	public void focusQuickLook() {
 		for (Object o : attachments.keySet()) {
 			if (o instanceof FileAttachment) {
@@ -692,7 +689,6 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		scroll.unlockAfter(100);
 
 		reloadDates();
-		reloadWordCount();
 	}
 
 	public void focusTitle() {
