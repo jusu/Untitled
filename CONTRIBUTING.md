@@ -6,3 +6,4 @@
 ## Code contributions from:
 
 Oliver Kopp, https://github.com/koppor
+lolsteve, https://github.com/lolsteve
