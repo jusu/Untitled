@@ -141,7 +141,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	protected abstract List<T> queryFilter(String text);
 
 	protected abstract void newButtonAction();
-	
+
 	protected abstract void trashButtonAction();
 
 	protected void vkEnter() {
@@ -283,8 +283,8 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 			public void keyReleased(KeyEvent e) {
 			}
 		});
-		
-		if(this instanceof Notebooks) {
+
+		if (this instanceof Notebooks) {
 			trash.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
