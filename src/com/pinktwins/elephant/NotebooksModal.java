@@ -190,6 +190,10 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	protected void newButtonAction() {
 		window.newNotebookAction.actionPerformed(null);
 	}
+	
+	@Override
+	protected void trashButtonAction() {
+	}
 
 	@Override
 	protected List<NotebookItem> queryFilter(String text) {

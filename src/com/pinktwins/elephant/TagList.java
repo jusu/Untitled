@@ -84,6 +84,10 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 	protected void newButtonAction() {
 		newTag();
 	}
+	
+	@Override
+	protected void trashButtonAction() {
+	}
 
 	@Override
 	protected void layoutItems() {

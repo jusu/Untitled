@@ -43,12 +43,13 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	protected List<T> itemList = Factory.newArrayList();
 	protected ListController<T> lc = ListController.newInstance();
 
-	private static Image hLine;
+	private static Image hLine, noteToolsTrash;
 
 	protected JPanel main;
 	protected JButton bNew;
 	protected SearchTextField search;
 	protected JScrollPane scroll;
+	protected JButton trash;
 
 	protected boolean isEditing;
 
@@ -64,8 +65,9 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	private String searchHint;
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "notebooksHLine" });
+		Iterator<Image> i = Images.iterator(new String[] { "notebooksHLine", "noteToolsTrash" });
 		hLine = i.next();
+		noteToolsTrash = i.next();
 	}
 
 	public ToolbarList(Image img, Image newButtonImage, String searchHint) {
@@ -112,9 +114,17 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		search.setFixedColor(Color.decode("#e9e9e9"));
 		search.useV2();
 		search.windowFocusGained();
-
+		
+		trash = new JButton("");
+		trash.setBorderPainted(false);
+		trash.setContentAreaFilled(false);
+		trash.setIcon(new ImageIcon(noteToolsTrash));
+		trash.setVisible(this instanceof Notebooks );
+		trash.setBounds(newButtonImage.getWidth(null) + 175, 10, noteToolsTrash.getWidth(null), noteToolsTrash.getHeight(null));
+		
 		tools.add(bNew);
 		tools.add(search);
+		tools.add(trash);
 
 		scroll = new JScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
@@ -131,6 +141,8 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	protected abstract List<T> queryFilter(String text);
 
 	protected abstract void newButtonAction();
+	
+	protected abstract void trashButtonAction();
 
 	protected void vkEnter() {
 	}
@@ -271,6 +283,15 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 			public void keyReleased(KeyEvent e) {
 			}
 		});
+		
+		if(this instanceof Notebooks) {
+			trash.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					trashButtonAction();
+				}
+			});
+		}
 
 	}
 
