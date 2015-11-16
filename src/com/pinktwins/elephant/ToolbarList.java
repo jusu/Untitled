@@ -114,14 +114,14 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		search.setFixedColor(Color.decode("#e9e9e9"));
 		search.useV2();
 		search.windowFocusGained();
-		
+
 		trash = new JButton("");
 		trash.setBorderPainted(false);
 		trash.setContentAreaFilled(false);
 		trash.setIcon(new ImageIcon(noteToolsTrash));
-		trash.setVisible(this instanceof Notebooks );
-		trash.setBounds(newButtonImage.getWidth(null) + 175, 10, noteToolsTrash.getWidth(null), noteToolsTrash.getHeight(null));
-		
+		trash.setVisible(this instanceof Notebooks);
+		trash.setBounds(newButtonImage.getWidth(null) + 177, 10, noteToolsTrash.getWidth(null), noteToolsTrash.getHeight(null));
+
 		tools.add(bNew);
 		tools.add(search);
 		tools.add(trash);
