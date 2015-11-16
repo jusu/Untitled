@@ -119,6 +119,13 @@ public class SearchIndexer {
 			memoryIndex.digestText(note, "notebook:" + nb.name() + " nb:" + nb.name());
 		}
 
+		// date to sort by creation and last modified date
+		memoryIndex.digestDate(note, meta.created());
+		
+		if (meta.created() < note.lastModified())
+			memoryIndex.digestDate(note, note.lastModified());
+				
+		
 		addDigestTimestamp(note);
 	}
 
