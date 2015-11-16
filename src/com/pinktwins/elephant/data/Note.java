@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-
+import java.util.regex.Pattern;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
@@ -59,6 +59,11 @@ public class Note implements Comparable<Note> {
 		public List<String> tags();
 
 		public void setTags(List<String> tagIds, List<String> tagNames);
+		
+		public String wordCount();
+		
+		public void setWordCount();
+		
 	}
 
 	public class AttachmentInfo implements Comparable<AttachmentInfo> {
@@ -194,6 +199,16 @@ public class Note implements Comparable<Note> {
 
 	public String updatedStr() {
 		return df.print(lastModified());
+	}
+	
+	public String updateWordCount(){
+		List<String> words = new ArrayList<String>();
+		Matcher matcher = Pattern.compile("\\S+").matcher(contents());
+		while(matcher.find()){
+			words.add(matcher.group());
+		}
+		
+		return Integer.toString(words.size());
 	}
 
 	private void readInfo() {
@@ -392,6 +407,18 @@ public class Note implements Comparable<Note> {
 			// out of Elephant easier.
 			setMeta("tagIds", StringUtils.join(tagIds, ","));
 			setMeta("tagNames", StringUtils.join(tagNames, ","));
+			reload();
+		}
+		
+		@Override
+		public String wordCount(){
+			String wordCount = map.get("wordCount");
+			return wordCount == null ? "0" : wordCount;
+		}
+		
+		@Override
+		public void setWordCount(){
+			setMeta("wordCount", wordCount());
 			reload();
 		}
 
