@@ -632,7 +632,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		String accessedStr = currentNote.accessedStr();
 		
 		if (accessedStr != "" && accessedStr != updatedStr)
-			noteAccessed.setText("Updated: " + accessedStr);
+			noteAccessed.setText("Accessed: " + accessedStr);
 		else{
 			noteAccessed.setText("");
 			noteAccessed.setVisible(false);
