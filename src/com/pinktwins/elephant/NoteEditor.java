@@ -609,9 +609,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		trash.setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
 
-		noteCreated.setText("Created: " + note.createdStr());
-		noteUpdated.setText("Updated: " + note.updatedStr());
-		noteAccessed.setText("Accessed: " + currentNote.accessedStr());
+		reloadDates();
 
 		caretChanged(editor.getTextPane());
 
@@ -630,7 +628,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private void reloadDates() {
 		noteCreated.setText("Created: " + currentNote.createdStr());
 		noteUpdated.setText("Updated: " + currentNote.updatedStr());
-		noteUpdated.setText("Updated: " + currentNote.accessedStr());
+		String accessedStr = currentNote.accessedStr();
+		if (accessedStr != "")
+			noteAccessed.setText("Updated: " + accessedStr);
+		else{
+			noteAccessed.setText("");
+			noteAccessed.setVisible(false);
+		}
 	}
 	
 	public void focusQuickLook() {

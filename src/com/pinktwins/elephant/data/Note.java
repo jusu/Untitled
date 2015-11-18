@@ -207,8 +207,9 @@ public class Note implements Comparable<Note> {
 	    } catch (IOException e){
 	    	return "";
 	    }
-		
-	    return df.print(basicFileAttributes.lastAccessTime().toMillis());
+		// Check if millis is 0, if so, last accessed time is not supported 
+		long millis = basicFileAttributes.lastAccessTime().toMillis();
+	    return millis > 0 ? df.print(basicFileAttributes.lastAccessTime().toMillis()) : "";
 	}
 
 	private void readInfo() {
