@@ -626,12 +626,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private void reloadDates() {
-		noteCreated.setText("Created: " + currentNote.createdStr());
+		String createdStr = currentNote.createdStr();
 		String updatedStr = currentNote.updatedStr();
-		noteUpdated.setText("Updated: " + updatedStr);
 		String accessedStr = currentNote.accessedStr();
+
+		noteCreated.setText("Created: " + createdStr);
+		noteUpdated.setText("Updated: " + updatedStr);
 		
-		if (accessedStr != "" && accessedStr != updatedStr)
+		if (accessedStr != "" && !accessedStr.equals(updatedStr) && !accessedStr.equals(createdStr))
 			noteAccessed.setText("Accessed: " + accessedStr);
 		else{
 			noteAccessed.setText("");
