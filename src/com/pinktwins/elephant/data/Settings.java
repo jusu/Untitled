@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.pinktwins.elephant.NoteList.ListModes;
+import com.pinktwins.elephant.Sidebar.RecentNotesModes;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class Settings {
@@ -15,7 +16,7 @@ public class Settings {
 	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
 	public static enum Keys {
-		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet");
+		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet"), RECENT_SHOW("showRecent");
 
 		private final String str;
 
@@ -146,6 +147,25 @@ public class Settings {
 		return ListModes.CARDVIEW;
 	}
 
+	public RecentNotesModes getRecentNotesMode() {
+		String mode = getString(Keys.RECENT_SHOW);
+		
+		if (mode.isEmpty()) {
+			return RecentNotesModes.SHOW;
+		}
+
+		if (RecentNotesModes.SHOW.toString().equals(mode)) {
+			return RecentNotesModes.SHOW;
+		}
+
+		if (RecentNotesModes.HIDE.toString().equals(mode)) {
+			return RecentNotesModes.HIDE;
+		}
+
+		LOG.severe("Unknown recentNotesMode: " + mode);
+		return RecentNotesModes.SHOW;
+	}
+	
 	public boolean getAutoBullet() {
 		if (!has(Keys.AUTOBULLET)) {
 			return true;
