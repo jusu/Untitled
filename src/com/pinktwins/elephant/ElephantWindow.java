@@ -96,7 +96,7 @@ public class ElephantWindow extends JFrame {
 
 	private JMenuBar menuBar;
 	private JMenuItem iUndo, iRedo, iSaveSearch;
-	private JCheckBoxMenuItem iCard, iSnippet;
+	private JCheckBoxMenuItem iCard, iSnippet, iRecentNotes;
 
 	private static final Image elephantIcon;
 
@@ -939,12 +939,22 @@ public class ElephantWindow extends JFrame {
 			iSnippet.setSelected(true);
 			break;
 		}
-
+		
 		view.add(menuItem("Show All Notes", KeyEvent.VK_A, menuMask | KeyEvent.SHIFT_DOWN_MASK, showAllNotesAction));
 		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, menuMask, jumpToNotebookAction));
 
 		view.addSeparator();
-		view.add(menuItem("Recent Notes", 0, 0, showRecentNotesAction));
+		iRecentNotes = new JCheckBoxMenuItem("Recent Notes");
+		iRecentNotes.addActionListener(showRecentNotesAction);
+		view.add(iRecentNotes);
+		switch (Elephant.settings.getRecentNotesMode()) {
+		case SHOW:
+			iRecentNotes.setSelected(true);
+			break;
+		case HIDE:
+			iRecentNotes.setSelected(false);
+			break;
+		}
 		
 		JMenu note = new JMenu("Note");
 		note.add(menuItem("Edit Note Title", KeyEvent.VK_L, menuMask, editTitleAction));
