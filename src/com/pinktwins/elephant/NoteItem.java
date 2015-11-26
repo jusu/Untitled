@@ -161,7 +161,7 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		if (now - note.lastModified() > time_24h * 30) {
 			col = ElephantWindow.colorBlue;
 		}
-		
+
 		Style style = preview.addStyle("timestampStyle", null);
 		StyleConstants.setForeground(style, col);
 		
