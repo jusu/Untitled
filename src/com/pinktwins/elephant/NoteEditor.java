@@ -164,7 +164,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	TagEditorPane tagPane;
 	BackgroundPanel topShadow;
 	JButton currNotebook, trash;
-	JLabel noteCreated, noteUpdated;
+	JLabel noteCreated, noteUpdated, noteAccessed;
 	BorderLayout areaHolderLayout;
 
 	private class DividedPanel extends BackgroundPanel {
@@ -301,9 +301,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		noteUpdated.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 20));
 		noteUpdated.setForeground(ElephantWindow.colorTitleButton);
 		noteUpdated.setFont(ElephantWindow.fontMedium);
+		
+		noteAccessed = new JLabel("Accesesd: xxxxxx");
+		noteAccessed.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 20));
+		noteAccessed.setForeground(ElephantWindow.colorTitleButton);
+		noteAccessed.setFont(ElephantWindow.fontMedium);
 
 		toolsBot.add(noteCreated);
 		toolsBot.add(noteUpdated);
+		toolsBot.add(noteAccessed);
 
 		tools.add(toolsTop, BorderLayout.NORTH);
 		tools.add(toolsBot, BorderLayout.SOUTH);
@@ -603,8 +609,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		trash.setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
 
-		noteCreated.setText("Created: " + note.createdStr());
-		noteUpdated.setText("Updated: " + note.updatedStr());
+		reloadDates();
 
 		caretChanged(editor.getTextPane());
 
@@ -621,10 +626,21 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	private void reloadDates() {
-		noteCreated.setText("Created: " + currentNote.createdStr());
-		noteUpdated.setText("Updated: " + currentNote.updatedStr());
-	}
+		String createdStr = currentNote.createdStr();
+		String updatedStr = currentNote.updatedStr();
+		String accessedStr = currentNote.accessedStr();
 
+		noteCreated.setText("Created: " + createdStr);
+		noteUpdated.setText("Updated: " + updatedStr);
+		
+		if (accessedStr != "" && !accessedStr.equals(updatedStr) && !accessedStr.equals(createdStr))
+			noteAccessed.setText("Accessed: " + accessedStr);
+		else{
+			noteAccessed.setText("");
+			noteAccessed.setVisible(false);
+		}
+	}
+	
 	public void focusQuickLook() {
 		for (Object o : attachments.keySet()) {
 			if (o instanceof FileAttachment) {

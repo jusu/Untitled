@@ -12,6 +12,7 @@ import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.RecentNotes;
+import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.data.Shortcuts;
 import com.pinktwins.elephant.eventbus.RecentNotesChangedEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
@@ -33,6 +34,28 @@ public class Sidebar extends BackgroundPanel {
 
 	SideBarList shortcutList, recentList, navigationList;
 
+	public static enum RecentNotesModes {
+		SHOW,
+		HIDE
+	};
+	
+	private RecentNotesModes recentMode = RecentNotesModes.SHOW;
+	
+	public void toggleRecentNotes(){
+		switch (recentMode) {
+		case SHOW:
+			recentList.setVisible(false);
+			recentMode = RecentNotesModes.HIDE;
+			break;
+		case HIDE:
+			recentList.setVisible(true);
+			recentMode = RecentNotesModes.SHOW;
+			break;
+		}
+		
+		Elephant.settings.set(Settings.Keys.RECENT_SHOW, recentMode.toString());
+	}
+	
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "sidebar", "sidebarDivider" });
 		tile = i.next();
@@ -80,6 +103,18 @@ public class Sidebar extends BackgroundPanel {
 		add(p1, BorderLayout.CENTER);
 		p1.add(p2, BorderLayout.CENTER);
 		p2.add(p3, BorderLayout.CENTER);
+		
+		// recent notes toggle settings
+		recentMode = Elephant.settings.getRecentNotesMode();
+		
+		switch (recentMode) {
+		case SHOW:
+			recentList.setVisible(true);
+			break;
+		case HIDE:
+			recentList.setVisible(false);
+			break;
+		}
 	}
 
 	public void selectNavigation(int n) {
