@@ -139,16 +139,6 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		preview.setBounds(0, 0, 176, 138);
 		preview.addMouseListener(this);
 
-		if (note.isMarkdown()) {
-			String contents = note.contents();
-			String html = NoteEditor.pegDown.markdownToHtml(contents);
-			// hint by http://stackoverflow.com/a/19785465/873282
-			preview.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-			preview.setText(html);
-		} else {
-			CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
-		}
-
 		// time
 		String ts = "";
 		Color col = ElephantWindow.colorGreen;
@@ -174,10 +164,21 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 
 		Style style = preview.addStyle("timestampStyle", null);
 		StyleConstants.setForeground(style, col);
-		try {
-			preview.getDocument().insertString(0, ts + " ", style);
-		} catch (BadLocationException e) {
-			LOG.severe("Fail: " + e);
+
+		if (note.isMarkdown()) {
+			String htmlts = "<p style='margin:0;padding:0;color:" + String.format("#%02x%02x%02x", col.getRed(), col.getGreen(), col.getBlue()) +"'>" + ts + "</p>\n";
+			String contents = htmlts + note.contents();
+			String html = NoteEditor.pegDown.markdownToHtml(contents);
+			// hint by http://stackoverflow.com/a/19785465/873282
+			preview.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+			preview.setText(html);
+		} else {
+			CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
+			try {
+		preview.getDocument().insertString(0, ts + " ", style);
+			} catch (BadLocationException e) {
+				LOG.severe("Fail: " + e);
+			}
 		}
 
 		previewPane.add(preview);
