@@ -330,7 +330,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener countNotebookWordsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(null, noteEditor.reloadWordCount() + " Words");
+			JOptionPane.showMessageDialog(null, noteEditor.reloadWordCount() + " Words", noteEditor.editor.getTitle(), JOptionPane.PLAIN_MESSAGE);
 		}
 	};
 
