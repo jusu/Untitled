@@ -624,6 +624,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		noteCreated.setText("Created: " + currentNote.createdStr());
 		noteUpdated.setText("Updated: " + currentNote.updatedStr());
 	}
+	
+	public int reloadWordCount(){
+		return currentNote.updateWordCount();
+	}
 
 	public void focusQuickLook() {
 		for (Object o : attachments.keySet()) {

@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -194,6 +195,13 @@ public class Note implements Comparable<Note> {
 
 	public String updatedStr() {
 		return df.print(lastModified());
+	}
+	
+	public int updateWordCount(){
+		List<String> words = new ArrayList<String>();
+		Matcher matcher = Pattern.compile("\\S+").matcher(contents());
+		while(matcher.find()) words.add(matcher.group());
+		return words.size();
 	}
 
 	private void readInfo() {
