@@ -300,31 +300,26 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 	
-	public Notebook getSelectedNotebook(){
-		Notebook nb = null;
-
-		switch (uiMode) {
-		case notes:
-			nb = noteList.currentNotebook();
-			break;
-		case notebooks:
-			if (notebooks.selectedItem != null) {
-				nb = notebooks.selectedItem.getNotebook();
-			}
-			break;
-		case tags:
-			break;
-		default:
-			break;
-		}
-		
-		return nb;
-	}
-	
 	ActionListener addNotebookToShortcutsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Notebook nb = getSelectedNotebook();
+			Notebook nb = null;
+
+			switch (uiMode) {
+			case notes:
+				nb = noteList.currentNotebook();
+				break;
+			case notebooks:
+				if (notebooks.selectedItem != null) {
+					nb = notebooks.selectedItem.getNotebook();
+				}
+				break;
+			case tags:
+				break;
+			default:
+				break;
+			}
+			
 			if (nb != null && !nb.isDynamicallyCreatedNotebook()) {
 				sideBar.addToShortcuts(nb);
 				new ShortcutsChangedEvent().post();
