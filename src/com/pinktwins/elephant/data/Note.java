@@ -3,6 +3,10 @@ package com.pinktwins.elephant.data;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -12,7 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-
+import java.util.regex.Pattern;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
@@ -194,6 +198,18 @@ public class Note implements Comparable<Note> {
 
 	public String updatedStr() {
 		return df.print(lastModified());
+	}
+	
+	public String accessedStr(){
+		BasicFileAttributes basicFileAttributes;
+		try{
+	    basicFileAttributes = Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class).readAttributes();
+	    } catch (IOException e){
+	    	return "";
+	    }
+		// Check if millis is 0, if so, last accessed time is not supported 
+		long millis = basicFileAttributes.lastAccessTime().toMillis();
+	    return millis > 0 ? df.print(basicFileAttributes.lastAccessTime().toMillis()) : "";
 	}
 
 	private void readInfo() {
@@ -394,7 +410,6 @@ public class Note implements Comparable<Note> {
 			setMeta("tagNames", StringUtils.join(tagNames, ","));
 			reload();
 		}
-
 	}
 
 	private String ts() {
