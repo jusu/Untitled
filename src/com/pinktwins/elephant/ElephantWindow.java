@@ -299,7 +299,7 @@ public class ElephantWindow extends JFrame {
 			new ShortcutsChangedEvent().post();
 		}
 	};
-
+	
 	ActionListener addNotebookToShortcutsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -319,10 +319,18 @@ public class ElephantWindow extends JFrame {
 			default:
 				break;
 			}
+			
 			if (nb != null && !nb.isDynamicallyCreatedNotebook()) {
 				sideBar.addToShortcuts(nb);
 				new ShortcutsChangedEvent().post();
 			}
+		}
+	};
+	
+	ActionListener countNotebookWordsAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(null, noteEditor.reloadWordCount() + " Words", noteEditor.editor.getTitle(), JOptionPane.PLAIN_MESSAGE);
 		}
 	};
 
@@ -963,6 +971,8 @@ public class ElephantWindow extends JFrame {
 		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, menuMask | KeyEvent.CTRL_DOWN_MASK, moveNoteAction));
 		note.add(menuItem("Add Note to Shortcuts", 0, 0, addToShortcutsAction));
 		note.add(menuItem("Add Notebook to Shortcuts", 0, 0, addNotebookToShortcutsAction));
+		note.addSeparator();
+		note.add(menuItem("Count Note Words", 0, 0, countNotebookWordsAction));
 
 		JMenu format = new JMenu("Format");
 		JMenu style = new JMenu("Style");
