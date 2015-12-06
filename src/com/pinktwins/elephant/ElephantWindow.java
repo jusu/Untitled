@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -406,7 +408,7 @@ public class ElephantWindow extends JFrame {
 
 		createMenu();
 		createSplit();
-		createToolbar();
+		//createToolbar();
 
 		boolean startCalled = false;
 
@@ -997,13 +999,29 @@ public class ElephantWindow extends JFrame {
 		version.setEnabled(false);
 		help.add(version);
 
-		menuBar.add(file);
-		menuBar.add(edit);
-		menuBar.add(view);
-		menuBar.add(note);
-		menuBar.add(format);
-		menuBar.add(help);
+		GridBagLayout gbLayout = new GridBagLayout();
+		menuBar.setLayout(gbLayout);
+		GridBagConstraints con = new GridBagConstraints();
+		con.gridx = 0;
+		
+		menuBar.add(file, con);
+		con.gridx++;
+		menuBar.add(edit, con);
+		con.gridx++;
+		menuBar.add(view, con);
+		con.gridx++;
+		menuBar.add(note, con);
+		con.gridx++;
+		menuBar.add(format, con);
+		con.gridx++;
+		con.anchor = GridBagConstraints.LINE_START;
+		con.weightx = 1.0;
+		menuBar.add(help, con);
+		con.gridx++;
 
+		con.weightx = 0;
+		menuBar.add(toolBar.getSearchTextField(), con);
+		
 		setJMenuBar(menuBar);
 
 		noteEditor.addStateListener(new NoteEditorStateListener() {

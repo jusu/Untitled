@@ -159,6 +159,10 @@ public class Toolbar extends BackgroundPanel {
 		skipNextFocusLost = true;
 	}
 
+	public SearchTextField getSearchTextField() {
+		return search;
+	}
+	
 	@Subscribe
 	public void handleIndexProgress(IndexProgressEvent event) {
 		if (isIndexing) {
