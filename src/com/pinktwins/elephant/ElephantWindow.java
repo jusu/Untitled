@@ -299,7 +299,7 @@ public class ElephantWindow extends JFrame {
 			new ShortcutsChangedEvent().post();
 		}
 	};
-	
+
 	ActionListener addNotebookToShortcutsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -319,14 +319,14 @@ public class ElephantWindow extends JFrame {
 			default:
 				break;
 			}
-			
+
 			if (nb != null && !nb.isDynamicallyCreatedNotebook()) {
 				sideBar.addToShortcuts(nb);
 				new ShortcutsChangedEvent().post();
 			}
 		}
 	};
-	
+
 	ActionListener countNotebookWordsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -349,7 +349,7 @@ public class ElephantWindow extends JFrame {
 			sideBar.toggleRecentNotes();
 		}
 	};
-	
+
 	ActionListener settingsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -947,7 +947,7 @@ public class ElephantWindow extends JFrame {
 			iSnippet.setSelected(true);
 			break;
 		}
-		
+
 		view.add(menuItem("Show All Notes", KeyEvent.VK_A, menuMask | KeyEvent.SHIFT_DOWN_MASK, showAllNotesAction));
 		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, menuMask, jumpToNotebookAction));
 
@@ -963,7 +963,7 @@ public class ElephantWindow extends JFrame {
 			iRecentNotes.setSelected(false);
 			break;
 		}
-		
+
 		JMenu note = new JMenu("Note");
 		note.add(menuItem("Edit Note Title", KeyEvent.VK_L, menuMask, editTitleAction));
 		note.add(menuItem("Edit Note Tags", KeyEvent.VK_QUOTE, menuMask, editTagsAction));
