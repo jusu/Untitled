@@ -972,7 +972,7 @@ public class ElephantWindow extends JFrame {
 		note.add(menuItem("Add Note to Shortcuts", 0, 0, addToShortcutsAction));
 		note.add(menuItem("Add Notebook to Shortcuts", 0, 0, addNotebookToShortcutsAction));
 		note.addSeparator();
-		note.add(menuItem("Count Note Words", 0, 0, countNotebookWordsAction));
+		note.add(menuItem("Word Count...", 0, 0, countNotebookWordsAction));
 
 		JMenu format = new JMenu("Format");
 		JMenu style = new JMenu("Style");
