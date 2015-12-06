@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import com.pinktwins.elephant.util.Factory;
 
@@ -44,11 +43,11 @@ public class MemorySearchIndex implements SearchIndexInterface {
 			if (s.indexOf("\uFFFD") > -1) {
 				continue;
 			}
-			
+
 			if (s.indexOf("##") > -1) {
 				continue;
 			}
-			
+
 			synchronized (wordMap) {
 				Set<Note> set = wordMap.get(s);
 				if (set == null) {
@@ -63,14 +62,14 @@ public class MemorySearchIndex implements SearchIndexInterface {
 	@Override
 	public void digestDate(Note note, long dateValue) {
 		String formats = "EEE EEE, EEEE EEEE, MMM MMM, MMMM MMMM, a dd dd, yyyy dd/MM/yyyy dd/MM/yy";
-		
-		Date date = new Date (dateValue);
+
+		Date date = new Date(dateValue);
 		// create date format for search
 		SimpleDateFormat wordFormat = new SimpleDateFormat(formats);
-		
+
 		digestText(note, wordFormat.format(date));
 	}
-	
+
 	public Set<Note> search(String text) {
 		Set<Note> foundSet = Factory.newHashSet();
 
