@@ -58,7 +58,7 @@ public class Toolbar extends BackgroundPanel {
 
 		JPanel p = new JPanel(new FlowLayout());
 		p.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 10));
-		p.add(search);
+		//p.add(search);
 
 		add(p, BorderLayout.EAST);
 

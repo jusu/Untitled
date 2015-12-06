@@ -1018,7 +1018,6 @@ public class ElephantWindow extends JFrame {
 		con.weightx = 1.0;
 		menuBar.add(help, con);
 		con.gridx++;
-
 		con.weightx = 0;
 		menuBar.add(toolBar.getSearchTextField(), con);
 		
