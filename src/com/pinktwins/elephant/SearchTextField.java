@@ -84,7 +84,7 @@ public class SearchTextField extends HintTextField {
 
 	public SearchTextField(String hint, Font font) {
 		super(hint, font);
-		
+
 		useV1();
 
 		setBackground(colorDefaultBg);
@@ -235,7 +235,7 @@ public class SearchTextField extends HintTextField {
 		images[8] = searchRightHiliteV4;
 		images[9] = searchRightHiliteCrossV4;
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);

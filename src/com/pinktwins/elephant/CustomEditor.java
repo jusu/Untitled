@@ -272,6 +272,10 @@ public class CustomEditor extends RoundPanel {
 	public JTextPane getTextPane() {
 		return note;
 	}
+	
+	public HtmlPane getHtmlPane() {
+		return htmlPane;
+	}
 
 	public void setEditorEventListener(EditorEventListener l) {
 		eeListener = l;
@@ -998,9 +1002,5 @@ public class CustomEditor extends RoundPanel {
 			LOG.severe("Fail: " + e);
 			clear();
 		}
-	}
-
-	public CustomTextPane getNote() {
-		return note;
 	}
 }

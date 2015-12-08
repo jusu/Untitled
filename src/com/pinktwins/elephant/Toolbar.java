@@ -158,7 +158,7 @@ public class Toolbar extends BackgroundPanel {
 	public static void skipNextFocusLost() {
 		skipNextFocusLost = true;
 	}
-	
+
 	@Subscribe
 	public void handleIndexProgress(IndexProgressEvent event) {
 		if (isIndexing) {
