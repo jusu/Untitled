@@ -999,4 +999,8 @@ public class CustomEditor extends RoundPanel {
 			clear();
 		}
 	}
+
+	public CustomTextPane getNote() {
+		return note;
+	}
 }

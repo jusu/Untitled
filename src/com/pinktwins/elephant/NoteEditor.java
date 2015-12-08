@@ -857,4 +857,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public void attachmentMoved(AttachmentInfo info) {
 		attachments.makeDirty();
 	}
+
+	public CustomEditor getEditor() {
+		return editor;
+	}
 }

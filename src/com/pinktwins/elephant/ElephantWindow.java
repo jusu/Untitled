@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -33,10 +31,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Document;
 
 import org.apache.commons.lang3.SystemUtils;
 
 import com.google.common.eventbus.Subscribe;
+import com.pinktwins.elephant.CustomEditor.CustomTextPane;
 import com.pinktwins.elephant.NoteEditor.NoteEditorStateListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
@@ -408,7 +410,7 @@ public class ElephantWindow extends JFrame {
 
 		createMenu();
 		createSplit();
-		//createToolbar();
+		createToolbar();
 
 		boolean startCalled = false;
 
@@ -802,6 +804,7 @@ public class ElephantWindow extends JFrame {
 	public void refreshNote(Note note) {
 		noteEditor.clear();
 		noteEditor.load(note);
+		searchHighlight();
 	}
 
 	public void showMultipleNotes() {
@@ -998,28 +1001,13 @@ public class ElephantWindow extends JFrame {
 		JMenuItem version = menuItem("Elephant version " + Elephant.VERSION, 0, 0, null);
 		version.setEnabled(false);
 		help.add(version);
-
-		GridBagLayout gbLayout = new GridBagLayout();
-		menuBar.setLayout(gbLayout);
-		GridBagConstraints con = new GridBagConstraints();
-		con.gridx = 0;
 		
-		menuBar.add(file, con);
-		con.gridx++;
-		menuBar.add(edit, con);
-		con.gridx++;
-		menuBar.add(view, con);
-		con.gridx++;
-		menuBar.add(note, con);
-		con.gridx++;
-		menuBar.add(format, con);
-		con.gridx++;
-		con.anchor = GridBagConstraints.LINE_START;
-		con.weightx = 1.0;
-		menuBar.add(help, con);
-		con.gridx++;
-		con.weightx = 0;
-		menuBar.add(toolBar.getSearchTextField(), con);
+		menuBar.add(file);
+		menuBar.add(edit);
+		menuBar.add(view);
+		menuBar.add(note);
+		menuBar.add(format);
+		menuBar.add(help);
 		
 		setJMenuBar(menuBar);
 
@@ -1137,6 +1125,32 @@ public class ElephantWindow extends JFrame {
 		} else {
 			iRedo.setEnabled(false);
 			iRedo.setName("Redo");
+		}
+	}
+
+	public void searchHighlight() {
+		textHighlight(toolBar.search.getText());
+	}
+
+	private void textHighlight(String text) {
+		CustomEditor editor = noteEditor.getEditor();
+		CustomTextPane editorTextPane = editor.getNote();
+		DefaultHighlightPainter hl = new DefaultHighlightPainter(Color.YELLOW);
+
+		try {
+			System.out.println("window " + text);
+			Document document = editorTextPane.getDocument();
+			for (int index = 0; index + text.length() < document.getLength(); index++) {
+                String match = document.getText(index, text.length());
+                if (text.toLowerCase().equals(match.toLowerCase())) {
+                    editorTextPane.getHighlighter().addHighlight(index, index + text.length(), hl);
+                    System.out.println("window " + index);
+                }
+			}
+			System.out.println("Markdown? " + editor.isMarkdown);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

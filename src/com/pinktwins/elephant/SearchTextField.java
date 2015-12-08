@@ -85,7 +85,7 @@ public class SearchTextField extends HintTextField {
 	public SearchTextField(String hint, Font font) {
 		super(hint, font);
 		
-		useV5();
+		useV1();
 
 		setBackground(colorDefaultBg);
 
@@ -184,6 +184,19 @@ public class SearchTextField extends HintTextField {
 		setBackground(c);
 	}
 
+	public void useV1() {
+		images[0] = searchLeft;
+		images[1] = searchMiddle;
+		images[2] = searchRight;
+		images[3] = searchLeftInactive;
+		images[4] = searchMiddleInactive;
+		images[5] = searchRightInactive;
+		images[6] = searchLeftHilite;
+		images[7] = searchMiddleHilite;
+		images[8] = searchRightHilite;
+		images[9] = searchRightHiliteCross;
+	}
+
 	public void useV2() {
 		images[0] = searchLeftV2;
 		images[1] = searchMiddleV2;
@@ -221,19 +234,6 @@ public class SearchTextField extends HintTextField {
 		images[7] = searchMiddleHiliteV4;
 		images[8] = searchRightHiliteV4;
 		images[9] = searchRightHiliteCrossV4;
-	}
-
-	public void useV5() {
-		images[0] = searchLeftInactive;
-		images[1] = searchMiddleInactive;
-		images[2] = searchRightInactive;
-		images[3] = searchLeftInactive;
-		images[4] = searchMiddleInactive;
-		images[5] = searchRightInactive;
-		images[6] = searchLeftHiliteV3;
-		images[7] = searchMiddleHiliteV3;
-		images[8] = searchRightHiliteV3;
-		images[9] = searchRightHiliteCrossV3;
 	}
 	
 	@Override

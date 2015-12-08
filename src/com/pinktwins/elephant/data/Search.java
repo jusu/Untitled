@@ -12,7 +12,7 @@ public class Search {
 
 	private Search() {
 	}
-	
+
 	public static Notebook search(String text) {
 		text = text.toLowerCase();
 
