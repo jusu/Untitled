@@ -80,7 +80,8 @@ public class ElephantWindow extends JFrame {
 	public static final Color colorPreviewGray = Color.decode("#666663");
 	public static final Color colorPreviewGrayOlder = Color.decode("#b1b1b1");
 
-	public static final Color colorHighlight = Color.YELLOW;
+	private static final Color[] colorHighlights = { Color.YELLOW, Color.PINK, Color.CYAN, Color.ORANGE, Color.GREEN };
+	private static final DefaultHighlightPainter[] highlightPainters = new DefaultHighlightPainter[colorHighlights.length];
 
 	public static final int bigWidth = 1920;
 
@@ -117,6 +118,10 @@ public class ElephantWindow extends JFrame {
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "elephantIcon" });
 		elephantIcon = i.next();
+
+		for (int n = 0; n < highlightPainters.length; n++) {
+			highlightPainters[n] = new DefaultHighlightPainter(colorHighlights[n % colorHighlights.length]);
+		}
 	}
 
 	ActionListener newNoteAction = new ActionListener() {
@@ -1139,18 +1144,23 @@ public class ElephantWindow extends JFrame {
 			return;
 
 		JTextPane editorTextPane = noteEditor.getEditor().getEditorPane();
-		DefaultHighlightPainter hl = new DefaultHighlightPainter(colorHighlight);
+
 		try {
 			Document document = editorTextPane.getDocument();
-
-			String searchText = text.toLowerCase();
 			String documentText = document.getText(0, document.getLength()).toLowerCase();
 
-			int index = documentText.indexOf(searchText);
-			while (index > -1) {
-				editorTextPane.getHighlighter().addHighlight(index, index + searchText.length(), hl);
-				index = documentText.indexOf(searchText, index + 1);
+			String[] searchWords = text.toLowerCase().split(" ");
+			for (int n = 0; n < searchWords.length; n++) {
+				String word = searchWords[n];
+				DefaultHighlightPainter p = highlightPainters[n % highlightPainters.length];
+
+				int index = documentText.indexOf(word);
+				while (index > -1) {
+					editorTextPane.getHighlighter().addHighlight(index, index + word.length(), p);
+					index = documentText.indexOf(word, index + 1);
+				}
 			}
+
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
