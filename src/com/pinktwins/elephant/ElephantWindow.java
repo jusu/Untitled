@@ -1135,18 +1135,21 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void textHighlight(String text) {
-		if (text.length() == 0) return;
+		if (text.length() == 0)
+			return;
 
-		CustomEditor editor = noteEditor.getEditor();
-		JTextPane editorTextPane = (editor.isMarkdown)? editor.getHtmlPane() : editor.getTextPane();
+		JTextPane editorTextPane = noteEditor.getEditor().getEditorPane();
 		DefaultHighlightPainter hl = new DefaultHighlightPainter(colorHighlight);
 		try {
 			Document document = editorTextPane.getDocument();
-			for (int index = 0; index + text.length() < document.getLength(); index++) {
-                String match = document.getText(index, text.length());
-                if (text.toLowerCase().equals(match.toLowerCase())) {
-                    editorTextPane.getHighlighter().addHighlight(index, index + text.length(), hl);
-                }
+
+			String searchText = text.toLowerCase();
+			String documentText = document.getText(0, document.getLength()).toLowerCase();
+
+			int index = documentText.indexOf(searchText);
+			while (index > -1) {
+				editorTextPane.getHighlighter().addHighlight(index, index + searchText.length(), hl);
+				index = documentText.indexOf(searchText, index + 1);
 			}
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block

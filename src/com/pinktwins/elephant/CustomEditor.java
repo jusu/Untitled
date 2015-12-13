@@ -272,9 +272,13 @@ public class CustomEditor extends RoundPanel {
 	public JTextPane getTextPane() {
 		return note;
 	}
-	
+
 	public HtmlPane getHtmlPane() {
 		return htmlPane;
+	}
+
+	public JTextPane getEditorPane() {
+		return isMarkdown ? getHtmlPane() : getTextPane();
 	}
 
 	public void setEditorEventListener(EditorEventListener l) {
