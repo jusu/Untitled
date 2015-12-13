@@ -29,8 +29,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.Border;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Document;
 
 import org.apache.commons.lang3.SystemUtils;
 
@@ -75,6 +79,8 @@ public class ElephantWindow extends JFrame {
 	public static final Color colorBlue = Color.decode("#0091e6");
 	public static final Color colorPreviewGray = Color.decode("#666663");
 	public static final Color colorPreviewGrayOlder = Color.decode("#b1b1b1");
+
+	public static final Color colorHighlight = Color.YELLOW;
 
 	public static final int bigWidth = 1920;
 
@@ -800,6 +806,7 @@ public class ElephantWindow extends JFrame {
 	public void refreshNote(Note note) {
 		noteEditor.clear();
 		noteEditor.load(note);
+		searchHighlight();
 	}
 
 	public void showMultipleNotes() {
@@ -1120,6 +1127,30 @@ public class ElephantWindow extends JFrame {
 		} else {
 			iRedo.setEnabled(false);
 			iRedo.setName("Redo");
+		}
+	}
+
+	public void searchHighlight() {
+		textHighlight(toolBar.search.getText());
+	}
+
+	private void textHighlight(String text) {
+		if (text.length() == 0) return;
+
+		CustomEditor editor = noteEditor.getEditor();
+		JTextPane editorTextPane = (editor.isMarkdown)? editor.getHtmlPane() : editor.getTextPane();
+		DefaultHighlightPainter hl = new DefaultHighlightPainter(colorHighlight);
+		try {
+			Document document = editorTextPane.getDocument();
+			for (int index = 0; index + text.length() < document.getLength(); index++) {
+                String match = document.getText(index, text.length());
+                if (text.toLowerCase().equals(match.toLowerCase())) {
+                    editorTextPane.getHighlighter().addHighlight(index, index + text.length(), hl);
+                }
+			}
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

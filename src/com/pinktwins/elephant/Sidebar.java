@@ -69,23 +69,23 @@ public class Sidebar extends BackgroundPanel {
 		Elephant.eventBus.register(this);
 
 		shortcutList = new SideBarList(window, "SHORTCUTS", true);
-		shortcutList.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+		shortcutList.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
 		shortcutList.load(shortcuts.load());
 		shortcutList.setItemModifier(shortcuts);
 
 		recentList = new SideBarList(window, "RECENT NOTES", false);
-		recentList.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
+		recentList.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
 		recentList.load(recentNotes.list());
 
 		BackgroundPanel div = new BackgroundPanel(sidebarDivider);
 		div.setStyle(BackgroundPanel.SCALED_X);
-		div.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+		div.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
 		div.setMaximumSize(new Dimension(1920, 2));
 
 		navigationList = new SideBarList(window, "", false);
 		navigationList.addNavigation();
 		navigationList.setOpaque(false);
-		navigationList.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+		navigationList.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
 		navigationList.highlightSelection = true;
 
 		JPanel p1 = new JPanel(new BorderLayout());

@@ -112,7 +112,6 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		search.setBounds(newButtonImage.getWidth(null) + 10, 8, 160, 26);
 		search.setFont(ElephantWindow.fontMedium);
 		search.setFixedColor(Color.decode("#e9e9e9"));
-		search.useV2();
 		search.windowFocusGained();
 
 		trash = new JButton("");
