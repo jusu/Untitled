@@ -35,13 +35,12 @@ public class Sidebar extends BackgroundPanel {
 	SideBarList shortcutList, recentList, navigationList;
 
 	public static enum RecentNotesModes {
-		SHOW,
-		HIDE
+		SHOW, HIDE
 	};
-	
+
 	private RecentNotesModes recentMode = RecentNotesModes.SHOW;
-	
-	public void toggleRecentNotes(){
+
+	public void toggleRecentNotes() {
 		switch (recentMode) {
 		case SHOW:
 			recentList.setVisible(false);
@@ -52,10 +51,10 @@ public class Sidebar extends BackgroundPanel {
 			recentMode = RecentNotesModes.SHOW;
 			break;
 		}
-		
+
 		Elephant.settings.set(Settings.Keys.RECENT_SHOW, recentMode.toString());
 	}
-	
+
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "sidebar", "sidebarDivider" });
 		tile = i.next();
@@ -103,10 +102,10 @@ public class Sidebar extends BackgroundPanel {
 		add(p1, BorderLayout.CENTER);
 		p1.add(p2, BorderLayout.CENTER);
 		p2.add(p3, BorderLayout.CENTER);
-		
+
 		// recent notes toggle settings
 		recentMode = Elephant.settings.getRecentNotesMode();
-		
+
 		switch (recentMode) {
 		case SHOW:
 			recentList.setVisible(true);
