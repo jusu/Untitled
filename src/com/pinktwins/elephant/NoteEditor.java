@@ -698,6 +698,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	@Override
 	public void editingFocusGained() {
 		isDirty = true;
+		editor.getEditorPane().getHighlighter().removeAllHighlights();
 	}
 
 	@Override
