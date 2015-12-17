@@ -1,9 +1,22 @@
 # Changelog
 
+##v21
+
+with many contributors, see Github https://github.com/jusu/Elephant/graphs/contributors
+
+- Added 'autoBullet' setting to toggle automatically extending lists on enter
+- Search words are highlighted in matching notes
+- Added search by date
+- Added View | Recent Notes menu option
+- Added Note | Word Count menu option
+- Added notebook trash button
+- Fixed missing date from markdown preview
+- Fixed Cmd-N/Cmd-A losing editor changes
+
 ##v20
 
 with contributions from Oliver Kopp, thanks!
-Contributors are listed in CONTRIBUTING.md.
+Contributors are listed in https://github.com/jusu/Elephant/graphs/contributors
 
 - "Add Notebook to Shortcuts" command under Note menu
 - Bullet list handling: automatically insert bullet char *+- when making lists

@@ -3,7 +3,8 @@
 ... CHANGELOG.md, this file, Eclipse formatting settings..
 
 
-## Code contributions from:
+## Code contributions tracked by Github:
 
-Oliver Kopp, https://github.com/koppor
-lolsteve, https://github.com/lolsteve
+https://github.com/jusu/Elephant/graphs/contributors
+
+Thank you!
