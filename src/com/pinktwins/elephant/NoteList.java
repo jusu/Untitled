@@ -318,7 +318,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	}
 
 	@Override
-	public void noteClicked(NoteItem item, boolean doubleClick, MouseEvent e) {
+	public void noteClicked(final NoteItem item, boolean doubleClick, MouseEvent e) {
 		if (e.isPopupTrigger()) {
 			// JPopupMenu is buggy.
 			return;
@@ -369,7 +369,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		}
 	}
 
-	private void selectNote(NoteItem item, boolean addToSelection) {
+	private void selectNote(final NoteItem item, final boolean addToSelection) {
 		if (!addToSelection) {
 			deselectAll();
 		}
@@ -380,7 +380,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		lc.updateVerticalScrollbar(item, ui.scroll);
 	}
 
-	private void deselectNote(NoteItem item) {
+	private void deselectNote(final NoteItem item) {
 		item.setSelected(false);
 		selectedNotes.remove(item);
 	}
@@ -444,7 +444,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		selectedNotes.clear();
 	}
 
-	public void selectNote(Note n, boolean addToSelection) {
+	public void selectNote(final Note n, final boolean addToSelection) {
 		for (NoteItem item : noteItems) {
 			if (item.note.equals(n)) {
 				selectNote(item, addToSelection);
@@ -572,7 +572,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		return notebook.isSearch();
 	}
 
-	public boolean isShowingNotebook(Notebook nb) {
+	public boolean isShowingNotebook(final Notebook nb) {
 		return notebook.equals(nb);
 	}
 

@@ -97,6 +97,8 @@ public class ElephantWindow extends JFrame {
 	private final Notebooks notebooks = new Notebooks(this);
 	private final TagList tagList = new TagList(this);
 
+	private final History history = new History(this);
+
 	private boolean hasWindowFocus;
 
 	public static final int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -128,7 +130,7 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// XXX if showing notebooks, open new note in solo window
-			saveChanges();
+			new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 			showNotes();
 			newNote();
 		}
@@ -238,7 +240,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener showAllNotesAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			saveChanges();
+			new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
 			showAllNotes();
 		}
 	};
@@ -358,6 +360,20 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			sideBar.toggleRecentNotes();
+		}
+	};
+
+	ActionListener viewBackAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			history.back();
+		}
+	};
+
+	ActionListener viewForwardAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			history.forward();
 		}
 	};
 
@@ -748,10 +764,7 @@ public class ElephantWindow extends JFrame {
 				if (notebook != null) {
 					Note note = notebook.find(f.getName());
 					if (note != null) {
-						showNotebook(notebook);
-						noteList.selectNote(note, false);
-						showNote(note);
-						toolBar.clearSearch();
+						selectAndShowNote(notebook, note);
 					}
 				}
 			}
@@ -762,6 +775,16 @@ public class ElephantWindow extends JFrame {
 		}
 	}
 
+	public void selectAndShowNote(final Notebook nb, final Note n) {
+		history.freeze();
+		showNotebook(nb);
+		noteList.selectNote(n, false);
+		history.unFreeze();
+
+		showNote(n);
+		toolBar.clearSearch();
+	}
+
 	public void saveChanges() {
 		noteEditor.saveChanges();
 	}
@@ -769,6 +792,10 @@ public class ElephantWindow extends JFrame {
 	public void deleteSelectedNote() {
 		noteEditor.clear();
 		noteList.deleteSelected();
+
+		// Should remove deleted note from history.
+		// Let's just flush it.
+		history.clear();
 	}
 
 	private void showNotes() {
@@ -778,18 +805,22 @@ public class ElephantWindow extends JFrame {
 		sideBar.selectNavigation(0);
 	}
 
-	private void showNotebooks() {
+	public void showNotebooks() {
 		splitLeft.setRightComponent(notebooks);
 		splitLeft.setDividerColor(CustomSplitPane.DividerColor.COLOR2);
 		uiMode = UiModes.notebooks;
 		sideBar.selectNavigation(1);
+
+		history.addNotebooks();
 	}
 
-	private void showTags() {
+	public void showTags() {
 		splitLeft.setRightComponent(tagList);
 		splitLeft.setDividerColor(CustomSplitPane.DividerColor.COLOR2);
 		uiMode = UiModes.tags;
 		sideBar.selectNavigation(2);
+
+		history.addTags();
 	}
 
 	public void showNotebook(Notebook notebook) {
@@ -806,6 +837,8 @@ public class ElephantWindow extends JFrame {
 		if (!toolBar.isEditing()) {
 			noteEditor.focusQuickLook();
 		}
+
+		history.add(note);
 	}
 
 	public void refreshNote(Note note) {
@@ -846,6 +879,8 @@ public class ElephantWindow extends JFrame {
 	public void showAllNotes() {
 		Notebook nb = Notebook.getNotebookWithAllNotes();
 		showNotebook(nb);
+
+		history.addAllNotes();
 	}
 
 	public void showSettings() {
@@ -869,14 +904,23 @@ public class ElephantWindow extends JFrame {
 		focusEditor();
 	}
 
+	public void setSearchText(String text) {
+		toolBar.search.setText(text);
+	}
+
 	public void search(String text) {
 		previousSearchText = text;
 		if (text.length() == 0) {
 			showNotebook(Vault.getInstance().getDefaultNotebook());
 			iSaveSearch.setEnabled(false);
 		} else {
+			history.freeze();
+
 			showNotebook(Search.search(text));
 			iSaveSearch.setEnabled(true);
+
+			history.unFreeze();
+			history.addSearch(text);
 		}
 	}
 
@@ -975,6 +1019,10 @@ public class ElephantWindow extends JFrame {
 			iRecentNotes.setSelected(false);
 			break;
 		}
+
+		view.addSeparator();
+		view.add(menuItem("Back", KeyEvent.VK_OPEN_BRACKET, menuMask, viewBackAction));
+		view.add(menuItem("Forward", KeyEvent.VK_CLOSE_BRACKET, menuMask, viewForwardAction));
 
 		JMenu note = new JMenu("Note");
 		note.add(menuItem("Edit Note Title", KeyEvent.VK_L, menuMask, editTitleAction));
