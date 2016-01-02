@@ -1,5 +1,11 @@
 # Changelog
 
+##v23
+- Added markdown table support (from Pegdown parser)
+
+##v22
+- Fixed invisible editor when editing markdown notes
+
 ##v21
 
 with many contributors, see Github https://github.com/jusu/Elephant/graphs/contributors
