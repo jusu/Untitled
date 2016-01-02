@@ -2,6 +2,7 @@
 
 ##v23
 - Added markdown table support (from Pegdown parser)
+- Added markdown FENCED_CODE_BLOCKS
 
 ##v22
 - Fixed invisible editor when editing markdown notes
