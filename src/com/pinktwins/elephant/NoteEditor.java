@@ -75,7 +75,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	public static final ImageScalingCache scalingCache = new ImageScalingCache();
 
 	public static final PegDownProcessor pegDown = new PegDownProcessor(org.pegdown.Parser.AUTOLINKS | org.pegdown.Parser.TABLES
-			| org.pegdown.Parser.FENCED_CODE_BLOCKS);
+			| org.pegdown.Parser.FENCED_CODE_BLOCKS | org.pegdown.Parser.DEFINITIONS);
 
 	static {
 		Iterator<Image> i = Images.iterator(new String[] { "noteeditor", "noteTopShadow", "noteToolsNotebook", "noteToolsTrash", "noteToolsDivider" });
