@@ -26,6 +26,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.IOUtil;
@@ -196,11 +197,12 @@ public class Note implements Comparable<Note> {
 	public String updatedStr() {
 		return df.print(lastModified());
 	}
-	
-	public int updateWordCount(){
+
+	public int updateWordCount() {
 		List<String> words = new ArrayList<String>();
 		Matcher matcher = Pattern.compile("\\S+").matcher(contents());
-		while(matcher.find()) words.add(matcher.group());
+		while (matcher.find())
+			words.add(matcher.group());
 		return words.size();
 	}
 
