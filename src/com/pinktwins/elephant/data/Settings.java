@@ -16,7 +16,8 @@ public class Settings {
 	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
 	public static enum Keys {
-		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet"), RECENT_SHOW("showRecent");
+		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet"), RECENT_SHOW(
+				"showRecent"), ALLOWFILENAMECHARS("allowFilenameChars");
 
 		private final String str;
 
@@ -149,7 +150,7 @@ public class Settings {
 
 	public RecentNotesModes getRecentNotesMode() {
 		String mode = getString(Keys.RECENT_SHOW);
-		
+
 		if (mode.isEmpty()) {
 			return RecentNotesModes.SHOW;
 		}
@@ -165,11 +166,18 @@ public class Settings {
 		LOG.severe("Unknown recentNotesMode: " + mode);
 		return RecentNotesModes.SHOW;
 	}
-	
+
 	public boolean getAutoBullet() {
 		if (!has(Keys.AUTOBULLET)) {
 			return true;
 		}
 		return getInt(Keys.AUTOBULLET) > 0;
+	}
+
+	public String getAllowFilenameChars() {
+		if (!has(Keys.ALLOWFILENAMECHARS)) {
+			return "";
+		}
+		return getString(Keys.ALLOWFILENAMECHARS);
 	}
 }

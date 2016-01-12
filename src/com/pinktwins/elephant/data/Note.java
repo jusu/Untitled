@@ -469,7 +469,16 @@ public class Note implements Comparable<Note> {
 
 	public void attemptSafeRename(String newName) throws IOException {
 
-		newName = newName.replaceAll("[^a-zA-Z0-9 \\.\\-]", "_");
+		String regexp = "[^a-zA-Z0-9 \\.\\-";
+		String allowChars = Elephant.settings.getAllowFilenameChars();
+		if (!allowChars.isEmpty()) {
+			for (int n = 0, len = allowChars.length(); n < len; n++) {
+				regexp += "\\" + allowChars.charAt(n);
+			}
+		}
+		regexp += "]";
+
+		newName = newName.replaceAll(regexp, "_");
 
 		File newFile = new File(file.getParentFile().getAbsolutePath() + File.separator + newName);
 		File newMeta = metaFromFile(newFile);
