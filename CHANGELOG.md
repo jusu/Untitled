@@ -4,6 +4,8 @@
 - Added markdown table support (from Pegdown parser)
 - Added markdown FENCED_CODE_BLOCKS
 - Added markdown DEFINITION_LISTS
+- Added "allowFilenameChars" setting to allow custom characters in note filenames
+- Added View | Back and View | Forward menu options
 
 ##v22
 - Fixed invisible editor when editing markdown notes
