@@ -37,6 +37,7 @@ import javax.swing.TransferHandler;
 import javax.swing.text.AbstractDocument.LeafElement;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Highlighter;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.pegdown.PegDownProcessor;
@@ -701,7 +702,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		isDirty = true;
 		JTextPane p = editor.getEditorPane();
 		if (p != null) {
-			p.getHighlighter().removeAllHighlights();
+			Highlighter h = p.getHighlighter();
+			if (h != null) {
+				h.removeAllHighlights();
+			}
 		}
 	}
 
