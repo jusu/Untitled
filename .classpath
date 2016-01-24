@@ -9,7 +9,6 @@
 	<classpathentry kind="lib" path="libs/joda-time-2.6.jar"/>
 	<classpathentry kind="lib" path="libs/commons-collections4-4.0.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang3-3.3.2.jar"/>
-	<classpathentry kind="lib" path="libs/PDFRenderer-0.9.1.jar"/>
 	<classpathentry kind="lib" path="libs/parboiled-java-1.1.6.jar"/>
 	<classpathentry kind="lib" path="libs/pegdown-1.4.2.jar"/>
 	<classpathentry kind="lib" path="libs/parboiled-core-1.1.6.jar"/>
@@ -19,5 +18,6 @@
 	<classpathentry kind="lib" path="libs/lucene-queryparser-4.10.3.jar"/>
 	<classpathentry kind="lib" path="libs/com.pinktwins.rtf.jar"/>
 	<classpathentry kind="lib" path="libs/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="libs/PDFRenderer-0.9.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

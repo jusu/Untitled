@@ -26,6 +26,8 @@ import javax.swing.ImageIcon;
 
 import com.sun.pdfview.PDFFile;
 import com.sun.pdfview.PDFPage;
+import com.sun.pdfview.PDFParseException;
+import com.sun.pdfview.PDFRenderer;
 
 // Based on:
 // http://stackoverflow.com/questions/550129/export-pdf-pages-to-a-series-of-images-in-java
@@ -55,6 +57,11 @@ public class PdfUtil {
 
 	private static final int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
 
+	static {
+		// It either works or not. Keep quiet.
+		PDFRenderer.setSuppressSetErrorStackTrace(true);
+	}
+
 	public PdfUtil(File f) {
 		try {
 			raf = new RandomAccessFile(f, "r");
@@ -83,22 +90,26 @@ public class PdfUtil {
 	}
 
 	public Image writePage(int n, File outPath) {
-		PDFPage page = pdffile.getPage(n);
+		BufferedImage bImg = null;
 
-		// Improve the image quality slightly compared to assuming 72dpi.
-		// XXX magic formula
-		double adjust = (screenDpi / 72.0 - 1.0) / 2.0 + 1.0;
-
-		Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
-		Image img = page.getImage((int) (rect.width * adjust), (int) (rect.height * adjust), rect, // clip rect
-				null, // null for the ImageObserver
-				true, // fill background with white
-				true // block until drawing is done
-				);
-
-		BufferedImage bImg = toBufferedImage(img);
 		try {
+			PDFPage page = pdffile.getPage(n);
+
+			// Improve the image quality slightly compared to assuming 72dpi.
+			// XXX magic formula
+			double adjust = (screenDpi / 72.0 - 1.0) / 2.0 + 1.0;
+
+			Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
+			Image img = page.getImage((int) (rect.width * adjust), (int) (rect.height * adjust), rect, // clip rect
+					null, // null for the ImageObserver
+					true, // fill background with white
+					true // block until drawing is done
+					);
+
+			bImg = toBufferedImage(img);
 			ImageIO.write(bImg, "png", outPath);
+		} catch (PDFParseException e) {
+			LOG.severe("Fail: " + e);
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}
