@@ -791,6 +791,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					if (currentNote.isMarkdown()) {
 						insertMarkdownLink(f);
 					}
+
+					// Insert linefeed for each dropped file
+					try {
+						noteArea.getDocument().insertString(noteArea.getCaretPosition() + 1, "\n", null);
+					} catch (BadLocationException e) {
+						LOG.severe("Fail: " + e);
+					}
 				} catch (IOException e) {
 					LOG.severe("Fail: " + e);
 				}
