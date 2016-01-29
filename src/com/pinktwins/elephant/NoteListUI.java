@@ -67,7 +67,7 @@ public class NoteListUI {
 		scroll = new JScrollPane(main);
 		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setBorder(ElephantWindow.emptyBorder);
-		scroll.getVerticalScrollBar().setUnitIncrement(5);
+		scroll.getVerticalScrollBar().setUnitIncrement(10);
 
 		parent.add(title, BorderLayout.NORTH);
 		parent.add(scroll, BorderLayout.CENTER);
