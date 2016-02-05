@@ -254,6 +254,9 @@ public class CustomEditor extends RoundPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			note.requestFocusInWindow();
+			if (isMarkdown && isShowingMarkdown()) {
+				switchToMarkdownEditor();
+			}
 		}
 	};
 
@@ -958,6 +961,15 @@ public class CustomEditor extends RoundPanel {
 		new UndoRedoStateUpdateRequest(undoManager).post();
 	}
 
+	private void switchToMarkdownEditor() {
+		if (isMarkdown && isShowingMarkdown()) {
+			remove(htmlPane);
+			add(note, BorderLayout.CENTER);
+			revalidate();
+			htmlPane = null;
+		}
+	}
+
 	public void displayHtml(final File noteFile, final String html) {
 		if (htmlPane == null) {
 			htmlPane = new HtmlPane(noteFile, new Runnable() {
@@ -965,11 +977,7 @@ public class CustomEditor extends RoundPanel {
 				public void run() {
 					// Executed when mouseClick does not open a link
 					// -> go to edit mode
-					CustomEditor.this.remove(htmlPane);
-					CustomEditor.this.add(note, BorderLayout.CENTER);
-					CustomEditor.this.revalidate();
-
-					htmlPane = null;
+					CustomEditor.this.switchToMarkdownEditor();
 				}
 			});
 		}
