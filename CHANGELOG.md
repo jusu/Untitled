@@ -1,12 +1,11 @@
 # Changelog
 
 ##v24
-- NoteEditor: fixed going to edit mode by clicking empty note area with short notes
+- NoteEditor: fixed going to edit mode by clicking empty note area with short markdown notes
 - NoteList: scrolling speed doubled from 5 to 10, matching NoteEditor scroll speed
 - Fixed dropping multiple files - attachments appeared on same line
-- Added command line (stdin/stdout) interface for search queries
+- Added text (stdin/stdout) interface for search queries
 - Suppressed pdf rendering errors from com.sun.pdfview
-
 
 ##v23
 - Added markdown table support (from Pegdown parser)
