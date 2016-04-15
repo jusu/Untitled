@@ -9,6 +9,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
 import javax.swing.text.Document;
 import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 
 public class HtmlPane extends JTextPane {
 
@@ -37,6 +38,10 @@ public class HtmlPane extends JTextPane {
 		} catch (MalformedURLException e) {
 			LOG.severe("Fail: " + e);
 		}
+
+		HTMLEditorKit kit = new HTMLEditorKit();
+		this.setEditorKit(kit);
+		HtmlPaneStylesheet.getInstance().addStylesheet(kit);
 
 		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));
 	}
