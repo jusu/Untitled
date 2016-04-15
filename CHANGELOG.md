@@ -1,5 +1,8 @@
 # Changelog
 
+##v25
+- Merged: Added external Stylesheet for HtmlPane #71
+
 ##v24
 - NoteEditor: fixed going to edit mode by clicking empty note area with short markdown notes
 - NoteList: scrolling speed doubled from 5 to 10, matching NoteEditor scroll speed
