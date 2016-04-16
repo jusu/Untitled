@@ -40,6 +40,7 @@ public class Note implements Comparable<Note> {
 	private String fileName = "";
 
 	private boolean saveLocked = false;
+	private boolean isPreviewDisabled = false;
 
 	private static DateTimeFormatter df = DateTimeFormat.forPattern("dd MMM yyyy").withLocale(Locale.getDefault());
 
@@ -186,6 +187,14 @@ public class Note implements Comparable<Note> {
 	public boolean isHtml() {
 		String s = file.getName().toLowerCase();
 		return s.endsWith(".htm") || s.endsWith(".html");
+	}
+
+	public boolean isPreviewDisabled() {
+		return isPreviewDisabled;
+	}
+
+	public void setPreviewDisabled(boolean b) {
+		isPreviewDisabled = b;
 	}
 
 	public String createdStr() {

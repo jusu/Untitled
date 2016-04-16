@@ -2,6 +2,8 @@
 
 ##v25
 - Merged: Added external Stylesheet for HtmlPane #71
+- Merged: exportJar.xml cleanup
+- Added disabling note previews by notebook. Add empty file ".disablePreview" to notebook folder to disable note previews for that folder.
 
 ##v24
 - NoteEditor: fixed going to edit mode by clicking empty note area with short markdown notes

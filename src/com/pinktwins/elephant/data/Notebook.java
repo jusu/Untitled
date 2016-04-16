@@ -26,6 +26,7 @@ public class Notebook implements Comparable<Notebook> {
 	private String name = "";
 	private File folder;
 	private boolean isSearch, isTagSearch;
+	private boolean isPreviewDisabled = false;
 
 	public List<Note> notes = Factory.newArrayList();
 
@@ -75,6 +76,10 @@ public class Notebook implements Comparable<Notebook> {
 	public Notebook(File folder) {
 		name = folder.getName();
 		this.folder = folder;
+
+		File f = new File(Vault.getInstance().getHome() + File.separator + name + File.separator + ".disablePreview");
+		isPreviewDisabled = f.exists();
+
 		populate();
 	}
 
@@ -147,6 +152,8 @@ public class Notebook implements Comparable<Notebook> {
 					try {
 						if (f.isFile()) {
 							Note note = new Note(f);
+							note.setPreviewDisabled(isPreviewDisabled);
+
 							notes.add(note);
 
 							// Re-digest possibly modified notes.

@@ -175,10 +175,14 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		} else {
 			CustomEditor.setTextRtfOrPlain(preview, getContentPreview());
 			try {
-		preview.getDocument().insertString(0, ts + " ", style);
+				preview.getDocument().insertString(0, ts + " ", style);
 			} catch (BadLocationException e) {
 				LOG.severe("Fail: " + e);
 			}
+		}
+
+		if (note.isPreviewDisabled()) {
+			preview.setText("");
 		}
 
 		previewPane.add(preview);
