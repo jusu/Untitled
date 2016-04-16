@@ -166,7 +166,8 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		StyleConstants.setForeground(style, col);
 
 		if (note.isMarkdown()) {
-			String htmlts = "<p style='margin:0;padding:0;color:" + String.format("#%02x%02x%02x", col.getRed(), col.getGreen(), col.getBlue()) +"'>" + ts + "</p>\n";
+			String htmlts = "<p style='margin:0;padding:0;color:" + String.format("#%02x%02x%02x", col.getRed(), col.getGreen(), col.getBlue()) + "'>" + ts
+					+ "</p>\n";
 			String contents = htmlts + note.contents();
 			String html = NoteEditor.pegDown.markdownToHtml(contents);
 			// hint by http://stackoverflow.com/a/19785465/873282
