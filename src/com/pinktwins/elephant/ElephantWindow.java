@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
@@ -19,6 +20,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
@@ -415,6 +419,19 @@ public class ElephantWindow extends JFrame {
 	ActionListener markdownAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+		}
+	};
+
+	ActionListener websiteAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Desktop.getDesktop().browse(new URI("http://elephant.mine.nu"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (URISyntaxException e1) {
+				e1.printStackTrace();
+			}
 		}
 	};
 
@@ -1056,6 +1073,7 @@ public class ElephantWindow extends JFrame {
 		JMenuItem version = menuItem("Elephant version " + Elephant.VERSION, 0, 0, null);
 		version.setEnabled(false);
 		help.add(version);
+		help.add(menuItem("Elephant website", 0, 0, websiteAction));
 
 		menuBar.add(file);
 		menuBar.add(edit);
