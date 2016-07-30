@@ -445,6 +445,9 @@ public class ElephantWindow extends JFrame {
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(loadBounds());
+		if (Elephant.settings.getBoolean("maximized")) {
+			setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		}
 
 		Elephant.eventBus.register(this);
 
@@ -508,11 +511,21 @@ public class ElephantWindow extends JFrame {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				saveBounds(ElephantWindow.this.getBounds());
+				if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH) {
+					Elephant.settings.setChain("maximized", true);
+				} else {
+					Elephant.settings.setChain("maximized", false);
+				}
 			}
 
 			@Override
 			public void componentMoved(ComponentEvent e) {
 				saveBounds(ElephantWindow.this.getBounds());
+				if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH) {
+					Elephant.settings.setChain("maximized", true);
+				} else {
+					Elephant.settings.setChain("maximized", false);
+				}
 			}
 
 			@Override
