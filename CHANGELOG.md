@@ -1,6 +1,7 @@
 # Changelog
 
 ##v25
+- Save/Load maximized state of window in settings
 - Merged: Added external Stylesheet for HtmlPane #71
 - Merged: exportJar.xml cleanup
 - Added disabling note previews by notebook. Add empty file ".disablePreview" to notebook folder to disable note previews for that folder.
