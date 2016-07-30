@@ -256,11 +256,15 @@ public class Notebook implements Comparable<Notebook> {
 
 	public void deleteNote(Note note) {
 		if (isTrash()) {
+			notes.remove(note);
+			note.delete();
 			return;
 		}
 
 		File trash = Vault.getInstance().getTrash();
 		if (folder != null && folder.equals(trash)) {
+			notes.remove(note);
+			note.delete();
 			return;
 		}
 

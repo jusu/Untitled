@@ -1,6 +1,7 @@
 # Changelog
 
 ##v25
+- Added possibility to permanently delete note from Trash.
 - Save/Load maximized state of window in settings
 - Merged: Added external Stylesheet for HtmlPane #71
 - Merged: exportJar.xml cleanup

@@ -57,6 +57,10 @@ public class Shortcuts implements SideBarItemModifier {
 
 	@Subscribe
 	public void handleNotebookChanged(NotebookEvent event) {
+		String prefix;
+		String oldPath;
+		boolean modified;
+		
 		switch (event.kind) {
 		case noteCreated:
 			break;
@@ -66,9 +70,9 @@ public class Shortcuts implements SideBarItemModifier {
 				return;
 			}
 
-			String prefix = Vault.getInstance().getHome() + File.separator;
-			String oldPath = event.source.getAbsolutePath();
-			boolean modified = false;
+			prefix = Vault.getInstance().getHome() + File.separator;
+			oldPath = event.source.getAbsolutePath();
+			modified = false;
 
 			for (int n = 0; n < list.size(); n++) {
 				String s = list.get(n);
@@ -89,6 +93,31 @@ public class Shortcuts implements SideBarItemModifier {
 				new ShortcutsChangedEvent().post();
 			}
 
+			break;
+		case noteDeleted:
+			if (event.source == null) {
+				return;
+			}
+			
+			prefix = Vault.getInstance().getHome() + File.separator;
+			oldPath = event.source.getAbsolutePath();
+			modified = false;
+
+			for (int n = 0; n < list.size(); n++) {
+				String s = list.get(n);
+
+				String fullShortcut = prefix + s;
+
+				if (oldPath.equals(fullShortcut)) {
+					list.remove(n);
+					modified = true;
+				}
+			}
+
+			if (modified) {
+				save();
+				new ShortcutsChangedEvent().post();
+			}
 			break;
 		default:
 			break;

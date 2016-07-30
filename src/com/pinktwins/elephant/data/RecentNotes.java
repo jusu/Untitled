@@ -101,17 +101,37 @@ public class RecentNotes {
 
 	@Subscribe
 	public void handleNotebookEvent(NotebookEvent event) {
-		if (event.source != null && event.dest != null) {
-			Note old = new Note(event.source);
+		switch (event.kind) {
+		case noteMoved:
+		case noteRenamed:
+		case noteCreated:
+			if (event.source != null && event.dest != null) {
+				Note old = new Note(event.source);
 
-			if (recent.contains(old)) {
-				recent.remove(old);
+				if (recent.contains(old)) {
+					recent.remove(old);
+				}
+
+				addRecentNote(new Note(event.dest));
+
+				new RecentNotesChangedEvent().post();
+				saveHistory();
 			}
-
-			addRecentNote(new Note(event.dest));
-
-			new RecentNotesChangedEvent().post();
-			saveHistory();
+			break;
+		case noteDeleted:
+			if (event.source != null) {
+				Note old = new Note(event.source);
+				
+				if (recent.contains(old)) {
+					recent.remove(old);
+				}
+				
+				new RecentNotesChangedEvent().post();
+				saveHistory();
+			}
+			break;
+		default:
+			break;
 		}
 	}
 

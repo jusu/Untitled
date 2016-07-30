@@ -445,9 +445,7 @@ public class ElephantWindow extends JFrame {
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(loadBounds());
-		if (Elephant.settings.getBoolean("maximized")) {
-			setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
-		}
+		setExtendedState(loadExtendedState());
 
 		Elephant.eventBus.register(this);
 
@@ -511,21 +509,13 @@ public class ElephantWindow extends JFrame {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				saveBounds(ElephantWindow.this.getBounds());
-				if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH) {
-					Elephant.settings.setChain("maximized", true);
-				} else {
-					Elephant.settings.setChain("maximized", false);
-				}
+				saveExtendedState(ElephantWindow.this.getExtendedState());
 			}
 
 			@Override
 			public void componentMoved(ComponentEvent e) {
 				saveBounds(ElephantWindow.this.getBounds());
-				if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH) {
-					Elephant.settings.setChain("maximized", true);
-				} else {
-					Elephant.settings.setChain("maximized", false);
-				}
+				saveExtendedState(ElephantWindow.this.getExtendedState());
 			}
 
 			@Override
@@ -608,6 +598,18 @@ public class ElephantWindow extends JFrame {
 
 	private void saveBounds(Rectangle r) {
 		Elephant.settings.setChain("windowX", r.x).setChain("windowY", r.y).setChain("windowWidth", r.width).set("windowHeight", r.height);
+	}
+	
+	private int loadExtendedState() {
+		int s = ElephantWindow.this.getExtendedState();
+		if (Elephant.settings.getBoolean("maximized")) {
+			s |= JFrame.MAXIMIZED_BOTH;
+		}
+		return s;
+	}
+	
+	private void saveExtendedState(int s) {
+		Elephant.settings.setChain("maximized", (s & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH ? true : false);
 	}
 
 	// Handling key dispatching for full control over keyboard interaction.
