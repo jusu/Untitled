@@ -63,6 +63,10 @@ public class Settings {
 		return map.optInt(keyStr);
 	}
 
+	public boolean getBoolean(String keyStr) {
+		return map.optBoolean(keyStr, false);
+	}
+
 	public String getString(Keys key) {
 		return map.optString(key.toString(), "");
 	}
@@ -98,6 +102,15 @@ public class Settings {
 	}
 
 	public Settings setChain(String key, int value) {
+		try {
+			map.put(key.toString(), value);
+		} catch (JSONException e) {
+			LOG.severe("Fail: " + e);
+		}
+		return this;
+	}
+	
+	public Settings setChain(String key, boolean value) {
 		try {
 			map.put(key.toString(), value);
 		} catch (JSONException e) {
