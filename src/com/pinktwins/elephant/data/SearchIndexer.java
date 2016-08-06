@@ -189,6 +189,13 @@ public class SearchIndexer {
 			break;
 		case noteCreated:
 			break;
+		case noteDeleted:
+			if (event.source != null) {
+				Note oldNote = new Note(event.source);
+
+				purgeNote(oldNote);
+			}
+			break;
 		default:
 			break;
 		}

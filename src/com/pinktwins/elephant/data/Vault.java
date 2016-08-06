@@ -19,6 +19,7 @@ import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.WatchDir.WatchDirListener;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
+import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.TagsChangedEvent;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Factory;
@@ -295,6 +296,11 @@ public class Vault implements WatchDirListener {
 		notebooks.remove(nb);
 
 		new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
+	}
+	
+	@Subscribe
+	public void handleNotebookEvent(NotebookEvent event) {
+		populate();
 	}
 
 	@Subscribe

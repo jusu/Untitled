@@ -420,6 +420,31 @@ public class Note implements Comparable<Note> {
 		return Long.toString(System.currentTimeMillis(), 36);
 	}
 
+	public void delete() {
+		try {
+			FileUtils.deleteQuietly(file);
+			if (meta.exists()) {
+				FileUtils.deleteQuietly(meta);
+			}
+
+			for (NoteBoundDirectory d : boundDirs) {
+				File bound = new File(d.getPath(file));
+				if (bound.exists() && bound.isDirectory()) {
+					FileUtils.deleteDirectory(bound);
+				}
+			}
+
+			Notebook source = findContainingNotebook();
+			if (source != null) {
+				source.refresh();
+			}
+
+			new NotebookEvent(NotebookEvent.Kind.noteDeleted, file).post();
+		} catch (IOException e) {
+			LOG.severe("Fail: " + e);
+		}
+	}
+
 	public void moveTo(File dest) {
 
 		File destFile = new File(dest + File.separator + file.getName());

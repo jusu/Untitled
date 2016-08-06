@@ -610,6 +610,8 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 				sortAndUpdate();
 			}
 			break;
+		case noteDeleted:
+			NoteItem.removeCacheKey(event.source);
 		default:
 			break;
 		}
