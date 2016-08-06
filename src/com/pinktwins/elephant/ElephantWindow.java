@@ -47,6 +47,7 @@ import com.pinktwins.elephant.NoteEditor.NoteEditorStateListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
+import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
@@ -599,17 +600,17 @@ public class ElephantWindow extends JFrame {
 	private void saveBounds(Rectangle r) {
 		Elephant.settings.setChain("windowX", r.x).setChain("windowY", r.y).setChain("windowWidth", r.width).set("windowHeight", r.height);
 	}
-	
+
 	private int loadExtendedState() {
 		int s = ElephantWindow.this.getExtendedState();
-		if (Elephant.settings.getBoolean("maximized")) {
+		if (Elephant.settings.getBoolean(Settings.Keys.WINDOW_MAXIMIZED)) {
 			s |= JFrame.MAXIMIZED_BOTH;
 		}
 		return s;
 	}
-	
+
 	private void saveExtendedState(int s) {
-		Elephant.settings.setChain("maximized", (s & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH ? true : false);
+		Elephant.settings.setChain(Settings.Keys.WINDOW_MAXIMIZED, (s & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH ? true : false);
 	}
 
 	// Handling key dispatching for full control over keyboard interaction.
@@ -822,6 +823,22 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void deleteSelectedNote() {
+
+		// When deleting from Trash, confirm deletion
+		if (noteList.isTrash() && Elephant.settings.getConfirmDeleteFromTrash()) {
+			int count = noteList.getSelection().size();
+			String noteName;
+			if (count == 1) {
+				noteName = "\"" + noteList.getSelection().iterator().next().getMeta().title() + "\"";
+			} else {
+				noteName = count + " notes";
+			}
+			String message = String.format("Permanently delete %s and any attachments? This cannot be undone.", noteName);
+			if (JOptionPane.showConfirmDialog(null, message, String.format("Delete?"), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+				return;
+			}
+		}
+
 		noteEditor.clear();
 		noteList.deleteSelected();
 

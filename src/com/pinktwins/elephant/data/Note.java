@@ -421,6 +421,14 @@ public class Note implements Comparable<Note> {
 	}
 
 	public void delete() {
+
+		// Make sure this note is in trash, or abort
+		Notebook folder = findContainingNotebook();
+		if (folder == null || !folder.isTrash()) {
+			LOG.severe("Fail: tried to delete note outside trash, aborting. file=" + file.toString());
+			return;
+		}
+
 		try {
 			FileUtils.deleteQuietly(file);
 			if (meta.exists()) {

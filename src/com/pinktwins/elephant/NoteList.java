@@ -572,6 +572,10 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		return notebook.isSearch();
 	}
 
+	public boolean isTrash() {
+		return notebook.isTrash();
+	}
+
 	public boolean isShowingNotebook(final Notebook nb) {
 		return notebook.equals(nb);
 	}

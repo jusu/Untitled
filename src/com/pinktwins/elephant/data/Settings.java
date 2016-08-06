@@ -17,7 +17,7 @@ public class Settings {
 
 	public static enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet"), RECENT_SHOW(
-				"showRecent"), ALLOWFILENAMECHARS("allowFilenameChars");
+				"showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH("confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized");
 
 		private final String str;
 
@@ -63,8 +63,8 @@ public class Settings {
 		return map.optInt(keyStr);
 	}
 
-	public boolean getBoolean(String keyStr) {
-		return map.optBoolean(keyStr, false);
+	public boolean getBoolean(Keys key) {
+		return map.optBoolean(key.toString(), false);
 	}
 
 	public String getString(Keys key) {
@@ -109,7 +109,11 @@ public class Settings {
 		}
 		return this;
 	}
-	
+
+	public Settings setChain(Keys key, boolean value) {
+		return setChain(key.toString(), value);
+	}
+
 	public Settings setChain(String key, boolean value) {
 		try {
 			map.put(key.toString(), value);
@@ -188,9 +192,16 @@ public class Settings {
 	}
 
 	public String getAllowFilenameChars() {
-		if (!has(Keys.ALLOWFILENAMECHARS)) {
+		if (!has(Keys.ALLOW_FILENAMECHARS)) {
 			return "";
 		}
-		return getString(Keys.ALLOWFILENAMECHARS);
+		return getString(Keys.ALLOW_FILENAMECHARS);
+	}
+
+	public boolean getConfirmDeleteFromTrash() {
+		if (!has(Keys.CONFIRM_DELETE_FROM_TRASH)) {
+			return true;
+		}
+		return getBoolean(Keys.CONFIRM_DELETE_FROM_TRASH);
 	}
 }
