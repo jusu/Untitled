@@ -9,16 +9,14 @@ public class NotebookEvent extends ElephantEvent {
 
 	public final Kind kind;
 	public final File source, dest;
-	
-	public NotebookEvent(Kind kind, File source) {
-		this.kind = kind;
-		this.source = source;
-		this.dest = null;
-	}
 
 	public NotebookEvent(Kind kind, File source, File dest) {
 		this.kind = kind;
 		this.source = source;
 		this.dest = dest;
+	}
+
+	public NotebookEvent(Kind kind, File source) {
+		this(kind, source, null);
 	}
 }
