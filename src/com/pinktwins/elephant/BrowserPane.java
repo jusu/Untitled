@@ -38,11 +38,12 @@ public class BrowserPane extends JPanel {
 
 	private static final Logger LOG = Logger.getLogger(BrowserPane.class.getName());
 
-	private static String HEIGHT_SCRIPT;
+	private static String HEIGHT_SCRIPT, NUMFRAMESETS_SCRIPT;
 
 	static {
 		try {
 			HEIGHT_SCRIPT = IOUtils.toString(BrowserPane.class.getClass().getResourceAsStream("/style/documentHeight.js"));
+			NUMFRAMESETS_SCRIPT = IOUtils.toString(BrowserPane.class.getClass().getResourceAsStream("/style/numFramesets.js"));
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}
@@ -146,10 +147,11 @@ public class BrowserPane extends JPanel {
 						final Runnable resizer = new Runnable() {
 							@Override
 							public void run() {
+								// Calculate document height, set note height to document height.
+								// Nice scrolling where webpage is 'embedded' in the note.
+
 								String heightText = engine.executeScript(HEIGHT_SCRIPT).toString();
 								double height = Double.valueOf(heightText.replace("px", ""));
-
-								// System.out.println("height " + height);
 
 								view.resize(view.getWidth(), height);
 
@@ -160,6 +162,22 @@ public class BrowserPane extends JPanel {
 										setHeightTo(h);
 									}
 								});
+
+								// If document has a frameset for frame redirection, we have no access to the in-frame
+								// document.
+								// In this case, apply style with overflow-y: scroll to be able to scroll the page.
+								// Not as nice as embedded style, but a good fallback.
+
+								String numFramesetsText = engine.executeScript(NUMFRAMESETS_SCRIPT).toString();
+								int numFramesets = Integer.valueOf(numFramesetsText);
+								if (numFramesets > 0) {
+									engine.setUserStyleSheetLocation(getClass().getResource("/style/webview_style_frameset.css").toExternalForm());
+								} else {
+									String currentCSS = engine.getUserStyleSheetLocation();
+									if (currentCSS.indexOf("_frameset") > 0) {
+										engine.setUserStyleSheetLocation(getClass().getResource("/style/webview_style.css").toExternalForm());
+									}
+								}
 							}
 						};
 
