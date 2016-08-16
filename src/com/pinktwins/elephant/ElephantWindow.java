@@ -59,22 +59,22 @@ import com.pinktwins.elephant.util.Images;
 
 public class ElephantWindow extends JFrame {
 
-	public static final Font fontStart = Font.decode("Arial-ITALIC-18");
-	public static final Font fontTitle = Font.decode("Helvetica-BOLD-18");
-	public static final Font fontH1 = Font.decode("Helvetica-BOLD-16");
-	public static final Font fontH2 = Font.decode("Helvetica-BOLD-14");
-	public static final Font fontSmall = Font.decode("Helvetica-10");
-	public static final Font fontEditorTitle = Font.decode("Helvetica-15");
-	public static final Font fontEditor = Font.decode("Arial-13");
-	public static final Font fontBoldEditor = Font.decode("Arial-BOLD-13");
-	public static final Font fontBoldNormal = Font.decode("Arial-BOLD-14");
-	public static final Font fontNormal = Font.decode("Arial-14");
-	public static final Font fontMediumPlus = Font.decode("Arial-12");
-	public static final Font fontMedium = Font.decode("Arial-11");
-	public static final Font fontMediumMinus = Font.decode("Arial-10");
-	public static final Font fontModalHeader = Font.decode("Arial-BOLD-16");
-	public static final Font fontSideBarText = Font.decode("Arial-BOLD-13");
-	public static final Font fontNotebookChooser = Font.decode("Helvetica-12");
+	public static Font fontStart = Font.decode("Arial-ITALIC-18");
+	public static Font fontTitle = Font.decode("Helvetica-BOLD-18");
+	public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
+	public static Font fontH2 = Font.decode("Helvetica-BOLD-14");
+	public static Font fontSmall = Font.decode("Helvetica-10");
+	public static Font fontEditorTitle = Font.decode("Helvetica-15");
+	public static Font fontEditor = Font.decode("Arial-13");
+	public static Font fontBoldEditor = Font.decode("Arial-BOLD-13");
+	public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
+	public static Font fontNormal = Font.decode("Arial-14");
+	public static Font fontMediumPlus = Font.decode("Arial-12");
+	public static Font fontMedium = Font.decode("Arial-11");
+	public static Font fontMediumMinus = Font.decode("Arial-10");
+	public static Font fontModalHeader = Font.decode("Arial-BOLD-16");
+	public static Font fontSideBarText = Font.decode("Arial-BOLD-13");
+	public static Font fontNotebookChooser = Font.decode("Helvetica-12");
 
 	public static final Color colorTitle = Color.decode("#999999");
 	public static final Color colorTitleButton = Color.decode("#666666");
@@ -129,6 +129,29 @@ public class ElephantWindow extends JFrame {
 		for (int n = 0; n < highlightPainters.length; n++) {
 			highlightPainters[n] = new DefaultHighlightPainter(colorHighlights[n % colorHighlights.length]);
 		}
+	}
+
+	private static String scaledFontSize(int base, float scale) {
+		return String.valueOf((int) (base * scale));
+	}
+
+	private static void scaleFonts(float scale) {
+		fontStart = Font.decode("Arial-ITALIC-" + scaledFontSize(18, scale));
+		fontTitle = Font.decode("Helvetica-BOLD-" + scaledFontSize(18, scale));
+		fontH1 = Font.decode("Helvetica-BOLD-" + scaledFontSize(16, scale));
+		fontH2 = Font.decode("Helvetica-BOLD-" + scaledFontSize(14, scale));
+		fontSmall = Font.decode("Helvetica-" + scaledFontSize(10, scale));
+		fontEditorTitle = Font.decode("Helvetica-" + scaledFontSize(15, scale));
+		fontEditor = Font.decode("Arial-" + scaledFontSize(13, scale));
+		fontBoldEditor = Font.decode("Arial-BOLD-" + scaledFontSize(13, scale));
+		fontBoldNormal = Font.decode("Arial-BOLD-" + scaledFontSize(14, scale));
+		fontNormal = Font.decode("Arial-" + scaledFontSize(14, scale));
+		fontMediumPlus = Font.decode("Arial-" + scaledFontSize(12, scale));
+		fontMedium = Font.decode("Arial-" + scaledFontSize(11, scale));
+		fontMediumMinus = Font.decode("Arial-" + scaledFontSize(10, scale));
+		fontModalHeader = Font.decode("Arial-BOLD-" + scaledFontSize(16, scale));
+		fontSideBarText = Font.decode("Arial-BOLD-" + scaledFontSize(13, scale));
+		fontNotebookChooser = Font.decode("Helvetica-" + scaledFontSize(12, scale));
 	}
 
 	ActionListener newNoteAction = new ActionListener() {
@@ -438,6 +461,15 @@ public class ElephantWindow extends JFrame {
 
 	public ElephantWindow() {
 		setTitle("Elephant Premium");
+
+		// Scale fonts using 'fontScale' setting
+		String fontScale = Elephant.settings.getString(Settings.Keys.FONT_SCALE);
+		if (!fontScale.isEmpty()) {
+			float f = Float.valueOf(fontScale);
+			if (f != 1f) {
+				scaleFonts(f);
+			}
+		}
 
 		// Mac packages the icon just fine. Windows needs this for taskbar icon. Linux?
 		if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
