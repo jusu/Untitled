@@ -1,5 +1,9 @@
 # Changelog
 
+##v26
+- Fixed bug affecting copy-paste from rtf-note to plain text note
+- Added fontScale setting for scaling fonts. Set to less than one to shrink and more than one to enlarge.
+
 ##v25
 - Fixed note scrolling bug with html notes using frameset redirection
 - Added possibility to permanently delete note from Trash.

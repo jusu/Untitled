@@ -383,11 +383,11 @@ public class CustomEditor extends RoundPanel {
 		return ((CustomDocument) note.getDocument()).getCharacterElement(position).getAttributes();
 	}
 
+	static private String prevRtfCopy = "";
+
 	class CustomTextPane extends JTextPane implements ClipboardOwner {
 
 		// http://www.javapractices.com/topic/TopicAction.do?Id=82
-
-		private String prevRtfCopy = "";
 
 		public void setClipboardContents(String aString) {
 			StringSelection stringSelection = new StringSelection(aString);
