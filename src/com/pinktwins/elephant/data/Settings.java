@@ -18,7 +18,7 @@ public class Settings {
 	public static enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet"), RECENT_SHOW(
 				"showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH("confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE(
-				"fontScale");
+				"fontScale"), PASTE_PLAINTEXT("pastePlaintext");
 
 		private final String str;
 

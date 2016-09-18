@@ -3,6 +3,7 @@
 ##v26
 - Fixed bug affecting copy-paste from rtf-note to plain text note
 - Added fontScale setting for scaling fonts. Set to less than one to shrink and more than one to enlarge.
+- Added "pastePlaintext" setting to always paste text in plain text, ignoring styling. Default is false.
 
 ##v25
 - Fixed note scrolling bug with html notes using frameset redirection

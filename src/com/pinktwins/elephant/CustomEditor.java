@@ -66,6 +66,7 @@ import org.apache.commons.io.IOUtils;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.BrowserPane.BrowserEventListener;
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.ui.AutoIndentAction;
@@ -526,6 +527,10 @@ public class CustomEditor extends RoundPanel {
 					}
 
 					i.pos -= i.adjust;
+
+					if (Elephant.settings.getBoolean(Settings.Keys.PASTE_PLAINTEXT)) {
+						s = Note.plainTextContents(s);
+					}
 
 					if (s.length() < 5 || !"{\\rtf".equals(s.substring(0, 5))) {
 						i.doc.insertString(i.pos, s, null);

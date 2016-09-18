@@ -1,0 +1,24 @@
+Elephant has a number of settings stored in JSON format in your home directory, in file ".com.pinktwins.elephant.settings".
+
+Some of these settings are not exposed in Elephant's UI. Use any text editor to apply these settings:
+
+{
+    "pastePlaintext": true,
+
+When true, any text is pasted in plain text. Default is false.
+
+    "autoBullet": 0,
+
+Whether to automatically create lists when starting a line with * - or +
+Default is 1 (for true).
+
+    "confirmDeleteFromTrash": true,
+
+Confirm when deleting a note from Trash. Default is true.
+
+    "allowFilenameChars": "öäåÖÄÅ",
+
+Additional characters allowed in note's filename. The filename is based on note's title, and by default only a-z, A-Z, 0-9 and . - are allowed, other chars are converted to _.
+
+}
+

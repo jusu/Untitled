@@ -81,10 +81,12 @@ public class Start extends BackgroundPanel {
 							File inbox = new File(folder + File.separator + "Inbox");
 							if (inbox.mkdirs()) {
 
-								addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #2 - Shortcuts", Note.getResourceNote("shortcuts.txt"));
-								addBuiltInNote(inbox + File.separator + "Welcome.txt", "Welcome!", Note.getResourceNote("welcome.txt"));
-								addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #1 - Markdown", Note.getResourceNote("markdown.md"));
+								addBuiltInNote(inbox + File.separator + "Advanced_settings.txt", "Tip #3 - Advanced settings",
+										Note.getResourceNote("Advanced_settings.txt"));
 								addBuiltInNote(inbox + File.separator + "html_example.html", "HTML Example", Note.getResourceNote("html_example.html"));
+								addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #2 - Markdown", Note.getResourceNote("markdown.md"));
+								addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #1 - Shortcuts", Note.getResourceNote("shortcuts.txt"));
+								addBuiltInNote(inbox + File.separator + "Welcome.txt", "Welcome!", Note.getResourceNote("welcome.txt"));
 
 								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
 								try {
