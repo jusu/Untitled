@@ -531,7 +531,13 @@ public class CustomEditor extends RoundPanel {
 					if (s.length() < 5 || !"{\\rtf".equals(s.substring(0, 5))) {
 						i.doc.insertString(i.pos, s, null);
 					} else {
-						if (isMarkdown || Elephant.settings.getBoolean(Settings.Keys.PASTE_PLAINTEXT)) {
+
+						// Clipboard has rich text content.
+						// If markdown note, paste as plain text.
+						// If pastePlaintext setting is true, paste plain text on plain text notes,
+						// and rich text on rich text notes.
+
+						if (isMarkdown || (Elephant.settings.getBoolean(Settings.Keys.PASTE_PLAINTEXT) && !isRichText)) {
 							String plain = Note.plainTextContents(s);
 							i.doc.insertString(i.pos, plain, null);
 							return;
