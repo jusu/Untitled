@@ -528,14 +528,10 @@ public class CustomEditor extends RoundPanel {
 
 					i.pos -= i.adjust;
 
-					if (Elephant.settings.getBoolean(Settings.Keys.PASTE_PLAINTEXT)) {
-						s = Note.plainTextContents(s);
-					}
-
 					if (s.length() < 5 || !"{\\rtf".equals(s.substring(0, 5))) {
 						i.doc.insertString(i.pos, s, null);
 					} else {
-						if (isMarkdown) {
+						if (isMarkdown || Elephant.settings.getBoolean(Settings.Keys.PASTE_PLAINTEXT)) {
 							String plain = Note.plainTextContents(s);
 							i.doc.insertString(i.pos, plain, null);
 							return;
