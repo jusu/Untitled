@@ -1,5 +1,8 @@
 # Changelog
 
+##v27
+- Fixed CTRL+ keymapping  (increase text size) for US key layouts.
+
 ##v26
 - Fixed bug affecting copy-paste from rtf-note to plain text note
 - Added fontScale setting for scaling fonts. Set to less than one to shrink and more than one to enlarge.
