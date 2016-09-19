@@ -3,6 +3,10 @@ Elephant has a number of settings stored in JSON format in your home directory, 
 Some of these settings are not exposed in Elephant's UI. Use any text editor to apply these settings:
 
 {
+    "fontScale": 1.0,
+
+Make all fonts smaller/bigger. Does not affect layout so scaling too much will negatively affect appearance. Yet, scaling slightly can be helpful with high-res screens.
+
     "pastePlaintext": true,
 
 When true, any text is pasted in plain text. Default is false.
