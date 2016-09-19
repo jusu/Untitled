@@ -667,6 +667,10 @@ public class CustomEditor extends RoundPanel {
 
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ElephantWindow.menuMask);
 		inputMap.put(ks, increaseFontSizeAction);
+
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, ElephantWindow.menuMask | KeyEvent.SHIFT_DOWN_MASK);
+		inputMap.put(ks, increaseFontSizeAction);
+
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ElephantWindow.menuMask);
 		inputMap.put(ks, decreaseFontSizeAction);
 
