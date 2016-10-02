@@ -36,6 +36,8 @@ public class CustomSplitPane extends JSplitPane {
 
 	Color currentColor = color1;
 
+	private boolean isNoteWindow = false;
+
 	class CustomSplitPaneUI extends BasicSplitPaneUI {
 		public CustomSplitPaneUI() {
 			super();
@@ -47,6 +49,13 @@ public class CustomSplitPane extends JSplitPane {
 				@Override
 				public void paint(Graphics g) {
 					super.paint(g);
+
+					if (isNoteWindow) {
+						g.setColor(color2);
+						g.fillRect(0, 0, getWidth(), getHeight());
+						return;
+					}
+
 					g.setColor(currentColor);
 					g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -193,6 +202,7 @@ public class CustomSplitPane extends JSplitPane {
 
 	@Override
 	public void setLeftComponent(Component c) {
+		isNoteWindow = c == null;
 		int i = getDividerLocation();
 		super.setLeftComponent(c);
 		setFixedLocation(i);

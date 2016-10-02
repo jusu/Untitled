@@ -164,6 +164,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 		ui.main.removeAll();
 		noteItems.clear();
+		selectedNotes.clear();
 
 		ui.main.repaint();
 

@@ -1,5 +1,10 @@
 # Changelog
 
+##v28
+- Added View | Hide Sidebar
+- Added Note | Open Note in Separate Window. Also works by doubleclicking a note in Note List
+- Added File | Close
+
 ##v27
 - Fixed CTRL+ keymapping  (increase text size) for US key layouts.
 

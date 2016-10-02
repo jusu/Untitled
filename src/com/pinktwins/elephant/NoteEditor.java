@@ -603,7 +603,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		Notebook nb = Vault.getInstance().findNotebook(note.file().getParentFile());
 		currNotebook.setText(nb.name());
 
-		//trash.setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
+		// trash.setVisible(!nb.folder().equals(Vault.getInstance().getTrash()));
 
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());

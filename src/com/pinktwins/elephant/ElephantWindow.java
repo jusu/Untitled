@@ -105,11 +105,12 @@ public class ElephantWindow extends JFrame {
 	private final History history = new History(this);
 
 	private boolean hasWindowFocus;
+	private boolean isNoteWindow = false; // is window dedicated to single note?
 
 	public static final int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
 	private JMenuBar menuBar;
-	private JMenuItem iUndo, iRedo, iSaveSearch;
+	private JMenuItem iUndo, iRedo, iSaveSearch, iSidebarVisibility;
 	private JCheckBoxMenuItem iCard, iSnippet, iRecentNotes;
 
 	private static final Image elephantIcon;
@@ -164,6 +165,13 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener closeWindowAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ElephantWindow.this.dispose();
+		}
+	};
+
 	ActionListener saveNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -182,6 +190,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener newNotebookAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			revertNoteWindowness();
 			showNotebooks();
 			notebooks.newNotebook();
 		}
@@ -198,7 +207,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener newWindowAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			newWindow();
+			newWindow().setVisible(true);
 		}
 	};
 
@@ -227,6 +236,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener showNotesAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			revertNoteWindowness();
 			showNotes();
 		}
 	};
@@ -234,6 +244,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener showNotebooksAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			revertNoteWindowness();
 			showNotebooks();
 		}
 	};
@@ -241,6 +252,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener showTagsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			revertNoteWindowness();
 			showTags();
 		}
 	};
@@ -311,11 +323,21 @@ public class ElephantWindow extends JFrame {
 	ActionListener moveNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			revertNoteWindowness();
 			if (splitRight.getRightComponent() == noteEditor) {
 				noteEditor.openNotebookChooserForMoving();
 			}
 			if (splitRight.getRightComponent() == multipleNotes) {
 				multipleNotes.openNotebookChooserForMoving();
+			}
+		}
+	};
+
+	ActionListener openNoteInWindowAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			for (Note n : noteList.getSelection()) {
+				openNoteWindow(n);
 			}
 		}
 	};
@@ -379,7 +401,9 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (uiMode == UiModes.notes) {
-				noteList.openNotebookChooserForJumping();
+				if (!isNoteWindow) {
+					noteList.openNotebookChooserForJumping();
+				}
 			}
 		}
 	};
@@ -388,6 +412,21 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			sideBar.toggleRecentNotes();
+		}
+	};
+
+	ActionListener viewSidebarVisibilityAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (splitLeft.getLeftComponent() != null) {
+				Elephant.settings.set(Settings.Keys.SHOW_SIDEBAR, false);
+				splitLeft.setLeftComponent(null);
+				iSidebarVisibility.setText("Show Sidebar");
+			} else {
+				Elephant.settings.set(Settings.Keys.SHOW_SIDEBAR, true);
+				splitLeft.setLeftComponent(sideBar);
+				iSidebarVisibility.setText("Hide Sidebar");
+			}
 		}
 	};
 
@@ -616,12 +655,34 @@ public class ElephantWindow extends JFrame {
 		frame.add(start, BorderLayout.CENTER);
 	}
 
+	private void revertNoteWindowness() {
+		if (isNoteWindow) {
+			isNoteWindow = false;
+			splitRight.setLeftComponent(noteList);
+			splitRight.setDividerSize(2);
+			toolBar.setVisible(true);
+			if (splitLeft.getLeftComponent() == null) {
+				iSidebarVisibility.setText("Show Sidebar");
+			} else {
+				iSidebarVisibility.setText("Hide Sidebar");
+			}
+		}
+	}
+
 	private Rectangle loadBounds() {
 		Rectangle b = new Rectangle();
-		int x = Elephant.settings.getInt("windowX");
-		int y = Elephant.settings.getInt("windowY");
-		int w = Elephant.settings.getInt("windowWidth");
-		int h = Elephant.settings.getInt("windowHeight");
+		int x, y, w, h;
+		if (isNoteWindow) {
+			x = Elephant.settings.getInt("noteWindowX");
+			y = Elephant.settings.getInt("noteWindowY");
+			w = Elephant.settings.getInt("noteWindowWidth");
+			h = Elephant.settings.getInt("noteWindowHeight");
+		} else {
+			x = Elephant.settings.getInt("windowX");
+			y = Elephant.settings.getInt("windowY");
+			w = Elephant.settings.getInt("windowWidth");
+			h = Elephant.settings.getInt("windowHeight");
+		}
 		b.x = x >= 0 ? x : 0;
 		b.y = y >= 0 ? y : 22;
 		b.width = w > 0 ? w : 1080;
@@ -630,7 +691,11 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void saveBounds(Rectangle r) {
-		Elephant.settings.setChain("windowX", r.x).setChain("windowY", r.y).setChain("windowWidth", r.width).set("windowHeight", r.height);
+		if (isNoteWindow) {
+			Elephant.settings.setChain("noteWindowX", r.x).setChain("noteWindowY", r.y).setChain("noteWindowWidth", r.width).set("noteWindowHeight", r.height);
+		} else {
+			Elephant.settings.setChain("windowX", r.x).setChain("windowY", r.y).setChain("windowWidth", r.width).set("windowHeight", r.height);
+		}
 	}
 
 	private int loadExtendedState() {
@@ -774,6 +839,7 @@ public class ElephantWindow extends JFrame {
 			case KeyEvent.KEY_PRESSED:
 				if (e.getKeyCode() >= KeyEvent.VK_1 && e.getKeyCode() <= KeyEvent.VK_9) {
 					if ((e.getModifiers() & menuMask) == menuMask && (e.getModifiers() & KeyEvent.ALT_MASK) == 0) {
+						revertNoteWindowness();
 						String target = sideBar.shortcutList.getTarget(e.getKeyCode() - KeyEvent.VK_1);
 						toolBar.clearSearch();
 						openShortcut(target);
@@ -855,6 +921,10 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void deleteSelectedNote() {
+
+		if (isNoteWindow) {
+			return;
+		}
 
 		// When deleting from Trash, confirm deletion
 		if (noteList.isTrash() && Elephant.settings.getConfirmDeleteFromTrash()) {
@@ -940,24 +1010,22 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void openNoteWindow(Note note) {
-		// changes needed:
-		// - create a new menubar for this jframe
-		// - bind actions in the new menubar to this editor (style changes,
-		// undo/redo, cmd-l, cmd-'
-		// - disable actions in the editor that call window. or route them thru
-		// eventBus
-		// - remember and use previous notewindow position
-
-		/*
-		 * JFrame f = new JFrame(); f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		 * 
-		 * NoteEditor e = new NoteEditor(null); e.load(note);
-		 * 
-		 * f.add(e); f.pack(); f.setBounds(400, 100, 550, 650); f.setVisible(true);
-		 */
+		ElephantWindow w = newWindow();
+		w.isNoteWindow = true;
+		w.toolBar.setVisible(false);
+		w.iSidebarVisibility.setText("Show Sidebar");
+		w.setBounds(w.loadBounds());
+		w.noteEditor.load(note);
+		w.noteList.load(note.findContainingNotebook());
+		w.splitLeft.setLeftComponent(null);
+		w.splitRight.setLeftComponent(null);
+		w.splitRight.setDividerSize(-1);
+		w.setVisible(true);
 	}
 
 	public void showAllNotes() {
+		revertNoteWindowness();
+
 		Notebook nb = Notebook.getNotebookWithAllNotes();
 		showNotebook(nb);
 
@@ -1032,6 +1100,7 @@ public class ElephantWindow extends JFrame {
 		file.add(menuItem("New Elephant Window", KeyEvent.VK_N, menuMask | KeyEvent.ALT_DOWN_MASK, newWindowAction));
 		file.add(menuItem("Switch Note Location", KeyEvent.VK_L, menuMask | KeyEvent.ALT_DOWN_MASK, switchNoteLocationAction));
 		file.addSeparator();
+		file.add(menuItem("Close", KeyEvent.VK_W, menuMask, closeWindowAction));
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
 		// file.addSeparator();
 		// file.add(menuItem("Settings", KeyEvent.VK_COMMA,
@@ -1062,6 +1131,15 @@ public class ElephantWindow extends JFrame {
 		edit.add(iSaveSearch);
 
 		JMenu view = new JMenu("View");
+		iSidebarVisibility = menuItem("", KeyEvent.VK_S, menuMask | KeyEvent.ALT_DOWN_MASK, viewSidebarVisibilityAction);
+		if (Elephant.settings.getShowSidebar()) {
+			iSidebarVisibility.setText("Hide Sidebar");
+		} else {
+			iSidebarVisibility.setText("Show Sidebar");
+		}
+		view.add(iSidebarVisibility);
+		view.addSeparator();
+
 		view.add(menuItem("Notes", KeyEvent.VK_2, menuMask | KeyEvent.ALT_DOWN_MASK, showNotesAction));
 		view.add(menuItem("Notebooks", KeyEvent.VK_3, menuMask | KeyEvent.ALT_DOWN_MASK, showNotebooksAction));
 		view.add(menuItem("Tags", KeyEvent.VK_4, menuMask | KeyEvent.ALT_DOWN_MASK, showTagsAction));
@@ -1106,6 +1184,8 @@ public class ElephantWindow extends JFrame {
 		view.add(menuItem("Forward", KeyEvent.VK_CLOSE_BRACKET, menuMask, viewForwardAction));
 
 		JMenu note = new JMenu("Note");
+		note.add(menuItem("Open Note in Separate Window", 0, 0, openNoteInWindowAction));
+		note.addSeparator();
 		note.add(menuItem("Edit Note Title", KeyEvent.VK_L, menuMask, editTitleAction));
 		note.add(menuItem("Edit Note Tags", KeyEvent.VK_QUOTE, menuMask, editTagsAction));
 		note.addSeparator();
@@ -1158,9 +1238,9 @@ public class ElephantWindow extends JFrame {
 		});
 	}
 
-	protected void newWindow() {
+	protected ElephantWindow newWindow() {
 		ElephantWindow w = new ElephantWindow();
-		w.setVisible(true);
+		return w;
 	}
 
 	private void createSplit() {
@@ -1183,7 +1263,9 @@ public class ElephantWindow extends JFrame {
 		splitRight.initLocationWithKey("divider2", 425);
 		splitRight.setDividerSize(2);
 
-		splitLeft.setLeftComponent(sideBar);
+		if (Elephant.settings.getShowSidebar()) {
+			splitLeft.setLeftComponent(sideBar);
+		}
 		splitLeft.setRightComponent(splitRight);
 
 		splitRight.setLeftComponent(noteList);

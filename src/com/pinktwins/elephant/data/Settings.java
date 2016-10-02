@@ -18,7 +18,7 @@ public class Settings {
 	public static enum Keys {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet"), RECENT_SHOW(
 				"showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH("confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE(
-				"fontScale"), PASTE_PLAINTEXT("pastePlaintext");
+				"fontScale"), PASTE_PLAINTEXT("pastePlaintext"), SHOW_SIDEBAR("showSidebar");
 
 		private final String str;
 
@@ -90,6 +90,19 @@ public class Settings {
 	}
 
 	public void set(String key, String value) {
+		try {
+			map.put(key, value);
+			save();
+		} catch (JSONException e) {
+			LOG.severe("Fail: " + e);
+		}
+	}
+
+	public void set(Keys key, boolean value) {
+		set(key.toString(), value);
+	}
+
+	public void set(String key, boolean value) {
 		try {
 			map.put(key, value);
 			save();
@@ -204,5 +217,12 @@ public class Settings {
 			return true;
 		}
 		return getBoolean(Keys.CONFIRM_DELETE_FROM_TRASH);
+	}
+
+	public boolean getShowSidebar() {
+		if (!has(Keys.SHOW_SIDEBAR)) {
+			return true;
+		}
+		return getBoolean(Keys.SHOW_SIDEBAR);
 	}
 }
