@@ -27,6 +27,7 @@ public class Elephant {
 
 		try {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
+			System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Elephant");
 			System.setProperty("awt.useSystemAAFontSettings", "on");
 			System.setProperty("swing.aatext", "true");
