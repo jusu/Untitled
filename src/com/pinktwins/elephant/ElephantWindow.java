@@ -262,7 +262,9 @@ public class ElephantWindow extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			iCard.setSelected(true);
 			iSnippet.setSelected(false);
-			splitLeft.setDividerSize(6);
+			if (splitLeft.getLeftComponent() != null) {
+				splitLeft.setDividerSize(6);
+			}
 			noteList.changeMode(NoteList.ListModes.CARDVIEW);
 		}
 	};
@@ -272,7 +274,9 @@ public class ElephantWindow extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			iCard.setSelected(false);
 			iSnippet.setSelected(true);
-			splitLeft.setDividerSize(2);
+			if (splitLeft.getLeftComponent() != null) {
+				splitLeft.setDividerSize(2);
+			}
 			noteList.changeMode(NoteList.ListModes.SNIPPETVIEW);
 		}
 	};
@@ -421,10 +425,15 @@ public class ElephantWindow extends JFrame {
 			if (splitLeft.getLeftComponent() != null) {
 				Elephant.settings.set(Settings.Keys.SHOW_SIDEBAR, false);
 				splitLeft.setLeftComponent(null);
+				splitLeft.setDividerSize(0);
 				iSidebarVisibility.setText("Show Sidebar");
 			} else {
 				Elephant.settings.set(Settings.Keys.SHOW_SIDEBAR, true);
 				splitLeft.setLeftComponent(sideBar);
+				splitLeft.setDividerSize(6);
+				if (Elephant.settings.getNoteListMode() == NoteList.ListModes.SNIPPETVIEW) {
+					splitLeft.setDividerSize(2);
+				}
 				iSidebarVisibility.setText("Hide Sidebar");
 			}
 		}
