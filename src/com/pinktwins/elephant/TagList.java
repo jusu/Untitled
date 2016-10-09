@@ -53,6 +53,11 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 		Elephant.eventBus.register(this);
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+		window = null;
+	}
+
 	// Called when initial SimpleSearchIndex run has completed
 	public void ssiDone() {
 		refresh();
@@ -84,7 +89,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 	protected void newButtonAction() {
 		newTag();
 	}
-	
+
 	@Override
 	protected void trashButtonAction() {
 	}

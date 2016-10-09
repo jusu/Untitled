@@ -19,6 +19,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -104,6 +105,10 @@ public class ElephantWindow extends JFrame {
 
 	private final History history = new History(this);
 
+	private final KeyDispatcher keyDisp = new KeyDispatcher();
+	WindowListener windowListener = null;
+	ComponentListener componentListener = null;
+
 	private boolean hasWindowFocus;
 	private boolean isNoteWindow = false; // is window dedicated to single note?
 
@@ -168,6 +173,8 @@ public class ElephantWindow extends JFrame {
 	ActionListener closeWindowAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			saveChanges();
+			cleanup();
 			ElephantWindow.this.dispose();
 		}
 	};
@@ -549,11 +556,9 @@ public class ElephantWindow extends JFrame {
 		}
 
 		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		final KeyDispatcher keyDisp = new KeyDispatcher();
-
 		manager.addKeyEventDispatcher(keyDisp);
 
-		addWindowListener(new WindowAdapter() {
+		windowListener = new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
 				hasWindowFocus = true;
@@ -570,7 +575,7 @@ public class ElephantWindow extends JFrame {
 			public void windowClosed(WindowEvent e) {
 				saveChanges();
 
-				manager.removeKeyEventDispatcher(keyDisp);
+				cleanup();
 
 				boolean alive = false;
 
@@ -584,9 +589,11 @@ public class ElephantWindow extends JFrame {
 					System.exit(0);
 				}
 			}
-		});
+		};
 
-		addComponentListener(new ComponentListener() {
+		addWindowListener(windowListener);
+
+		componentListener = new ComponentListener() {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				saveBounds(ElephantWindow.this.getBounds());
@@ -606,7 +613,9 @@ public class ElephantWindow extends JFrame {
 			@Override
 			public void componentHidden(ComponentEvent e) {
 			}
-		});
+		};
+
+		addComponentListener(componentListener);
 
 		// Run dummy search in the background. This will populate the
 		// 'SimpleSearchIndex' class
@@ -648,6 +657,31 @@ public class ElephantWindow extends JFrame {
 				}
 			}.start();
 		}
+	}
+
+	private void cleanup() {
+		Elephant.eventBus.unregister(this);
+
+		toolBar.cleanup();
+		sideBar.cleanup();
+		noteEditor.clear();
+		noteEditor.cleanup();
+		noteList.cleanup();
+		notebooks.cleanup();
+		tagList.cleanup();
+		history.cleanup();
+		multipleNotes.cleanup();
+
+		menuBar.removeNotify();
+		menuBar.remove(this);
+
+		final KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		manager.removeKeyEventDispatcher(keyDisp);
+
+		removeWindowListener(windowListener);
+		removeComponentListener(componentListener);
+
+		setJMenuBar(null);
 	}
 
 	private void callStart(JFrame frame) {

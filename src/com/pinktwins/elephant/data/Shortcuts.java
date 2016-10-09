@@ -27,6 +27,10 @@ public class Shortcuts implements SideBarItemModifier {
 		Elephant.eventBus.register(this);
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+	}
+
 	private File shortcutsFile() {
 		return new File(Vault.getInstance().getHome() + File.separator + ".shortcuts");
 	}
@@ -60,7 +64,7 @@ public class Shortcuts implements SideBarItemModifier {
 		String prefix;
 		String oldPath;
 		boolean modified;
-		
+
 		switch (event.kind) {
 		case noteCreated:
 			break;
@@ -98,7 +102,7 @@ public class Shortcuts implements SideBarItemModifier {
 			if (event.source == null) {
 				return;
 			}
-			
+
 			prefix = Vault.getInstance().getHome() + File.separator;
 			oldPath = event.source.getAbsolutePath();
 			modified = false;

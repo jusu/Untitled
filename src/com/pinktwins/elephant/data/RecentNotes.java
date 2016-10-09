@@ -32,6 +32,10 @@ public class RecentNotes {
 		loadHistory();
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+	}
+
 	public List<Note> list() {
 		return recent;
 	}
@@ -121,11 +125,11 @@ public class RecentNotes {
 		case noteDeleted:
 			if (event.source != null) {
 				Note old = new Note(event.source);
-				
+
 				if (recent.contains(old)) {
 					recent.remove(old);
 				}
-				
+
 				new RecentNotesChangedEvent().post();
 				saveHistory();
 			}

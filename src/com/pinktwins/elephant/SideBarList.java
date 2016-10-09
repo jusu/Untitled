@@ -75,6 +75,10 @@ public class SideBarList extends JPanel {
 		modifyingListener = allowModifying ? new SidebarModifyingMouseListener(this, getCursor()) : null;
 	}
 
+	public void cleanup() {
+		window = null;
+	}
+
 	public String getTarget(int n) {
 		if (n >= 0 && n < items.size()) {
 			return items.get(n).target;
@@ -216,7 +220,7 @@ public class SideBarList extends JPanel {
 		}
 
 		public void init() {
-			Elephant.eventBus.register(this);
+			// Elephant.eventBus.register(this);
 
 			setOpaque(false);
 

@@ -116,6 +116,17 @@ public class Sidebar extends BackgroundPanel {
 		}
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+		shortcuts.cleanup();
+		recentNotes.cleanup();
+		shortcutList.cleanup();
+		recentList.cleanup();
+		navigationList.cleanup();
+
+		window = null;
+	}
+
 	public void selectNavigation(int n) {
 		navigationList.select(n);
 	}

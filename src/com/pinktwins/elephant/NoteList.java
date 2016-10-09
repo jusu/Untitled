@@ -85,6 +85,11 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		createComponents();
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+		window = null;
+	}
+
 	private void createComponents() {
 
 		ui = new NoteListUI(this);

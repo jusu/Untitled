@@ -50,6 +50,11 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		layoutItemHeightAdjustment = -1;
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+		window = null;
+	}
+
 	public void setNotebookActionListener(NotebookActionListener l) {
 		naListener = l;
 	}
@@ -64,7 +69,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 	protected void newButtonAction() {
 		window.newNotebookAction.actionPerformed(null);
 	}
-	
+
 	@Override
 	protected void trashButtonAction() {
 		deleteSelected();

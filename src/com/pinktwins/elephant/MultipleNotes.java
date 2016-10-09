@@ -36,7 +36,7 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 
 	// private static final Logger LOG = Logger.getLogger(MultipleNotes.class.getName());
 
-	private final ElephantWindow window;
+	private ElephantWindow window;
 
 	private static Image tile, multiSelection, multiSelectionTagFocus, moveToNotebook;
 
@@ -64,6 +64,10 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 		super(tile);
 		window = w;
 		createComponents();
+	}
+
+	public void cleanup() {
+		window = null;
 	}
 
 	private void createComponents() {

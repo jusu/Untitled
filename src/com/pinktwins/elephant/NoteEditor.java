@@ -259,6 +259,13 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		createComponents();
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+		editor.cleanup();
+		window = null;
+		stateListener = null;
+	}
+
 	private void createComponents() {
 		main = new TopShadowPanel();
 		main.setLayout(null);

@@ -22,6 +22,10 @@ public class History {
 		window = w;
 	}
 
+	public void cleanup() {
+		window = null;
+	}
+
 	private static enum ItemType {
 		Note, Notebooks, Tags, AllNotes, Search;
 	};

@@ -372,6 +372,10 @@ public class CustomEditor extends RoundPanel {
 		});
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+	}
+
 	void insertNewline(int position) {
 		try {
 			note.getDocument().insertString(position, "\n", null);
@@ -587,6 +591,12 @@ public class CustomEditor extends RoundPanel {
 	private void createNote() {
 
 		if (note != null) {
+			try {
+				note.getDocument().remove(0, note.getDocument().getLength());
+			} catch (BadLocationException e1) {
+				e1.printStackTrace();
+			}
+			note.removeAll();
 			remove(note);
 		}
 

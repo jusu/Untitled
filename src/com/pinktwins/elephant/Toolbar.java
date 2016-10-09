@@ -48,6 +48,11 @@ public class Toolbar extends BackgroundPanel {
 		createComponents();
 	}
 
+	public void cleanup() {
+		Elephant.eventBus.unregister(this);
+		window = null;
+	}
+
 	private void createComponents() {
 		final int searchWidth = 360;
 
@@ -154,7 +159,7 @@ public class Toolbar extends BackgroundPanel {
 		clearSearch();
 		search.setHintText(searchNotes);
 	}
-	
+
 	public static void skipNextFocusLost() {
 		skipNextFocusLost = true;
 	}
