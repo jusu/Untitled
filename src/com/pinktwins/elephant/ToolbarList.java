@@ -22,7 +22,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -48,7 +47,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 	protected JPanel main;
 	protected JButton bNew;
 	protected SearchTextField search;
-	protected JScrollPane scroll;
+	protected CustomScrollPane scroll;
 	protected JButton trash;
 
 	protected boolean isEditing;
@@ -126,7 +125,7 @@ public abstract class ToolbarList<T extends Component & ToolbarList.ToolbarListI
 		tools.add(search);
 		tools.add(trash);
 
-		scroll = new JScrollPane(main);
+		scroll = new CustomScrollPane(main);
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.getHorizontalScrollBar().setUnitIncrement(5);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);

@@ -134,7 +134,10 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 		tools.add(title);
 		tools.add(search);
 
-		scroll = new JScrollPane(main);
+		scroll = new CustomScrollPane(main);
+		if (isJump) {
+			scroll.useTrackColorB();
+		}
 		scroll.setBorder(ElephantWindow.emptyBorder);
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.getVerticalScrollBar().setUnitIncrement(5);
@@ -190,7 +193,7 @@ public class NotebooksModal extends ToolbarList<NotebooksModal.NotebookItem> {
 	protected void newButtonAction() {
 		window.newNotebookAction.actionPerformed(null);
 	}
-	
+
 	@Override
 	protected void trashButtonAction() {
 	}

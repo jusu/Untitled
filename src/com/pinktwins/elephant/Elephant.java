@@ -7,6 +7,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import javax.swing.UIManager;
+
 import com.google.common.eventbus.EventBus;
 import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.data.Vault;
@@ -31,6 +33,12 @@ public class Elephant {
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Elephant");
 			System.setProperty("awt.useSystemAAFontSettings", "on");
 			System.setProperty("swing.aatext", "true");
+
+			UIManager.put("ScrollBar.width", 15);
+			UIManager.put("ScrollBar.incrementButtonGap", 0);
+			UIManager.put("ScrollBar.decrementButtonGap", 0);
+
+			UIManager.put("ScrollBarUI", "com.pinktwins.elephant.ui.CustomScrollBarUI");
 
 			// No system look-and-feel. Some systems (eg. ubuntu) draw additional borders etc
 			// that we do not want.

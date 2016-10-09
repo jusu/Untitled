@@ -8,6 +8,9 @@ import java.util.TimerTask;
 
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.plaf.ScrollBarUI;
+
+import com.pinktwins.elephant.ui.CustomScrollBarUI;
 
 public class CustomScrollPane extends JScrollPane {
 	private boolean isLocked;
@@ -46,7 +49,6 @@ public class CustomScrollPane extends JScrollPane {
 	public void setLocked(boolean b) {
 		isLocked = b;
 		lockedValue = getVerticalScrollBar().getValue();
-		//this.setVerticalScrollBarPolicy(b ? JScrollPane.VERTICAL_SCROLLBAR_NEVER : JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	}
 
 	public boolean isLocked() {
@@ -55,5 +57,12 @@ public class CustomScrollPane extends JScrollPane {
 
 	public void unlockAfter(int inactivity) {
 		this.inactivity = inactivity;
+	}
+
+	public void useTrackColorB() {
+		ScrollBarUI ui = this.getVerticalScrollBar().getUI();
+		if (ui instanceof CustomScrollBarUI) {
+			((CustomScrollBarUI) ui).useTrackColorB();
+		}
 	}
 }
