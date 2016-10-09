@@ -46,6 +46,7 @@ import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
 import com.pinktwins.elephant.util.LaunchUtil;
 import com.pinktwins.elephant.util.PdfUtil;
+import com.pinktwins.elephant.util.SimpleImageInfo;
 
 public class FileAttachment extends JPanel {
 
@@ -277,16 +278,18 @@ public class FileAttachment extends JPanel {
 		PdfUtil pdf;
 		int page;
 		File outPath;
+		int minimumWidth;
 
-		public PdfPageProvider(PdfUtil pdf, int page, File outPath) {
+		public PdfPageProvider(PdfUtil pdf, int page, File outPath, int minimumWidth) {
 			this.pdf = pdf;
 			this.page = page;
 			this.outPath = outPath;
+			this.minimumWidth = minimumWidth;
 		}
 
 		@Override
 		public Image getPage() {
-			Image img = pdf.writePage(page, outPath);
+			Image img = pdf.writePage(page, outPath, minimumWidth);
 			if (img != null) {
 				img = scaler.scale(img, outPath);
 			}
@@ -327,16 +330,39 @@ public class FileAttachment extends JPanel {
 		}
 
 		int gotPages = pages.size();
+		int minWidth = -1;
 
 		if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
 			PdfUtil pdf = new PdfUtil(f);
+
+			// Check if pdf was rendered at enough quality
+			int previewWidth = -1;
+			if (gotPages >= 1) {
+				try {
+					SimpleImageInfo info = new SimpleImageInfo(files[0]);
+					previewWidth = info.getWidth();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				// Not yet rendered, get width from pdf
+				previewWidth = (int) pdf.getPageBBoxWidth();
+			}
+
+			int targetWidth = (int) scaler.getTargetWidth();
+			if (previewWidth != -1 && previewWidth / (float) targetWidth < 0.8) {
+				// Not enough pdf quality, discard previous render, re-render at targetWidth
+				minWidth = targetWidth;
+				gotPages = 0;
+				pages.clear();
+			}
 
 			if (pdf.numPages() > gotPages) {
 				File outPath = getPreviewDirectory(f);
 				outPath.mkdirs();
 				if (outPath.exists()) {
 					for (int n = gotPages; n < pdf.numPages(); n++) {
-						pages.add(new PdfPageProvider(pdf, n + 1, getPreviewFileForPage(outPath, n + 1)));
+						pages.add(new PdfPageProvider(pdf, n + 1, getPreviewFileForPage(outPath, n + 1), minWidth));
 					}
 				}
 			}

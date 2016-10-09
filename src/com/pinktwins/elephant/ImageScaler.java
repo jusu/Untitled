@@ -7,4 +7,6 @@ public interface ImageScaler {
 	public Image scale(Image i, File source);
 
 	public Image getCachedScale(File source);
+
+	public long getTargetWidth();
 }

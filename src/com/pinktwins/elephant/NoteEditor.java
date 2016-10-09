@@ -118,6 +118,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		public Image getCachedScale(File source) {
 			return getScaledImageCacheOnly(source, adjust, true);
 		}
+
+		@Override
+		public long getTargetWidth() {
+			return getUsableEditorWidth() + adjust;
+		}
 	}
 
 	class ImageAttachmentImageScaler implements ImageScaler {
@@ -128,6 +133,11 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		@Override
 		public Image getCachedScale(File source) {
 			return getScaledImageCacheOnly(source, 0, false);
+		}
+
+		@Override
+		public long getTargetWidth() {
+			return getUsableEditorWidth();
 		}
 	}
 
@@ -543,6 +553,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void _load(Note note) {
+
+		if (note == null) {
+			return;
+		}
 
 		if (!note.file().exists()) {
 			// XXX Tell user what is going on.

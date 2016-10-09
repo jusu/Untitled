@@ -218,7 +218,7 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 					PdfUtil pdf = new PdfUtil(i.f);
 					if (pdf.numPages() > 0) {
 						File ff = FileAttachment.getPreviewFileForPage(previewDir, 1);
-						if (pdf.writePage(1, ff) != null) {
+						if (pdf.writePage(1, ff, -1) != null) {
 							addPictureThumbnail(ff);
 						}
 						pdf.close();

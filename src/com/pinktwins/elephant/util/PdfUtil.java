@@ -89,7 +89,17 @@ public class PdfUtil {
 		return new Dimension((int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
 	}
 
-	public Image writePage(int n, File outPath) {
+	public long getPageBBoxWidth() {
+		if (pdffile == null) {
+			return -1;
+		}
+		if (pdffile.getNumPages() <= 0) {
+			return -1;
+		}
+		return (long) pdffile.getPage(0).getBBox().getWidth();
+	}
+
+	public Image writePage(int n, File outPath, int minimumWidth) {
 		BufferedImage bImg = null;
 
 		try {
@@ -100,6 +110,12 @@ public class PdfUtil {
 			double adjust = (screenDpi / 72.0 - 1.0) / 2.0 + 1.0;
 
 			Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
+
+			// If minimumWidth is given, adjust to get at least that.
+			if (minimumWidth != -1 && rect.width * adjust < minimumWidth) {
+				adjust = minimumWidth / (float) rect.width;
+			}
+
 			Image img = page.getImage((int) (rect.width * adjust), (int) (rect.height * adjust), rect, // clip rect
 					null, // null for the ImageObserver
 					true, // fill background with white
