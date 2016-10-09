@@ -1,5 +1,10 @@
 # Changelog
 
+##v29
+- PDFs are rendered at better quality when needed
+- Scrollbars now look the part in all platforms
+- Some memory was not collected when closing note windows
+
 ##v28
 - Added View | Hide Sidebar
 - Added Note | Open Note in Separate Window. Also works by doubleclicking a note in Note List
