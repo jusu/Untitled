@@ -15,6 +15,8 @@ public class HtmlPane extends JTextPane {
 
 	private static final Logger LOG = Logger.getLogger(HtmlPane.class.getName());
 
+	private String base = null;
+
 	public HtmlPane(File noteFile, Runnable onTerminalClick) {
 		super();
 
@@ -22,8 +24,17 @@ public class HtmlPane extends JTextPane {
 		setEditable(false);
 		setContentType("text/html");
 
-		String base = noteFile.getAbsolutePath() + ".attachments" + File.separator;
+		base = noteFile.getAbsolutePath() + ".attachments" + File.separator;
+		setDocumentBase();
 
+		HTMLEditorKit kit = new HTMLEditorKit();
+		this.setEditorKit(kit);
+		HtmlPaneStylesheet.getInstance().addStylesheet(kit);
+
+		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));
+	}
+
+	private void setDocumentBase() {
 		try {
 			URL baseUrl = new File(base).toURI().toURL();
 
@@ -38,11 +49,11 @@ public class HtmlPane extends JTextPane {
 		} catch (MalformedURLException e) {
 			LOG.severe("Fail: " + e);
 		}
+	}
 
-		HTMLEditorKit kit = new HTMLEditorKit();
-		this.setEditorKit(kit);
-		HtmlPaneStylesheet.getInstance().addStylesheet(kit);
-
-		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));
+	@Override
+	public void setText(String html) {
+		super.setText(html);
+		setDocumentBase();
 	}
 }
