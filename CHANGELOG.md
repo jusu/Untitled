@@ -1,5 +1,8 @@
 # Changelog
 
+##v30
+- Fixed occasional broken images with markdown notes
+
 ##v29
 - PDFs are rendered at better quality when needed
 - Scrollbars now look the part in all platforms
