@@ -3,7 +3,7 @@
 
     <taskdef name="bundleapp"
              classname="com.oracle.appbundler.AppBundlerTask"   
-             classpath="lib/appbundler-1.0.jar" />
+             classpath="lib/appbundler-1.0ea.jar" />
 
     <target name="dist">
         <bundleapp outputdirectory="dist"

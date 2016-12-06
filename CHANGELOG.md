@@ -2,6 +2,8 @@
 
 ##v30
 - Fixed occasional broken images with markdown notes
+- Mac: No longer forces dedicated graphics with machines that use graphics switching.
+  (Mac version now builds with forked appbundler from https://bitbucket.org/infinitekind/appbundler)
 
 ##v29
 - PDFs are rendered at better quality when needed
