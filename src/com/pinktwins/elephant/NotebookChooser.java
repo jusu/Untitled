@@ -8,8 +8,6 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
 
-import org.apache.commons.lang3.SystemUtils;
-
 import com.pinktwins.elephant.data.Notebook;
 
 public class NotebookChooser extends JDialog {
@@ -37,14 +35,7 @@ public class NotebookChooser extends JDialog {
 		setLayout(new BorderLayout());
 
 		if (title.isEmpty()) {
-			float opacity = 0.8f;
-
-			// For whatever reason, windows needs much less opacity than mac.
-			// Linux doesnt seem to support this but play it safe.
-			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
-				opacity = 0.95f;
-			}
-
+			float opacity = 0.95f;
 			this.setOpacity(opacity);
 		}
 
