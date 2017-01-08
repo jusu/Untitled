@@ -1,5 +1,8 @@
 # Changelog
 
+##v31
+- Fixed some key handling issues when separate note windows open
+
 ##v30
 - Fixed occasional broken images with markdown notes
 - Mac: No longer forces dedicated graphics with machines that use graphics switching.

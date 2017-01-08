@@ -106,6 +106,8 @@ public class ElephantWindow extends JFrame {
 	private final History history = new History(this);
 
 	private final KeyDispatcher keyDisp = new KeyDispatcher();
+	private static KeyEvent previousKeyEvent = null;
+
 	WindowListener windowListener = null;
 	ComponentListener componentListener = null;
 
@@ -759,12 +761,13 @@ public class ElephantWindow extends JFrame {
 
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
-			if (!hasWindowFocus) {
+			if (!hasWindowFocus && previousKeyEvent != e) {
 				// XXX the windows accumulate. Get rid of them.
 				for (Window w : getWindows()) {
 					if (w instanceof NotebookChooser) {
 						if (w.isActive()) {
 							((NotebookChooser) w).handleKeyEvent(e);
+							previousKeyEvent = e;
 							return false;
 						}
 					}
@@ -775,7 +778,7 @@ public class ElephantWindow extends JFrame {
 
 			switch (uiMode) {
 			case notes:
-				if (!noteEditor.hasFocus() && !multipleNotes.hasFocus() && !toolBar.isEditing()) {
+				if (!noteEditor.hasFocus() && !multipleNotes.hasFocus() && !toolBar.isEditing() && !isNoteWindow) {
 					switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						switch (e.getKeyCode()) {
