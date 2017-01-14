@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Elephant" default="dist" basedir=".">        
+
+    <property environment="env" />
+
+    <taskdef name="bundleapp"
+             classname="com.oracle.appbundler.AppBundlerTask"   
+             classpath="lib/appbundler-1.0ea.jar" />
+
+    <target name="dist">
+        <bundleapp outputdirectory="dist/dmg"
+            name="Elephant"
+            displayname="Elephant"
+            identifier="com.pinktwins.elephant"
+            mainclassname="com.pinktwins.elephant.Elephant"
+            shortversion="{{version}}"
+	    icon="elephantIcon4.icns">
+            <runtime dir="${env.JAVA_HOME}" />
+            <classpath file="build/elephantapp.jar" />
+        </bundleapp>
+    </target>
+
+</project>
