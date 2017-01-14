@@ -730,8 +730,8 @@ public class ElephantWindow extends JFrame {
 		}
 		b.x = x >= 0 ? x : 0;
 		b.y = y >= 0 ? y : 22;
-		b.width = w > 0 ? w : 1080;
-		b.height = h > 0 ? h : 600;
+		b.width = w > 0 ? w : 1200;
+		b.height = h > 0 ? h : 900;
 		return b;
 	}
 
