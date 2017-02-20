@@ -178,6 +178,9 @@ public class ElephantWindow extends JFrame {
 			saveChanges();
 			cleanup();
 			ElephantWindow.this.dispose();
+			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
+				System.exit(0);
+			}
 		}
 	};
 
