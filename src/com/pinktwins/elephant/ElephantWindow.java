@@ -175,9 +175,8 @@ public class ElephantWindow extends JFrame {
 	ActionListener closeWindowAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			saveChanges();
-			cleanup();
 			ElephantWindow.this.dispose();
+			performWindowCloseActions();
 		}
 	};
 
@@ -575,21 +574,7 @@ public class ElephantWindow extends JFrame {
 
 			@Override
 			public void windowClosed(WindowEvent e) {
-				saveChanges();
-
-				cleanup();
-
-				boolean alive = false;
-
-				for (Window w : getWindows()) {
-					if (w.isShowing()) {
-						alive = true;
-					}
-				}
-
-				if (!alive) {
-					System.exit(0);
-				}
+				performWindowCloseActions();
 			}
 		};
 
@@ -658,6 +643,23 @@ public class ElephantWindow extends JFrame {
 					}
 				}
 			}.start();
+		}
+	}
+
+	private void performWindowCloseActions() {
+		saveChanges();
+		cleanup();
+
+		boolean alive = false;
+
+		for (Window w : getWindows()) {
+			if (w.isShowing()) {
+				alive = true;
+			}
+		}
+
+		if (!alive) {
+			System.exit(0);
 		}
 	}
 
