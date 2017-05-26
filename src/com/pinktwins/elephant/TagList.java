@@ -210,11 +210,14 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 
 		@Override
 		public void paint(Graphics g) {
-			int countWidth = 2, countOffsetX = 21, maxWidth = 160;
+			int countWidth = 2, countOffsetX = 25, maxWidth = 200;
+
+			String countStr = Search.ssi.ready() ? String.valueOf(count) : "-";
 
 			Font font = ElephantWindow.fontMediumPlus;
 			g.setFont(font);
 			FontMetrics fm = g.getFontMetrics(font);
+			countWidth = fm.stringWidth(countStr);
 			int width = fm.stringWidth(nameStr) + countWidth;
 			int h = 25, hd2 = h / 2;
 
@@ -258,8 +261,7 @@ public class TagList extends ToolbarList<TagList.TagItem> {
 				g.setColor(isSelected ? Color.WHITE : fontColor);
 				g.drawString(nameStr, hd2 - 2, yOff + hd2 + fm.getAscent() / 2 + 2);
 
-				String countStr = Search.ssi.ready() ? String.valueOf(count) : "-";
-				g.drawString(countStr, width + countOffsetX, yOff + hd2 + fm.getAscent() / 2 + 2);
+				g.drawString(countStr, width - countWidth + countOffsetX, yOff + hd2 + fm.getAscent() / 2 + 2);
 			}
 
 			super.paint(g);

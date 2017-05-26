@@ -2,6 +2,7 @@
 
 ##v32
 - App closes properly when last ElephantWindow is closed
+- Fixed Tag view clipping tag count when >= 100 notes on a tag
 
 ##v31
 - Fixed some key handling issues when separate note windows open
