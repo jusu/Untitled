@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="libs/com.pinktwins.rtf.jar"/>
 	<classpathentry kind="lib" path="libs/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="libs/PDFRenderer-0.9.1.jar"/>
+	<classpathentry kind="lib" path="libs/tika-app-1.14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

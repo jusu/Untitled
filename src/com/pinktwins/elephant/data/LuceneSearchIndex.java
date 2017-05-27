@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -35,6 +37,11 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.SAXException;
 
 import com.pinktwins.elephant.util.Factory;
 
@@ -119,10 +126,20 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		}
 	}
 
+	public String parseToPlainText(File file) throws IOException, SAXException, TikaException {
+		BodyContentHandler handler = new BodyContentHandler();
+		AutoDetectParser parser = new AutoDetectParser();
+		Metadata metadata = new Metadata();
+		InputStream stream = new FileInputStream(file.getAbsolutePath());
+
+		parser.parse(stream, handler, metadata);
+		return handler.toString();
+	}
+
 	@Override
 	public void digestText(Note n, String text) {
 		try {
-			indexFile(n.file());
+			indexNote(n);
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}
@@ -131,7 +148,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 	@Override
 	public void digestDate(Note note, long dateValue) {
 	}
-	
+
 	@Override
 	public Set<Note> search(String text) {
 		closeWriter();
@@ -194,7 +211,9 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		closeReader();
 	}
 
-	private void indexFile(File file) throws IOException {
+	private void indexNote(Note note) throws IOException {
+		File file = note.file();
+
 		if ("Trash".equals(file.getParentFile().getName())) {
 			return;
 		}
@@ -239,6 +258,17 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 			doc.add(new StringField("path", file.getAbsolutePath(), Field.Store.YES));
 			doc.add(new LongField("modified", file.lastModified(), Field.Store.YES));
 			doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))));
+
+			for (Note.AttachmentInfo info : note.getAttachmentList()) {
+				try {
+					doc.add(new TextField("contents", info.f.getName(), Field.Store.YES));
+
+					String plainText = parseToPlainText(info.f);
+					doc.add(new TextField("contents", plainText, Field.Store.YES));
+				} catch (Exception e) {
+					LOG.severe("Fail: failed indexing '" + info.f.getName() + "'");
+				}
+			}
 
 			synchronized (writerSync) {
 				if (writer == null) {
