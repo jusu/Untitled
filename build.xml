@@ -5,7 +5,6 @@
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. --><project basedir="." default="build" name="Elephant">
     <property environment="env"/>
-    <property name="ECLIPSE_HOME" value="../../../../../../Applications/eclipse"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
@@ -18,22 +17,22 @@
         <pathelement location="libs/joda-time-2.6.jar"/>
         <pathelement location="libs/commons-collections4-4.0.jar"/>
         <pathelement location="libs/commons-lang3-3.3.2.jar"/>
-        <pathelement location="libs/commons-codec-1.10.jar"/>
-        <pathelement location="libs/PDFRenderer-0.9.1.jar"/>
         <pathelement location="libs/parboiled-java-1.1.6.jar"/>
         <pathelement location="libs/pegdown-1.4.2.jar"/>
         <pathelement location="libs/parboiled-core-1.1.6.jar"/>
         <pathelement location="libs/asm-all-4.0.jar"/>
-        <pathelement location="libs/lucene-core-4.10.3.jar"/>
         <pathelement location="libs/lucene-analyzers-common-4.10.3.jar"/>
+        <pathelement location="libs/lucene-core-4.10.3.jar"/>
         <pathelement location="libs/lucene-queryparser-4.10.3.jar"/>
         <pathelement location="libs/com.pinktwins.rtf.jar"/>
+        <pathelement location="libs/commons-codec-1.10.jar"/>
+        <pathelement location="libs/PDFRenderer-0.9.1.jar"/>
+        <pathelement location="libs/tika-app-1.14.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
-                <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
@@ -64,11 +63,6 @@
     <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <antcall target="build"/>
-    </target>
-    <target name="Elephant VisualVM">
-        <java classname="com.pinktwins.elephant.Elephant" failonerror="true" fork="yes">
-            <classpath refid="Elephant.classpath"/>
-        </java>
     </target>
     <target name="Elephant">
         <java classname="com.pinktwins.elephant.Elephant" failonerror="true" fork="yes">
