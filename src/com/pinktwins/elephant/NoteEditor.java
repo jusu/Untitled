@@ -464,7 +464,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
 		long w = getUsableEditorWidth() + widthOffset;
 		long iw = i.getWidth(null);
-
+		
 		if (useFullWidth || iw > w) {
 			float f = w / (float) iw;
 			int scaledWidth = (int) (f * (float) iw);

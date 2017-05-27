@@ -1,11 +1,12 @@
 # Changelog
 
 ##v32
-- Added searching attachments. Most file types are supported (office docs, pdfs, etc)
+- Added searching inside attachments. Most file types are supported (office docs, pdfs, etc)
+- Now using Apache PdfBox for better PDF support
 - Added ability to Undo note deletion/moving
 - App closes properly when last ElephantWindow is closed
-- Fixed Tag view clipping tag count when >= 100 notes on a tag
-- Single note window's title is now the note's title
+- Fixed Tag view drawing bug when >= 100 notes on a tag
+- Single note window now uses note title as window title
 
 ##v31
 - Fixed some key handling issues when separate note windows open
