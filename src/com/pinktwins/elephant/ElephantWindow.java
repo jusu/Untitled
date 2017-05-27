@@ -471,7 +471,12 @@ public class ElephantWindow extends JFrame {
 	ActionListener undoAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			noteEditor.undo();
+			if (Elephant.undoManager.hasEvents()) {
+				Elephant.undoManager.performUndo();
+				noteList.updateLoad();
+			} else {
+				noteEditor.undo();
+			}
 		}
 	};
 
@@ -1378,20 +1383,38 @@ public class ElephantWindow extends JFrame {
 
 	@Subscribe
 	public void handleUndoRedoSUR(UndoRedoStateUpdateRequest r) {
-		if (r.manager.canUndo()) {
-			iUndo.setEnabled(true);
-			iUndo.setName(r.manager.getUndoPresentationName());
-		} else {
-			iUndo.setEnabled(false);
-			iUndo.setName("Undo");
-		}
+		if (r.manager != null) {
+			if (r.manager.canUndo()) {
+				iUndo.setEnabled(true);
+				iUndo.setText(r.manager.getUndoPresentationName());
+			} else {
+				if (Elephant.undoManager.hasEvents()) {
+					iUndo.setEnabled(true);
+					iUndo.setText(Elephant.undoManager.getActionText());
+				} else {
+					iUndo.setEnabled(false);
+					iUndo.setText("Undo");
+				}
+			}
 
-		if (r.manager.canRedo()) {
-			iRedo.setEnabled(true);
-			iRedo.setName(r.manager.getRedoPresentationName());
-		} else {
+			if (r.manager.canRedo()) {
+				iRedo.setEnabled(true);
+				iRedo.setText(r.manager.getRedoPresentationName());
+			} else {
+				iRedo.setEnabled(false);
+				iRedo.setText("Redo");
+			}
+		}
+		if (r.event != null) {
+			if (Elephant.undoManager.hasEvents()) {
+				iUndo.setEnabled(true);
+				iUndo.setText(Elephant.undoManager.getActionText());
+			} else {
+				iUndo.setEnabled(false);
+				iUndo.setText("Undo");
+			}
 			iRedo.setEnabled(false);
-			iRedo.setName("Redo");
+			iRedo.setText("Redo");
 		}
 	}
 

@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.swing.UIManager;
 
 import com.google.common.eventbus.EventBus;
+import com.pinktwins.elephant.data.ElephantUndoManager;
 import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.data.Vault;
 
@@ -21,6 +22,7 @@ public class Elephant {
 
 	public static final EventBus eventBus = new EventBus();
 	public static final Settings settings = new Settings();
+	public static final ElephantUndoManager undoManager = new ElephantUndoManager();
 
 	public static String[] args;
 
