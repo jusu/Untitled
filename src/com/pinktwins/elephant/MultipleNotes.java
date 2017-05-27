@@ -188,6 +188,10 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 			window.redoSearch();
 		}
 
+		if (window.isShowingAllNotes()) {
+			window.showAllNotes();
+		}
+		
 		currentNotes.clear();
 
 		if (index >= 0) {

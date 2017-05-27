@@ -98,16 +98,12 @@ public class Note implements Comparable<Note> {
 		public String getPath(File noteFile) {
 			return attachmentFolderPath(noteFile);
 		}
-	},
-
-	new NoteBoundDirectory() {
+	}, new NoteBoundDirectory() {
 		@Override
 		public String getPath(File noteFile) {
 			return resourceFolderPath(noteFile);
 		}
-	},
-
-	new NoteBoundDirectory() {
+	}, new NoteBoundDirectory() {
 		@Override
 		public String getPath(File noteFile) {
 			return filesFolderPath(noteFile);

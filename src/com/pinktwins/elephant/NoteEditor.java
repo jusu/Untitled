@@ -531,6 +531,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			window.redoSearch();
 		}
 
+		if (window.isShowingAllNotes()) {
+			window.showAllNotes();
+		}
+		
 		clear();
 
 		if (index >= 0) {

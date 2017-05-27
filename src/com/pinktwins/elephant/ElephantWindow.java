@@ -1134,6 +1134,10 @@ public class ElephantWindow extends JFrame {
 		return noteList.isSearch();
 	}
 
+	public boolean isShowingAllNotes() {
+		return noteList.currentNotebook().isAllNotes();
+	}
+	
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
 		if (keyCode > 0 || keyMask > 0) {
