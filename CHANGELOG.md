@@ -1,6 +1,7 @@
 # Changelog
 
 ##v32
+- Added searching attachments. Most file types are supported (office docs, pdfs, etc)
 - Added ability to Undo note deletion/moving
 - App closes properly when last ElephantWindow is closed
 - Fixed Tag view clipping tag count when >= 100 notes on a tag
