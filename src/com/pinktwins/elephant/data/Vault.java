@@ -76,8 +76,12 @@ public class Vault implements WatchDirListener {
 			// For now, use memory-based indexing up to 2000 notes. It's fast, doesn't create extra files.
 			// After 2k it starts consuming some memory so Lucene preferred.
 			// Can overwrite this by setting 'useLucene' to 0 or 1.
-
 			SearchIndexer.useLucene = getNoteCount() >= 2000;
+
+			// Changed 2017-05-27: Attachments are indexed only with Lucene,
+			// so defaulting this to true. 'useLucene' setting can still turn this off.
+			SearchIndexer.useLucene = true;
+
 			if (Elephant.settings.has(Settings.Keys.USE_LUCENE)) {
 				SearchIndexer.useLucene = Elephant.settings.getInt(Settings.Keys.USE_LUCENE) == 1;
 			}
