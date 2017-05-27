@@ -1064,6 +1064,7 @@ public class ElephantWindow extends JFrame {
 
 	public void openNoteWindow(Note note) {
 		ElephantWindow w = newWindow();
+		w.setTitle(note.getMeta().title());
 		w.isNoteWindow = true;
 		w.toolBar.setVisible(false);
 		w.iSidebarVisibility.setText("Show Sidebar");
@@ -1364,6 +1365,10 @@ public class ElephantWindow extends JFrame {
 		updateThumb(event.note);
 		if (event.contentChanged) {
 			sortAndUpdate();
+		}
+		
+		if (isNoteWindow) {
+			setTitle(event.note.getMeta().title());
 		}
 	}
 

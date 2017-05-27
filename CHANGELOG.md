@@ -5,6 +5,7 @@
 - Added ability to Undo note deletion/moving
 - App closes properly when last ElephantWindow is closed
 - Fixed Tag view clipping tag count when >= 100 notes on a tag
+- Single note window's title is the note's title
 
 ##v31
 - Fixed some key handling issues when separate note windows open
