@@ -806,16 +806,13 @@ public class CustomEditor extends RoundPanel {
 	}
 
 	private void createPadding() {
-		if (padding != null) {
-			padding.setVisible(false);
-			remove(padding);
+		if (padding == null) {
+			padding = new JPanel(null);
+			padding.setBackground(Color.WHITE);
+			padding.addMouseListener(paddingClick);
+			padding.setPreferredSize(new Dimension(0, 0));
+			add(padding, BorderLayout.SOUTH);
 		}
-
-		padding = new JPanel(null);
-		padding.setBackground(Color.WHITE);
-		padding.addMouseListener(paddingClick);
-		padding.setPreferredSize(new Dimension(0, 0));
-		add(padding, BorderLayout.SOUTH);
 	}
 
 	public void setTitle(String s) {
