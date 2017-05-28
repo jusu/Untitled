@@ -3,6 +3,7 @@
 ##v32
 - Added searching inside attachments. Most file types are supported (office docs, pdfs, etc)
 - Now using Apache PdfBox for better PDF support
+- Faster multithreaded Pdf rendering
 - Added ability to Undo note deletion/moving
 - App closes properly when last ElephantWindow is closed
 - Fixed Tag view drawing bug when >= 100 notes on a tag
