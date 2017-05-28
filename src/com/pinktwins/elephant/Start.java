@@ -11,11 +11,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Vault;
@@ -40,7 +36,7 @@ public class Start extends BackgroundPanel {
 
 		setLayout(new FlowLayout());
 
-		JPanel main = new JPanel(new GridLayout(3, 1));
+		JPanel main = new JPanel(new GridLayout(4, 1));
 		main.setBorder(BorderFactory.createEmptyBorder(200, 0, 0, 0));
 
 		JLabel welcome = new JLabel("Please choose your note location.", JLabel.CENTER);
@@ -50,6 +46,11 @@ public class Start extends BackgroundPanel {
 
 		JButton bLocation = new JButton("Choose folder");
 
+		JCheckBox checkBox = new JCheckBox("Use the selected folder directly.");
+		checkBox.setForeground(Color.DARK_GRAY);
+		checkBox.setFont(ElephantWindow.fontStart);
+		checkBox.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+
 		JLabel hint = new JLabel("Folder 'Elephant' will be created under this folder.", JLabel.CENTER);
 		hint.setForeground(Color.DARK_GRAY);
 		hint.setFont(ElephantWindow.fontStart);
@@ -57,9 +58,24 @@ public class Start extends BackgroundPanel {
 
 		main.add(welcome);
 		main.add(bLocation);
+		main.add(checkBox);
 		main.add(hint);
 
 		add(main);
+
+		checkBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (checkBox.isSelected())
+				{
+					hint.setText("No subfolder will be created under this folder.");
+				}
+				else
+				{
+					hint.setText("Folder 'Elephant' will be created under this folder.");
+				}
+			}
+		});
 
 		bLocation.addActionListener(new ActionListener() {
 			@Override
@@ -73,7 +89,11 @@ public class Start extends BackgroundPanel {
 				if (res == JFileChooser.APPROVE_OPTION) {
 					File f = ch.getSelectedFile();
 					if (f.exists()) {
-						File folder = new File(f + File.separator); // + "Elephant"); // I do no want the Elephant folder
+						String extra = "";
+						if (!checkBox.isSelected())
+							extra = File.separator + "Elephant";
+
+						File folder = new File(f + extra);
 						if (folder.exists() || folder.mkdirs()) {
 
 							Vault.getInstance().setLocation(folder.getAbsolutePath());
