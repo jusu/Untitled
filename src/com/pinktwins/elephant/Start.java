@@ -73,7 +73,7 @@ public class Start extends BackgroundPanel {
 				if (res == JFileChooser.APPROVE_OPTION) {
 					File f = ch.getSelectedFile();
 					if (f.exists()) {
-						File folder = new File(f + File.separator + "Elephant");
+						File folder = new File(f + File.separator); // + "Elephant"); // I do no want the Elephant folder
 						if (folder.exists() || folder.mkdirs()) {
 
 							Vault.getInstance().setLocation(folder.getAbsolutePath());

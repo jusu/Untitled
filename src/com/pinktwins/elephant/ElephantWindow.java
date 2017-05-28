@@ -77,7 +77,7 @@ public class ElephantWindow extends JFrame {
 	public static Font fontSideBarText = Font.decode("Arial-BOLD-13");
 	public static Font fontNotebookChooser = Font.decode("Helvetica-12");
 
-	public static final Color colorTitle = Color.decode("#999999");
+	public static final Color colorTitle = Color.decode("#999999");//#999999
 	public static final Color colorTitleButton = Color.decode("#666666");
 	public static final Color colorGray5 = Color.decode("#555555");
 	public static final Color colorDB = Color.decode("#dbdbdb");

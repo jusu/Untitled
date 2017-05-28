@@ -1,0 +1,6 @@
+Welcome to Elephant!
+
+Hit CMD-N to create a new note. (Ctrl-n in Windows)
+
+Drag an image or file here to attach it.
+
