@@ -829,6 +829,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						editor.setTitle(f.getName());
 					}
 
+					// Update modify time
+					currentNote.file().setLastModified(System.currentTimeMillis());
+
 				} catch (IOException e) {
 					LOG.severe("Fail: " + e);
 				}
