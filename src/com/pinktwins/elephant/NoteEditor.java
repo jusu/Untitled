@@ -823,6 +823,12 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					} catch (BadLocationException e) {
 						LOG.severe("Fail: " + e);
 					}
+
+					// If note is unnamed, use file name
+					if (currentNote.getMeta().title().equals("Untitled")) {
+						editor.setTitle(f.getName());
+					}
+
 				} catch (IOException e) {
 					LOG.severe("Fail: " + e);
 				}
