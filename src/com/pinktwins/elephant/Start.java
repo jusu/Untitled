@@ -46,12 +46,12 @@ public class Start extends BackgroundPanel {
 
 		JButton bLocation = new JButton("Choose folder");
 
-		JCheckBox checkBox = new JCheckBox("Use the selected folder directly.");
+		final JCheckBox checkBox = new JCheckBox("Use the selected folder directly.");
 		checkBox.setForeground(Color.DARK_GRAY);
 		checkBox.setFont(ElephantWindow.fontStart);
 		checkBox.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-		JLabel hint = new JLabel("Folder 'Elephant' will be created under this folder.", JLabel.CENTER);
+		final JLabel hint = new JLabel("Folder 'Elephant' will be created under this folder.", JLabel.CENTER);
 		hint.setForeground(Color.DARK_GRAY);
 		hint.setFont(ElephantWindow.fontStart);
 		hint.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
