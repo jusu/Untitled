@@ -1,5 +1,8 @@
 # Changelog
 
+##v33
+- Added text encryption/decryption via menu items: Edit | Encrypt Selection to Clipboard / Decrypt to Clipboard
+
 ##v32
 - Added searching inside attachments. Most file types are supported (office docs, pdfs, etc)
 - Now using Apache PdfBox for better PDF support
