@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
@@ -53,6 +55,7 @@ import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
+import com.pinktwins.elephant.eventbus.ToastEvent;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
@@ -315,6 +318,20 @@ public class ElephantWindow extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			noteEditor.pasteAction();
+		}
+	};
+
+	ActionListener encryptAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.encryptAction();
+		}
+	};
+
+	ActionListener decryptAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			noteEditor.decryptAction();
 		}
 	};
 
@@ -762,6 +779,16 @@ public class ElephantWindow extends JFrame {
 		Elephant.settings.setChain(Settings.Keys.WINDOW_MAXIMIZED, (s & JFrame.MAXIMIZED_BOTH) == JFrame.MAXIMIZED_BOTH ? true : false);
 	}
 
+	public void showToast(String text) {
+		setTitle(text);
+		new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+				ElephantWindow.this.setTitle("Elephant Premium");
+			}
+		}, 3000);
+	}
+
 	// Handling key dispatching for full control over keyboard interaction.
 	// XXX this will bite me eventually
 	private class KeyDispatcher implements KeyEventDispatcher {
@@ -1138,7 +1165,7 @@ public class ElephantWindow extends JFrame {
 	public boolean isShowingAllNotes() {
 		return noteList.currentNotebook().isAllNotes();
 	}
-	
+
 	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
 		JMenuItem mi = new JMenuItem(title);
 		if (keyCode > 0 || keyMask > 0) {
@@ -1181,6 +1208,12 @@ public class ElephantWindow extends JFrame {
 		edit.add(iCut);
 		edit.add(iCopy);
 		edit.add(iPaste);
+		edit.addSeparator();
+
+		final JMenuItem iEnc = menuItem("Encrypt Selection to Clipboard", KeyEvent.VK_C, menuMask | KeyEvent.SHIFT_DOWN_MASK, encryptAction);
+		final JMenuItem iDec = menuItem("Decrypt to Clipboard", KeyEvent.VK_X, menuMask | KeyEvent.SHIFT_DOWN_MASK, decryptAction);
+		edit.add(iEnc);
+		edit.add(iDec);
 
 		edit.addSeparator();
 		edit.add(menuItem("Search Notes...", KeyEvent.VK_F, menuMask | KeyEvent.ALT_DOWN_MASK, searchAction));
@@ -1366,7 +1399,7 @@ public class ElephantWindow extends JFrame {
 		if (event.contentChanged) {
 			sortAndUpdate();
 		}
-		
+
 		if (isNoteWindow) {
 			setTitle(event.note.getMeta().title());
 		}
@@ -1425,6 +1458,11 @@ public class ElephantWindow extends JFrame {
 			iRedo.setEnabled(false);
 			iRedo.setText("Redo");
 		}
+	}
+	
+	@Subscribe
+	public void handleToastEvent(ToastEvent toast) {
+		showToast(toast.text);
 	}
 
 	public void searchHighlight() {

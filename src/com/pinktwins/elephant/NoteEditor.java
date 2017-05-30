@@ -853,6 +853,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor.getTextPane().requestFocusInWindow();
 	}
 
+	public void encryptAction() {
+		editor.encryptSelection();
+	}
+	
+	public void decryptAction() {
+		editor.decryptSelection();
+	}
+	
 	public void undo() {
 		editor.undo();
 	}

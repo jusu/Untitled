@@ -68,11 +68,14 @@ import com.pinktwins.elephant.BrowserPane.BrowserEventListener;
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
+import com.pinktwins.elephant.eventbus.ToastEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.ui.AutoIndentAction;
 import com.pinktwins.elephant.ui.HomeAction;
+import com.pinktwins.elephant.ui.PasswordDialog;
 import com.pinktwins.elephant.ui.ShiftTabAction;
 import com.pinktwins.elephant.ui.TabAction;
+import com.pinktwins.elephant.util.CryptoUtil;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.ResizeListener;
@@ -94,6 +97,9 @@ public class CustomEditor extends RoundPanel {
 	private JPanel padding;
 
 	private UndoManager undoManager = new UndoManager();
+
+	private final PasswordDialog passwordDialog = new PasswordDialog();
+	private final CryptoUtil cryptoUtil = new CryptoUtil();
 
 	public boolean isRichText, isMarkdown;
 	private boolean maybeImporting;
@@ -386,6 +392,79 @@ public class CustomEditor extends RoundPanel {
 
 	AttributeSet getAttributes(int position) {
 		return ((CustomDocument) note.getDocument()).getCharacterElement(position).getAttributes();
+	}
+
+	public void encryptSelection() {
+		String text = note.getSelectedText();
+		if (text != null && !text.isEmpty()) {
+
+			String pw = passwordDialog.getPassword();
+			if (pw != null && !pw.isEmpty()) {
+
+				try {
+					String enc = cryptoUtil.encryptToBase64(pw, text);
+					note.setClipboardContents(enc);
+
+					new ToastEvent("Encrypted to clipboard").post();
+				} catch (IOException e) {
+					LOG.severe("Failed encrypting text.");
+					new ToastEvent("Failed encrypting text.").post();
+				}
+				return;
+			} else {
+				new ToastEvent("No password").post();
+			}
+		} else {
+			new ToastEvent("No selection").post();
+		}
+	}
+
+	public void decryptSelection() {
+		String pw = passwordDialog.getPassword();
+		if (pw != null && !pw.isEmpty()) {
+			String text = note.getSelectedText();
+
+			if (text == null) {
+				// No selection? Check if this note has encrypted data
+				text = findEncryptedText();
+			}
+
+			if (text != null && !text.isEmpty()) {
+				try {
+					String dec = cryptoUtil.decryptBase64(pw, text);
+					if (dec == null) {
+						new ToastEvent("No ecrypted data found").post();
+						return;
+					} else {
+						note.setClipboardContents(dec);
+					}
+
+					new ToastEvent("Decrypted to clipboard").post();
+				} catch (Exception e) {
+					new ToastEvent("Decryption failed. Wrong password?").post();
+				}
+				return;
+			} else {
+				new ToastEvent("No selection").post();
+			}
+		} else {
+			new ToastEvent("No password").post();
+		}
+	}
+
+	private String findEncryptedText() {
+		// Find first line starting with 'encv0:'
+		try {
+			String s = getText();
+			String[] arr = s.split("\n");
+			for (String line : arr) {
+				if (line.indexOf("encv0:") == 0) {
+					return line;
+				}
+			}
+		} catch (BadLocationException e) {
+		}
+		return null;
 	}
 
 	static private String prevRtfCopy = "";
