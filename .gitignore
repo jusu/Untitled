@@ -2,3 +2,6 @@ bin
 .DS_Store
 /build/
 *~
+/out/
+.idea/
+Elephant.iml

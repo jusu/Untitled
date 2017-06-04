@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JCheckBox;
 
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Vault;
@@ -40,7 +41,7 @@ public class Start extends BackgroundPanel {
 
 		setLayout(new FlowLayout());
 
-		JPanel main = new JPanel(new GridLayout(3, 1));
+		JPanel main = new JPanel(new GridLayout(4, 1));
 		main.setBorder(BorderFactory.createEmptyBorder(200, 0, 0, 0));
 
 		JLabel welcome = new JLabel("Please choose your note location.", JLabel.CENTER);
@@ -50,16 +51,33 @@ public class Start extends BackgroundPanel {
 
 		JButton bLocation = new JButton("Choose folder");
 
-		JLabel hint = new JLabel("Folder 'Elephant' will be created under this folder.", JLabel.CENTER);
+		final JCheckBox cbUseFolderDirectly = new JCheckBox("Use the selected folder directly.");
+		cbUseFolderDirectly.setForeground(Color.DARK_GRAY);
+		cbUseFolderDirectly.setFont(ElephantWindow.fontStart);
+		cbUseFolderDirectly.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+
+		final JLabel hint = new JLabel("Folder 'Elephant' will be created under this folder.", JLabel.CENTER);
 		hint.setForeground(Color.DARK_GRAY);
 		hint.setFont(ElephantWindow.fontStart);
 		hint.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
 		main.add(welcome);
 		main.add(bLocation);
+		main.add(cbUseFolderDirectly);
 		main.add(hint);
 
 		add(main);
+
+		cbUseFolderDirectly.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (cbUseFolderDirectly.isSelected()) {
+					hint.setText("No subfolder will be created under this folder.");
+				} else {
+					hint.setText("Folder 'Elephant' will be created under this folder.");
+				}
+			}
+		});
 
 		bLocation.addActionListener(new ActionListener() {
 			@Override
@@ -73,7 +91,13 @@ public class Start extends BackgroundPanel {
 				if (res == JFileChooser.APPROVE_OPTION) {
 					File f = ch.getSelectedFile();
 					if (f.exists()) {
-						File folder = new File(f + File.separator + "Elephant");
+						File folder = null;
+						if (cbUseFolderDirectly.isSelected()) {
+							folder = new File(f);
+						} else {
+							folder = new File(f + File.separator + "Elephant");
+						}
+
 						if (folder.exists() || folder.mkdirs()) {
 
 							Vault.getInstance().setLocation(folder.getAbsolutePath());
