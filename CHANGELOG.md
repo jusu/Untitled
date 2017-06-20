@@ -1,5 +1,8 @@
 # Changelog
 
+##v34
+- Fixed undo handling when moving and then editing notes
+
 ##v33
 - Added text encryption/decryption via menu items: Edit | Encrypt Selection to Clipboard / Decrypt to Clipboard
 
