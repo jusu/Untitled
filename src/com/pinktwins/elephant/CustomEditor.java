@@ -1058,6 +1058,10 @@ public class CustomEditor extends RoundPanel {
 		new UndoRedoStateUpdateRequest(undoManager).post();
 	}
 
+	public void updateUndoState() {
+		new UndoRedoStateUpdateRequest(undoManager).post();
+	}
+	
 	private void switchToMarkdownEditor() {
 		if (isMarkdown && isShowingMarkdown()) {
 			remove(htmlPane);

@@ -869,6 +869,10 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		editor.redo();
 	}
 
+	public void updateUndoState() {
+		editor.updateUndoState();
+	}
+	
 	private void turnToPlainText_format() {
 		List<AttachmentInfo> info = editor.getAttachmentInfo();
 		List<AttachmentInfo> info_reverse = editor.removeAttachmentElements(info);

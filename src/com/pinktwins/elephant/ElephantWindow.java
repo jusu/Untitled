@@ -488,7 +488,7 @@ public class ElephantWindow extends JFrame {
 	ActionListener undoAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (Elephant.undoManager.hasEvents()) {
+			if (Elephant.undoManager.hasEvents() && !noteEditor.hasFocus()) {
 				Elephant.undoManager.performUndo();
 				noteList.updateLoad();
 			} else {
@@ -1325,6 +1325,10 @@ public class ElephantWindow extends JFrame {
 				iCut.setEnabled(hasSelection);
 				iCopy.setEnabled(hasSelection);
 				iPaste.setEnabled(true);
+				if (hasFocus) {
+					Elephant.undoManager.clear();
+					noteEditor.updateUndoState();
+				}
 			}
 		});
 	}

@@ -26,6 +26,10 @@ public class ElephantUndoManager {
 		return events.size() > 0;
 	}
 
+	public void clear() {
+		events.clear();
+	}
+	
 	private String getTitle(File f) {
 		return new Note(f).getMeta().title();
 	}
