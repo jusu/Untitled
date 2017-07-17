@@ -1,5 +1,8 @@
 # Changelog
 
+##v35
+- Fixed wrong ui state for right panel when moving multiple notes and notebook is left empty.
+
 ##v34
 - Fixed undo handling when moving and then editing notes
 
