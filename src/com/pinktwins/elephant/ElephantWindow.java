@@ -1000,6 +1000,11 @@ public class ElephantWindow extends JFrame {
 		noteEditor.saveChanges();
 	}
 
+	public void clearNoteEditor() {
+		splitRight.setRightComponent(noteEditor);
+		noteEditor.clear();
+	}
+
 	public void deleteSelectedNote() {
 
 		if (isNoteWindow) {

@@ -193,6 +193,7 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 		}
 		
 		currentNotes.clear();
+		window.clearNoteEditor();
 
 		if (index >= 0) {
 			window.selectNoteByIndex(index);
