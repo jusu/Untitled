@@ -101,8 +101,9 @@ public class SearchTextField extends HintTextField {
 				requestFocusInWindow();
 
 				if (e.getX() >= getWidth() - 20) {
-					setText("");
-					setFocusable(false);
+					if (getText().length() > 0) {
+						setText("");
+					}
 				}
 			}
 
