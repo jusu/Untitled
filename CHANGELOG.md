@@ -2,6 +2,7 @@
 
 ##v35
 - Fixed wrong ui state for right panel when moving multiple notes and notebook is left empty.
+- Fixed clicking X in searchfield, now works same as ESC
 
 ##v34
 - Fixed undo handling when moving and then editing notes
