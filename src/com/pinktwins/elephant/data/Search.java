@@ -20,7 +20,7 @@ public class Search {
 	private Search() {
 	}
 
-	public static Notebook search(String text) {
+	synchronized public static Notebook search(String text) {
 		text = text.toLowerCase();
 
 		Notebook found = new Notebook();

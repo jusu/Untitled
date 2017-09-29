@@ -275,12 +275,13 @@ public class Note implements Comparable<Note> {
 	}
 
 	public Map<String, String> getMetaMap() {
+		String json = "";
 		try {
-			String json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
+			json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
 			if (json == null || json.isEmpty()) {
 				return Collections.emptyMap();
 			}
-
+			
 			JSONObject o = new JSONObject(json);
 			Map<String, String> map = Factory.newHashMap();
 
@@ -294,7 +295,7 @@ public class Note implements Comparable<Note> {
 
 			return map;
 		} catch (JSONException e) {
-			LOG.severe("Fail: " + e);
+			LOG.severe("Fail: " + e + " json: " + json + " file: " + file.getAbsolutePath());
 		}
 
 		return Collections.emptyMap();
