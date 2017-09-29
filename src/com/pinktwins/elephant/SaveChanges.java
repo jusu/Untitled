@@ -27,7 +27,11 @@ public class SaveChanges {
 	private static void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
 		if (!currentNote.isHtml()) {
 			try {
-				currentNote.attemptSafeRename(title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt"));
+				String newName = title;
+				if (!newName.endsWith(".md")) {
+					newName = title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt");
+				}
+				currentNote.attemptSafeRename(newName);
 			} catch (IOException e) {
 				LOG.severe("Fail: " + e);
 			}
@@ -50,6 +54,14 @@ public class SaveChanges {
 				if (!fileTitle.equals(editedTitle)) {
 					currentNote.getMeta().title(editedTitle);
 					renameAccordingToFormat(currentNote, editor, editedTitle);
+
+					// Saved as markdown? Let's take .md out of the title.
+					if (currentNote.isMarkdown() && editedTitle.endsWith(".md")) {
+						String withoutMd = editedTitle.replace(".md", "");
+						currentNote.getMeta().title(withoutMd);
+						editor.setTitle(withoutMd);
+					}
+
 					changed = true;
 				}
 

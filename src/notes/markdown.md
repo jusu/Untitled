@@ -4,7 +4,7 @@ Here's how it works:
 
   1. Files ending with ".md" or ".md.txt" are markdown-enabled
   1. To create a new markdown note, end the title with .md and save
-  1. After saving as markdown, you can remove .md from the title
+  1. After saving as markdown, .md gets removed from the title
   1. The note is shown in all rich text glory
   1. Click on the note to edit it. Editing always happens in plain text / markdown mode
   1. Click the note card or editor background to go back to rich display
