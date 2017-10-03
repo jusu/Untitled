@@ -3,6 +3,7 @@
 ##v36
 - Markdown notes are saves as 'filename.md' instead of 'filename.md.txt'
 - Editor will automatically remove .md from note title when saving a markdown note
+- Fixed unusual hang with unfortunate search term
 
 ##v35
 - Fixed wrong ui state for right panel when moving multiple notes and notebook is left empty.
