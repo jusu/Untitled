@@ -1468,7 +1468,7 @@ public class ElephantWindow extends JFrame {
 			iRedo.setText("Redo");
 		}
 	}
-	
+
 	@Subscribe
 	public void handleToastEvent(ToastEvent toast) {
 		showToast(toast.text);
@@ -1491,12 +1491,14 @@ public class ElephantWindow extends JFrame {
 			String[] searchWords = text.toLowerCase().split(" ");
 			for (int n = 0; n < searchWords.length; n++) {
 				String word = searchWords[n];
-				DefaultHighlightPainter p = highlightPainters[n % highlightPainters.length];
+				if (word.length() > 0) {
+					DefaultHighlightPainter p = highlightPainters[n % highlightPainters.length];
 
-				int index = documentText.indexOf(word);
-				while (index > -1) {
-					editorTextPane.getHighlighter().addHighlight(index, index + word.length(), p);
-					index = documentText.indexOf(word, index + 1);
+					int index = documentText.indexOf(word);
+					while (index > -1) {
+						editorTextPane.getHighlighter().addHighlight(index, index + word.length(), p);
+						index = documentText.indexOf(word, index + 1);
+					}
 				}
 			}
 
