@@ -20,6 +20,8 @@ public class Search {
 	private Search() {
 	}
 
+	public static Object lockObject = new Object();
+	
 	synchronized public static Notebook search(String text) {
 		text = text.toLowerCase();
 
@@ -33,31 +35,35 @@ public class Search {
 		if (!ssi.ready()) {
 			ssi.start();
 
-			int noteCount = Vault.getInstance().getNoteCount();
+			Vault vault = Vault.getInstance();
 
-			for (Notebook nb : Vault.getInstance().getNotebooks()) {
-				if (!nb.isTrash()) {
-					for (Note n : nb.notes) {
-						ssi.digestNote(n, nb);
-						totalNotes++;
+			synchronized (lockObject) {
+				int noteCount = vault.getNoteCount();
 
-						int p = (int) (totalNotes / (float) noteCount * 100);
-						if (progress != p / 10) {
-							progress = p;
-							new IndexProgressEvent(p).post();
+				for (Notebook nb : vault.getNotebooks()) {
+					if (!nb.isTrash()) {
+						for (Note n : nb.notes) {
+							ssi.digestNote(n, nb);
+							totalNotes++;
+
+							int p = (int) (totalNotes / (float) noteCount * 100);
+							if (progress != p / 10) {
+								progress = p;
+								new IndexProgressEvent(p).post();
+							}
 						}
 					}
 				}
 			}
+
 			ssi.markReady();
 		}
 
 		List<Set<Note>> sets = Factory.newArrayList();
 
 		/*
-		 * List<String> keys = new ArrayList<String>(); Matcher m =
-		 * Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text); while (m.find()) {
-		 * keys.add(m.group(1).replace("\"", "")); }
+		 * List<String> keys = new ArrayList<String>(); Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text);
+		 * while (m.find()) { keys.add(m.group(1).replace("\"", "")); }
 		 */
 
 		String[] a = text.split(" ");

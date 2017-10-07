@@ -1130,13 +1130,15 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void newNote() {
-		if (noteList.isDynamicallyCreatedNotebook()) {
-			Notebook nb = Vault.getInstance().getDefaultNotebook();
-			showNotebook(nb);
-		}
+		synchronized (Search.lockObject) {
+			if (noteList.isDynamicallyCreatedNotebook()) {
+				Notebook nb = Vault.getInstance().getDefaultNotebook();
+				showNotebook(nb);
+			}
 
-		noteList.newNote();
-		focusEditor();
+			noteList.newNote();
+			focusEditor();
+		}
 	}
 
 	public void setSearchText(String text) {
