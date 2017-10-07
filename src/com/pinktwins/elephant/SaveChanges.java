@@ -28,8 +28,14 @@ public class SaveChanges {
 		if (!currentNote.isHtml()) {
 			try {
 				String newName = title;
-				if (!newName.endsWith(".md")) {
-					newName = title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : ".txt");
+
+				String defaultFiletype = Elephant.settings.getDefaultFiletype();
+				if (!defaultFiletype.contains(".")) {
+					defaultFiletype = "." + defaultFiletype;
+				}
+
+				if (!newName.endsWith(".md") && !newName.endsWith(".txt")) {
+					newName = title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : defaultFiletype);
 				}
 				currentNote.attemptSafeRename(newName);
 			} catch (IOException e) {
@@ -54,24 +60,23 @@ public class SaveChanges {
 				if (!fileTitle.equals(editedTitle)) {
 					currentNote.getMeta().title(editedTitle);
 					renameAccordingToFormat(currentNote, editor, editedTitle);
-
-					// Saved as markdown? Let's take .md out of the title.
-					if (currentNote.isMarkdown() && editedTitle.endsWith(".md")) {
-						String withoutMd = editedTitle.replace(".md", "");
-						currentNote.getMeta().title(withoutMd);
-						editor.setTitle(withoutMd);
-					}
-
 					changed = true;
 				}
 
 				// Format
+				String ext = FilenameUtils.getExtension(currentNote.file().getAbsolutePath()).toLowerCase();
 				if (!changed) {
 					// Did format change during edit?
-					String ext = FilenameUtils.getExtension(currentNote.file().getAbsolutePath()).toLowerCase();
 					if ((editor.isRichText && "txt".equals(ext)) || (!editor.isRichText && "rtf".equals(ext))) {
 						renameAccordingToFormat(currentNote, editor, editedTitle);
 						changed = true;
+					}
+				}
+
+				// If we saved as markdown note, set editor to markdown mode.
+				if (changed) {
+					if ("md".equals(ext) && !editor.isMarkdown) {
+						editor.setMarkdown(true);
 					}
 				}
 

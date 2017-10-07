@@ -1,7 +1,11 @@
 # Changelog
 
+##v37
+- Added "defaultFiletype" setting. Use "md" to create new notes in markdown format. Default is "txt".
+- Reverted automatic removal of "md" from note title
+
 ##v36
-- Markdown notes are saves as 'filename.md' instead of 'filename.md.txt'
+- Markdown notes are saved as 'filename.md' instead of 'filename.md.txt'
 - Editor will automatically remove .md from note title when saving a markdown note
 - Fixed unusual hang with unfortunate search term
 
