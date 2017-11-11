@@ -1,5 +1,8 @@
 # Changelog
 
+##v38
+- Fixed sometimes using a wrong charset depending on system defaults
+
 ##v37
 - Added "defaultFiletype" setting. Use "md" to create new notes in markdown format. Default is "txt".
 - Reverted automatic removal of "md" from note title

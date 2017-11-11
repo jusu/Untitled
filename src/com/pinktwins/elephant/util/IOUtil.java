@@ -18,6 +18,12 @@ public class IOUtil {
 
 	private static final byte[] emptyBytes = new byte[0];
 
+	static {
+		if (!Charset.isSupported("UTF-8")) {
+			System.out.println("Warning: UTF-8 charset not supported. Default is " + Charset.defaultCharset().toString());
+		}
+	}
+	
 	private IOUtil() {
 	}
 
@@ -61,7 +67,8 @@ public class IOUtil {
 	}
 
 	public static void writeFile(File file, String text) throws IOException {
-		Files.write(text, file, Charset.defaultCharset());
+		Charset charset = Charset.isSupported("UTF-8") ? Charset.forName("UTF-8") : Charset.defaultCharset();
+		Files.write(text, file, charset);
 	}
 
 	public static JSONObject loadJson(File file) {
