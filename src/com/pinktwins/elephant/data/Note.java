@@ -229,7 +229,8 @@ public class Note implements Comparable<Note> {
 
 	private String readFileAsString() {
 		byte[] contents = IOUtil.readFile(file);
-		return new String(contents, Charset.defaultCharset());
+		Charset charset = Charset.isSupported("UTF-8") ? Charset.forName("UTF-8") : Charset.defaultCharset();
+		return new String(contents, charset);
 	}
 
 	public String contents() {
