@@ -2,7 +2,6 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -229,8 +228,7 @@ public class Note implements Comparable<Note> {
 
 	private String readFileAsString() {
 		byte[] contents = IOUtil.readFile(file);
-		Charset charset = Charset.isSupported("UTF-8") ? Charset.forName("UTF-8") : Charset.defaultCharset();
-		return new String(contents, charset);
+		return new String(contents, IOUtil.getCharset());
 	}
 
 	public String contents() {
@@ -278,7 +276,7 @@ public class Note implements Comparable<Note> {
 	public Map<String, String> getMetaMap() {
 		String json = "";
 		try {
-			json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
+			json = new String(IOUtil.readFile(meta), IOUtil.getCharset());
 			if (json == null || json.isEmpty()) {
 				return Collections.emptyMap();
 			}
@@ -304,7 +302,7 @@ public class Note implements Comparable<Note> {
 
 	private void setMeta(String key, String value) {
 		try {
-			String json = new String(IOUtil.readFile(meta), Charset.defaultCharset());
+			String json = new String(IOUtil.readFile(meta), IOUtil.getCharset());
 			if (json == null || json.isEmpty()) {
 				json = "{}";
 			}
