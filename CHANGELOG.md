@@ -1,5 +1,9 @@
 # Changelog
 
+##
+v39
+- Draw sharper background tiles on Retina Macbooks
+
 ##v38
 - Fixed sometimes using a wrong charset depending on system defaults
 
