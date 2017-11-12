@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.common.io.Files;
 import com.pinktwins.elephant.NoteList.ListModes;
 import com.pinktwins.elephant.Sidebar.RecentNotesModes;
 import com.pinktwins.elephant.util.IOUtil;
@@ -154,7 +155,7 @@ public class Settings {
 
 	private void save() {
 		try {
-			IOUtil.writeFile(settingsFile(), map.toString(4));
+			Files.write(map.toString(4), settingsFile(), Charset.forName("UTF-8"));
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		} catch (JSONException e) {

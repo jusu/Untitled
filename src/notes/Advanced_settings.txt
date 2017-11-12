@@ -5,7 +5,7 @@ Some of these settings are not exposed in Elephant's UI. Use any text editor to 
 {
     "fontScale": 1.0,
 
-Make all fonts smaller/bigger. Does not affect layout so scaling too much will negatively affect appearance. Yet, scaling slightly can be helpful with high-res screens.
+Make all fonts small/bigger. Does not affect layouts so scaling too much will negatively affect appearance. Yet, scaling slightly can be helpful with high-res screens.
 
     "pastePlaintext": true,
 
@@ -20,21 +20,34 @@ Default is 1 (for true).
 
 Confirm when deleting a note from Trash. Default is true.
 
-    "allowFilenameChars": "öäåÖÄÅ",
+    "allowFilenameChars": "aeiouy",
 
 Additional characters allowed in note's filename. The filename is based on note's title, and by default only a-z, A-Z, 0-9 and . - are allowed, other chars are converted to _.
 
-	"useLucene": 0,
+    "useLucene": 0,
 
-Use Lucene for search indexing. 1 to enable, 0 to disable. Default is to use lucene when note count exceeds 2000 notes.
+Use Lucene for search indexing. 1 to enable, 0 to disable. Default is to use Lucene.
 When lucene is disabled, a simple in-memory structure is used for searching. You should not need to care about this.
+
+    "defaultFiletype": "txt",
+
+Default file type when creating a new note. Default is to create note files with .txt extension,
+in plain text format. Change to "md" to create new notes in markdown format.
+
+    "charset": "UTF-8",
+
+Force a specific character set for notes. Default is to use your system's default character set. Example is "UTF-8" to force UTF-8.
+
+Note that Elephant doesn't convert your notes' character encodings - if you previously used non-ascii characters and change the character set, your notes might need to be converted to the new encoding to display correctly.
 
 }
 
-Other stuff~
+
+Other stuff
 
 Disabling note preview in Note List
 
 Create an empty file called ".disablePreview" in a notebook folder to disable note preview in Note List.
+
 This is useful with notebooks containing passwords, for example - the preview will not give away the note contents.
 
