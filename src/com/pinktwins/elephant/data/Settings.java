@@ -2,6 +2,7 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.logging.Logger;
 
 import org.json.JSONException;
@@ -16,9 +17,10 @@ public class Settings {
 	private static final Logger LOG = Logger.getLogger(Settings.class.getName());
 
 	public static enum Keys {
-		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET("autoBullet"), RECENT_SHOW(
-				"showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH("confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE(
-				"fontScale"), PASTE_PLAINTEXT("pastePlaintext"), SHOW_SIDEBAR("showSidebar"), DEFAULT_FILETYPE("defaultFiletype");
+		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET(
+				"autoBullet"), RECENT_SHOW("showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH(
+						"confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE("fontScale"), PASTE_PLAINTEXT(
+								"pastePlaintext"), SHOW_SIDEBAR("showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset");
 
 		private final String str;
 
@@ -225,11 +227,23 @@ public class Settings {
 		}
 		return getBoolean(Keys.SHOW_SIDEBAR);
 	}
-	
+
 	public String getDefaultFiletype() {
 		if (!has(Keys.DEFAULT_FILETYPE)) {
 			return "txt";
 		}
 		return getString(Keys.DEFAULT_FILETYPE);
+	}
+
+	public boolean hasCharset() {
+		return has(Keys.CHARSET);
+	}
+
+	public String getCharset() {
+		if (hasCharset()) {
+			return getString(Keys.CHARSET);
+		} else {
+			return null;
+		}
 	}
 }

@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.common.io.Files;
+import com.pinktwins.elephant.Elephant;
 
 public class IOUtil {
 
@@ -18,14 +19,19 @@ public class IOUtil {
 
 	private static final byte[] emptyBytes = new byte[0];
 
-	static {
-		if (!Charset.isSupported("UTF-8")) {
-			System.out.println("Warning: UTF-8 charset not supported. Default is " + Charset.defaultCharset().toString());
-		}
-	}
-
 	static public Charset getCharset() {
-		return Charset.isSupported("UTF-8") ? Charset.forName("UTF-8") : Charset.defaultCharset();
+		if (Elephant.settings.hasCharset()) {
+			String charsetName = Elephant.settings.getCharset();
+			if (Charset.isSupported(charsetName)) {
+				return Charset.forName(charsetName);
+			} else {
+				System.out.println("Warning: Charset '" + charsetName + "' defined but not supported by system.");
+				System.out.println("Defaulting to " + Charset.defaultCharset());
+				return Charset.defaultCharset();
+			}
+		} else {
+			return Charset.defaultCharset();
+		}
 	}
 
 	private IOUtil() {

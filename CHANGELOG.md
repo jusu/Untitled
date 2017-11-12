@@ -2,10 +2,11 @@
 
 ##
 v39
+- Added "charset" setting to optionally use a character set different from system character set. For example, "UTF-8"
 - Draw sharper background tiles on Retina Macbooks
 
 ##v38
-- Fixed sometimes using a wrong charset depending on system defaults
+(v38 had an issue with character sets)
 
 ##v37
 - Added "defaultFiletype" setting. Use "md" to create new notes in markdown format. Default is "txt".
