@@ -17,7 +17,7 @@ import com.pinktwins.elephant.util.ScreenUtil;
 
 public class Elephant {
 
-	public static final int VERSION = 38;
+	public static final int VERSION = 39;
 
 	private static final Logger LOG = Logger.getLogger(Elephant.class.getName());
 
