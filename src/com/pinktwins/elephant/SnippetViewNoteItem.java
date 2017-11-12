@@ -17,6 +17,7 @@ import javax.swing.JTextPane;
 
 import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.ScreenUtil;
 
 public class SnippetViewNoteItem extends NoteItem {
 
@@ -128,8 +129,10 @@ public class SnippetViewNoteItem extends NoteItem {
 	public void setSelected(boolean b) {
 		if (b) {
 			root.setImage(noteBgSelected);
+			root.keepScaleOnRetina(false, true);
 		} else {
 			root.setImage(noteBg);
+			root.keepScaleOnRetina(false, false);
 		}
 		isSelected = b;
 		repaint();
@@ -140,9 +143,14 @@ public class SnippetViewNoteItem extends NoteItem {
 		super.paint(g);
 
 		if (!isSelected) {
-			g.setColor(kColorNoteBorder);
-			g.drawLine(0, getHeight() - 1, getWidth() - 1, getHeight() - 1);
+			int y = 1;
+			if (ScreenUtil.isRetina()) {
+				y = 0;
+			}
 
+			g.setColor(kColorNoteBorder);
+			g.drawLine(0, getHeight() - y, getWidth() - 1, getHeight() - y);
+			
 			g.setColor(kColorNoteHighlight);
 			g.drawLine(0, 0, getWidth() - 1, 0);
 		}

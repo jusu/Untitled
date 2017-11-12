@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
+import com.pinktwins.elephant.util.ScreenUtil;
+
 /*
  *  Support custom painting on a panel in the form of
  *
@@ -39,6 +41,8 @@ public class BackgroundPanel extends JPanel {
 	private float alignmentX = 0.5f;
 	private float alignmentY = 0.5f;
 	private boolean isTransparentAdd = true;
+	private boolean keepWidthOnRetina = false;
+	private boolean keepHeightOnRetina = false;
 
 	public BackgroundPanel() {
 		this(null, TILED);
@@ -69,6 +73,11 @@ public class BackgroundPanel extends JPanel {
 		setImageAlignmentX(alignmentX);
 		setImageAlignmentY(alignmentY);
 		setLayout(new BorderLayout());
+	}
+
+	public void keepScaleOnRetina(boolean w, boolean h) {
+		keepWidthOnRetina = w;
+		keepHeightOnRetina = h;
 	}
 
 	/*
@@ -153,17 +162,17 @@ public class BackgroundPanel extends JPanel {
 	}
 
 	/*
-	 * Controls whether components added to this panel should automatically be made transparent. That is,
-	 * setOpaque(false) will be invoked. The default is set to true.
+	 * Controls whether components added to this panel should automatically be made transparent. That is, setOpaque(false)
+	 * will be invoked. The default is set to true.
 	 */
 	public void setTransparentAdd(boolean isTransparentAdd) {
 		this.isTransparentAdd = isTransparentAdd;
 	}
 
 	/*
-	 * Try to make the component transparent. For components that use renderers, like JTable, you will also need to
-	 * change the renderer to be transparent. An easy way to do this it to set the background of the table to a Color
-	 * using an alpha value of 0.
+	 * Try to make the component transparent. For components that use renderers, like JTable, you will also need to change
+	 * the renderer to be transparent. An easy way to do this it to set the background of the table to a Color using an
+	 * alpha value of 0.
 	 */
 	private void makeComponentTransparent(JComponent component) {
 		component.setOpaque(false);
@@ -236,16 +245,25 @@ public class BackgroundPanel extends JPanel {
 		int width = image.getWidth(null);
 		int height = image.getHeight(null);
 
+		if (ScreenUtil.isRetina()) {
+			if (!keepWidthOnRetina) {
+				width /= 2.0f;
+			}
+			if (!keepHeightOnRetina) {
+				height /= 2.0f;
+			}
+		}
+
 		for (int x = 0; x < d.width; x += width) {
 			for (int y = 0; y < d.height; y += height) {
-				g.drawImage(image, x, y, null, null);
+				g.drawImage(image, x, y, width, height, null);
 			}
 		}
 	}
 
 	/*
-	 * Custom painting code for drawing the ACTUAL image as the background. The image is positioned in the panel based
-	 * on the horizontal and vertical alignments specified.
+	 * Custom painting code for drawing the ACTUAL image as the background. The image is positioned in the panel based on
+	 * the horizontal and vertical alignments specified.
 	 */
 	private void drawActual(Graphics g) {
 		Dimension d = getSize();

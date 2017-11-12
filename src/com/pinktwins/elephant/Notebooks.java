@@ -175,6 +175,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 
 		public NotebookItem(Notebook nb) {
 			super(notebookBg);
+			keepScaleOnRetina(true, true);
 
 			setLayout(null);
 

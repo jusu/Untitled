@@ -152,6 +152,7 @@ public class SideBarList extends JPanel {
 		if (highlightSelection) {
 			for (SideBarListItem item : items) {
 				item.setImage(sidebarTile);
+				item.keepScaleOnRetina(false, false);
 			}
 		}
 	}
@@ -162,6 +163,7 @@ public class SideBarList extends JPanel {
 			if (idx >= 0 && idx < items.size()) {
 				SideBarListItem item = items.get(idx);
 				item.setImage(largeHighlight);
+				item.keepScaleOnRetina(false, true);
 			}
 		}
 	}

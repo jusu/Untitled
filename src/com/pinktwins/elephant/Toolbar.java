@@ -41,6 +41,7 @@ public class Toolbar extends BackgroundPanel {
 
 	public Toolbar(ElephantWindow w) {
 		super(toolbarBg);
+		keepScaleOnRetina(false, true);
 		window = w;
 
 		Elephant.eventBus.register(this);

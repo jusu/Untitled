@@ -26,6 +26,7 @@ public class CardViewNoteItem extends NoteItem {
 		root.setBorder(BorderFactory.createEmptyBorder(7, 7, 7, 7));
 		root.setMinimumSize(size);
 		root.setMaximumSize(size);
+		root.keepScaleOnRetina(true, true);
 
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());

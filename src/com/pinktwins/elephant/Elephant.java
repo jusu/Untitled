@@ -13,6 +13,7 @@ import com.google.common.eventbus.EventBus;
 import com.pinktwins.elephant.data.ElephantUndoManager;
 import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.util.ScreenUtil;
 
 public class Elephant {
 
