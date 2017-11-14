@@ -455,11 +455,31 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		long w = getUsableEditorWidth() + widthOffset;
 		long iw = info.getWidth();
+		long ih = info.getHeight();
+
+		if (ScreenUtil.isRetina() && !useFullWidth && iw < w) {
+			// Retina screen, requested NOT full editor width scaling,
+			// image is smaller than editor width. Need to scale using
+			// 2x image size, otherwise image would show up half as small.
+			iw *= 2;
+			ih *= 2;
+
+			float f;
+			if (iw < w) {
+				f = 1;
+			} else {
+				f = w / (float) iw;
+			}
+			int scaledWidth = (int) (f * (float) iw);
+			int scaledHeight = (int) (f * (float) ih);
+
+			return scalingCache.get(sourceFile, scaledWidth, scaledHeight);
+		}
 
 		if (useFullWidth || iw > w) {
 			float f = w / (float) iw;
 			int scaledWidth = (int) (f * (float) iw);
-			int scaledHeight = (int) (f * (float) info.getHeight());
+			int scaledHeight = (int) (f * (float) ih);
 
 			return scalingCache.get(sourceFile, scaledWidth, scaledHeight);
 		}
@@ -470,11 +490,40 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	private Image getScaledImage(Image i, File sourceFile, int widthOffset, boolean useFullWidth) {
 		long w = getUsableEditorWidth() + widthOffset;
 		long iw = i.getWidth(null);
+		long ih = i.getHeight(null);
+
+		if (ScreenUtil.isRetina() && !useFullWidth && iw < w) {
+			// Retina screen, requested NOT full editor width scaling,
+			// image is smaller than editor width. Need to scale using
+			// 2x image size, otherwise image would show up half as small.
+			iw *= 2;
+			ih *= 2;
+
+			float f;
+			if (iw < w) {
+				f = 1;
+			} else {
+				f = w / (float) iw;
+			}
+			int scaledWidth = (int) (f * (float) iw);
+			int scaledHeight = (int) (f * (float) ih);
+
+			Image cached = scalingCache.get(sourceFile, scaledWidth, scaledHeight);
+			if (cached != null) {
+				return cached;
+			}
+
+			Image img = i.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_AREA_AVERAGING);
+			scalingCache.put(sourceFile, scaledWidth, scaledHeight, img);
+
+			return img;
+		}
 
 		if (useFullWidth || iw > w) {
+			// Scale to editor width
 			float f = w / (float) iw;
 			int scaledWidth = (int) (f * (float) iw);
-			int scaledHeight = (int) (f * (float) i.getHeight(null));
+			int scaledHeight = (int) (f * (float) ih);
 
 			Image cached = scalingCache.get(sourceFile, scaledWidth, scaledHeight);
 			if (cached != null) {
