@@ -426,6 +426,16 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener countNotesAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Vault v = Vault.getInstance();
+			int trashCount = v.findNotebook(v.getTrash()).count();
+			JOptionPane.showMessageDialog(null, (v.getNoteCount() - trashCount) + " notes (+ " + trashCount + " notes in Trash)", "Note count",
+					JOptionPane.PLAIN_MESSAGE);
+		}
+	};
+
 	ActionListener jumpToNotebookAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -1292,6 +1302,7 @@ public class ElephantWindow extends JFrame {
 		note.add(menuItem("Add Notebook to Shortcuts", 0, 0, addNotebookToShortcutsAction));
 		note.addSeparator();
 		note.add(menuItem("Word Count...", 0, 0, countNotebookWordsAction));
+		note.add(menuItem("Note Count...", 0, 0, countNotesAction));
 
 		JMenu format = new JMenu("Format");
 		JMenu style = new JMenu("Style");
