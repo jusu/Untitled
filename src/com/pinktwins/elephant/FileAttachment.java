@@ -41,6 +41,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.NoteEditor.EditorController;
+import com.pinktwins.elephant.ui.RetinaImageIcon;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
@@ -429,7 +430,7 @@ public class FileAttachment extends JPanel {
 					}
 				}
 
-				ImageIcon ii = new ImageIcon(blank);
+				RetinaImageIcon ii = new RetinaImageIcon(blank);
 				pageIcons.add(ii);
 
 				addPageBreak(tp, style);
