@@ -40,6 +40,7 @@ public class RetinaImageIcon extends ImageIcon {
 	public synchronized void paintIcon(Component c, Graphics g, int x, int y) {
 		if (!ScreenUtil.isRetina()) {
 			super.paintIcon(c, g, x, y);
+			return;
 		}
 
 		// Retina
