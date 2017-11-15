@@ -1,7 +1,12 @@
 # Changelog
 
-##
-v39
+##v40
+- Draw sharper images and PDFs on Retina Macbooks
+- Note|Note count - menu item
+- Clearing search goes back to notebook/note prior search
+- New App icon
+
+##v39
 - Added "charset" setting to optionally use a character set different from system character set. For example, "UTF-8"
 - Draw sharper background tiles on Retina Macbooks
 
