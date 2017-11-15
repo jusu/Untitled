@@ -14,7 +14,7 @@
             identifier="com.pinktwins.elephant"
             mainclassname="com.pinktwins.elephant.Elephant"
             shortversion="{{version}}"
-	    icon="elephantIcon4.icns">
+	    icon="elephantIcon4-v2.icns">
             <runtime dir="${env.JAVA_HOME}" />
             <classpath file="build/elephantapp.jar" />
         </bundleapp>

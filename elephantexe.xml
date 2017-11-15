@@ -13,7 +13,7 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>/Users/jusu/Desktop/Dropbox/src/Elephant-collection/package/elephantIcon4.ico</icon>
+  <icon>/Users/jusu/Desktop/Dropbox/src/Elephant-collection/package/elephantIcon4-v2.ico</icon>
   <classPath>
     <mainClass>com.pinktwins.elephant.Elephant</mainClass>
   </classPath>
@@ -29,7 +29,7 @@
     <fileVersion>{{version}}.0.0.0</fileVersion>
     <txtFileVersion>{{version}}</txtFileVersion>
     <fileDescription>Elephant v{{version}}</fileDescription>
-    <copyright>(c) 2015 Pink Twins</copyright>
+    <copyright>(c) 2017 Pink Twins</copyright>
     <productVersion>{{version}}.0.0.0</productVersion>
     <txtProductVersion>{{version}}</txtProductVersion>
     <productName>Elephant</productName>

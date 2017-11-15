@@ -123,7 +123,7 @@ public class ElephantWindow extends JFrame {
 	private JMenuItem iUndo, iRedo, iSaveSearch, iSidebarVisibility;
 	private JCheckBoxMenuItem iCard, iSnippet, iRecentNotes;
 
-	private static final Image elephantIcon;
+	private static final Image elephantIcon_v2_64;
 
 	enum UiModes {
 		notebooks, notes, tags
@@ -134,8 +134,8 @@ public class ElephantWindow extends JFrame {
 	private String previousSearchText = "";
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "elephantIcon" });
-		elephantIcon = i.next();
+		Iterator<Image> i = Images.iterator(new String[] { "elephantIcon-v2-64" });
+		elephantIcon_v2_64 = i.next();
 
 		for (int n = 0; n < highlightPainters.length; n++) {
 			highlightPainters[n] = new DefaultHighlightPainter(colorHighlights[n % colorHighlights.length]);
@@ -231,7 +231,7 @@ public class ElephantWindow extends JFrame {
 
 			// Mac packages the icon just fine. Windows needs this for taskbar icon. Linux?
 			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
-				startFrame.setIconImage(elephantIcon);
+				startFrame.setIconImage(elephantIcon_v2_64);
 			}
 
 			startFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -561,7 +561,7 @@ public class ElephantWindow extends JFrame {
 
 		// Mac packages the icon just fine. Windows needs this for taskbar icon. Linux?
 		if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
-			setIconImage(elephantIcon);
+			setIconImage(elephantIcon_v2_64);
 		}
 
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
