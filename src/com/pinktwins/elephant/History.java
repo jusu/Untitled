@@ -16,6 +16,8 @@ public class History {
 	private boolean preventAdd = false;
 	private boolean freezeState;
 
+	private int indexMark = 0;
+
 	private ElephantWindow window;
 
 	public History(ElephantWindow w) {
@@ -138,6 +140,16 @@ public class History {
 		preventAdd = false;
 	}
 
+	public void rewindSearch() {
+		for (; index > 0; index--) {
+			HistoryItem i = items.get(index);
+			if (i.type != ItemType.Search) {
+				break;
+			}
+		}
+		showIndex();
+	}
+
 	public void freeze() {
 		freezeState = preventAdd;
 		preventAdd = true;
@@ -150,5 +162,18 @@ public class History {
 	public void clear() {
 		items.clear();
 		index = 0;
+	}
+
+	public int size() {
+		return items.size();
+	}
+
+	public void setMark() {
+		indexMark = index;
+	}
+
+	public void rewindToMark() {
+		index = indexMark;
+		showIndex();
 	}
 }

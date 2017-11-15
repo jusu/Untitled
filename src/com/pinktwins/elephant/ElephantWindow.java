@@ -1156,9 +1156,22 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void search(String text) {
+		if (previousSearchText.length() == 0 && text.length() > 0) {
+			history.setMark();
+		}
+
 		previousSearchText = text;
 		if (text.length() == 0) {
-			showNotebook(Vault.getInstance().getDefaultNotebook());
+			if (history.size() > 0) {
+				// When clearing out search, we could go to previous
+				// history item which is not a search:
+				//history.rewindSearch();
+
+				// Or to point in history where we started searching:
+				history.rewindToMark();
+			} else {
+				showNotebook(Vault.getInstance().getDefaultNotebook());
+			}
 			iSaveSearch.setEnabled(false);
 		} else {
 			history.freeze();
