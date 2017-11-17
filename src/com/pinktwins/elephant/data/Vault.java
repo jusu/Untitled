@@ -182,6 +182,7 @@ public class Vault implements WatchDirListener {
 		});
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public Notebook findNotebook(File f) {
 		for (Notebook n : notebooks) {
 			if (n.equals(f)) {

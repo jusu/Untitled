@@ -296,7 +296,6 @@ public class CustomEditor extends RoundPanel {
 		attachmentTransferHandler = new NoteAttachmentTransferHandler(eeListener);
 	}
 
-	@SuppressWarnings("serial")
 	public CustomEditor() {
 		super();
 

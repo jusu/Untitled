@@ -138,6 +138,7 @@ public class Notebooks extends ToolbarList<Notebooks.NotebookItem> {
 		return edit;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	protected void doneEditing(NotebookItem item, String text) {
 		if (item.notebook.rename(text)) {

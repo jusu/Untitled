@@ -272,6 +272,7 @@ public class Notebook implements Comparable<Notebook> {
 		note.moveTo(trash);
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public Note find(String name) {
 		File note = new File(folder + File.separator + name);
 		for (Note n : notes) {

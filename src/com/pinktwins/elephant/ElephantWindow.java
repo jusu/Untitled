@@ -60,6 +60,7 @@ import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.ScreenUtil;
 
 public class ElephantWindow extends JFrame {
 
@@ -676,6 +677,8 @@ public class ElephantWindow extends JFrame {
 				}
 			}.start();
 		}
+
+		ScreenUtil.enableOSXFullscreen(this);
 	}
 
 	private void performWindowCloseActions() {
@@ -1217,9 +1220,8 @@ public class ElephantWindow extends JFrame {
 		file.addSeparator();
 		file.add(menuItem("Close", KeyEvent.VK_W, menuMask, closeWindowAction));
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
-		// file.addSeparator();
-		// file.add(menuItem("Settings", KeyEvent.VK_COMMA,
-		// ActionEvent.META_MASK, settingsAction));
+		//file.addSeparator();
+		//file.add(menuItem("Preferences…", KeyEvent.VK_COMMA, menuMask, settingsAction));
 
 		JMenu edit = new JMenu("Edit");
 

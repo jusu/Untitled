@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
 
 import org.apache.commons.lang3.StringUtils;
