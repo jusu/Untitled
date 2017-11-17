@@ -1,5 +1,8 @@
 # Changelog
 
+##v41
+- Support macOS-style full screen
+
 ##v40
 - Draw sharper images and PDFs on Retina Macbooks
 - Note|Note count - menu item
