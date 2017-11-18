@@ -5,12 +5,17 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.data.Vault;
@@ -18,6 +23,8 @@ import com.pinktwins.elephant.data.Vault;
 public class ImageScalingCache {
 
 	private static final Logger LOG = Logger.getLogger(ImageScalingCache.class.getName());
+	private long lastPurgeTs = System.currentTimeMillis();
+	private final long purgeAfterMs = 1000 * 60 * 60 * 6;
 
 	public Image get(File sourceFile, int w, int h) {
 		return load(sourceFile, w, h);
@@ -46,7 +53,6 @@ public class ImageScalingCache {
 		return new File(getImageCacheDir() + File.separator + hash + "." + ext);
 	}
 
-	// XXX purge old cache files
 	private void store(File sourceFile, Image img, int w, int h) {
 		String ext = FilenameUtils.getExtension(sourceFile.getName()).toUpperCase();
 		File cache = getCacheFile(sourceFile, w, h);
@@ -56,6 +62,41 @@ public class ImageScalingCache {
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}
+
+		try {
+			purgeOldCacheFiles();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void purgeOldCacheFiles() throws IOException {
+		if (System.currentTimeMillis() - lastPurgeTs < purgeAfterMs) {
+			return;
+		}
+
+		LOG.info("Purging old, unused cache files.");
+		long start = System.currentTimeMillis();
+		long count = 0;
+		// Purge last accessed more than x days ago
+		FileTime olderThan = FileTime.fromMillis(System.currentTimeMillis() - 1000 * 3600 * 24 * 120l);
+
+		File folder = new File(getImageCacheDir());
+		for (File f : folder.listFiles()) {
+			if (f.isFile()) {
+				String name = f.getName();
+				String ext = FilenameUtils.getExtension(f.getName()).toLowerCase();
+				if (name.charAt(0) != '.' && (ext.equals("png") || ext.equals("jpg"))) {
+					BasicFileAttributes attrs = Files.readAttributes(Paths.get(f.getAbsolutePath()), BasicFileAttributes.class);
+					if (attrs.lastAccessTime().compareTo(olderThan) < 0) {
+						FileUtils.deleteQuietly(f);
+						count++;
+					}
+				}
+			}
+		}
+
+		LOG.info("Purging " + count + " took " + (System.currentTimeMillis() - start) + " ms.");
 	}
 
 	private Image load(File sourceFile, int w, int h) {
