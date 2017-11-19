@@ -96,6 +96,8 @@ public class ImageScalingCache {
 			}
 		}
 
+		lastPurgeTs = start;
+
 		LOG.info("Purging " + count + " took " + (System.currentTimeMillis() - start) + " ms.");
 	}
 
