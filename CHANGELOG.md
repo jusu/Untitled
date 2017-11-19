@@ -2,6 +2,7 @@
 
 ##v41
 - Support macOS-style full screen
+- Now cleaning out some old, unused cache files from .imagecache folder
 
 ##v40
 - Draw sharper images and PDFs on Retina Macbooks
