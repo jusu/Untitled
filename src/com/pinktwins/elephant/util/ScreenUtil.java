@@ -6,6 +6,8 @@ import java.awt.Window;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang.SystemUtils;
+
 public class ScreenUtil {
 
 	private static Boolean hasRetina = null;
@@ -41,29 +43,33 @@ public class ScreenUtil {
 	// https://stackoverflow.com/questions/30089804/true-full-screen-jframe-swing-application-in-mac-osx
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void enableOSXFullscreen(Window window) {
-		try {
-			Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
-			Class params[] = new Class[] { Window.class, Boolean.TYPE };
-			Method method = util.getMethod("setWindowCanFullScreen", params);
-			method.invoke(util, window, true);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (SystemUtils.IS_OS_MAC_OSX) {
+			try {
+				Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
+				Class params[] = new Class[] { Window.class, Boolean.TYPE };
+				Method method = util.getMethod("setWindowCanFullScreen", params);
+				method.invoke(util, window, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void requestOSXFullscreen(Window window) {
-		try {
-			Class appClass = Class.forName("com.apple.eawt.Application");
-			Class params[] = new Class[] {};
+		if (SystemUtils.IS_OS_MAC_OSX) {
+			try {
+				Class appClass = Class.forName("com.apple.eawt.Application");
+				Class params[] = new Class[] {};
 
-			Method getApplication = appClass.getMethod("getApplication", params);
-			Object application = getApplication.invoke(appClass);
-			Method requestToggleFulLScreen = application.getClass().getMethod("requestToggleFullScreen", Window.class);
+				Method getApplication = appClass.getMethod("getApplication", params);
+				Object application = getApplication.invoke(appClass);
+				Method requestToggleFulLScreen = application.getClass().getMethod("requestToggleFullScreen", Window.class);
 
-			requestToggleFulLScreen.invoke(application, window);
-		} catch (Exception e) {
-			e.printStackTrace();
+				requestToggleFulLScreen.invoke(application, window);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
