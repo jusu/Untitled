@@ -1,5 +1,8 @@
 # Changelog
 
+##v42
+- Fixed visual bug on Retina Macbooks when multiple notes are selected
+
 ##v41
 - Support macOS-style full screen
 - Now cleaning out some old, unused cache files from .imagecache folder
