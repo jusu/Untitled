@@ -86,6 +86,7 @@ public class MultipleNotes extends BackgroundPanel implements EditorEventListene
 
 		frame = new BackgroundPanel(multiSelection);
 		frame.setLayout(null);
+		frame.keepScaleOnRetina(true, true);
 		frame.add(bMove);
 		frame.add(tagPane.getComponent());
 		bMove.setBounds(20, 31, 290, 24);
