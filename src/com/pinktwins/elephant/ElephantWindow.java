@@ -549,7 +549,7 @@ public class ElephantWindow extends JFrame {
 	};
 
 	public ElephantWindow() {
-		setTitle("Elephant Premium");
+		setTitle("Elephant");
 
 		// Scale fonts using 'fontScale' setting
 		String fontScale = Elephant.settings.getString(Settings.Keys.FONT_SCALE);
