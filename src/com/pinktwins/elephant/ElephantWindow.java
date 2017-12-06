@@ -988,7 +988,7 @@ public class ElephantWindow extends JFrame {
 				if (notebook != null) {
 					Note note = notebook.find(f.getName());
 					if (note != null) {
-						selectAndShowNote(notebook, note);
+						selectAndShowNote(notebook, note, true);
 					}
 				}
 			}
@@ -999,14 +999,16 @@ public class ElephantWindow extends JFrame {
 		}
 	}
 
-	public void selectAndShowNote(final Notebook nb, final Note n) {
+	public void selectAndShowNote(final Notebook nb, final Note n, final boolean shouldClearSearch) {
 		history.freeze();
 		showNotebook(nb);
 		noteList.selectNote(n, false);
 		history.unFreeze();
 
 		showNote(n);
-		toolBar.clearSearch();
+		if (shouldClearSearch) {
+			toolBar.clearSearch();
+		}
 	}
 
 	public void saveChanges() {
@@ -1168,7 +1170,7 @@ public class ElephantWindow extends JFrame {
 			if (history.size() > 0) {
 				// When clearing out search, we could go to previous
 				// history item which is not a search:
-				//history.rewindSearch();
+				// history.rewindSearch();
 
 				// Or to point in history where we started searching:
 				history.rewindToMark();
@@ -1220,8 +1222,8 @@ public class ElephantWindow extends JFrame {
 		file.addSeparator();
 		file.add(menuItem("Close", KeyEvent.VK_W, menuMask, closeWindowAction));
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
-		//file.addSeparator();
-		//file.add(menuItem("Preferences…", KeyEvent.VK_COMMA, menuMask, settingsAction));
+		// file.addSeparator();
+		// file.add(menuItem("Preferences…", KeyEvent.VK_COMMA, menuMask, settingsAction));
 
 		JMenu edit = new JMenu("Edit");
 

@@ -98,18 +98,18 @@ public class History {
 	public void back() {
 		if (index > 0) {
 			index--;
-			showIndex();
+			showIndex(true);
 		}
 	}
 
 	public void forward() {
 		if (index < items.size() - 1) {
 			index++;
-			showIndex();
+			showIndex(true);
 		}
 	}
 
-	private void showIndex() {
+	private void showIndex(final boolean shouldClearSearch) {
 		HistoryItem i = items.get(index);
 
 		preventAdd = true;
@@ -121,7 +121,7 @@ public class History {
 			window.showAllNotes();
 			break;
 		case Note:
-			window.selectAndShowNote(i.note.findContainingNotebook(), i.note);
+			window.selectAndShowNote(i.note.findContainingNotebook(), i.note, shouldClearSearch);
 			break;
 		case Notebooks:
 			window.showNotebooks();
@@ -147,7 +147,7 @@ public class History {
 				break;
 			}
 		}
-		showIndex();
+		showIndex(false);
 	}
 
 	public void freeze() {
@@ -174,6 +174,6 @@ public class History {
 
 	public void rewindToMark() {
 		index = indexMark;
-		showIndex();
+		showIndex(false);
 	}
 }
