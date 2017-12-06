@@ -2,6 +2,8 @@
 
 ##v42
 - Fixed visual bug on Retina Macbooks when multiple notes are selected
+- Fixed ui focus when clearing search input with backspace (now search input stays focused)
+- Changed window title to "Elephant"
 
 ##v41
 - Support macOS-style full screen

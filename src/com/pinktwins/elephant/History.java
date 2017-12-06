@@ -174,6 +174,7 @@ public class History {
 
 	public void rewindToMark() {
 		index = indexMark;
-		showIndex(false);
+		rewindSearch();
+		//showIndex(false);
 	}
 }

@@ -93,6 +93,8 @@ public class ElephantWindow extends JFrame {
 	private static final Color[] colorHighlights = { Color.YELLOW, Color.PINK, Color.CYAN, Color.ORANGE, Color.GREEN };
 	private static final DefaultHighlightPainter[] highlightPainters = new DefaultHighlightPainter[colorHighlights.length];
 
+	private static final String windowTitle = "Elephant";
+	
 	public static final int bigWidth = 1920;
 
 	public static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
@@ -549,7 +551,7 @@ public class ElephantWindow extends JFrame {
 	};
 
 	public ElephantWindow() {
-		setTitle("Elephant");
+		setTitle(windowTitle);
 
 		// Scale fonts using 'fontScale' setting
 		String fontScale = Elephant.settings.getString(Settings.Keys.FONT_SCALE);
@@ -797,7 +799,7 @@ public class ElephantWindow extends JFrame {
 		new Timer().schedule(new TimerTask() {
 			@Override
 			public void run() {
-				ElephantWindow.this.setTitle("Elephant Premium");
+				ElephantWindow.this.setTitle(windowTitle);
 			}
 		}, 3000);
 	}
