@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
@@ -94,7 +95,7 @@ public class ElephantWindow extends JFrame {
 	private static final DefaultHighlightPainter[] highlightPainters = new DefaultHighlightPainter[colorHighlights.length];
 
 	private static final String windowTitle = "Elephant";
-	
+
 	public static final int bigWidth = 1920;
 
 	public static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
@@ -1214,6 +1215,15 @@ public class ElephantWindow extends JFrame {
 
 	private void createMenu() {
 		menuBar = new JMenuBar();
+
+		// Windows uses bold font for menu by default.
+		// Plain might be preferred.
+		if (SystemUtils.IS_OS_WINDOWS) {
+			Font f = menuBar.getFont().deriveFont(Font.PLAIN);
+			UIManager.put("Menu.font", f);
+			UIManager.put("MenuItem.font", f);
+			UIManager.put("CheckBoxMenuItem.font", f);
+		}
 
 		JMenu file = new JMenu("File");
 		file.add(menuItem("New Note", KeyEvent.VK_N, menuMask, newNoteAction));
