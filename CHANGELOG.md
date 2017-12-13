@@ -1,5 +1,9 @@
 # Changelog
 
+##v43
+- Menu font set to plain style in windows
+- Arrows up/down change note selection when search field is focused
+
 ##v42
 - Fixed visual bug on Retina Macbooks when multiple notes are selected
 - Fixed ui focus when clearing search input with backspace (now search input stays focused)
