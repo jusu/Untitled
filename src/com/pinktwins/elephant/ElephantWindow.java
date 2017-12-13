@@ -865,6 +865,18 @@ public class ElephantWindow extends JFrame {
 								editTagsAction.actionPerformed(null);
 							}
 							break;
+						case KeyEvent.VK_UP:
+							if (toolBar.isEditing()) {
+								noteList.changeSelection(-1, e);
+								return true;
+							}
+							break;
+						case KeyEvent.VK_DOWN:
+							if (toolBar.isEditing()) {
+								noteList.changeSelection(1, e);
+								return true;
+							}
+							break;
 						}
 						break;
 					}
