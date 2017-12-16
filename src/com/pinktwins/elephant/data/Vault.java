@@ -110,10 +110,12 @@ public class Vault implements WatchDirListener {
 		trash = new File(home.getAbsolutePath() + File.separator + "Trash");
 		trash.mkdirs();
 
-		for (File f : home.listFiles()) {
-			if (f.isDirectory() && f.getName().charAt(0) != '.') {
-				if (findNotebook(f) == null) {
-					notebooks.add(new Notebook(f));
+		synchronized (Search.lockObject) {
+			for (File f : home.listFiles()) {
+				if (f.isDirectory() && f.getName().charAt(0) != '.') {
+					if (findNotebook(f) == null) {
+						notebooks.add(new Notebook(f));
+					}
 				}
 			}
 		}
@@ -265,7 +267,8 @@ public class Vault implements WatchDirListener {
 			if (count > 0) {
 				String message = String.format("The notebook directory (with %d note%s) will be moved to Trash. It will no longer be visible in Elephant.",
 						count, count == 1 ? "" : "s");
-				if (JOptionPane.showConfirmDialog(null, message, String.format("Delete notebook %s?", nb.name()), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+				if (JOptionPane.showConfirmDialog(null, message, String.format("Delete notebook %s?", nb.name()),
+						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 					return;
 				}
 			}
@@ -302,7 +305,7 @@ public class Vault implements WatchDirListener {
 
 		new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
 	}
-	
+
 	@Subscribe
 	public void handleNotebookEvent(NotebookEvent event) {
 		populate();
