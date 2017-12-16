@@ -3,6 +3,7 @@
 ##v43
 - Menu font set to plain style in windows
 - Arrows up/down change note selection when search field is focused
+- Fixed indexing newly created note for search under some circumstances
 
 ##v42
 - Fixed visual bug on Retina Macbooks when multiple notes are selected
