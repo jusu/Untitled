@@ -3,6 +3,7 @@ package com.pinktwins.elephant;
 import java.util.List;
 
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.util.Factory;
 
@@ -141,13 +142,17 @@ public class History {
 	}
 
 	public void rewindSearch() {
-		for (; index > 0; index--) {
+		for (; index >= 0; index--) {
 			HistoryItem i = items.get(index);
 			if (i.type != ItemType.Search) {
 				break;
 			}
 		}
-		showIndex(false);
+		if (index >= 0) {
+			showIndex(false);
+		} else {
+			window.showNotebook(Vault.getInstance().getDefaultNotebook());
+		}
 	}
 
 	public void freeze() {
@@ -175,6 +180,6 @@ public class History {
 	public void rewindToMark() {
 		index = indexMark;
 		rewindSearch();
-		//showIndex(false);
+		// showIndex(false);
 	}
 }
