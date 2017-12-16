@@ -1056,12 +1056,14 @@ public class ElephantWindow extends JFrame {
 			}
 		}
 
-		noteEditor.clear();
-		noteList.deleteSelected();
+		synchronized (Search.lockObject) {
+			noteEditor.clear();
+			noteList.deleteSelected();
 
-		// Should remove deleted note from history.
-		// Let's just flush it.
-		history.clear();
+			// Should remove deleted note from history.
+			// Let's just flush it.
+			history.clear();
+		}
 	}
 
 	private void showNotes() {
