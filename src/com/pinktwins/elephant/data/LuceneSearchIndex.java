@@ -1,13 +1,10 @@
 package com.pinktwins.elephant.data;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -235,8 +232,11 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 					if (sd.length == 1) {
 						Number n = searcher.doc(sd[0].doc).getField("modified").numericValue();
 						if (n.equals(file.lastModified())) {
-							// File indexed and not changed, no need to reindex.
-							return;
+							// Same modify time, should have 'contents' field as well
+							if (searcher.doc(sd[0].doc).getField("contents") != null) {
+								// File indexed and not changed, no need to reindex.
+								return;
+							}
 						}
 					}
 				}
@@ -256,7 +256,11 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 
 			doc.add(new StringField("path", file.getAbsolutePath(), Field.Store.YES));
 			doc.add(new LongField("modified", file.lastModified(), Field.Store.YES));
-			doc.add(new TextField("contents", new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))));
+			try {
+				doc.add(new TextField("contents", parseToPlainText(file), Field.Store.YES));
+			} catch (Exception e) {
+				LOG.severe("Fail: failed indexing '" + file.getName() + "'");
+			}
 
 			for (Note.AttachmentInfo info : note.getAttachmentList()) {
 				try {

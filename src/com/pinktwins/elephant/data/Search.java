@@ -57,6 +57,7 @@ public class Search {
 			}
 
 			ssi.markReady();
+			ssi.commit();
 		}
 
 		List<Set<Note>> sets = Factory.newArrayList();
