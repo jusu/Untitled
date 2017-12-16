@@ -230,12 +230,23 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 					Query q = new TermQuery(t);
 					ScoreDoc[] sd = searcher.search(q, 1).scoreDocs;
 					if (sd.length == 1) {
-						Number n = searcher.doc(sd[0].doc).getField("modified").numericValue();
+
+						// Does index have same 'modified' time as file?
+						Document doc = searcher.doc(sd[0].doc);
+						Number n = doc.getField("modified").numericValue();
 						if (n.equals(file.lastModified())) {
-							// Same modify time, should have 'contents' field as well
-							if (searcher.doc(sd[0].doc).getField("contents") != null) {
-								// File indexed and not changed, no need to reindex.
-								return;
+
+							// Does index have 'contents' field?
+							if (doc.getField("contents") != null) {
+
+								// Was indexed more than one second ago?
+								// 'modified' is accurate to one second, unfortunately,
+								// so just reindex possible changes withing last second.
+								if (System.currentTimeMillis() - n.longValue() > 1000) {
+
+									// The index is fine for this file.
+									return;
+								}
 							}
 						}
 					}
@@ -257,7 +268,8 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 			doc.add(new StringField("path", file.getAbsolutePath(), Field.Store.YES));
 			doc.add(new LongField("modified", file.lastModified(), Field.Store.YES));
 			try {
-				doc.add(new TextField("contents", parseToPlainText(file), Field.Store.YES));
+				String plainText = parseToPlainText(file);
+				doc.add(new TextField("contents", plainText, Field.Store.YES));
 			} catch (Exception e) {
 				LOG.severe("Fail: failed indexing '" + file.getName() + "'");
 			}
