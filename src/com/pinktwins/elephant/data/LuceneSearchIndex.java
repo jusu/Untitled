@@ -129,7 +129,10 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 		InputStream stream = new FileInputStream(file.getAbsolutePath());
 
 		parser.parse(stream, handler, metadata);
-		return handler.toString();
+		String s = handler.toString();
+
+		stream.close();
+		return s;
 	}
 
 	@Override
