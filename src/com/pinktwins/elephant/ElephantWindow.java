@@ -805,6 +805,10 @@ public class ElephantWindow extends JFrame {
 		}, 3000);
 	}
 
+	public boolean isSearchFocused() {
+		return toolBar.isEditing();
+	}
+	
 	// Handling key dispatching for full control over keyboard interaction.
 	// XXX this will bite me eventually
 	private class KeyDispatcher implements KeyEventDispatcher {

@@ -401,7 +401,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 		}
 
-		boolean sideways = keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN;
+		boolean sideways = !window.isSearchFocused() && (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN);
 
 		// Get first or last selected note, depending on key pressed
 		NoteItem selected = null;
