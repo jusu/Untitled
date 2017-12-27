@@ -808,7 +808,7 @@ public class ElephantWindow extends JFrame {
 	public boolean isSearchFocused() {
 		return toolBar.isEditing();
 	}
-	
+
 	// Handling key dispatching for full control over keyboard interaction.
 	// XXX this will bite me eventually
 	private class KeyDispatcher implements KeyEventDispatcher {
@@ -852,6 +852,10 @@ public class ElephantWindow extends JFrame {
 						case KeyEvent.VK_DELETE:
 							deleteSelectedNote();
 							break;
+						case KeyEvent.VK_ENTER:
+							// ENTER will make editor focused + switch to markdown editor if md
+							noteEditor.startEditing();
+							break;
 						}
 						break;
 					}
@@ -870,6 +874,7 @@ public class ElephantWindow extends JFrame {
 							}
 							break;
 						case KeyEvent.VK_UP:
+							// When search is active, keys UP/DOWN change note list selection
 							if (toolBar.isEditing()) {
 								noteList.changeSelection(-1, e);
 								return true;
@@ -879,6 +884,12 @@ public class ElephantWindow extends JFrame {
 							if (toolBar.isEditing()) {
 								noteList.changeSelection(1, e);
 								return true;
+							}
+							break;
+						case KeyEvent.VK_ESCAPE:
+							// ESC will unfocus note editor.
+							if (noteEditor.hasFocus()) {
+								noteEditor.stopEditing();
 							}
 							break;
 						}

@@ -260,13 +260,17 @@ public class CustomEditor extends RoundPanel {
 	private final CustomMouseListener paddingClick = new CustomMouseListener() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			note.requestFocusInWindow();
-			if (isMarkdown && isShowingMarkdown()) {
-				switchToMarkdownEditor();
-			}
+			startEditing();
 		}
 	};
 
+	public void startEditing() {
+		if (isMarkdown && isShowingMarkdown()) {
+			switchToMarkdownEditor();
+		}
+		note.requestFocusInWindow();
+	}
+	
 	public boolean isRichText() {
 		return isRichText;
 	}

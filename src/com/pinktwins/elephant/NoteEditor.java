@@ -419,16 +419,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		scroll.addMouseListener(new CustomMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				unfocus();
-
-				// If we switch out from markdown-editing to rich display,
-				// the unfocus happens too late to actually save edits.
-				// This UIEvent marks a savepoint.
-				new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
-
-				if (currentNote.isMarkdown()) {
-					window.showNote(currentNote);
-				}
+				stopEditing();
 			}
 		});
 
@@ -775,6 +766,23 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	public void focusEditor() {
 		editor.getTextPane().requestFocusInWindow();
+	}
+
+	public void startEditing() {
+		editor.startEditing();
+	}
+
+	public void stopEditing() {
+		unfocus();
+
+		// If we switch out from markdown-editing to rich display,
+		// the unfocus happens too late to actually save edits.
+		// This UIEvent marks a savepoint.
+		new UIEvent(UIEvent.Kind.editorWillChangeNote).post();
+
+		if (currentNote.isMarkdown()) {
+			window.showNote(currentNote);
+		}
 	}
 
 	@Override
