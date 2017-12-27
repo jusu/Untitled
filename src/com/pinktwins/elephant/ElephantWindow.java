@@ -832,7 +832,22 @@ public class ElephantWindow extends JFrame {
 
 			switch (uiMode) {
 			case notes:
-				if (!noteEditor.hasFocus() && !multipleNotes.hasFocus() && !toolBar.isEditing() && !isNoteWindow) {
+				boolean notEditingSingleNote = !noteEditor.hasFocus() && !multipleNotes.hasFocus() && !isNoteWindow;
+
+				if (notEditingSingleNote) {
+					switch (e.getID()) {
+					case KeyEvent.KEY_PRESSED:
+						switch (e.getKeyCode()) {
+						case KeyEvent.VK_ENTER:
+							// ENTER will make editor focused + switch to markdown editor if md
+							noteEditor.startEditing();
+							break;
+						}
+						break;
+					}
+				}
+
+				if (notEditingSingleNote && !toolBar.isEditing()) {
 					switch (e.getID()) {
 					case KeyEvent.KEY_PRESSED:
 						switch (e.getKeyCode()) {
@@ -851,10 +866,6 @@ public class ElephantWindow extends JFrame {
 						case KeyEvent.VK_BACK_SPACE:
 						case KeyEvent.VK_DELETE:
 							deleteSelectedNote();
-							break;
-						case KeyEvent.VK_ENTER:
-							// ENTER will make editor focused + switch to markdown editor if md
-							noteEditor.startEditing();
 							break;
 						}
 						break;

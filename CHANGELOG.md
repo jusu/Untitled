@@ -1,5 +1,8 @@
 # Changelog
 
+##v44
+- Enter/ESC switches in/out of editing mode
+
 ##v43
 - Menu font set to plain style in windows
 - Arrows up/down change note selection when search field is focused
