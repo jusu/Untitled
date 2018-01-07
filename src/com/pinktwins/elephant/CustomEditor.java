@@ -885,6 +885,7 @@ public class CustomEditor extends RoundPanel {
 		note.getStyledDocument().setCharacterAttributes(0, note.getDocument().getLength(), new SimpleAttributeSet(), true);
 		note.requestFocusInWindow();
 		isRichText = false;
+		isMarkdown = false;
 	}
 
 	private void createPadding() {

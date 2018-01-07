@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.Note.Meta;
 import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.util.Factory;
@@ -237,7 +238,12 @@ public class Notebook implements Comparable<Notebook> {
 			throw new IllegalStateException();
 		}
 
-		String fullPath = this.folder.getAbsolutePath() + File.separator + Long.toString(System.currentTimeMillis(), 36) + ".txt";
+		String defaultFiletype = Elephant.settings.getDefaultFiletype();
+		if (!defaultFiletype.contains(".")) {
+			defaultFiletype = "." + defaultFiletype;
+		}
+
+		String fullPath = this.folder.getAbsolutePath() + File.separator + Long.toString(System.currentTimeMillis(), 36) + defaultFiletype;
 		File f = new File(fullPath);
 
 		f.createNewFile();

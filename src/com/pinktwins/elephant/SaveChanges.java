@@ -29,14 +29,10 @@ public class SaveChanges {
 			try {
 				String newName = title;
 
-				String defaultFiletype = Elephant.settings.getDefaultFiletype();
-				if (!defaultFiletype.contains(".")) {
-					defaultFiletype = "." + defaultFiletype;
+				if (!newName.endsWith(".md") && !newName.endsWith(".txt")) {
+					newName = title + (editor.isMarkdown ? ".md" : editor.isRichText ? ".rtf" : ".txt");
 				}
 
-				if (!newName.endsWith(".md") && !newName.endsWith(".txt")) {
-					newName = title + (currentNote.isMarkdown() ? ".md" : editor.isRichText ? ".rtf" : defaultFiletype);
-				}
 				currentNote.attemptSafeRename(newName);
 			} catch (IOException e) {
 				LOG.severe("Fail: " + e);
@@ -68,6 +64,12 @@ public class SaveChanges {
 				if (!changed) {
 					// Did format change during edit?
 					if ((editor.isRichText && "txt".equals(ext)) || (!editor.isRichText && "rtf".equals(ext))) {
+						renameAccordingToFormat(currentNote, editor, editedTitle);
+						changed = true;
+					}
+
+					// markdown -> make plain text
+					if (!editor.isMarkdown && "md".equals(ext)) {
 						renameAccordingToFormat(currentNote, editor, editedTitle);
 						changed = true;
 					}

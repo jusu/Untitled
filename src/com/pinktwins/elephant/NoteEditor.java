@@ -943,11 +943,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	}
 
 	public void turnToPlainText() {
+		if (editor.isMarkdown) {
+			editor.startEditing();
+			// Remove '.md' from title if any
+			if (editor.getTitle().endsWith(".md")) {
+				String title = editor.getTitle();
+				title = title.substring(0, title.length() - 3);
+				editor.setTitle(title);
+			}
+		}
 		turnToPlainText_format();
-		/*
-		 * try { currentNote.attemptSafeRename(editor.getTitle() + ".txt"); editor.setMarkdown(false); } catch (IOException e) {
-		 * e.printStackTrace(); }
-		 */
 	}
 
 	/*
