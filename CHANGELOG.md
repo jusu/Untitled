@@ -2,6 +2,10 @@
 
 ##v44
 - Enter/ESC switches in/out of editing mode
+- Enter in search field focuses editor
+- Search did not always pick up changes when note was changed by external programs
+- Fix: text selection highlight was sometimes lost when switching applications
+- Fix: changing title no longer changes note format to defaultFiletype for existing notes
 
 ##v43
 - Menu font set to plain style in windows
