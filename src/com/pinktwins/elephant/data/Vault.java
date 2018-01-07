@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
@@ -13,7 +16,6 @@ import javax.swing.JOptionPane;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
@@ -130,9 +132,11 @@ public class Vault implements WatchDirListener {
 				@Override
 				public void run() {
 					try {
-						// On linux the watcher needs to recursively add directories.
-						// On mac and win we get a suitable modified event without.
-						boolean watchRecursive = SystemUtils.IS_OS_LINUX;
+						// Recursively watching dirs is needed to be notified of single
+						// file notifications inside notebook folders (possibly done with
+						// external programs). Just watching the vault folder would only
+						// notify on directory level changes (file added/removed/renamed).
+						boolean watchRecursive = true;
 
 						watchDir = new WatchDir(HOME, watchRecursive, Vault.this);
 						watchDir.processEvents();
@@ -330,22 +334,50 @@ public class Vault implements WatchDirListener {
 	@Override
 	public void watchEvent(final String kind, final String file) {
 		if ("ENTRY_MODIFY".equals(kind)) {
+			File f = new File(file);
+			if (f.isFile()) {
+				f = f.getParentFile();
+			}
+			Notebook nb = findNotebook(f);
+			if (nb != null) {
+				// Refresh notebook, but use one second throttle to keep number of
+				// refreshes to minimum when multiple files have changed.
+				RefreshNotebook pending = pendingRefreshes.get(nb);
+				if (pending != null) {
+					pending.cancel();
+				}
+				pending = new RefreshNotebook(nb);
+				pendingRefreshes.put(nb, pending);
+				timer.schedule(pending, 1000);
+			}
+		}
+	}
+
+	private Timer timer = new Timer();
+	private Map<Notebook, RefreshNotebook> pendingRefreshes = Factory.newConcurrentHashMap();
+
+	class RefreshNotebook extends TimerTask {
+		private final Notebook nb;
+
+		public RefreshNotebook(Notebook nb) {
+			this.nb = nb;
+		}
+
+		@Override
+		public void run() {
+			pendingRefreshes.remove(nb);
+
 			EventQueue.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					File f = new File(file);
-					if (f.isFile()) {
-						f = f.getParentFile();
-					}
-					Notebook nb = findNotebook(f);
-					if (nb != null) {
-						// need latest tags loaded when refreshing notebook.
-						tags.refresh();
+					// need latest tags loaded when refreshing notebook.
+					tags.refresh();
 
-						nb.refresh();
-						new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb).post();
-						new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
-					}
+					// refresh notebook
+					nb.refresh();
+
+					new VaultEvent(VaultEvent.Kind.notebookRefreshed, nb).post();
+					new VaultEvent(VaultEvent.Kind.notebookListChanged, nb).post();
 				}
 			});
 		}

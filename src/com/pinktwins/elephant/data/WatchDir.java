@@ -127,7 +127,7 @@ public class WatchDir {
 				WatchEvent<Path> ev = cast(event);
 				Path name = ev.context();
 				Path child = dir.resolve(name);
-
+				
 				String childName = child.toFile().getName();
 				if (!childName.startsWith(".") || ".lastSaveTs".equals(childName)) {
 					listener.watchEvent(event.kind().name(), child.toString());
