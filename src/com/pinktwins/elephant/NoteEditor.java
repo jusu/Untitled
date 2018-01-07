@@ -38,6 +38,7 @@ import javax.swing.text.AbstractDocument.LeafElement;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.Highlight;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.pegdown.PegDownProcessor;
@@ -792,7 +793,14 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		if (p != null) {
 			Highlighter h = p.getHighlighter();
 			if (h != null) {
-				h.removeAllHighlights();
+				// Only remove search highlights, keep text selection highlight
+				Highlight[] his = h.getHighlights();
+				for (int n = 0; n < his.length; n++) {
+					Highlight hl = his[n];
+					if (window.isSearchHighlight(hl.getPainter())) {
+						h.removeHighlight(hl);
+					}
+				}
 			}
 		}
 	}

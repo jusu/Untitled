@@ -43,6 +43,7 @@ import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Document;
+import javax.swing.text.Highlighter.HighlightPainter;
 
 import org.apache.commons.lang3.SystemUtils;
 
@@ -1588,5 +1589,14 @@ public class ElephantWindow extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isSearchHighlight(HighlightPainter p) {
+		for (int n = 0; n < highlightPainters.length; n++) {
+			if (highlightPainters[n].equals(p)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
