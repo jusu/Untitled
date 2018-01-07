@@ -334,6 +334,10 @@ public class CustomEditor extends RoundPanel {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					manager.focusNextComponent();
+					if (isMarkdown) {
+						startEditing();
+						initialFocus();
+					}
 				}
 			}
 
