@@ -525,15 +525,23 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	public void updateLoad() {
 		Note n = null;
+		NoteItem[] selections = null;
 		if (!selectedNotes.isEmpty()) {
 			n = selectedNotes.first().note;
+			selections = selectedNotes.toArray(new NoteItem[selectedNotes.size()]);
 		}
 
 		load(notebook);
 
 		if (n != null) {
 			selectNote(n, false);
-			if (!selectedNotes.isEmpty() && !window.isEditorDirty()) {
+			if (selections != null) {
+				for (int i = 0; i < selections.length; i++) {
+					selectNote(selections[i].note, true);
+				}
+			}
+
+			if (!selectedNotes.isEmpty() && !window.isEditorDirty() && selectedNotes.size() == 1) {
 				if (window.uiMode == ElephantWindow.UiModes.notes) {
 					window.showNote(n);
 				} else {
