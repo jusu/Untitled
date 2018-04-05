@@ -664,7 +664,7 @@ public class Note implements Comparable<Note> {
 
 	public static String getResourceNote(String name) {
 		try {
-			return IOUtils.toString(Note.class.getClass().getResourceAsStream("/notes/" + name));
+			return IOUtils.toString(Note.class.getResourceAsStream("/notes/" + name));
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}

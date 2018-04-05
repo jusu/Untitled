@@ -42,8 +42,8 @@ public class BrowserPane extends JPanel {
 
 	static {
 		try {
-			HEIGHT_SCRIPT = IOUtils.toString(BrowserPane.class.getClass().getResourceAsStream("/style/documentHeight.js"));
-			NUMFRAMESETS_SCRIPT = IOUtils.toString(BrowserPane.class.getClass().getResourceAsStream("/style/numFramesets.js"));
+			HEIGHT_SCRIPT = IOUtils.toString(BrowserPane.class.getResourceAsStream("/style/documentHeight.js"));
+			NUMFRAMESETS_SCRIPT = IOUtils.toString(BrowserPane.class.getResourceAsStream("/style/numFramesets.js"));
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}
@@ -111,7 +111,7 @@ public class BrowserPane extends JPanel {
 				engine = view.getEngine();
 
 				view.setContextMenuEnabled(false);
-				engine.setUserStyleSheetLocation(getClass().getResource("/style/webview_style.css").toExternalForm());
+				engine.setUserStyleSheetLocation(BrowserPane.class.getResource("/style/webview_style.css").toExternalForm());
 
 				engine.getLoadWorker().exceptionProperty().addListener(new ChangeListener<Throwable>() {
 					public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
@@ -171,11 +171,11 @@ public class BrowserPane extends JPanel {
 								String numFramesetsText = engine.executeScript(NUMFRAMESETS_SCRIPT).toString();
 								int numFramesets = Integer.valueOf(numFramesetsText);
 								if (numFramesets > 0) {
-									engine.setUserStyleSheetLocation(getClass().getResource("/style/webview_style_frameset.css").toExternalForm());
+									engine.setUserStyleSheetLocation(BrowserPane.class.getResource("/style/webview_style_frameset.css").toExternalForm());
 								} else {
 									String currentCSS = engine.getUserStyleSheetLocation();
 									if (currentCSS.indexOf("_frameset") > 0) {
-										engine.setUserStyleSheetLocation(getClass().getResource("/style/webview_style.css").toExternalForm());
+										engine.setUserStyleSheetLocation(BrowserPane.class.getResource("/style/webview_style.css").toExternalForm());
 									}
 								}
 							}

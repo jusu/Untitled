@@ -30,7 +30,7 @@ public class Start extends BackgroundPanel {
 
 	static {
 		try {
-			tile = ImageIO.read(Sidebar.class.getClass().getResourceAsStream("/images/notebooks.png"));
+			tile = ImageIO.read(Sidebar.class.getResourceAsStream("/images/notebooks.png"));
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);
 		}

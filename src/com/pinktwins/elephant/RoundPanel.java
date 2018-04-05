@@ -19,7 +19,7 @@ public class RoundPanel extends JPanel {
 	static {
 		try {
 			for (int n = 0; n < 8; n++) {
-				note9p[n] = ImageIO.read(RoundPanel.class.getClass().getResourceAsStream(String.format("/images/note9p%d.png", n + 1)));
+				note9p[n] = ImageIO.read(RoundPanel.class.getResourceAsStream(String.format("/images/note9p%d.png", n + 1)));
 			}
 		} catch (IOException e) {
 			LOG.severe("Fail: " + e);

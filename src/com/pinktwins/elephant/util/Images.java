@@ -3,6 +3,7 @@ package com.pinktwins.elephant.util;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -23,7 +24,9 @@ public class Images {
 		for (int n = 0; n < names.length; n++) {
 			Image img = null;
 			try {
-				img = ImageIO.read(Images.class.getClass().getResourceAsStream("/images/" + names[n] + ".png"));
+				String resource = "/images/" + names[n] + ".png";
+				InputStream is = Images.class.getResourceAsStream(resource);
+				img = ImageIO.read(is);
 			} catch (IOException e) {
 				LOG.severe("Fail: " + e);
 			}
