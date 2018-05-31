@@ -155,7 +155,9 @@ public class FileAttachment extends JPanel {
 		left.add(icon);
 		left.add(text);
 
-		right.add(fold);
+		if(isPdf(f)) {
+			right.add(fold);
+		}
 
 		if (qlExists) {
 			right.add(show);
@@ -343,6 +345,10 @@ public class FileAttachment extends JPanel {
 		PdfUtil pdf;
 	}
 
+	private boolean isPdf(File f) {
+		return "pdf".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()));
+	}
+
 	private List<PreviewPageProvider> getPreviewPages(File f, PdfHolder pdfHolder) {
 		List<PreviewPageProvider> pages = Factory.newArrayList();
 
@@ -368,7 +374,7 @@ public class FileAttachment extends JPanel {
 		int gotPages = pages.size();
 		int minWidth = -1;
 
-		if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(f.getName()))) {
+		if (isPdf(f)) {
 			PdfUtil pdf = new PdfUtil(f);
 
 			// Check if pdf was rendered at enough quality
