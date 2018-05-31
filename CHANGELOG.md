@@ -1,5 +1,10 @@
 # Changelog
 
+##v45
+- Added fold/expand button for PDF attachments. Folding will remove the inline preview.
+- Added 'inlinePreview' setting to set whether inline previews are shown by default.
+- Added View | Sort By menu items for sorting notes by title or create/update times.
+
 ##v44
 - Enter/ESC switches in/out of editing mode
 - Enter in search field focuses editor
