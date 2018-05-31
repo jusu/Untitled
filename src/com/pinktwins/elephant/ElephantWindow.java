@@ -131,6 +131,11 @@ public class ElephantWindow extends JFrame {
 	private JCheckBoxMenuItem iCard, iSnippet, iRecentNotes;
 	private JMenu sort;
 
+	private static final String kRecentFirst = "Most Recent to Least Recent";
+	private static final String kLeastFirst = "Least Recent to Most Recent";
+	private static final String kAlphabetical = "Alphabetical Order";
+	private static final String kReverseAlphabetical = "Reverse Alphabetical Order";
+
 	private static final Image elephantIcon_v2_64;
 
 	enum UiModes {
@@ -1337,12 +1342,18 @@ public class ElephantWindow extends JFrame {
 		switch (Elephant.settings.getSortBy()) {
 		case CREATED:
 			iSortCreated.setSelected(true);
+			iSortMostRecent.setText(kRecentFirst);
+			iSortLeastRecent.setText(kLeastFirst);
 			break;
 		case TITLE:
 			iSortTitle.setSelected(true);
+			iSortMostRecent.setText(kAlphabetical);
+			iSortLeastRecent.setText(kReverseAlphabetical);
 			break;
 		case UPDATED:
 			iSortUpdated.setSelected(true);
+			iSortMostRecent.setText(kRecentFirst);
+			iSortLeastRecent.setText(kLeastFirst);
 			break;
 		}
 		if (Elephant.settings.getSortRecentFirst()) {
@@ -1447,9 +1458,9 @@ public class ElephantWindow extends JFrame {
 		iSortUpdated = checkBoxMenuItem("Date Updated", 0, 0, sortDateUpdatedAction);
 		sort.add(iSortUpdated);
 		sort.addSeparator();
-		iSortMostRecent = checkBoxMenuItem("Most Recent to Least Recent", 0, 0, sortMostRecentAction);
+		iSortMostRecent = checkBoxMenuItem(kRecentFirst, 0, 0, sortMostRecentAction);
 		sort.add(iSortMostRecent);
-		iSortLeastRecent = checkBoxMenuItem("Least Recent to Most Recent", 0, 0, sortLeastRecentAction);
+		iSortLeastRecent = checkBoxMenuItem(kLeastFirst, 0, 0, sortLeastRecentAction);
 		sort.add(iSortLeastRecent);
 
 		setSortMenuCheckmarks();
