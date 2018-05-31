@@ -16,6 +16,7 @@ import javax.swing.JTextPane;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.ui.RetinaImageIcon;
 import com.pinktwins.elephant.util.Factory;
 import com.pinktwins.elephant.util.Images;
@@ -45,7 +46,7 @@ public class NoteAttachments {
 		attachments.remove(o);
 	}
 
-	void insertFileIntoNote(NoteEditor editor, File f, int position) {
+	void insertFileIntoNote(NoteEditor editor, Note note, File f, int position) {
 		if (editor.getWidth() <= 0) {
 			throw new AssertionError();
 		}
@@ -88,7 +89,7 @@ public class NoteAttachments {
 				LOG.severe("Fail: " + e);
 			}
 		} else {
-			FileAttachment aa = new FileAttachment(f, editor.editorWidthScaler, editor.editorController);
+			FileAttachment aa = new FileAttachment(f, note, editor.editorWidthScaler, editor.editorController);
 
 			notePane.setCaretPosition(position);
 			notePane.insertComponent(aa);

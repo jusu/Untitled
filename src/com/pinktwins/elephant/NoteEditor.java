@@ -652,7 +652,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					}
 				}
 
-				attachments.insertFileIntoNote(this, ap.f, ap.position);
+				attachments.insertFileIntoNote(this, currentNote, ap.f, ap.position);
 			}
 		}
 
@@ -882,7 +882,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 					File attached = currentNote.importAttachment(f);
 					currentNote.getMeta().setAttachmentPosition(attached, noteArea.getCaretPosition());
 
-					attachments.insertFileIntoNote(this, attached, noteArea.getCaretPosition());
+					attachments.insertFileIntoNote(this, currentNote, attached, noteArea.getCaretPosition());
 
 					if (currentNote.isMarkdown()) {
 						insertMarkdownLink(f);
@@ -979,7 +979,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 				// remove previous object mapping,
 				attachments.remove(i.object);
 				// insert.. will map a new Object -> File
-				attachments.insertFileIntoNote(this, ff, i.startPosition);
+				attachments.insertFileIntoNote(this, currentNote, ff, i.startPosition);
 			}
 		}
 	}

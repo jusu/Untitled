@@ -47,20 +47,19 @@ public class Note implements Comparable<Note> {
 
 	public interface Meta {
 		public String title();
-
-		public long created();
-
 		public void title(String newTitle);
 
+		public long created();
 		public void setCreatedTime();
 
 		public int getAttachmentPosition(File attachment);
-
 		public void setAttachmentPosition(File attachment, int position);
 
 		public List<String> tags();
-
 		public void setTags(List<String> tagIds, List<String> tagNames);
+
+		boolean getAttachmentPreview(File attachment);
+		public void setAttachmentPreview(File attachment, boolean b);
 	}
 
 	public class AttachmentInfo implements Comparable<AttachmentInfo> {
@@ -410,6 +409,27 @@ public class Note implements Comparable<Note> {
 			reload();
 		}
 
+		@Override
+		public boolean getAttachmentPreview(File attachment) {
+			String key = "attachment:" + attachment.getName() + ":preview";
+			String value = map.get(key);
+
+			if (value == null) {
+				return Elephant.settings.getInlinePreview();
+			}
+
+			if ("false".equals(value)) {
+				return false;
+			}
+
+			return true;
+		}
+
+		@Override
+		public void setAttachmentPreview(File attachment, boolean b) {
+			setMeta("attachment:" + attachment.getName() + ":preview", b ? "true" : "false");
+			reload();
+		}
 	}
 
 	private String ts() {

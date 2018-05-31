@@ -2,6 +2,7 @@ package com.pinktwins.elephant;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
@@ -41,6 +42,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.pinktwins.elephant.NoteEditor.EditorController;
+import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.ui.RetinaImageIcon;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
@@ -55,7 +57,7 @@ public class FileAttachment extends JPanel {
 
 	private static JFileChooser chooser = new JFileChooser();
 
-	private static Image quickLook, openFolder;
+	private static Image quickLook, openFolder, foldPreview;
 	private static boolean qlExists;
 	private static String qlPath = "/usr/bin/qlmanage";
 
@@ -66,21 +68,21 @@ public class FileAttachment extends JPanel {
 	}
 
 	static {
-		Iterator<Image> i = Images.iterator(new String[] { "quickLook", "openFolder" });
+		Iterator<Image> i = Images.iterator(new String[] { "quickLook", "openFolder", "foldPreview" });
 		quickLook = i.next();
 		openFolder = i.next();
-
+		foldPreview = i.next();
 		qlExists = new File(qlPath).exists();
 	}
 
 	private JPanel iconArea, left, text, right;
 	private JLabel label, size;
-	private JButton icon, show, open;
+	private JButton icon, fold, show, open;
 	private ImageScaler scaler;
 	private EditorController editor;
 	private String labelStr, sizeStr;
 
-	public FileAttachment(final File f, ImageScaler scaler, EditorController editor) {
+	public FileAttachment(final File f, final Note note, ImageScaler scaler, EditorController editor) {
 		super();
 
 		this.scaler = scaler;
@@ -127,11 +129,20 @@ public class FileAttachment extends JPanel {
 		icon.setBorder(ElephantWindow.emptyBorder);
 		icon.setBorderPainted(false);
 
+		fold = new JButton("");
+		RetinaImageIcon foldRetina = new RetinaImageIcon(foldPreview);
+		fold.setIcon(foldRetina);
+		fold.setPressedIcon(foldRetina);
+		fold.setBorderPainted(false);
+		fold.setContentAreaFilled(false);
+		fold.setFocusPainted(false);
+		fold.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
 		show = new JButton("");
 		show.setIcon(new ImageIcon(quickLook));
 		show.setBorderPainted(false);
 		show.setContentAreaFilled(false);
-		show.setBorder(BorderFactory.createEmptyBorder(6, 8, 6, 4));
+		show.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 4));
 
 		open = new JButton("");
 		open.setIcon(new ImageIcon(openFolder));
@@ -143,6 +154,9 @@ public class FileAttachment extends JPanel {
 		text.add(size, BorderLayout.CENTER);
 		left.add(icon);
 		left.add(text);
+
+		right.add(fold);
+
 		if (qlExists) {
 			right.add(show);
 		} else {
@@ -157,7 +171,9 @@ public class FileAttachment extends JPanel {
 
 		setMaximumSize(new Dimension(294, 38));
 
-		addPreview(f);
+		if (note.getMeta().getAttachmentPreview(f)) {
+			addPreview(f);
+		}
 
 		icon.addMouseListener(new CustomMouseListener() {
 			@Override
@@ -165,6 +181,25 @@ public class FileAttachment extends JPanel {
 				if (event.getClickCount() == 2) {
 					LaunchUtil.launch(f);
 				}
+			}
+		});
+
+		fold.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int len = FileAttachment.this.getComponentCount();
+				for (int n = 0; n < len; n++) {
+					Component c = FileAttachment.this.getComponent(n);
+					if (c instanceof JTextPane && "previewTextPane".equals(c.getName())) {
+						FileAttachment.this.remove(c);
+						note.getMeta().setAttachmentPreview(f, false);
+						return;
+					}
+				}
+
+				// previewTextPane was not found, this buttons adds it as well.
+				addPreview(f);
+				note.getMeta().setAttachmentPreview(f, true);
 			}
 		});
 
@@ -384,6 +419,7 @@ public class FileAttachment extends JPanel {
 			tp.setBackground(Color.WHITE);
 			tp.setOpaque(true);
 			tp.setFocusable(false);
+			tp.setName("previewTextPane");
 
 			final Style style = tp.addStyle("nada", null);
 			StyleConstants.setFontSize(style, 0);
@@ -417,8 +453,7 @@ public class FileAttachment extends JPanel {
 				pageNum++;
 
 				/*
-				 * If pdf, check if aspect ratio changed. Must add a placeholder with correct aspect ratio, or cropping
-				 * will occur.
+				 * If pdf, check if aspect ratio changed. Must add a placeholder with correct aspect ratio, or cropping will occur.
 				 */
 				if (pdfHolder.pdf != null) {
 					Dimension d = pdfHolder.pdf.pageSize(pageNum);
@@ -460,7 +495,7 @@ public class FileAttachment extends JPanel {
 						try {
 							Image img = get();
 							if (img != null) {
-								//int num = pages.size() - workers.size();
+								// int num = pages.size() - workers.size();
 
 								if (num >= 0 && num < pageIcons.size()) {
 									pageIcons.get(num).setImage(img);
