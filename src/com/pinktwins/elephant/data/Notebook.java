@@ -189,6 +189,9 @@ public class Notebook implements Comparable<Notebook> {
 
 	public void sortNotes() {
 		Collections.sort(notes);
+		if (Elephant.settings.getSortRecentFirst() == false) {
+			Collections.reverse(notes);
+		}
 	}
 
 	public void truncNotes(int limit) {

@@ -40,6 +40,11 @@ Force a specific character set for notes. Default is to use your system's defaul
 
 Note that Elephant doesn't convert your notes' character encodings - if you previously used non-ascii characters and change the character set, your notes might need to be converted to the new encoding to display correctly.
 
+    "inlinePreview": true,
+
+Display inline previews for attachments that support it. Currently PDFs are shown inline in note editor.
+Each attachment can be folded/expanded using the fold/expand button and the folding state is saved per attachment. This default applies when attachment has not been manually folded/expanded.
+
 }
 
 

@@ -152,6 +152,12 @@ public class Vault implements WatchDirListener {
 		return notebooks;
 	}
 
+	public void sortNotesInNotebooks() {
+		for (Notebook nb : notebooks) {
+			nb.sortNotes();
+		}
+	}
+
 	public int getNoteCount() {
 		int count = 0;
 		for (Notebook nb : notebooks) {

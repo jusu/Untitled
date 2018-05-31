@@ -21,7 +21,7 @@ public class Settings {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET(
 				"autoBullet"), RECENT_SHOW("showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH(
 						"confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE("fontScale"), PASTE_PLAINTEXT("pastePlaintext"), SHOW_SIDEBAR(
-								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW("inlinePreview");
+								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW("inlinePreview"), SORT_BY("sortBy"), SORT_RECENT_FIRST("sortRecentFirst");
 
 		private final String str;
 
@@ -34,6 +34,8 @@ public class Settings {
 			return str;
 		}
 	};
+
+	public static enum SortBy { TITLE, CREATED, UPDATED };
 
 	private String homeDir;
 	private JSONObject map;
@@ -253,5 +255,34 @@ public class Settings {
 		} else {
 			return null;
 		}
+	}
+
+	public SortBy getSortBy() {
+		if (!has(Keys.SORT_BY)) {
+			return SortBy.UPDATED;
+		}
+
+		int n = getInt(Keys.SORT_BY);
+		SortBy[] v = SortBy.values();
+		if (n >= 0 && n < v.length) {
+			return v[n];
+		}
+
+		return SortBy.UPDATED;
+	}
+
+	public boolean getSortRecentFirst() {
+		if (!has(Keys.SORT_RECENT_FIRST)) {
+			return true;
+		}
+		return getBoolean(Keys.SORT_RECENT_FIRST);
+	}
+	
+	public void setSortBy(SortBy s) {
+		set(Keys.SORT_BY, s.ordinal());
+	}
+	
+	public void setSortMostRecent(boolean b) {
+		set(Keys.SORT_RECENT_FIRST, b);
 	}
 }

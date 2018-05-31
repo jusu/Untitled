@@ -132,7 +132,22 @@ public class Note implements Comparable<Note> {
 
 	@Override
 	public int compareTo(Note n) {
-		long m1 = file.lastModified(), m2 = n.file().lastModified();
+		long m1, m2;
+
+		switch (Elephant.settings.getSortBy()) {
+		case CREATED:
+			m1 = getMeta().created();
+			m2 = n.getMeta().created();
+			break;
+		case TITLE:
+			String s1 = getMeta().title().toLowerCase();
+			String s2 = n.getMeta().title().toLowerCase();
+			return s1.compareTo(s2);
+		case UPDATED:
+		default:
+			m1 = file.lastModified();
+			m2 = n.file().lastModified();
+		}
 
 		if (m1 > m2) {
 			return -1;

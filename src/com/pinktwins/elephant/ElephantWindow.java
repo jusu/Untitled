@@ -53,6 +53,7 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Settings;
+import com.pinktwins.elephant.data.Settings.SortBy;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
@@ -126,7 +127,9 @@ public class ElephantWindow extends JFrame {
 
 	private JMenuBar menuBar;
 	private JMenuItem iUndo, iRedo, iSaveSearch, iSidebarVisibility;
+	private JCheckBoxMenuItem iSortTitle, iSortCreated, iSortUpdated, iSortMostRecent, iSortLeastRecent;
 	private JCheckBoxMenuItem iCard, iSnippet, iRecentNotes;
+	private JMenu sort;
 
 	private static final Image elephantIcon_v2_64;
 
@@ -551,6 +554,51 @@ public class ElephantWindow extends JFrame {
 			}
 		}
 	};
+
+	ActionListener sortTitleAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			changeSortingTo(SortBy.TITLE);
+		}
+	};
+
+	ActionListener sortDateCreatedAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			changeSortingTo(SortBy.CREATED);
+		}
+	};
+
+	ActionListener sortDateUpdatedAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			changeSortingTo(SortBy.UPDATED);
+		}
+	};
+
+	ActionListener sortMostRecentAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Elephant.settings.setSortMostRecent(true);
+			changeSortingTo(Elephant.settings.getSortBy());
+		}
+	};
+
+	ActionListener sortLeastRecentAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Elephant.settings.setSortMostRecent(false);
+			changeSortingTo(Elephant.settings.getSortBy());
+		}
+	};
+
+	private void changeSortingTo(SortBy sorting) {
+		Elephant.settings.setSortBy(sorting);
+		sort.setText(getSortText());
+		setSortMenuCheckmarks();
+		Vault.getInstance().sortNotesInNotebooks();
+		noteList.sortAndUpdate();
+	}
 
 	public ElephantWindow() {
 		setTitle(windowTitle);
@@ -1245,13 +1293,63 @@ public class ElephantWindow extends JFrame {
 		return noteList.currentNotebook().isAllNotes();
 	}
 
-	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
-		JMenuItem mi = new JMenuItem(title);
+	private void setMenuItemArgs(JMenuItem mi, int keyCode, int keyMask, ActionListener action) {
 		if (keyCode > 0 || keyMask > 0) {
 			mi.setAccelerator(KeyStroke.getKeyStroke(keyCode, keyMask));
 		}
 		mi.addActionListener(action);
+	}
+
+	private JMenuItem menuItem(String title, int keyCode, int keyMask, ActionListener action) {
+		JMenuItem mi = new JMenuItem(title);
+		setMenuItemArgs(mi, keyCode, keyMask, action);
 		return mi;
+	}
+
+	private JCheckBoxMenuItem checkBoxMenuItem(String title, int keyCode, int keyMask, ActionListener action) {
+		JCheckBoxMenuItem mi = new JCheckBoxMenuItem(title);
+		setMenuItemArgs(mi, keyCode, keyMask, action);
+		return mi;
+	}
+
+	private String getSortText() {
+		String sortText = "Sort by: ";
+		switch (Elephant.settings.getSortBy()) {
+		case CREATED:
+			sortText += "Date Created";
+			break;
+		case TITLE:
+			sortText += "Title";
+			break;
+		case UPDATED:
+			sortText += "Date Updated";
+			break;
+		}
+		return sortText;
+	}
+
+	private void setSortMenuCheckmarks() {
+		iSortTitle.setSelected(false);
+		iSortCreated.setSelected(false);
+		iSortUpdated.setSelected(false);
+		iSortMostRecent.setSelected(false);
+		iSortLeastRecent.setSelected(false);
+		switch (Elephant.settings.getSortBy()) {
+		case CREATED:
+			iSortCreated.setSelected(true);
+			break;
+		case TITLE:
+			iSortTitle.setSelected(true);
+			break;
+		case UPDATED:
+			iSortUpdated.setSelected(true);
+			break;
+		}
+		if (Elephant.settings.getSortRecentFirst()) {
+			iSortMostRecent.setSelected(true);
+		} else {
+			iSortLeastRecent.setSelected(true);
+		}
 	}
 
 	private void createMenu() {
@@ -1340,6 +1438,24 @@ public class ElephantWindow extends JFrame {
 			iSnippet.setSelected(true);
 			break;
 		}
+
+		sort = new JMenu(getSortText());
+		iSortTitle = checkBoxMenuItem("Title", 0, 0, sortTitleAction);
+		sort.add(iSortTitle);
+		iSortCreated = checkBoxMenuItem("Date Created", 0, 0, sortDateCreatedAction);
+		sort.add(iSortCreated);
+		iSortUpdated = checkBoxMenuItem("Date Updated", 0, 0, sortDateUpdatedAction);
+		sort.add(iSortUpdated);
+		sort.addSeparator();
+		iSortMostRecent = checkBoxMenuItem("Most Recent to Least Recent", 0, 0, sortMostRecentAction);
+		sort.add(iSortMostRecent);
+		iSortLeastRecent = checkBoxMenuItem("Least Recent to Most Recent", 0, 0, sortLeastRecentAction);
+		sort.add(iSortLeastRecent);
+
+		setSortMenuCheckmarks();
+
+		view.add(sort);
+		view.addSeparator();
 
 		view.add(menuItem("Show All Notes", KeyEvent.VK_A, menuMask | KeyEvent.SHIFT_DOWN_MASK, showAllNotesAction));
 		view.add(menuItem("Jump to Notebook", KeyEvent.VK_J, menuMask, jumpToNotebookAction));
