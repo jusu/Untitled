@@ -111,12 +111,12 @@ public class SearchIndexer {
 
 			List<String> tagNames = Vault.getInstance().resolveTagIds(tagIds);
 			for (String s : tagNames) {
-				memoryIndex.digestText(note, s + " tag:" + s + " t:" + s);
+				memoryIndex.digestText(note, s + " tag:" + s + " t:" + s + " #" + s);
 			}
 		}
 
 		if (nb != null) {
-			memoryIndex.digestText(note, "notebook:" + nb.name() + " nb:" + nb.name());
+			memoryIndex.digestText(note, "notebook:" + nb.name() + " nb:" + nb.name() + " @" + nb.name());
 		}
 
 		// date to sort by creation and last modified date
