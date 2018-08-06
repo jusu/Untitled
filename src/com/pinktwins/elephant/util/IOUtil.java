@@ -20,16 +20,20 @@ public class IOUtil {
 	private static final byte[] emptyBytes = new byte[0];
 
 	static public Charset getCharset() {
-		if (Elephant.settings.hasCharset()) {
-			String charsetName = Elephant.settings.getCharset();
-			if (Charset.isSupported(charsetName)) {
-				return Charset.forName(charsetName);
-			} else {
-				System.out.println("Warning: Charset '" + charsetName + "' defined but not supported by system.");
-				System.out.println("Defaulting to " + Charset.defaultCharset());
-				return Charset.defaultCharset();
-			}
+		if (!Elephant.settings.hasCharset()) {
+			return Charset.defaultCharset();
+		}
+
+		String charsetName = Elephant.settings.getCharset();
+		if (charsetName.isEmpty()) {
+			return Charset.defaultCharset();
+		}
+
+		if (Charset.isSupported(charsetName)) {
+			return Charset.forName(charsetName);
 		} else {
+			System.out.println("Warning: Charset '" + charsetName + "' defined but not supported by system.");
+			System.out.println("Defaulting to " + Charset.defaultCharset());
 			return Charset.defaultCharset();
 		}
 	}

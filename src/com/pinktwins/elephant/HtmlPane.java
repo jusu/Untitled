@@ -30,7 +30,7 @@ public class HtmlPane extends JTextPane {
 		HTMLEditorKit kit = new HTMLEditorKit();
 		this.setEditorKit(kit);
 		HtmlPaneStylesheet.getInstance().addStylesheet(kit);
-
+		
 		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));
 	}
 

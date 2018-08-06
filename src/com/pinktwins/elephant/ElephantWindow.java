@@ -178,6 +178,10 @@ public class ElephantWindow extends JFrame {
 		fontNotebookChooser = Font.decode("Helvetica-" + scaledFontSize(12, scale));
 	}
 
+	interface AddNewFrameContent {
+		public void addContent(JFrame f);
+	}
+
 	ActionListener newNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -238,24 +242,32 @@ public class ElephantWindow extends JFrame {
 	ActionListener switchNoteLocationAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// show start in a new frame
-			JFrame startFrame = new JFrame();
-			startFrame.setTitle("Elephant Note Location Switch");
-
-			// Mac packages the icon just fine. Windows needs this for taskbar icon. Linux?
-			if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
-				startFrame.setIconImage(elephantIcon_v2_64);
-			}
-
-			startFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			// wild guessing for the coordinates
-			Rectangle bounds = new Rectangle(130, 121, 495, 548);
-			startFrame.setBounds(bounds);
-
-			callStart(startFrame);
-			startFrame.setVisible(true);
+			showInNewFrame("Elephant Note Location Switch", new AddNewFrameContent() {
+				@Override
+				public void addContent(JFrame f) {
+					callStart(f);
+				}
+			});
 		}
 	};
+
+	public void showInNewFrame(String title, AddNewFrameContent cb) {
+		JFrame f = new JFrame();
+		f.setTitle(title);
+
+		// Mac packages the icon just fine. Windows needs this for taskbar icon. Linux?
+		if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
+			f.setIconImage(elephantIcon_v2_64);
+		}
+
+		f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		// wild guessing for the coordinates
+		Rectangle bounds = new Rectangle(130, 121, 495, 548);
+		f.setBounds(bounds);
+
+		cb.addContent(f);
+		f.setVisible(true);
+	}
 
 	ActionListener showNotesAction = new ActionListener() {
 		@Override
@@ -504,7 +516,25 @@ public class ElephantWindow extends JFrame {
 	ActionListener settingsAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			showSettings();
+			for (Window w : getWindows()) {
+				if (w instanceof JFrame) {
+					if ("Preferences".equals(((JFrame) w).getTitle())) {
+						// If visible, bring it to front. If not visible, it was closed and disposed,
+						// and should not be reused.
+						if (w.isVisible()) {
+							w.setVisible(true);
+							return;
+						}
+					}
+				}
+			}
+
+			showInNewFrame("Preferences", new AddNewFrameContent() {
+				@Override
+				public void addContent(final JFrame f) {
+					f.add(new SettingsUI());
+				}
+			});
 		}
 	};
 
@@ -611,9 +641,12 @@ public class ElephantWindow extends JFrame {
 		// Scale fonts using 'fontScale' setting
 		String fontScale = Elephant.settings.getString(Settings.Keys.FONT_SCALE);
 		if (!fontScale.isEmpty()) {
-			float f = Float.valueOf(fontScale);
-			if (f != 1f) {
-				scaleFonts(f);
+			try {
+				float f = Float.valueOf(fontScale);
+				if (f != 1f) {
+					scaleFonts(f);
+				}
+			} catch (NumberFormatException nfe) {
 			}
 		}
 
@@ -1230,9 +1263,6 @@ public class ElephantWindow extends JFrame {
 		history.addAllNotes();
 	}
 
-	public void showSettings() {
-	}
-
 	public void focusEditor() {
 		noteEditor.focusTitle();
 	}
@@ -1384,8 +1414,8 @@ public class ElephantWindow extends JFrame {
 		file.addSeparator();
 		file.add(menuItem("Close", KeyEvent.VK_W, menuMask, closeWindowAction));
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
-		// file.addSeparator();
-		// file.add(menuItem("Preferences…", KeyEvent.VK_COMMA, menuMask, settingsAction));
+		file.addSeparator();
+		file.add(menuItem("Preferences…", KeyEvent.VK_COMMA, menuMask, settingsAction));
 
 		JMenu edit = new JMenu("Edit");
 

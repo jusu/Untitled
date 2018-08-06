@@ -21,7 +21,8 @@ public class Settings {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET(
 				"autoBullet"), RECENT_SHOW("showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH(
 						"confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE("fontScale"), PASTE_PLAINTEXT("pastePlaintext"), SHOW_SIDEBAR(
-								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW("inlinePreview"), SORT_BY("sortBy"), SORT_RECENT_FIRST("sortRecentFirst");
+								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET(
+										"charset"), INLINE_PREVIEW("inlinePreview"), SORT_BY("sortBy"), SORT_RECENT_FIRST("sortRecentFirst");
 
 		private final String str;
 
@@ -33,9 +34,94 @@ public class Settings {
 		public String toString() {
 			return str;
 		}
+
+		public String title() {
+			switch (this) {
+			case ALLOW_FILENAMECHARS:
+				return "Allow characters in filenames";
+			case AUTOBULLET:
+				return "Autobullet";
+			case CHARSET:
+				return "Character set";
+			case CONFIRM_DELETE_FROM_TRASH:
+				return "Confirm delete from Trash";
+			case DEFAULT_FILETYPE:
+				return "Default filetype";
+			case DEFAULT_NOTEBOOK:
+				return "Default notebook";
+			case FONT_SCALE:
+				return "Font scale";
+			case INLINE_PREVIEW:
+				return "Inline preview";
+			case PASTE_PLAINTEXT:
+				return "Paste plain text";
+			default:
+				return "";
+			}
+		}
+
+		public String description() {
+			switch (this) {
+			case ALLOW_FILENAMECHARS:
+				return "Additional characters allowed in note's filename. The filename is based on note's title, and by default only a-z, A-Z, 0-9 and . - are allowed, other chars are converted to _";
+			case AUTOBULLET:
+				return "Whether to automatically create lists when starting a line with * - or +. Default is true.";
+			case CHARSET:
+				return "Force a specific character set for notes. Default is to use your system's default character set. Example is \"UTF-8\" to force UTF-8. Note that Elephant doesn't convert your notes' character encodings - if you previously used non-ascii characters and change the character set, your notes might need to be converted to the new encoding to display correctly.";
+			case CONFIRM_DELETE_FROM_TRASH:
+				return "Confirm when deleting a note from Trash. Default is true.";
+			case DEFAULT_FILETYPE:
+				return "Default file type when creating a new note. Default is to create note files with .txt extension, in plain text format. Change to \"md\" to create new notes in markdown format.";
+			case DEFAULT_NOTEBOOK:
+				return "Name of the default notebook to create notes in. Default is \"Inbox\".";
+			case FONT_SCALE:
+				return "Make all fonts small/bigger. Does not affect layouts so scaling too much will negatively affect appearance. Yet, scaling slightly can be helpful with high-res screens. Requires restart.";
+			case INLINE_PREVIEW:
+				return "Display inline previews for attachments that support it. Currently PDFs are shown inline in note editor. Each attachment can be folded/expanded using the fold/expand button and the folding state is saved per attachment. This default applies when attachment has not been manually folded/expanded.";
+			case PASTE_PLAINTEXT:
+				return "When true, any text is pasted in plain text. Default is false.";
+			default:
+				return "";
+			}
+		}
+
+		public static enum Kinds {
+			String, Boolean, Float, Other
+		};
+
+		public Kinds getKind() {
+			switch (this) {
+			case ALLOW_FILENAMECHARS:
+				return Kinds.String;
+			case AUTOBULLET:
+				return Kinds.Boolean;
+			case CHARSET:
+				return Kinds.String;
+			case CONFIRM_DELETE_FROM_TRASH:
+				return Kinds.Boolean;
+			case DEFAULT_FILETYPE:
+				return Kinds.String;
+			case DEFAULT_NOTEBOOK:
+				return Kinds.String;
+			case FONT_SCALE:
+				return Kinds.Float;
+			case INLINE_PREVIEW:
+				return Kinds.Boolean;
+			case PASTE_PLAINTEXT:
+				return Kinds.Boolean;
+			default:
+				return Kinds.Other;
+			}
+		}
+
 	};
 
-	public static enum SortBy { TITLE, CREATED, UPDATED };
+	public static Keys[] uiKeys = { Keys.ALLOW_FILENAMECHARS, Keys.AUTOBULLET, Keys.CHARSET, Keys.CONFIRM_DELETE_FROM_TRASH, Keys.DEFAULT_FILETYPE,
+			Keys.DEFAULT_NOTEBOOK, Keys.FONT_SCALE, Keys.INLINE_PREVIEW, Keys.PASTE_PLAINTEXT, };
+
+	public static enum SortBy {
+		TITLE, CREATED, UPDATED
+	};
 
 	private String homeDir;
 	private JSONObject map;
@@ -69,6 +155,14 @@ public class Settings {
 		return map.optInt(keyStr);
 	}
 
+	public float getFloat(Keys key) {
+		return getFloat(key.toString());
+	}
+	
+	public float getFloat(String keyStr) {
+		return (float)map.optDouble(keyStr, 1.0);
+	}
+	
 	public boolean getBoolean(Keys key) {
 		return map.optBoolean(key.toString(), false);
 	}
@@ -207,7 +301,19 @@ public class Settings {
 		if (!has(Keys.AUTOBULLET)) {
 			return true;
 		}
-		return getInt(Keys.AUTOBULLET) > 0;
+		
+		try {
+			Object o = map.get(Keys.AUTOBULLET.toString());
+			if (o instanceof Boolean) {
+				return getBoolean(Keys.AUTOBULLET);
+			}
+			if (o instanceof Integer) {
+				return getInt(Keys.AUTOBULLET) > 0;
+			}
+		} catch (JSONException e) {
+		}
+
+		return true;
 	}
 
 	public String getAllowFilenameChars() {
@@ -242,7 +348,12 @@ public class Settings {
 		if (!has(Keys.DEFAULT_FILETYPE)) {
 			return "txt";
 		}
-		return getString(Keys.DEFAULT_FILETYPE);
+		String s = getString(Keys.DEFAULT_FILETYPE);
+		if (s.isEmpty()) {
+			return "txt";
+		}
+
+		return s;
 	}
 
 	public boolean hasCharset() {
@@ -277,11 +388,11 @@ public class Settings {
 		}
 		return getBoolean(Keys.SORT_RECENT_FIRST);
 	}
-	
+
 	public void setSortBy(SortBy s) {
 		set(Keys.SORT_BY, s.ordinal());
 	}
-	
+
 	public void setSortMostRecent(boolean b) {
 		set(Keys.SORT_RECENT_FIRST, b);
 	}
