@@ -21,8 +21,8 @@ public class Settings {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET(
 				"autoBullet"), RECENT_SHOW("showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH(
 						"confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE("fontScale"), PASTE_PLAINTEXT("pastePlaintext"), SHOW_SIDEBAR(
-								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET(
-										"charset"), INLINE_PREVIEW("inlinePreview"), SORT_BY("sortBy"), SORT_RECENT_FIRST("sortRecentFirst");
+								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW(
+										"inlinePreview"), SORT_BY("sortBy"), SORT_RECENT_FIRST("sortRecentFirst"), MARKDOWN_STYLES("markdownStyles");
 
 		private final String str;
 
@@ -53,6 +53,8 @@ public class Settings {
 				return "Font scale";
 			case INLINE_PREVIEW:
 				return "Inline preview";
+			case MARKDOWN_STYLES:
+				return "Markdown styles";
 			case PASTE_PLAINTEXT:
 				return "Paste plain text";
 			default:
@@ -78,6 +80,8 @@ public class Settings {
 				return "Make all fonts small/bigger. Does not affect layouts so scaling too much will negatively affect appearance. Yet, scaling slightly can be helpful with high-res screens. Requires restart.";
 			case INLINE_PREVIEW:
 				return "Display inline previews for attachments that support it. Currently PDFs are shown inline in note editor. Each attachment can be folded/expanded using the fold/expand button and the folding state is saved per attachment. This default applies when attachment has not been manually folded/expanded.";
+			case MARKDOWN_STYLES:
+				return "Additional styles for Markdown display.<br/>For example, \"body { font-size: 22px; }\"";
 			case PASTE_PLAINTEXT:
 				return "When true, any text is pasted in plain text. Default is false.";
 			default:
@@ -107,6 +111,8 @@ public class Settings {
 				return Kinds.Float;
 			case INLINE_PREVIEW:
 				return Kinds.Boolean;
+			case MARKDOWN_STYLES:
+				return Kinds.String;
 			case PASTE_PLAINTEXT:
 				return Kinds.Boolean;
 			default:
@@ -117,7 +123,7 @@ public class Settings {
 	};
 
 	public static Keys[] uiKeys = { Keys.ALLOW_FILENAMECHARS, Keys.AUTOBULLET, Keys.CHARSET, Keys.CONFIRM_DELETE_FROM_TRASH, Keys.DEFAULT_FILETYPE,
-			Keys.DEFAULT_NOTEBOOK, Keys.FONT_SCALE, Keys.INLINE_PREVIEW, Keys.PASTE_PLAINTEXT, };
+			Keys.DEFAULT_NOTEBOOK, Keys.FONT_SCALE, Keys.INLINE_PREVIEW, Keys.MARKDOWN_STYLES, Keys.PASTE_PLAINTEXT };
 
 	public static enum SortBy {
 		TITLE, CREATED, UPDATED
@@ -158,11 +164,11 @@ public class Settings {
 	public float getFloat(Keys key) {
 		return getFloat(key.toString());
 	}
-	
+
 	public float getFloat(String keyStr) {
-		return (float)map.optDouble(keyStr, 1.0);
+		return (float) map.optDouble(keyStr, 1.0);
 	}
-	
+
 	public boolean getBoolean(Keys key) {
 		return map.optBoolean(key.toString(), false);
 	}
@@ -301,7 +307,7 @@ public class Settings {
 		if (!has(Keys.AUTOBULLET)) {
 			return true;
 		}
-		
+
 		try {
 			Object o = map.get(Keys.AUTOBULLET.toString());
 			if (o instanceof Boolean) {

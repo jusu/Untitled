@@ -11,6 +11,8 @@ import javax.swing.text.Document;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+import com.pinktwins.elephant.data.Settings;
+
 public class HtmlPane extends JTextPane {
 
 	private static final Logger LOG = Logger.getLogger(HtmlPane.class.getName());
@@ -30,7 +32,7 @@ public class HtmlPane extends JTextPane {
 		HTMLEditorKit kit = new HTMLEditorKit();
 		this.setEditorKit(kit);
 		HtmlPaneStylesheet.getInstance().addStylesheet(kit);
-		
+
 		addMouseListener(new HtmlPaneMouseListener(this, base, onTerminalClick));
 	}
 
@@ -43,6 +45,12 @@ public class HtmlPane extends JTextPane {
 			if (doc instanceof HTMLDocument) {
 				d = (HTMLDocument) doc;
 				d.setBase(baseUrl);
+
+				String styles = Elephant.settings.getString(Settings.Keys.MARKDOWN_STYLES);
+				if (!styles.isEmpty()) {
+					d.getStyleSheet().addRule(styles);
+				}
+
 				// hint by http://stackoverflow.com/a/19785465/873282
 				this.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			}
