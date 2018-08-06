@@ -43,6 +43,7 @@ import javax.swing.text.Highlighter.Highlight;
 import org.apache.commons.lang3.SystemUtils;
 import org.pegdown.PegDownProcessor;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.CustomEditor.AttachmentInfo;
 import com.pinktwins.elephant.data.Note;
@@ -870,7 +871,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	@Override
 	public void filesDropped(List<File> files) {
 		JTextPane noteArea = editor.getTextPane();
-		for (File f : files) {
+		for (File f : Lists.reverse(files)) {
 			if (f.isDirectory()) {
 				// XXX directory dropped. what to do? compress and import zip?
 			}
@@ -888,9 +889,9 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 						insertMarkdownLink(f);
 					}
 
-					// Insert linefeed for each dropped file
+					// Insert 2*linefeed for each dropped file
 					try {
-						noteArea.getDocument().insertString(noteArea.getCaretPosition() + 1, "\n", null);
+						noteArea.getDocument().insertString(noteArea.getCaretPosition() + 1, "\n\n", null);
 					} catch (BadLocationException e) {
 						LOG.severe("Fail: " + e);
 					}
