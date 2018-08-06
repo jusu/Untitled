@@ -67,11 +67,11 @@ public class Settings {
 			case ALLOW_FILENAMECHARS:
 				return "Additional characters allowed in note's filename. The filename is based on note's title, and by default only a-z, A-Z, 0-9 and . - are allowed, other chars are converted to _";
 			case AUTOBULLET:
-				return "Whether to automatically create lists when starting a line with * - or +. Default is true.";
+				return "Whether to automatically create lists when starting a line with * - or +. Default is yes.";
 			case CHARSET:
 				return "Force a specific character set for notes. Default is to use your system's default character set. Example is \"UTF-8\" to force UTF-8. Note that Elephant doesn't convert your notes' character encodings - if you previously used non-ascii characters and change the character set, your notes might need to be converted to the new encoding to display correctly.";
 			case CONFIRM_DELETE_FROM_TRASH:
-				return "Confirm when deleting a note from Trash. Default is true.";
+				return "Confirm when deleting a note from Trash. Default is yes.";
 			case DEFAULT_FILETYPE:
 				return "Default file type when creating a new note. Default is to create note files with .txt extension, in plain text format. Change to \"md\" to create new notes in markdown format.";
 			case DEFAULT_NOTEBOOK:
@@ -83,7 +83,7 @@ public class Settings {
 			case MARKDOWN_STYLES:
 				return "Additional styles for Markdown display.<br/>For example, \"body { font-size: 22px; color: red; }\"";
 			case PASTE_PLAINTEXT:
-				return "When true, any text is pasted in plain text. Default is false.";
+				return "Text is pasted in plain text. Default is no.";
 			default:
 				return "";
 			}
