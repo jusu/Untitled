@@ -1,5 +1,11 @@
 # Changelog
 
+##v46
+- Added File - Preferences option and UI. Modifying settings file manually is no longer neccessary.
+- Added "Markdown styles" setting to apply additional styles to Markdown display. For example: "body { font-size: 22px; color: red; }"
+- Use #@ characters to search under #tags and @notebooks
+- Fixed attachment order when dropping multiple attachments (was reversed)
+
 ##v45
 - Added fold/expand button for PDF attachments. Folding will remove the inline preview.
 - Added 'inlinePreview' setting to set whether inline previews are shown by default.
