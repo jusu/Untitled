@@ -221,7 +221,7 @@ public class SettingsUI extends BackgroundPanel {
 			setBorder(BorderFactory.createMatteBorder(4, 0, 4, 0, Color.decode("#dddddd")));
 		}
 
-		private JPanel addFontButton(Keys fontKey, String defaultFontName, String buttonName, FontSetter fontSetter) {
+		private JPanel addFontButton(final Keys fontKey, final String defaultFontName, final String buttonName, final FontSetter fontSetter) {
 			String fEditor = Elephant.settings.getString(fontKey);
 			if (fEditor == null || fEditor.isEmpty()) {
 				fEditor = defaultFontName;
