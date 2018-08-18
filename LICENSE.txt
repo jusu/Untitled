@@ -1,6 +1,6 @@
 ELEPHANT LICENSE:
 
-Copyright 2017 Juha Vehviläinen
+Copyright 2018 Juha Vehviläinen
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ limitations under the License.
 
 
 ---------------------
-THIRD PARTY LIBRARIES and applicable licenses:
+THIRD PARTY LIBRARIES, applicable licenses and credits:
 
 Apache Tika, Apacha Lucene, Apache PdfBox
 http://lucene.apache.org/
@@ -146,4 +146,12 @@ Apache Tika uses the Bouncy Castle generic encryption libraries for extracting t
 
 App Icon modified from:
 Elephant Origami by Joana Cardoso from the Noun Project
+Creative Commons
+
+===
+
+FontChooser (C) 2009 Dr Christos Bohoris, adapted by Daniel Heid:
+https://github.com/dheid/fontchooser/blob/master/README.md:
+"This is a major rewrite of the JFontChooser component, originally written by Dr Christos Bohoris (Copyright 2009)."
+LGPL3, https://www.gnu.org/licenses/lgpl-3.0.en.html
 
