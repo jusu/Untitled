@@ -33,8 +33,8 @@ public class CardViewNoteItem extends NoteItem {
 		p.setBackground(Color.WHITE);
 		p.setBorder(BorderFactory.createLineBorder(kColorNoteBorder, 1));
 
-		JLabel name = new JLabel(n.getMeta().title());
-		name.setFont(ElephantWindow.fontH1);
+		name = new JLabel(n.getMeta().title());
+		name.setFont(ElephantWindow.fontNoteListCardName);
 		name.setBorder(BorderFactory.createEmptyBorder(12, 12, 8, 12));
 		p.add(name, BorderLayout.NORTH);
 

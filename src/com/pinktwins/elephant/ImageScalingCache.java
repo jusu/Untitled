@@ -77,7 +77,7 @@ public class ImageScalingCache {
 
 		LOG.info("Purging old, unused cache files.");
 		long start = System.currentTimeMillis();
-		long count = 0;
+		long iterateCount = 0, count = 0;
 		// Purge last accessed more than x days ago
 		FileTime olderThan = FileTime.fromMillis(System.currentTimeMillis() - 1000 * 3600 * 24 * 120l);
 
@@ -87,6 +87,7 @@ public class ImageScalingCache {
 				String name = f.getName();
 				String ext = FilenameUtils.getExtension(f.getName()).toLowerCase();
 				if (name.charAt(0) != '.' && (ext.equals("png") || ext.equals("jpg"))) {
+					iterateCount++;
 					BasicFileAttributes attrs = Files.readAttributes(Paths.get(f.getAbsolutePath()), BasicFileAttributes.class);
 					if (attrs.lastAccessTime().compareTo(olderThan) < 0) {
 						FileUtils.deleteQuietly(f);
@@ -98,7 +99,7 @@ public class ImageScalingCache {
 
 		lastPurgeTs = start;
 
-		LOG.info("Purging " + count + " took " + (System.currentTimeMillis() - start) + " ms.");
+		LOG.info("Purging checked " + iterateCount + " purged " + count + " took " + (System.currentTimeMillis() - start) + " ms.");
 	}
 
 	private Image load(File sourceFile, int w, int h) {

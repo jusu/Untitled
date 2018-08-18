@@ -45,8 +45,8 @@ public class SnippetViewNoteItem extends NoteItem {
 		p.setOpaque(false);
 		p.setLayout(new BorderLayout());
 
-		JLabel name = new JLabel(n.getMeta().title());
-		name.setFont(ElephantWindow.fontH2);
+		name = new JLabel(n.getMeta().title());
+		name.setFont(ElephantWindow.fontNoteListSnippetName);
 		name.setForeground(kColorSnippetTitle);
 		name.setBorder(BorderFactory.createEmptyBorder(12, 10, 2, 2));
 
@@ -71,7 +71,7 @@ public class SnippetViewNoteItem extends NoteItem {
 		}
 
 		((JTextPane) text).setOpaque(false);
-		((JTextPane) text).setFont(ElephantWindow.fontEditor);
+		((JTextPane) text).setFont(ElephantWindow.fontSnippetPreview);
 
 		previewPane.setLayout(new BorderLayout());
 		previewPane.add(name, BorderLayout.NORTH);

@@ -21,8 +21,10 @@ public class Settings {
 		DEFAULT_NOTEBOOK("defaultNotebook"), VAULT_FOLDER("noteFolder"), USE_LUCENE("useLucene"), NOTELIST_MODE("noteListMode"), AUTOBULLET(
 				"autoBullet"), RECENT_SHOW("showRecent"), ALLOW_FILENAMECHARS("allowFilenameChars"), CONFIRM_DELETE_FROM_TRASH(
 						"confirmDeleteFromTrash"), WINDOW_MAXIMIZED("maximized"), FONT_SCALE("fontScale"), PASTE_PLAINTEXT("pastePlaintext"), SHOW_SIDEBAR(
-								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW(
-										"inlinePreview"), SORT_BY("sortBy"), SORT_RECENT_FIRST("sortRecentFirst"), MARKDOWN_STYLES("markdownStyles");
+								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW("inlinePreview"), SORT_BY(
+										"sortBy"), SORT_RECENT_FIRST("sortRecentFirst"), MARKDOWN_STYLES("markdownStyles"), FONTS("fonts"), FONT_EDITOR(
+												"fontEditor"), FONT_EDITORTITLE("fontEditorTitle"), FONT_CARDNAME("fontCardName"), FONT_SNIPPETNAME(
+														"fontSnippetName"), FONT_CARDPREVIEW("fontCardPreview"), FONT_SNIPPETPREVIEW("fontSnippetPreview");
 
 		private final String str;
 
@@ -57,6 +59,8 @@ public class Settings {
 				return "Markdown styles";
 			case PASTE_PLAINTEXT:
 				return "Paste plain text";
+			case FONTS:
+				return "Fonts";
 			default:
 				return "";
 			}
@@ -77,20 +81,41 @@ public class Settings {
 			case DEFAULT_NOTEBOOK:
 				return "Name of the default notebook to create notes in. Default is \"Inbox\".";
 			case FONT_SCALE:
-				return "Make all fonts small/bigger. Does not affect layouts so scaling too much will negatively affect appearance. Yet, scaling slightly can be helpful with high-res screens. Requires restart.";
+				return "Make all fonts small/bigger. Does not affect layouts so scaling too much will negatively affect appearance. Yet, scaling slightly can be helpful with high-res screens. Requires restart. Selecting custom fonts will reset this scale to 1.";
 			case INLINE_PREVIEW:
 				return "Display inline previews for attachments that support it. Currently PDFs are shown inline in note editor. Each attachment can be folded/expanded using the fold/expand button and the folding state is saved per attachment. This default applies when attachment has not been manually folded/expanded.";
 			case MARKDOWN_STYLES:
 				return "Additional styles for Markdown display.<br/>For example, \"body { font-size: 22px; color: red; }\"";
 			case PASTE_PLAINTEXT:
 				return "Text is pasted in plain text. Default is no.";
+			case FONTS:
+				return "Fonts used in Elephant.";
+			default:
+				return "";
+			}
+		}
+
+		public String fontDefaults() {
+			switch (this) {
+			case FONT_EDITOR:
+				return "Arial-13";
+			case FONT_EDITORTITLE:
+				return "Helvetica-15";
+			case FONT_CARDNAME:
+				return "Helvetica-BOLD-16";
+			case FONT_CARDPREVIEW:
+				return "Arial-12";
+			case FONT_SNIPPETNAME:
+				return "Helvetica-BOLD-14";
+			case FONT_SNIPPETPREVIEW:
+				return "Arial-13";
 			default:
 				return "";
 			}
 		}
 
 		public static enum Kinds {
-			String, Boolean, Float, Other
+			String, Boolean, Float, Fonts, Other
 		};
 
 		public Kinds getKind() {
@@ -115,6 +140,8 @@ public class Settings {
 				return Kinds.String;
 			case PASTE_PLAINTEXT:
 				return Kinds.Boolean;
+			case FONTS:
+				return Kinds.Fonts;
 			default:
 				return Kinds.Other;
 			}
@@ -122,7 +149,7 @@ public class Settings {
 
 	};
 
-	public static Keys[] uiKeys = { Keys.ALLOW_FILENAMECHARS, Keys.AUTOBULLET, Keys.CHARSET, Keys.CONFIRM_DELETE_FROM_TRASH, Keys.DEFAULT_FILETYPE,
+	public static Keys[] uiKeys = { Keys.FONTS, Keys.ALLOW_FILENAMECHARS, Keys.AUTOBULLET, Keys.CHARSET, Keys.CONFIRM_DELETE_FROM_TRASH, Keys.DEFAULT_FILETYPE,
 			Keys.DEFAULT_NOTEBOOK, Keys.FONT_SCALE, Keys.INLINE_PREVIEW, Keys.MARKDOWN_STYLES, Keys.PASTE_PLAINTEXT };
 
 	public static enum SortBy {

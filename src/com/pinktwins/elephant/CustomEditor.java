@@ -270,7 +270,7 @@ public class CustomEditor extends RoundPanel {
 		}
 		note.requestFocusInWindow();
 	}
-	
+
 	public boolean isRichText() {
 		return isRichText;
 	}
@@ -387,6 +387,10 @@ public class CustomEditor extends RoundPanel {
 
 	public void cleanup() {
 		Elephant.eventBus.unregister(this);
+	}
+
+	public void resetTitleFont() {
+		title.setFont(ElephantWindow.fontEditorTitle);
 	}
 
 	void insertNewline(int position) {
@@ -1069,7 +1073,7 @@ public class CustomEditor extends RoundPanel {
 	public void updateUndoState() {
 		new UndoRedoStateUpdateRequest(undoManager).post();
 	}
-	
+
 	private void switchToMarkdownEditor() {
 		if (isMarkdown && isShowingMarkdown()) {
 			remove(htmlPane);

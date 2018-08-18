@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,8 +54,10 @@ import com.pinktwins.elephant.data.Note;
 import com.pinktwins.elephant.data.Notebook;
 import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Settings;
+import com.pinktwins.elephant.data.Settings.Keys;
 import com.pinktwins.elephant.data.Settings.SortBy;
 import com.pinktwins.elephant.data.Vault;
+import com.pinktwins.elephant.eventbus.FontChangedEvent;
 import com.pinktwins.elephant.eventbus.NoteChangedEvent;
 import com.pinktwins.elephant.eventbus.ShortcutsChangedEvent;
 import com.pinktwins.elephant.eventbus.StyleCommandEvent;
@@ -69,11 +72,13 @@ public class ElephantWindow extends JFrame {
 
 	public static Font fontStart = Font.decode("Arial-ITALIC-18");
 	public static Font fontTitle = Font.decode("Helvetica-BOLD-18");
-	public static Font fontH1 = Font.decode("Helvetica-BOLD-16");
-	public static Font fontH2 = Font.decode("Helvetica-BOLD-14");
 	public static Font fontSmall = Font.decode("Helvetica-10");
-	public static Font fontEditorTitle = Font.decode("Helvetica-15");
-	public static Font fontEditor = Font.decode("Arial-13");
+	public static Font fontEditor = Font.decode(Keys.FONT_EDITOR.fontDefaults());
+	public static Font fontEditorTitle = Font.decode(Keys.FONT_EDITORTITLE.fontDefaults());
+	public static Font fontNoteListCardName = Font.decode(Keys.FONT_CARDNAME.fontDefaults());
+	public static Font fontNoteListSnippetName = Font.decode(Keys.FONT_SNIPPETNAME.fontDefaults());
+	public static Font fontCardPreview = Font.decode(Keys.FONT_CARDPREVIEW.fontDefaults());
+	public static Font fontSnippetPreview = Font.decode(Keys.FONT_SNIPPETPREVIEW.fontDefaults());
 	public static Font fontBoldEditor = Font.decode("Arial-BOLD-13");
 	public static Font fontBoldNormal = Font.decode("Arial-BOLD-14");
 	public static Font fontNormal = Font.decode("Arial-14");
@@ -162,11 +167,13 @@ public class ElephantWindow extends JFrame {
 	private static void scaleFonts(float scale) {
 		fontStart = Font.decode("Arial-ITALIC-" + scaledFontSize(18, scale));
 		fontTitle = Font.decode("Helvetica-BOLD-" + scaledFontSize(18, scale));
-		fontH1 = Font.decode("Helvetica-BOLD-" + scaledFontSize(16, scale));
-		fontH2 = Font.decode("Helvetica-BOLD-" + scaledFontSize(14, scale));
+		fontNoteListCardName = Font.decode("Helvetica-BOLD-" + scaledFontSize(16, scale));
+		fontNoteListSnippetName = Font.decode("Helvetica-BOLD-" + scaledFontSize(14, scale));
 		fontSmall = Font.decode("Helvetica-" + scaledFontSize(10, scale));
 		fontEditorTitle = Font.decode("Helvetica-" + scaledFontSize(15, scale));
 		fontEditor = Font.decode("Arial-" + scaledFontSize(13, scale));
+		fontCardPreview = Font.decode("Arial-" + scaledFontSize(12, scale));
+		fontSnippetPreview = Font.decode("Arial-" + scaledFontSize(13, scale));
 		fontBoldEditor = Font.decode("Arial-BOLD-" + scaledFontSize(13, scale));
 		fontBoldNormal = Font.decode("Arial-BOLD-" + scaledFontSize(14, scale));
 		fontNormal = Font.decode("Arial-" + scaledFontSize(14, scale));
@@ -262,7 +269,7 @@ public class ElephantWindow extends JFrame {
 
 		f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		// wild guessing for the coordinates
-		Rectangle bounds = new Rectangle(130, 121, 495, 548);
+		Rectangle bounds = new Rectangle(130, 121, 515, 548);
 		f.setBounds(bounds);
 
 		cb.addContent(f);
@@ -637,6 +644,37 @@ public class ElephantWindow extends JFrame {
 
 	public ElephantWindow() {
 		setTitle(windowTitle);
+
+		String fs = Elephant.settings.getString(Keys.FONT_EDITOR);
+		if (fs != null && !fs.isEmpty()) {
+			fontEditor = Font.decode(fs);
+		}
+
+		fs = Elephant.settings.getString(Keys.FONT_EDITORTITLE);
+		if (fs != null && !fs.isEmpty()) {
+			fontEditorTitle = Font.decode(fs);
+			noteEditor.getEditor().resetTitleFont();
+		}
+
+		fs = Elephant.settings.getString(Keys.FONT_CARDNAME);
+		if (fs != null && !fs.isEmpty()) {
+			fontNoteListCardName = Font.decode(fs);
+		}
+
+		fs = Elephant.settings.getString(Keys.FONT_CARDPREVIEW);
+		if (fs != null && !fs.isEmpty()) {
+			fontCardPreview = Font.decode(fs);
+		}
+
+		fs = Elephant.settings.getString(Keys.FONT_SNIPPETNAME);
+		if (fs != null && !fs.isEmpty()) {
+			fontNoteListSnippetName = Font.decode(fs);
+		}
+
+		fs = Elephant.settings.getString(Keys.FONT_SNIPPETPREVIEW);
+		if (fs != null && !fs.isEmpty()) {
+			fontSnippetPreview = Font.decode(fs);
+		}
 
 		// Scale fonts using 'fontScale' setting
 		String fontScale = Elephant.settings.getString(Settings.Keys.FONT_SCALE);
@@ -1712,6 +1750,17 @@ public class ElephantWindow extends JFrame {
 	@Subscribe
 	public void handleToastEvent(ToastEvent toast) {
 		showToast(toast.text);
+	}
+
+	@Subscribe
+	public void handleFontChangedEvent(FontChangedEvent e) {
+		Set<Note> set = noteList.getSelection();
+		if (set.size() == 1) {
+			refreshNote(set.iterator().next());
+		}
+		noteEditor.getEditor().resetTitleFont();
+		NoteItem.resetCachedFonts();
+		noteList.sortAndUpdate();
 	}
 
 	public void searchHighlight() {

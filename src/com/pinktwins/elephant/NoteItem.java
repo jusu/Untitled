@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -51,6 +52,7 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 	public Note note;
 	protected NoteList.ListModes listMode;
 
+	protected JLabel name;
 	protected JTextPane preview;
 	protected BackgroundPanel root;
 
@@ -116,12 +118,31 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		}
 	}
 
+	static public void resetCachedFonts() {
+		for (NoteItem item : itemCache.values()) {
+			item.resetFonts();
+		}
+	}
+	
 	protected NoteItem(Note n, NoteList.ListModes listMode) {
 		super();
 		note = n;
 		this.listMode = listMode;
 	}
 
+	public void resetFonts() {
+		switch (listMode) {
+		case CARDVIEW:
+			name.setFont(ElephantWindow.fontNoteListCardName);
+			preview.setFont(ElephantWindow.fontCardPreview);
+			break;
+		case SNIPPETVIEW:
+			name.setFont(ElephantWindow.fontNoteListSnippetName);
+			preview.setFont(ElephantWindow.fontSnippetPreview);
+			break;
+		}
+	}
+	
 	protected void createPreviewComponents(JPanel previewPane) {
 		previewPane.removeAll();
 
@@ -133,7 +154,7 @@ abstract class NoteItem extends JPanel implements Comparable<NoteItem>, MouseLis
 		preview.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 12));
 		preview.setEditable(false);
 		preview.setFocusable(false);
-		preview.setFont(ElephantWindow.fontMediumPlus);
+		preview.setFont(ElephantWindow.fontCardPreview);
 		preview.setForeground(ElephantWindow.colorPreviewGray);
 		preview.setBackground(Color.WHITE);
 		preview.setBounds(0, 0, 176, 138);
