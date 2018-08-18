@@ -1,5 +1,8 @@
 # Changelog
 
+##v47
+- Added Font section under preferences
+
 ##v46
 - Added File - Preferences option and UI. Modifying settings file manually is no longer neccessary.
 - Added "Markdown styles" setting to apply additional styles to Markdown display. For example: "body { font-size: 22px; color: red; }"
