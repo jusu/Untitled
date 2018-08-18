@@ -1453,7 +1453,7 @@ public class ElephantWindow extends JFrame {
 		file.add(menuItem("Close", KeyEvent.VK_W, menuMask, closeWindowAction));
 		file.add(menuItem("Save", KeyEvent.VK_S, menuMask, saveNoteAction));
 		file.addSeparator();
-		file.add(menuItem("Preferences…", KeyEvent.VK_COMMA, menuMask, settingsAction));
+		file.add(menuItem("Preferences...", KeyEvent.VK_COMMA, menuMask, settingsAction));
 
 		JMenu edit = new JMenu("Edit");
 
