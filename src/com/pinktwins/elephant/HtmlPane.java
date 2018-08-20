@@ -12,6 +12,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import com.pinktwins.elephant.data.Settings;
+import com.pinktwins.elephant.eventbus.ToastEvent;
 import com.pinktwins.elephant.util.IOUtil;
 
 public class HtmlPane extends JTextPane {
@@ -57,7 +58,11 @@ public class HtmlPane extends JTextPane {
 					} catch (Exception e) {
 					}
 
-					d.getStyleSheet().addRule(styles);
+					try {
+						d.getStyleSheet().addRule(styles);
+					} catch (Exception e) {
+						new ToastEvent("CSS error: " + e.getMessage()).post();
+					}
 				}
 
 				// hint by http://stackoverflow.com/a/19785465/873282
