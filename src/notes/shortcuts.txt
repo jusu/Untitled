@@ -6,3 +6,11 @@ To save a search, select "Save Search to Shortcuts" from Edit menu.
 To save a tag shortcut, search for "tag:mytag" and save that.
 
 Use cmd-1 through cmd-9 (ctrl-1 on windows) as keyboard shortcuts to shortcuts.
+
+About search:
+
+Use the following to search for tags and notebooks:
+
+tag:tagname or #tagname
+nb:notebook or @notebook
+

@@ -12,6 +12,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import com.pinktwins.elephant.data.Settings;
+import com.pinktwins.elephant.util.IOUtil;
 
 public class HtmlPane extends JTextPane {
 
@@ -48,6 +49,14 @@ public class HtmlPane extends JTextPane {
 
 				String styles = Elephant.settings.getString(Settings.Keys.MARKDOWN_STYLES);
 				if (!styles.isEmpty()) {
+					try {
+						File f = new File(styles);
+						if (f.exists()) {
+							styles = new String(IOUtil.readFile(f), IOUtil.getCharset());
+						}
+					} catch (Exception e) {
+					}
+
 					d.getStyleSheet().addRule(styles);
 				}
 

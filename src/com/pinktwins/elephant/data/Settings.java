@@ -85,7 +85,7 @@ public class Settings {
 			case INLINE_PREVIEW:
 				return "Display inline previews for attachments that support it. Currently PDFs are shown inline in note editor. Each attachment can be folded/expanded using the fold/expand button and the folding state is saved per attachment. This default applies when attachment has not been manually folded/expanded.";
 			case MARKDOWN_STYLES:
-				return "Additional styles for Markdown display.<br/>For example, \"body { font-size: 22px; color: red; }\"";
+				return "Additional styles for Markdown display.<br/>For example, \"body { font-size: 22px; color: red; }\"<br/>Can also be full path to a stylesheet file.";
 			case PASTE_PLAINTEXT:
 				return "Text is pasted in plain text. Default is no.";
 			case FONTS:
