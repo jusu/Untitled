@@ -2,6 +2,7 @@
 
 ##v49
 - Added Edit | Paste Without Styles
+- Added Note | Show in Finder
 
 ##v48
 - Added CSS error checking
