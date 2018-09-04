@@ -1,5 +1,11 @@
 # Changelog
 
+##v49
+- Added Edit | Paste Without Styles
+
+##v48
+- Added CSS error checking
+
 ##v47
 - Added Font section under preferences
 
