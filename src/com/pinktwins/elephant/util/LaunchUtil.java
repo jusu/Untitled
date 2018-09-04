@@ -46,4 +46,25 @@ public class LaunchUtil {
 			}
 		}
 	}
+
+	public static void reveal(File f) {
+		if (SystemUtils.IS_OS_MAC_OSX) {
+			final List<String> command = Factory.newArrayList();
+			command.add("/usr/bin/open");
+			command.add("--reveal");
+			command.add(f.getAbsolutePath());
+			final ProcessBuilder builder = new ProcessBuilder(command);
+			try {
+				builder.start();
+			} catch (IOException e) {
+				LOG.severe("Fail: " + e);
+			}
+		} else {
+			try {
+				Desktop.getDesktop().open(f.getParentFile());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
 }

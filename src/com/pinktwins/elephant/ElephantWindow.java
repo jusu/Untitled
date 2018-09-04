@@ -66,6 +66,7 @@ import com.pinktwins.elephant.eventbus.UIEvent;
 import com.pinktwins.elephant.eventbus.UndoRedoStateUpdateRequest;
 import com.pinktwins.elephant.eventbus.VaultEvent;
 import com.pinktwins.elephant.util.Images;
+import com.pinktwins.elephant.util.LaunchUtil;
 import com.pinktwins.elephant.util.ScreenUtil;
 
 public class ElephantWindow extends JFrame {
@@ -108,7 +109,7 @@ public class ElephantWindow extends JFrame {
 	public static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
 	public static boolean plainTextOnPasteAction = false;
-	
+
 	private CustomSplitPane splitLeft, splitRight;
 
 	private final Toolbar toolBar = new Toolbar(this);
@@ -190,7 +191,7 @@ public class ElephantWindow extends JFrame {
 	interface AddNewFrameContent {
 		public void addContent(JFrame f);
 	}
-	
+
 	ActionListener newNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -362,9 +363,9 @@ public class ElephantWindow extends JFrame {
 			noteEditor.pasteAction();
 			ElephantWindow.plainTextOnPasteAction = false;
 		}
-		
+
 	};
-	
+
 	ActionListener encryptAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -643,6 +644,20 @@ public class ElephantWindow extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			Elephant.settings.setSortMostRecent(false);
 			changeSortingTo(Elephant.settings.getSortBy());
+		}
+	};
+
+	ActionListener showInFinderAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Set<Note> set = noteList.getSelection();
+			if (set.size() != 1) {
+				return;
+			}
+			Note n = set.iterator().next();
+			File f = n.file();
+
+			LaunchUtil.reveal(f);
 		}
 	};
 
@@ -1570,8 +1585,14 @@ public class ElephantWindow extends JFrame {
 		view.add(menuItem("Back", KeyEvent.VK_OPEN_BRACKET, menuMask, viewBackAction));
 		view.add(menuItem("Forward", KeyEvent.VK_CLOSE_BRACKET, menuMask, viewForwardAction));
 
+		String showIn = "Show in File Explorer";
+		if (SystemUtils.IS_OS_MAC_OSX) {
+			showIn = "Show in Finder";
+		}
+
 		JMenu note = new JMenu("Note");
 		note.add(menuItem("Open Note in Separate Window", 0, 0, openNoteInWindowAction));
+		note.add(menuItem(showIn, 0, 0, showInFinderAction));
 		note.addSeparator();
 		note.add(menuItem("Edit Note Title", KeyEvent.VK_L, menuMask, editTitleAction));
 		note.add(menuItem("Edit Note Tags", KeyEvent.VK_QUOTE, menuMask, editTagsAction));
