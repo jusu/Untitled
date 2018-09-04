@@ -59,6 +59,17 @@ public class LaunchUtil {
 			} catch (IOException e) {
 				LOG.severe("Fail: " + e);
 			}
+		} else if (SystemUtils.IS_OS_WINDOWS) {
+			final List<String> command = Factory.newArrayList();
+			command.add("explorer.exe");
+			command.add("/select,");
+			command.add(f.getAbsolutePath());
+			try {
+				final ProcessBuilder builder = new ProcessBuilder(command);
+				builder.start();
+			} catch (IOException e) {
+				LOG.severe("Fail: " + e);
+			}
 		} else {
 			try {
 				Desktop.getDesktop().open(f.getParentFile());
