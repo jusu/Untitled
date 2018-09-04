@@ -631,8 +631,17 @@ public class CustomEditor extends RoundPanel {
 						// If pastePlaintext setting is true, paste plain text on plain text notes,
 						// and rich text on rich text notes.
 
-						if (isMarkdown || (Elephant.settings.getBoolean(Settings.Keys.PASTE_PLAINTEXT) && !isRichText)) {
+						boolean pastePlain = ElephantWindow.plainTextOnPasteAction;
+
+						if (pastePlain || isMarkdown || (Elephant.settings.getBoolean(Settings.Keys.PASTE_PLAINTEXT) && !isRichText)) {
 							String plain = Note.plainTextContents(s);
+
+							// There seems to be an extra linefeed there but should we remove it or not?
+							/*
+							 * if (plain != null && plain.length() > 0 && plain.charAt(plain.length() - 1) == '\n') {
+							 * plain = plain.substring(0, plain.length() - 1); }
+							 */
+
 							i.doc.insertString(i.pos, plain, null);
 							return;
 						}

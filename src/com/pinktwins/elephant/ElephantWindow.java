@@ -107,6 +107,8 @@ public class ElephantWindow extends JFrame {
 
 	public static final Border emptyBorder = BorderFactory.createEmptyBorder(0, 0, 0, 0);
 
+	public static boolean plainTextOnPasteAction = false;
+	
 	private CustomSplitPane splitLeft, splitRight;
 
 	private final Toolbar toolBar = new Toolbar(this);
@@ -188,7 +190,7 @@ public class ElephantWindow extends JFrame {
 	interface AddNewFrameContent {
 		public void addContent(JFrame f);
 	}
-
+	
 	ActionListener newNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -353,6 +355,16 @@ public class ElephantWindow extends JFrame {
 		}
 	};
 
+	ActionListener pasteWithoutStylesAction = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ElephantWindow.plainTextOnPasteAction = true;
+			noteEditor.pasteAction();
+			ElephantWindow.plainTextOnPasteAction = false;
+		}
+		
+	};
+	
 	ActionListener encryptAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -1469,9 +1481,11 @@ public class ElephantWindow extends JFrame {
 		final JMenuItem iCut = menuItem("Cut", KeyEvent.VK_X, menuMask, cutTextAction);
 		final JMenuItem iCopy = menuItem("Copy", KeyEvent.VK_C, menuMask, copyTextAction);
 		final JMenuItem iPaste = menuItem("Paste", KeyEvent.VK_V, menuMask, pasteTextAction);
+		final JMenuItem iPasteWithoutStyles = menuItem("Paste Without Styles", KeyEvent.VK_V, menuMask | KeyEvent.SHIFT_DOWN_MASK, pasteWithoutStylesAction);
 		edit.add(iCut);
 		edit.add(iCopy);
 		edit.add(iPaste);
+		edit.add(iPasteWithoutStyles);
 		edit.addSeparator();
 
 		final JMenuItem iEnc = menuItem("Encrypt Selection to Clipboard", KeyEvent.VK_C, menuMask | KeyEvent.SHIFT_DOWN_MASK, encryptAction);
