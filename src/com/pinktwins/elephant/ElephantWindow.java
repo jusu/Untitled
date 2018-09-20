@@ -213,8 +213,13 @@ public class ElephantWindow extends JFrame {
 	ActionListener saveNoteAction = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			noteEditor.focusEditor();
-			unfocusEditor();
+			// Save, keep editor focused.
+			noteEditor.saveChanges();
+			noteEditor.editingFocusGained();
+
+			// Previously, save by unfocusing editor:
+			//noteEditor.focusEditor();
+			//unfocusEditor();
 		}
 	};
 

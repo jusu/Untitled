@@ -3,6 +3,7 @@
 ##v49
 - Added Edit | Paste Without Styles
 - Added Note | Show in Finder
+- Fix: File | Save now keeps editor focused to prevent accidental keystrokes to note list. Use ESC to unfocus editor.
 
 ##v48
 - Added CSS error checking
