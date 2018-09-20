@@ -91,6 +91,7 @@ public class SearchIndexer {
 
 		Meta meta = note.getMeta();
 		memoryIndex.digestText(note, meta.title());
+		memoryIndex.digestText(note, "title:" + meta.title());
 
 		if (useLucene) {
 			luceneIndex.digestText(note, null);
