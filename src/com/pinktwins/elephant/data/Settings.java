@@ -24,7 +24,7 @@ public class Settings {
 								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW("inlinePreview"), SORT_BY(
 										"sortBy"), SORT_RECENT_FIRST("sortRecentFirst"), MARKDOWN_STYLES("markdownStyles"), FONTS("fonts"), FONT_EDITOR(
 												"fontEditor"), FONT_EDITORTITLE("fontEditorTitle"), FONT_CARDNAME("fontCardName"), FONT_SNIPPETNAME(
-														"fontSnippetName"), FONT_CARDPREVIEW("fontCardPreview"), FONT_SNIPPETPREVIEW("fontSnippetPreview");
+														"fontSnippetName"), FONT_CARDPREVIEW("fontCardPreview"), FONT_SNIPPETPREVIEW("fontSnippetPreview"), MARKDOWN_FULLPICTUREPATH("markdownFullPicturePath");
 
 		private final String str;
 
@@ -61,6 +61,8 @@ public class Settings {
 				return "Paste plain text";
 			case FONTS:
 				return "Fonts";
+			case MARKDOWN_FULLPICTUREPATH:
+				return "Markdown: use full path for pictures";
 			default:
 				return "";
 			}
@@ -90,6 +92,8 @@ public class Settings {
 				return "Text is pasted in plain text. Default is no.";
 			case FONTS:
 				return "Fonts used in Elephant.";
+			case MARKDOWN_FULLPICTUREPATH:
+				return "Use full path for markdown pictures, as in: 'noteFilename.attachments/picture.jpg'. This might be required to support external markdown editors. This is a beta feature, is off by default, and filename without path is used.";
 			default:
 				return "";
 			}
@@ -142,6 +146,8 @@ public class Settings {
 				return Kinds.Boolean;
 			case FONTS:
 				return Kinds.Fonts;
+			case MARKDOWN_FULLPICTUREPATH:
+				return Kinds.Boolean;
 			default:
 				return Kinds.Other;
 			}
@@ -150,7 +156,7 @@ public class Settings {
 	};
 
 	public static Keys[] uiKeys = { Keys.FONTS, Keys.ALLOW_FILENAMECHARS, Keys.AUTOBULLET, Keys.CHARSET, Keys.CONFIRM_DELETE_FROM_TRASH, Keys.DEFAULT_FILETYPE,
-			Keys.DEFAULT_NOTEBOOK, Keys.FONT_SCALE, Keys.INLINE_PREVIEW, Keys.MARKDOWN_STYLES, Keys.PASTE_PLAINTEXT };
+			Keys.DEFAULT_NOTEBOOK, Keys.FONT_SCALE, Keys.INLINE_PREVIEW, Keys.MARKDOWN_STYLES, Keys.PASTE_PLAINTEXT, Keys.MARKDOWN_FULLPICTUREPATH };
 
 	public static enum SortBy {
 		TITLE, CREATED, UPDATED
@@ -428,5 +434,12 @@ public class Settings {
 
 	public void setSortMostRecent(boolean b) {
 		set(Keys.SORT_RECENT_FIRST, b);
+	}
+	
+	public boolean getMarkdownFullPicturePath() {
+		if (!has(Keys.MARKDOWN_FULLPICTUREPATH)) {
+			return false;
+		}
+		return getBoolean(Keys.MARKDOWN_FULLPICTUREPATH);
 	}
 }

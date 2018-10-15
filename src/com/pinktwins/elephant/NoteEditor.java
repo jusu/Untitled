@@ -854,12 +854,16 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		String name = f.getName();
 		String encName = name;
 		try {
-			encName = URLEncoder.encode(name, "UTF-8");
+			encName = URLEncoder.encode(encName, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			LOG.severe("Fail: " + e);
 		}
 		encName = encName.replace("+", "%20");
 
+		if (Elephant.settings.getMarkdownFullPicturePath()) {
+			encName = currentNote.file().getName() + ".attachments" + File.separator + encName;
+		}
+		
 		JTextPane tp = editor.getTextPane();
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), String.format("%s[%s](%s \"\")\n", isImage ? "!" : "", name, encName), null);

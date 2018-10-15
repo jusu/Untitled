@@ -28,7 +28,12 @@ public class HtmlPane extends JTextPane {
 		setEditable(false);
 		setContentType("text/html");
 
-		base = noteFile.getAbsolutePath() + ".attachments" + File.separator;
+		if (!Elephant.settings.getMarkdownFullPicturePath()) {
+			base = noteFile.getAbsolutePath() + ".attachments" + File.separator;
+		} else {
+			base = noteFile.getAbsolutePath();
+		}
+
 		setDocumentBase();
 
 		HTMLEditorKit kit = new HTMLEditorKit();

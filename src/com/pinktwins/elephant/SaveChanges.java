@@ -24,7 +24,7 @@ public class SaveChanges {
 	private SaveChanges() {
 	}
 
-	private static void renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
+	private static File renameAccordingToFormat(Note currentNote, CustomEditor editor, String title) {
 		if (!currentNote.isHtml()) {
 			try {
 				String newName = title;
@@ -33,11 +33,12 @@ public class SaveChanges {
 					newName = title + (editor.isMarkdown ? ".md" : editor.isRichText ? ".rtf" : ".txt");
 				}
 
-				currentNote.attemptSafeRename(newName);
+				return currentNote.attemptSafeRename(newName);
 			} catch (IOException e) {
 				LOG.severe("Fail: " + e);
 			}
 		}
+		return null;
 	}
 
 	public static void saveChanges(Note currentNote, NoteAttachments attachments, NoteEditor noteEditor, TagEditorPane tagPane) {
@@ -49,13 +50,16 @@ public class SaveChanges {
 			boolean changed = false;
 			boolean contentChanged = false;
 
+			File noteFileBeforeRename = currentNote.file();
+			File renamedFile = null;
+
 			try {
 				// Title
 				String fileTitle = currentNote.getMeta().title();
 				String editedTitle = editor.getTitle();
 				if (!fileTitle.equals(editedTitle)) {
 					currentNote.getMeta().title(editedTitle);
-					renameAccordingToFormat(currentNote, editor, editedTitle);
+					renamedFile = renameAccordingToFormat(currentNote, editor, editedTitle);
 					changed = true;
 				}
 
@@ -64,13 +68,13 @@ public class SaveChanges {
 				if (!changed) {
 					// Did format change during edit?
 					if ((editor.isRichText && "txt".equals(ext)) || (!editor.isRichText && "rtf".equals(ext))) {
-						renameAccordingToFormat(currentNote, editor, editedTitle);
+						renamedFile = renameAccordingToFormat(currentNote, editor, editedTitle);
 						changed = true;
 					}
 
 					// markdown -> make plain text
 					if (!editor.isMarkdown && "md".equals(ext)) {
-						renameAccordingToFormat(currentNote, editor, editedTitle);
+						renamedFile = renameAccordingToFormat(currentNote, editor, editedTitle);
 						changed = true;
 					}
 				}
@@ -111,6 +115,21 @@ public class SaveChanges {
 
 				String fileText = currentNote.contents();
 				String editedText = editor.getText();
+
+				if (editor.isMarkdown && Elephant.settings.getMarkdownFullPicturePath()) {
+					// If full picture path is used (to support external markdown editors)
+					// and note was renamed, we need to modify the path for the newly renamed
+					// attachments folder.
+					if (renamedFile != null) {
+						String oldPath = "](" + noteFileBeforeRename.getName() + ".attachments" + File.separator;
+						String newPath = "](" + renamedFile.getName() + ".attachments" + File.separator;
+						String s = editedText.replace(oldPath, newPath);
+						if (!s.equals(editedText)) {
+							editor.setText(s);
+							editedText = s;
+						}
+					}
+				}
 
 				if (!fileText.equals(editedText)) {
 					currentNote.save(editedText);

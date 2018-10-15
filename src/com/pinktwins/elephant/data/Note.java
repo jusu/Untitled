@@ -540,7 +540,7 @@ public class Note implements Comparable<Note> {
 		}
 	}
 
-	public void attemptSafeRename(String newName) throws IOException {
+	public File attemptSafeRename(String newName) throws IOException {
 
 		String regexp = "[^a-zA-Z0-9 \\.\\-";
 		String allowChars = Elephant.settings.getAllowFilenameChars();
@@ -575,8 +575,7 @@ public class Note implements Comparable<Note> {
 			String base = FilenameUtils.getBaseName(newName);
 			String ext = FilenameUtils.getExtension(newName);
 			newName = base + "_" + ts() + "." + ext;
-			attemptSafeRename(newName);
-			return;
+			return attemptSafeRename(newName);
 		}
 
 		if (meta.exists()) {
@@ -599,6 +598,8 @@ public class Note implements Comparable<Note> {
 		meta = newMeta;
 
 		new NotebookEvent(NotebookEvent.Kind.noteRenamed, oldFile, newFile).post();
+
+		return newFile;
 	}
 
 	public File importAttachment(File f) throws IOException {
