@@ -861,9 +861,15 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		encName = encName.replace("+", "%20");
 
 		if (Elephant.settings.getMarkdownFullPicturePath()) {
-			encName = currentNote.file().getName() + ".attachments" + File.separator + encName;
+			String noteFilename = currentNote.file().getName();
+			try {
+				noteFilename = URLEncoder.encode(noteFilename, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				LOG.severe("Fail: " + e);
+			}
+			encName = noteFilename + ".attachments" + File.separator + encName;
 		}
-		
+
 		JTextPane tp = editor.getTextPane();
 		try {
 			tp.getDocument().insertString(tp.getCaretPosition(), String.format("%s[%s](%s \"\")\n", isImage ? "!" : "", name, encName), null);
@@ -970,8 +976,8 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 	/*
 	 * somehow I just dont like this. public void turnToMarkdown() { if (!currentNote.isMarkdown()) {
-	 * turnToPlainText_format(); try { currentNote.attemptSafeRename(editor.getTitle() + ".md"); editor.setMarkdown(true); }
-	 * catch (IOException e) { e.printStackTrace(); } } }
+	 * turnToPlainText_format(); try { currentNote.attemptSafeRename(editor.getTitle() + ".md");
+	 * editor.setMarkdown(true); } catch (IOException e) { e.printStackTrace(); } } }
 	 */
 
 	public void importAttachments(List<AttachmentInfo> info) {
