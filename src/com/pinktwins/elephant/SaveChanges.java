@@ -2,6 +2,8 @@ package com.pinktwins.elephant;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -121,8 +123,17 @@ public class SaveChanges {
 					// and note was renamed, we need to modify the path for the newly renamed
 					// attachments folder.
 					if (renamedFile != null) {
-						String oldPath = "](" + noteFileBeforeRename.getName() + ".attachments" + File.separator;
-						String newPath = "](" + renamedFile.getName() + ".attachments" + File.separator;
+						String oldPath = noteFileBeforeRename.getName();
+						String newPath = renamedFile.getName();
+						try {
+							oldPath = URLEncoder.encode(oldPath, "UTF-8");
+							newPath = URLEncoder.encode(newPath, "UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							LOG.severe("Fail: " + e);
+						}
+
+						oldPath = "](" + oldPath + ".attachments" + File.separator;
+						newPath = "](" + newPath + ".attachments" + File.separator;
 						String s = editedText.replace(oldPath, newPath);
 						if (!s.equals(editedText)) {
 							editor.setText(s);
