@@ -710,6 +710,7 @@ public class CustomEditor extends RoundPanel {
 		}
 
 		note = new CustomTextPane();
+		note.setEditorKit(new WrappedEditorKit());
 		note.setDocument(new CustomDocument());
 		note.addFocusListener(editorFocusListener);
 		note.setFont(ElephantWindow.fontEditor);
