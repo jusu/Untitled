@@ -45,12 +45,6 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
 	}
 
 	@Override
-	protected void installDefaults() {
-		scrollBarWidth = 12;
-		super.installDefaults();
-	}
-
-	@Override
 	protected void installComponents() {
 		incrButton = new VoidButton(); // createIncreaseButton(SOUTH);
 		decrButton = new VoidButton(); // createDecreaseButton(NORTH);
