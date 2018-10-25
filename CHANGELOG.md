@@ -1,5 +1,8 @@
 # Changelog
 
+##v50
+- Added word wrapping for long words in editor (github.com/floppypanda)
+
 ##v49
 - Added Edit | Paste Without Styles
 - Added Note | Show in Finder

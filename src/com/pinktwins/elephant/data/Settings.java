@@ -24,7 +24,7 @@ public class Settings {
 								"showSidebar"), DEFAULT_FILETYPE("defaultFiletype"), CHARSET("charset"), INLINE_PREVIEW("inlinePreview"), SORT_BY(
 										"sortBy"), SORT_RECENT_FIRST("sortRecentFirst"), MARKDOWN_STYLES("markdownStyles"), FONTS("fonts"), FONT_EDITOR(
 												"fontEditor"), FONT_EDITORTITLE("fontEditorTitle"), FONT_CARDNAME("fontCardName"), FONT_SNIPPETNAME(
-														"fontSnippetName"), FONT_CARDPREVIEW("fontCardPreview"), FONT_SNIPPETPREVIEW("fontSnippetPreview"), MARKDOWN_FULLPICTUREPATH("markdownFullPicturePath");
+														"fontSnippetName"), FONT_CARDPREVIEW("fontCardPreview"), FONT_SNIPPETPREVIEW("fontSnippetPreview"), MARKDOWN_FULLPICTUREPATH("markdownFullPicturePath"), WORDWRAP("wordWrap");
 
 		private final String str;
 
@@ -441,5 +441,12 @@ public class Settings {
 			return false;
 		}
 		return getBoolean(Keys.MARKDOWN_FULLPICTUREPATH);
+	}
+	
+	public boolean getWordWrap() {
+		if (!has(Keys.WORDWRAP)) {
+			return true;
+		}
+		return getBoolean(Keys.WORDWRAP);
 	}
 }
