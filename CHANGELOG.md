@@ -2,6 +2,8 @@
 
 ##v50
 - Added word wrapping for long words in editor (github.com/floppypanda)
+- Fixed freezing when clicking a link on html note on some linux systems
+- Added experimental "Use full path for markdown pictures" setting
 
 ##v49
 - Added Edit | Paste Without Styles

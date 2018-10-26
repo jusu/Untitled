@@ -75,6 +75,7 @@ public class BrowserPane extends JPanel {
 
 			final String href = ((Element) ev.getTarget()).getAttribute("href");
 			if (href != null) {
+				// Some linux systems hang in browse() without invokeLater()
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
