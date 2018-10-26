@@ -73,15 +73,20 @@ public class BrowserPane extends JPanel {
 		public void handleEvent(Event ev) {
 			ev.preventDefault();
 
-			String href = ((Element) ev.getTarget()).getAttribute("href");
+			final String href = ((Element) ev.getTarget()).getAttribute("href");
 			if (href != null) {
-				try {
-					Desktop.getDesktop().browse(new URI(href));
-				} catch (IOException e) {
-					LOG.severe("Fail: " + e);
-				} catch (URISyntaxException e) {
-					LOG.severe("Fail: " + e);
-				}
+				
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							Desktop.getDesktop().browse(new URI(href));
+						} catch (IOException e) {
+							LOG.severe("Fail: " + e);
+						} catch (URISyntaxException e) {
+							LOG.severe("Fail: " + e);
+						}
+					}
+				});
 			}
 		}
 	};
