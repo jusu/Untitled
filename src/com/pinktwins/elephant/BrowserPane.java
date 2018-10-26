@@ -75,7 +75,6 @@ public class BrowserPane extends JPanel {
 
 			final String href = ((Element) ev.getTarget()).getAttribute("href");
 			if (href != null) {
-				
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						try {
