@@ -30,7 +30,7 @@ dependencies {
     compile 'org.apache.tika:tika-app:1.14'
     compile 'org.pushing-pixels:trident:1.2'
     
-    compile files('libs/com.pinktwins.rtf.jar') 
+    compile files('lib/com.pinktwins.rtf.jar') 
 
     testCompile 'junit:junit:4.12'
 }
