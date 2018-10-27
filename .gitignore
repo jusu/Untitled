@@ -5,3 +5,4 @@ bin
 /out/
 .idea/
 Elephant.iml
+.gradle
