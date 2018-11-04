@@ -15,6 +15,16 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
+// PdfBox is OK, some other renderers:
+//- iText: not a renderer
+//- JPedal: commercial, insanely expensive
+//- jPod: will check this
+//- gnujpdf: no way
+//- PDFJet: commercial
+//- ICEpdf: free versions doesn't have "font renderer", possibly limited
+//- jmupdf: by far fastests and most compatible, JNI wrapper to a native library.
+// latest version was missing binary for Linux. Might be an option to switch to. 
+
 public class PdfUtil {
 
 	private static final Logger LOG = Logger.getLogger(PdfUtil.class.getName());
