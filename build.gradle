@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['src']
+        }
+    }
+}
+
+repositories {
+}
+
+dependencies {
+  compile files('libs/android-json.jar')
+  compile files('libs/asm-all-4.0.jar')
+  compile files('libs/com.pinktwins.rtf.jar')
+  compile files('libs/commons-codec-1.10.jar')
+  compile files('libs/commons-collections4-4.0.jar')
+  compile files('libs/commons-io-2.4.jar')
+  compile files('libs/commons-lang3-3.3.2.jar')
+  compile files('libs/fontchooser-2.4-SNAPSHOT.jar')
+  compile files('libs/guava-18.0.jar')
+  compile files('libs/jai-imageio-core-1.3.1.jar')
+  compile files('libs/jai-imageio-jpeg2000-1.3.0.jar')
+  compile files('libs/joda-time-2.6.jar')
+  compile files('libs/levigo-jbig2-imageio-1.6.5.jar')
+  compile files('libs/lucene-analyzers-common-4.10.3.jar')
+  compile files('libs/lucene-core-4.10.3.jar')
+  compile files('libs/lucene-queryparser-4.10.3.jar')
+  compile files('libs/parboiled-core-1.1.6.jar')
+  compile files('libs/parboiled-java-1.1.6.jar')
+  compile files('libs/pegdown-1.4.2.jar')
+  compile files('libs/tika-app-1.14.jar')
+  compile files('libs/trident.jar')
+}
+
+// Define the main class for the application
+mainClassName = 'com.pinktwins.elephant.Elephant'
