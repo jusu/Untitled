@@ -22,7 +22,7 @@ Copy: https://github.com/jusu/commons-collections
 
 commons-io-2.4.jar
 Website: https://commons.apache.org/proper/commons-io/index.html
-Source: https://git-wip-us.apache.org/repos/asf?p=commons-io.git
+Source: http://git-wip-us.apache.org/repos/asf/commons-io.git
 Copy: https://github.com/jusu/commons-io
 
 commons-lang3-3.3.2.jar
