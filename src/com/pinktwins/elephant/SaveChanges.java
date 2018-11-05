@@ -128,6 +128,8 @@ public class SaveChanges {
 						try {
 							oldPath = URLEncoder.encode(oldPath, "UTF-8");
 							newPath = URLEncoder.encode(newPath, "UTF-8");
+							oldPath = oldPath.replace("+", "%20");
+							newPath = newPath.replace("+", "%20");
 						} catch (UnsupportedEncodingException e) {
 							LOG.severe("Fail: " + e);
 						}

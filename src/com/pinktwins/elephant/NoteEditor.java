@@ -864,6 +864,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 			String noteFilename = currentNote.file().getName();
 			try {
 				noteFilename = URLEncoder.encode(noteFilename, "UTF-8");
+				noteFilename = noteFilename.replace("+",  "%20");
 			} catch (UnsupportedEncodingException e) {
 				LOG.severe("Fail: " + e);
 			}
