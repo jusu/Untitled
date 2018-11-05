@@ -28,6 +28,7 @@ dependencies {
   compile files('libs/commons-lang3-3.3.2.jar')
   compile files('libs/fontchooser-2.4-SNAPSHOT.jar')
   compile files('libs/guava-27.0-jre.jar')
+  compile files('libs/jackson-datatype-jdk8-2.9.7.jar')
   compile files('libs/jai-imageio-core-1.3.1.jar')
   compile files('libs/jai-imageio-jpeg2000-1.3.0.jar')
   compile files('libs/joda-time-2.6.jar')
