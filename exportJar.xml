@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="build/elephantapp.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="package/build/elephantapp.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.pinktwins.elephant.Elephant"/>
                 <attribute name="Class-Path" value="."/>
