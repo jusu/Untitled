@@ -38,7 +38,7 @@ dependencies {
   compile files('libs/parboiled-core-1.1.6.jar')
   compile files('libs/parboiled-java-1.1.6.jar')
   compile files('libs/pegdown-1.4.2.jar')
-  compile files('libs/tika-app-1.14.jar')
+  compile files('libs/tika-app-1.19.1.jar')
   compile files('libs/trident.jar')
 }
 

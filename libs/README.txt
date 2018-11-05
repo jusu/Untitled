@@ -72,9 +72,10 @@ pegdown-1.4.2.jar
 Source: https://github.com/sirthias/pegdown/
 Copy: https://github.com/jusu/pegdown
 
-tika-app-1.14.jar
+tika-app-1.19.1.jar
 Website: http://tika.apache.org/
 Source: https://github.com/apache/tika/
+Tag: https://github.com/apache/tika/releases/tag/1.19.1
 Copy: https://github.com/jusu/tika
 
 trident.jar

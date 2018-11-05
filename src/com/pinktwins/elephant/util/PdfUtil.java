@@ -40,7 +40,8 @@ public class PdfUtil {
 		String[] loggers = { "org.apache.pdfbox.util.PDFStreamEngine", "org.apache.pdfbox.pdmodel.font.PDSimpleFont", "org.apache.pdfbox.pdmodel.font.PDFont",
 				"org.apache.pdfbox.pdmodel.font.FontManager", "org.apache.pdfbox.pdfparser.PDFObjectStreamParser", "org.apache.pdfbox.pdmodel.PDDocument",
 				"org.apache.pdfbox.pdmodel.PDPage", "org.apache.pdfbox.tools.PDFToImage", "org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap",
-				"org.apache.fontbox.type1.Type1CharStringReader", "org.apache.fontbox.cff.CharStringHandler", "org.apache.fontbox", "org.apache.pdfbox" };
+				"org.apache.fontbox.type1.Type1CharStringReader", "org.apache.fontbox.cff.CharStringHandler", "org.apache.fontbox", "org.apache.pdfbox",
+				"org.apache.tika.config.InitializableProblemHandler" };
 		for (String logger : loggers) {
 			org.apache.log4j.Logger logpdfengine = org.apache.log4j.Logger.getLogger(logger);
 			logpdfengine.setLevel(org.apache.log4j.Level.OFF);
@@ -62,7 +63,7 @@ public class PdfUtil {
 	}
 
 	public Dimension pageSize(int n) {
-		PDPage page = pdfDoc.getPage(n-1);
+		PDPage page = pdfDoc.getPage(n - 1);
 		return new Dimension((int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
 	}
 
@@ -80,7 +81,7 @@ public class PdfUtil {
 		BufferedImage bImg = null;
 
 		try {
-			PDPage page = pdfDoc.getPage(n-1);
+			PDPage page = pdfDoc.getPage(n - 1);
 
 			// Improve the image quality slightly compared to assuming 72dpi.
 			double adjust = screenDpi / 72.0;
@@ -92,7 +93,7 @@ public class PdfUtil {
 				adjust = minimumWidth / (float) rect.width;
 			}
 
-			bImg = pdfRenderer.renderImage(n-1, (float) adjust);
+			bImg = pdfRenderer.renderImage(n - 1, (float) adjust);
 
 			ImageIO.write(bImg, "png", outPath);
 		} catch (IOException e) {
