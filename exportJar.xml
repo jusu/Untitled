@@ -12,7 +12,7 @@
             <zipfileset excludes="META-INF/*.SF" src="libs/android-json.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="libs/trident.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="libs/commons-io-2.4.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="libs/guava-18.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="libs/guava-27.0-jre.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="libs/joda-time-2.6.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="libs/commons-collections4-4.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="libs/commons-lang3-3.3.2.jar"/>

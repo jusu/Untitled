@@ -33,8 +33,9 @@ Copy: https://github.com/jusu/commons-lang
 fontchooser-2.4-SNAPSHOT.jar
 Copy: https://github.com/jusu/fontchooser
 
-guava-18.0.jar
+guava-27.0-jre.jar
 Source: https://github.com/google/guava
+Tag: https://github.com/google/guava/tree/v27.0
 Copy: https://github.com/jusu/guava
 
 jai-imageio-core-1.3.1.jar
