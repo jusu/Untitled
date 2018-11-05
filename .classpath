@@ -5,10 +5,10 @@
 	<classpathentry kind="lib" path="libs/android-json.jar"/>
 	<classpathentry kind="lib" path="libs/trident.jar"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="libs/guava-18.0.jar"/>
 	<classpathentry kind="lib" path="libs/joda-time-2.6.jar"/>
 	<classpathentry kind="lib" path="libs/commons-collections4-4.0.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="libs/guava-27.0-jre.jar"/>
 	<classpathentry kind="lib" path="libs/parboiled-java-1.1.6.jar"/>
 	<classpathentry kind="lib" path="libs/pegdown-1.4.2.jar"/>
 	<classpathentry kind="lib" path="libs/parboiled-core-1.1.6.jar"/>
