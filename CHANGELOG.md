@@ -1,5 +1,8 @@
 # Changelog
 
+##v51
+- Updated 3rd party dependencies: Apache Tika, Google Guava
+
 ##v50
 - Added word wrapping for long words in editor (github.com/floppypanda)
 - Fixed freezing when clicking a link on html note on some linux systems
