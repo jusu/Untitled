@@ -42,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -753,6 +754,12 @@ public class CustomEditor extends RoundPanel {
 			public void mouseClicked(MouseEvent event) {
 				if (eeListener != null && attachmentObject != null) {
 					eeListener.attachmentClicked(event, attachmentObject);
+				} else {
+					if (SwingUtilities.isLeftMouseButton(event)) {
+						startEditing();
+					} else if (SwingUtilities.isMiddleMouseButton(event)) {
+						if (note.isFocusOwner()) getTextPane().paste();
+					}
 				}
 			}
 
