@@ -36,98 +36,130 @@ public class Start extends BackgroundPanel {
 		}
 	}
 
+	private JPanel startupPanel;
+
+	private JLabel welcomeLabel;
+
+	private JButton chooseFolderButton;
+
+	private JCheckBox createElephantFolderCheckBox;
+
+	private JLabel hintLabel;
+
 	public Start(final Runnable runWhenLocationSet) {
 		super(tile);
 
 		setLayout(new FlowLayout());
+		createComponents();
 
-		JPanel main = new JPanel(new GridLayout(4, 1));
-		main.setBorder(BorderFactory.createEmptyBorder(140, 0, 0, 0));
-
-		JLabel welcome = new JLabel("Please choose your note location.", JLabel.CENTER);
-		welcome.setForeground(Color.DARK_GRAY);
-		welcome.setFont(ElephantWindow.fontStart);
-		welcome.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-
-		JButton bLocation = new JButton("Choose folder");
-
-		final JCheckBox createElephantFolder = new JCheckBox("Create folder 'Elephant' under this location.");
-		createElephantFolder.setForeground(Color.DARK_GRAY);
-		createElephantFolder.setFont(ElephantWindow.fontStart);
-		createElephantFolder.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-		createElephantFolder.setSelected(true);
-		
-		final JLabel hint = new JLabel("", JLabel.CENTER);
-		hint.setForeground(Color.DARK_GRAY);
-		hint.setFont(ElephantWindow.fontStart);
-		hint.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-
-		main.add(welcome);
-		main.add(bLocation);
-		main.add(createElephantFolder);
-		main.add(hint);
-
-		add(main);
-
-		createElephantFolder.addActionListener(new ActionListener() {
+		createElephantFolderCheckBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (createElephantFolder.isSelected()) {
-					hint.setText("");
-				} else {
-					hint.setText("Elephant will use the selected folder directly.");
-				}
+				String hintLabelText = createElephantFolderCheckBox.isSelected() ? "" : "Elephant will use the selected folder directly.";
+				hintLabel.setText(hintLabelText);
 			}
 		});
 
-		bLocation.addActionListener(new ActionListener() {
+		chooseFolderButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				JFileChooser ch = new JFileChooser();
-				ch.setCurrentDirectory(new File(System.getProperty("user.home")));
-				ch.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				ch.setMultiSelectionEnabled(false);
+				JFileChooser baseDirectoryChooser = buildBaseDirectoryChooser();
+				int res = baseDirectoryChooser.showOpenDialog(Start.this);
+				if (res != JFileChooser.APPROVE_OPTION) {
+					return;
+				}
 
-				int res = ch.showOpenDialog(Start.this);
-				if (res == JFileChooser.APPROVE_OPTION) {
-					File f = ch.getSelectedFile();
-					if (f.exists()) {
-						File folder = null;
-						if (createElephantFolder.isSelected()) {
-							folder = new File(f.getAbsolutePath() + File.separator + "Elephant");
-						} else {
-							folder = new File(f.getAbsolutePath());
-						}
+				File selectedFile = baseDirectoryChooser.getSelectedFile();
 
-						if (folder.exists() || folder.mkdirs()) {
+				String baseDirectoryPath = selectedFile.getAbsolutePath();
+				if (createElephantFolderCheckBox.isSelected()) {
+					baseDirectoryPath += File.separator + "Elephant";
+				}
 
-							Vault.getInstance().setLocation(folder.getAbsolutePath());
-
-							File inbox = new File(folder + File.separator + "Inbox");
-							if (inbox.mkdirs()) {
-
-								addBuiltInNote(inbox + File.separator + "Advanced_settings.txt", "Tip #3 - Advanced settings",
-										Note.getResourceNote("Advanced_settings.txt"));
-								addBuiltInNote(inbox + File.separator + "html_example.html", "HTML Example", Note.getResourceNote("html_example.html"));
-								addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #2 - Markdown", Note.getResourceNote("markdown.md"));
-								addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #1 - Shortcuts", Note.getResourceNote("shortcuts.txt"));
-								addBuiltInNote(inbox + File.separator + "Welcome.txt", "Welcome!", Note.getResourceNote("welcome.txt"));
-
-								File shortcuts = new File(folder.getAbsolutePath() + File.separator + ".shortcuts");
-								try {
-									IOUtil.writeFile(shortcuts, "{\"list\": [\"Inbox\", \"Inbox/Welcome.txt\", \"search:Tip\", \"search:tag:Today\"]}");
-								} catch (IOException e) {
-									LOG.severe("Fail: " + e);
-								}
-							}
-
-							Vault.getInstance().populate();
-							runWhenLocationSet.run();
-						}
-					}
+				boolean locationSet = createBaseDirectory(baseDirectoryPath);
+				if (locationSet) {
+					Vault.getInstance().populate();
+					runWhenLocationSet.run();
 				}
 			}
 		});
+	}
+
+	private void createComponents() {
+		startupPanel = new JPanel(new GridLayout(4, 1));
+		startupPanel.setBorder(BorderFactory.createEmptyBorder(140, 0, 0, 0));
+
+		welcomeLabel = new JLabel("Please choose your note location.", JLabel.CENTER);
+		welcomeLabel.setForeground(Color.DARK_GRAY);
+		welcomeLabel.setFont(ElephantWindow.fontStart);
+		welcomeLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
+		chooseFolderButton = new JButton("Choose folder");
+
+		createElephantFolderCheckBox = new JCheckBox("Create folder 'Elephant' under this location.");
+		createElephantFolderCheckBox.setForeground(Color.DARK_GRAY);
+		createElephantFolderCheckBox.setFont(ElephantWindow.fontStart);
+		createElephantFolderCheckBox.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+		createElephantFolderCheckBox.setSelected(true);
+
+		hintLabel = new JLabel("", JLabel.CENTER);
+		hintLabel.setForeground(Color.DARK_GRAY);
+		hintLabel.setFont(ElephantWindow.fontStart);
+		hintLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+
+		startupPanel.add(welcomeLabel);
+		startupPanel.add(chooseFolderButton);
+		startupPanel.add(createElephantFolderCheckBox);
+		startupPanel.add(hintLabel);
+
+		add(startupPanel);
+	}
+
+	private JFileChooser buildBaseDirectoryChooser() {
+		JFileChooser baseDirectoryChooser = new JFileChooser();
+		baseDirectoryChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		baseDirectoryChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		baseDirectoryChooser.setMultiSelectionEnabled(false);
+		return baseDirectoryChooser;
+	}
+
+	private boolean createBaseDirectory(String baseDirectoryPath) {
+		File baseDirectory = new File(baseDirectoryPath);
+		if (!baseDirectory.exists() && !baseDirectory.mkdirs()) {
+			return false;
+		}
+
+		Vault.getInstance().setLocation(baseDirectoryPath);
+
+		createInbox(baseDirectoryPath + File.separator + "Inbox", baseDirectory);
+
+		return true;
+	}
+
+	private void createInbox(String inboxPath, File baseDirectory) {
+		File inbox = new File(inboxPath);
+		if (!inbox.mkdirs()) {
+			return;
+		}
+		addBuiltInNotes(inbox);
+		createShortcuts(baseDirectory);
+	}
+
+	private void createShortcuts(File baseDirectory) {
+		File shortcuts = new File(baseDirectory.getAbsolutePath() + File.separator + ".shortcuts");
+		try {
+			IOUtil.writeFile(shortcuts, "{\"list\": [\"Inbox\", \"Inbox/Welcome.txt\", \"search:Tip\", \"search:tag:Today\"]}");
+		} catch (IOException e) {
+			LOG.severe("Fail: " + e);
+		}
+	}
+
+	private void addBuiltInNotes(File inbox) {
+		addBuiltInNote(inbox + File.separator + "Advanced_settings.txt", "Tip #3 - Advanced settings", Note.getResourceNote("Advanced_settings.txt"));
+		addBuiltInNote(inbox + File.separator + "html_example.html", "HTML Example", Note.getResourceNote("html_example.html"));
+		addBuiltInNote(inbox + File.separator + "Markdown.md", "Tip #2 - Markdown", Note.getResourceNote("markdown.md"));
+		addBuiltInNote(inbox + File.separator + "Shortcuts.txt", "Tip #1 - Shortcuts", Note.getResourceNote("shortcuts.txt"));
+		addBuiltInNote(inbox + File.separator + "Welcome.txt", "Welcome!", Note.getResourceNote("welcome.txt"));
 	}
 
 	private void addBuiltInNote(String filePath, String title, String contents) {
