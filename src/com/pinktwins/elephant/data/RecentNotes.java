@@ -91,7 +91,7 @@ public class RecentNotes {
 		recent.add(0, n);
 
 		while (recent.size() > MAX_NOTES) {
-			recent.remove(MAX_NOTES - 1);
+			recent.remove(MAX_NOTES);
 		}
 	}
 
