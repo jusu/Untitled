@@ -34,6 +34,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.exception.TikaException;
+import org.apache.tika.exception.ZeroByteFileException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
@@ -274,7 +275,11 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				String plainText = parseToPlainText(file);
 				doc.add(new TextField("contents", plainText, Field.Store.YES));
 			} catch (Exception e) {
-				LOG.severe("Fail: failed indexing '" + file.getName() + "'");
+				if (e instanceof ZeroByteFileException) {
+					// kind of okay
+				} else {
+					LOG.severe("Fail: failed indexing '" + file.getName() + "'");
+				}
 			}
 
 			for (Note.AttachmentInfo info : note.getAttachmentList()) {
