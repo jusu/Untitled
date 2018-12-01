@@ -293,7 +293,9 @@ public class Notebook implements Comparable<Notebook> {
 	}
 
 	public void refresh() {
-		populate();
+		synchronized (notes) {
+			populate();
+		}
 	}
 
 	public boolean rename(String s) {

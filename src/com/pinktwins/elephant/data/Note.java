@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingWorker;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
@@ -531,7 +532,13 @@ public class Note implements Comparable<Note> {
 
 			Notebook nb = Vault.getInstance().findNotebook(dest);
 			if (nb != null) {
-				nb.refresh();
+				(new SwingWorker<Void, Void>() {
+					@Override
+					protected Void doInBackground() throws Exception {
+						nb.refresh();
+						return null;
+					}
+				}).execute();
 			}
 
 			new NotebookEvent(NotebookEvent.Kind.noteMoved, file, destFile).post();

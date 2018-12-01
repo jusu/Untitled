@@ -498,7 +498,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			}
 
 			load(notebook);
-
+			
 			if (index >= 0 && index < noteItems.size()) {
 				NoteItem item = noteItems.get(index);
 				window.showNote(item.note);
