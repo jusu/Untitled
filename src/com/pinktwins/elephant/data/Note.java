@@ -48,18 +48,23 @@ public class Note implements Comparable<Note> {
 
 	public interface Meta {
 		public String title();
+
 		public void title(String newTitle);
 
 		public long created();
+
 		public void setCreatedTime();
 
 		public int getAttachmentPosition(File attachment);
+
 		public void setAttachmentPosition(File attachment, int position);
 
 		public List<String> tags();
+
 		public void setTags(List<String> tagIds, List<String> tagNames);
 
 		boolean getAttachmentPreview(File attachment);
+
 		public void setAttachmentPreview(File attachment, boolean b);
 	}
 
@@ -295,7 +300,7 @@ public class Note implements Comparable<Note> {
 			if (json == null || json.isEmpty()) {
 				return Collections.emptyMap();
 			}
-			
+
 			JSONObject o = new JSONObject(json);
 			Map<String, String> map = Factory.newHashMap();
 
