@@ -3,6 +3,7 @@
 ##v52
 - Markdown links can use environment variables: file://${HOME}/ expands to file:///Users/jusu
 - Fixed search field after File -> New Elephant Window, search was disabled
+- Fixed slowness deleting a note when Trash contains thousands of notes
 - Fixed sticky last entry in 'Recent Notes'
 
 ##v51
