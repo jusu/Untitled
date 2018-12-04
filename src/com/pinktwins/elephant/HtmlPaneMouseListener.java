@@ -57,6 +57,7 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 				String href = (String) set.getAttribute(HTML.Attribute.HREF);
 				if (href != null) {
 					String link = SystemUtil.interpolateEnvironmentVariables(href);
+					link = link.replace("\\",  "/");
 					LOG.info("Clicked " + href + " -> " + link);
 					href = link;
 
