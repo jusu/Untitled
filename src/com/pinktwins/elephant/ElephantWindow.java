@@ -802,12 +802,12 @@ public class ElephantWindow extends JFrame {
 		// with string to note references for future searches.
 		// Also cache notelist items to speed up search result displays.
 
-		toolBar.indexingInProgress(true);
-
 		if (!startCalled && !Search.ssi.ready()) {
 			new Thread() {
 				@Override
 				public void run() {
+					toolBar.indexingInProgress(true);
+
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
