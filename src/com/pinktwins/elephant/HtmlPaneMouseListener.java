@@ -17,6 +17,7 @@ import javax.swing.text.html.HTMLDocument;
 
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.LaunchUtil;
+import com.pinktwins.elephant.util.SystemUtil;
 
 public class HtmlPaneMouseListener extends CustomMouseListener {
 
@@ -55,6 +56,10 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 				AttributeSet set = (AttributeSet) attribute;
 				String href = (String) set.getAttribute(HTML.Attribute.HREF);
 				if (href != null) {
+					String link = SystemUtil.interpolateEnvironmentVariables(href);
+					LOG.info("Clicked " + href + " -> " + link);
+					href = link;
+
 					try {
 						Desktop.getDesktop().browse(new URI(href));
 					} catch (IOException e1) {
