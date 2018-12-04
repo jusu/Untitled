@@ -1,5 +1,10 @@
 # Changelog
 
+##v52
+- Markdown links can use environment variables: file://${HOME}/ expands to file:///Users/jusu
+- Fixed search field after File -> New Elephant Window, search was disabled
+- Fixed sticky last entry in 'Recent Notes'
+
 ##v51
 - Updated 3rd party dependencies: Apache Tika, Google Guava
 - Paste using middle mouse button
