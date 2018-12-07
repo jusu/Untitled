@@ -1,5 +1,9 @@
 # Changelog
 
+##v53
+- Use !searchterm to exclude notes containing searchterm. Can be combined with @ or # searches: "@Inbox !#" - notes in Inbox without a tag.
+- Use search://term in markdown notes as shortcut to search. Might be used for note links: "search://title:Weekend+notes"
+
 ##v52
 - Markdown links can use environment variables: file://${HOME}/ expands to file:///Users/jusu
 - Fixed search field after File -> New Elephant Window, search was disabled
