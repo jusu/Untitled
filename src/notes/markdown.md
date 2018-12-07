@@ -35,3 +35,21 @@ Here's how it works:
 </table>
 
 [Markdown syntax cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
+
+You can also use file:// links to point to filesystem:
+
+file:///Users
+
+Links can use environment variables:
+
+file://${HOME}/
+
+search:// works as a shortcut to Elephant's search field:
+
+search://@Inbox
+
+search://some+notes
+
+search://#
+
+Last one searches for notes with any tag.

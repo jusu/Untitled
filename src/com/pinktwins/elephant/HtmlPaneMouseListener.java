@@ -61,6 +61,17 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 					LOG.info("Clicked " + href + " -> " + link);
 					href = link;
 
+					if (href.startsWith("search://")) {
+						ElephantWindow w = ElephantWindow.getActiveWindow();
+						if (w != null) {
+							href = href.replace("search://",  "search:");
+							href = href.replace("%20", " ");
+							href = href.replace("+", " ");
+							w.openShortcut(href);
+						}
+						return;
+					}
+					
 					try {
 						Desktop.getDesktop().browse(new URI(href));
 					} catch (IOException e1) {

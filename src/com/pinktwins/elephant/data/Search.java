@@ -61,6 +61,7 @@ public class Search {
 		}
 
 		List<Set<Note>> sets = Factory.newArrayList();
+		List<Set<Note>> negativeSets = Factory.newArrayList();
 
 		/*
 		 * List<String> keys = new ArrayList<String>(); Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text);
@@ -71,8 +72,13 @@ public class Search {
 		for (String q : a) {
 			q = q.trim();
 			Set<Note> notes = Factory.newHashSet();
-			notes.addAll(ssi.search(q));
-			sets.add(notes);
+			if (q.charAt(0) != '!') {
+				notes.addAll(ssi.search(q));
+				sets.add(notes);
+			} else {
+				notes.addAll(ssi.search(q.substring(1)));
+				negativeSets.add(notes);
+			}
 		}
 
 		Set<Note> smallest = null;
@@ -89,6 +95,10 @@ public class Search {
 				smallest.retainAll(notes);
 			}
 
+			for (Set<Note> negatives : negativeSets) {
+				smallest.removeAll(negatives);
+			}
+			
 			for (Note n : smallest) {
 				found.addNote(n);
 			}

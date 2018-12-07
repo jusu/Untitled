@@ -674,6 +674,17 @@ public class ElephantWindow extends JFrame {
 		noteList.sortAndUpdate();
 	}
 
+	public static ElephantWindow getActiveWindow() {
+		for (Window w : getWindows()) {
+			if (w instanceof ElephantWindow) {
+				if (w.isActive()) {
+					return (ElephantWindow)w;
+				}
+			}
+		}
+		return null;
+	}
+
 	public ElephantWindow() {
 		setTitle(windowTitle);
 
@@ -882,7 +893,7 @@ public class ElephantWindow extends JFrame {
 
 		setJMenuBar(null);
 	}
-
+	
 	private void callStart(JFrame frame) {
 		Start start = new Start(new Runnable() {
 			@Override

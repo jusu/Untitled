@@ -11,6 +11,20 @@ About search:
 
 Use the following to search for tags and notebooks:
 
-tag:tagname or #tagname
+tag:tagname or t:tagname or #tagname
 nb:notebook or @notebook
+title:shortcuts to search by title
 
+Use ! for "does not contain" a search term:
+
+Notes in "notebook" without "todo" tag:
+@notebook !#todo
+
+Notes in "notebook" without any tags:
+@notebook !#
+
+Tagged notes except from "notebook":
+
+# !@notebook
+
+Note that !searchterm will not return results if it is the only search term.
