@@ -33,7 +33,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
@@ -133,7 +132,7 @@ public class ElephantWindow extends JFrame {
 
 	public static final int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
-	private JMenuBar menuBar;
+	private CustomMenuBar menuBar;
 	private JMenuItem iUndo, iRedo, iSaveSearch, iSidebarVisibility;
 	private JCheckBoxMenuItem iSortTitle, iSortCreated, iSortUpdated, iSortMostRecent, iSortLeastRecent;
 	private JCheckBoxMenuItem iCard, iSnippet, iRecentNotes;
@@ -1475,7 +1474,7 @@ public class ElephantWindow extends JFrame {
 	}
 
 	private void createMenu() {
-		menuBar = new JMenuBar();
+		menuBar = new CustomMenuBar();
 
 		// Windows uses bold font for menu by default.
 		// Plain might be preferred.
@@ -1711,6 +1710,9 @@ public class ElephantWindow extends JFrame {
 	}
 
 	public void sortAndUpdate() {
+		if (CustomMenuBar.isOpen()) {
+			return;
+		}
 		noteList.sortAndUpdate();
 		splitLeft.revalidate();
 	}
