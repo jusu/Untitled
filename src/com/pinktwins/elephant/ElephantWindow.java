@@ -218,8 +218,8 @@ public class ElephantWindow extends JFrame {
 			noteEditor.editingFocusGained();
 
 			// Previously, save by unfocusing editor:
-			//noteEditor.focusEditor();
-			//unfocusEditor();
+			// noteEditor.focusEditor();
+			// unfocusEditor();
 		}
 	};
 
@@ -678,7 +678,7 @@ public class ElephantWindow extends JFrame {
 		for (Window w : getWindows()) {
 			if (w instanceof ElephantWindow) {
 				if (w.isActive()) {
-					return (ElephantWindow)w;
+					return (ElephantWindow) w;
 				}
 			}
 		}
@@ -893,7 +893,7 @@ public class ElephantWindow extends JFrame {
 
 		setJMenuBar(null);
 	}
-	
+
 	private void callStart(JFrame frame) {
 		Start start = new Start(new Runnable() {
 			@Override
