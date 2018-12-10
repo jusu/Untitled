@@ -3,6 +3,8 @@
 ##v53
 - Use !searchterm to exclude notes containing searchterm. Can be combined with @ or # searches: "@Inbox !#" - notes in Inbox without a tag.
 - Use search://term in markdown notes as shortcut to search. Might be used for note links: "search://title:Weekend+notes"
+- Fixed: undo/redo menuitems were disabled on windows/linux
+- Fixed: new note file might have been left open on windows, causing renaming to fail
 
 ##v52
 - Markdown links can use environment variables: file://${HOME}/ expands to file:///Users/jusu
