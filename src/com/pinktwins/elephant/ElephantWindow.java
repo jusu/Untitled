@@ -838,10 +838,12 @@ public class ElephantWindow extends JFrame {
 						return;
 					}
 
-					if (Vault.getInstance().getNoteCount() < 5000) {
+					if (Vault.getInstance().getNoteCount() < 10000) {
 						System.out.println("Thumbnail cache..");
 						start = System.currentTimeMillis();
 						noteList.cache(Notebook.getNotebookWithAllNotes());
+						System.out.println("Thumbnail cache.. trash..");
+						noteList.cache(Vault.getInstance().findNotebook(Vault.getInstance().getTrash()));
 						System.out.println("Done in " + (System.currentTimeMillis() - start) + " ms");
 					}
 				}

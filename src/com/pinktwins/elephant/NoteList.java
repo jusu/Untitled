@@ -160,6 +160,8 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 	}
 
 	public void load(Notebook notebook) {
+		long startTs = System.currentTimeMillis();
+
 		this.notebook = notebook;
 
 		loadCancelTriggers.triggerAll();
@@ -176,7 +178,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 		final List<Note> list = notebook.getNotes();
 
 		final Trigger cancelTrigger = loadCancelTriggers.get();
-		final int uiStep = 50;
+		int uiStep = notebook.count();
 
 		// First batch to screen NOW.
 		// This could come from SwingWorker too, but doing it here avoids some flickering.
@@ -184,6 +186,11 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			NoteItem item = NoteItem.itemOf(list.get(start), listMode);
 			ui.main.add(item);
 			noteItems.add(item);
+			
+			if (start % 100 == 0 && System.currentTimeMillis() - startTs > 200) {
+				uiStep = start+1;
+				break;
+			}
 		}
 
 		// Paging for remaining notes.
@@ -498,7 +505,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			}
 
 			load(notebook);
-			
+
 			if (index >= 0 && index < noteItems.size()) {
 				NoteItem item = noteItems.get(index);
 				window.showNote(item.note);
