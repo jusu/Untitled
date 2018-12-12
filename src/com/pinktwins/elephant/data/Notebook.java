@@ -24,6 +24,7 @@ public class Notebook implements Comparable<Notebook> {
 	public static final String NAME_ALLNOTES = "All Notes";
 	public static final String NAME_SEARCH = "Search";
 
+	private final long objectCreationTs = System.currentTimeMillis();
 	private String name = "";
 	private File folder;
 	private boolean isSearch, isTagSearch;
@@ -55,6 +56,9 @@ public class Notebook implements Comparable<Notebook> {
 
 	@Override
 	public int hashCode() {
+		if (folder == null) {
+			return new Long(objectCreationTs).hashCode();
+		}
 		return folder.hashCode();
 	}
 
