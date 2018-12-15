@@ -43,9 +43,8 @@ public class NoteListUI {
 		allNotes.setFocusPainted(false);
 		allNotes.setContentAreaFilled(false);
 
-		int allNotesPanelY = SystemUtils.IS_OS_WINDOWS ? 1 : 0;
 		allNotesPanel = new JPanel(new GridLayout(1, 1));
-		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(allNotesPanelY, 0, 0, 0));
+		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 		allNotesPanel.add(allNotes);
 
 		fillerPanel = new JPanel(new GridLayout(1, 1));
