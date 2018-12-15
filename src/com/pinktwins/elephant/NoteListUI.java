@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import org.apache.commons.lang.SystemUtils;
+
 import com.pinktwins.elephant.util.Images;
 
 public class NoteListUI {
@@ -40,17 +42,19 @@ public class NoteListUI {
 		allNotes.setBorderPainted(false);
 		allNotes.setFocusPainted(false);
 		allNotes.setContentAreaFilled(false);
-		
+
+		int allNotesPanelY = SystemUtils.IS_OS_WINDOWS ? 1 : 0;
 		allNotesPanel = new JPanel(new GridLayout(1, 1));
-		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(allNotesPanelY, 0, 0, 0));
 		allNotesPanel.add(allNotes);
 
 		fillerPanel = new JPanel(new GridLayout(1, 1));
 
+		int currentNameY = SystemUtils.IS_OS_WINDOWS ? 14 : 9;
 		currentName = new JLabel("", JLabel.CENTER);
-		currentName.setBorder(BorderFactory.createEmptyBorder(13, 0, 9, 0));
 		currentName.setFont(ElephantWindow.fontTitle);
 		currentName.setForeground(ElephantWindow.colorTitle);
+		currentName.setBorder(BorderFactory.createEmptyBorder(13, 0, currentNameY, 0));
 
 		sep = new JPanel(null);
 		sep.setBounds(0, 0, 1920, 1);
