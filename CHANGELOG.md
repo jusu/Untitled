@@ -3,6 +3,7 @@
 ##v54
 - Fixed note list caching when over 5000 notes total - jumping to notebooks and searching is now faster
 - Fixed note list paging, now only uses paging when neccessary
+- Small visual tweak on windows
 
 ##v53
 - Use !searchterm to exclude notes containing searchterm. Can be combined with @ or # searches: "@Inbox !#" - notes in Inbox without a tag.
