@@ -38,8 +38,9 @@ public class NoteListUI {
 		allNotes = new JButton("");
 		allNotes.setIcon(new ImageIcon(iAllNotes));
 		allNotes.setBorderPainted(false);
+		allNotes.setFocusPainted(false);
 		allNotes.setContentAreaFilled(false);
-
+		
 		allNotesPanel = new JPanel(new GridLayout(1, 1));
 		allNotesPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		allNotesPanel.add(allNotes);
