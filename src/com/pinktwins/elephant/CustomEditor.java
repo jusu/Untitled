@@ -775,7 +775,9 @@ public class CustomEditor extends RoundPanel {
 					if (SwingUtilities.isLeftMouseButton(event)) {
 						startEditing();
 					} else if (SwingUtilities.isMiddleMouseButton(event)) {
-						if (note.isFocusOwner()) getTextPane().paste();
+						if (note.isFocusOwner()) {
+							getTextPane().paste();
+						}
 					}
 				}
 			}
