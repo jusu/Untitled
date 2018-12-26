@@ -512,6 +512,7 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 				selectNote(item, false);
 			} else {
 				selectedNotes.clear();
+				window.clearNoteEditor();
 				window.showNotebook(notebook);
 			}
 		}
