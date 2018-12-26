@@ -79,6 +79,7 @@ import com.pinktwins.elephant.ui.TabAction;
 import com.pinktwins.elephant.util.CryptoUtil;
 import com.pinktwins.elephant.util.CustomMouseListener;
 import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.IOUtil;
 import com.pinktwins.elephant.util.ResizeListener;
 import com.pinktwins.elephant.util.RtfUtil;
 import com.pinktwins.elephant.util.TextComponentUtil;
@@ -479,8 +480,6 @@ public class CustomEditor extends RoundPanel {
 		return null;
 	}
 
-	static private String prevRtfCopy = "";
-
 	class CustomTextPane extends JTextPane implements ClipboardOwner {
 
 		// http://www.javapractices.com/topic/TopicAction.do?Id=82
@@ -489,18 +488,42 @@ public class CustomEditor extends RoundPanel {
 			StringSelection stringSelection = new StringSelection(aString);
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 			clipboard.setContents(stringSelection, this);
-			prevRtfCopy = "";
 		}
 
-		public void setClipboardContentsRtf(String rtf) {
+		public void setClipboardContentsRtf(final String rtf, final String plainText) {
 			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			try {
-				DataHandler hand = new DataHandler(new ByteArrayInputStream(rtf.getBytes("UTF-8")), "text/rtf");
-				clipboard.setContents(hand, this);
-			} catch (UnsupportedEncodingException e) {
-				LOG.severe("Fail: " + e);
-			}
-			prevRtfCopy = rtf;
+
+			/*
+			 * older way. Now using DataFlavors, below.
+			 * 
+			 * try { DataHandler hand = new DataHandler(new ByteArrayInputStream(rtf.getBytes("UTF-8")), "text/rtf");
+			 * clipboard.setContents(hand, this); } catch (UnsupportedEncodingException e) { LOG.severe("Fail: " + e); }
+			 */
+
+			clipboard.setContents(new Transferable() {
+				private final DataFlavor flavors[] = { new DataFlavor("text/rtf", "Rich Formatted Text"), new DataFlavor("text/plain", "Plain Text") };
+
+				@Override
+				public DataFlavor[] getTransferDataFlavors() {
+					return flavors;
+				}
+
+				@Override
+				public boolean isDataFlavorSupported(DataFlavor f) {
+					return f.getMimeType().contains("text/rtf") || f.getMimeType().contains("text/plain");
+				}
+
+				@Override
+				public Object getTransferData(DataFlavor f) throws UnsupportedFlavorException, IOException {
+					if (f.getMimeType().contains("text/rtf")) {
+						return new ByteArrayInputStream(rtf.getBytes(IOUtil.getCharset()));
+					} else if (f.getMimeType().contains("text/plain")) {
+						return new ByteArrayInputStream(plainText.getBytes(IOUtil.getCharset()));
+					} else {
+						throw new UnsupportedFlavorException(f);
+					}
+				}
+			}, this);
 		}
 
 		public String getClipboardContents() {
@@ -593,7 +616,7 @@ public class CustomEditor extends RoundPanel {
 						d.remove(0, start);
 						String rtf = RtfUtil.getRtf(d);
 
-						setClipboardContentsRtf(rtf);
+						setClipboardContentsRtf(rtf, s);
 					} catch (IOException e) {
 						LOG.severe("Fail: " + e);
 					} catch (BadLocationException e) {
@@ -606,12 +629,6 @@ public class CustomEditor extends RoundPanel {
 		@Override
 		public void paste() {
 			String s = getClipboardContents();
-
-			// For some reason I don't get any rtf text from clipboard copied
-			// there by me. Workround.
-			if (s.isEmpty() && !prevRtfCopy.isEmpty()) {
-				s = prevRtfCopy;
-			}
 
 			if (!s.isEmpty()) {
 				try {
