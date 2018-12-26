@@ -1,5 +1,8 @@
 # Changelog
 
+##v55
+- Fixed copying styled text to clipboard on windows
+
 ##v54
 - Fixed note list caching when over 5000 notes total - jumping to notebooks and searching is now faster
 - Fixed note list paging, now only uses paging when neccessary
