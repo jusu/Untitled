@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -22,9 +23,12 @@ import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang.SystemUtils;
+
 import com.pinktwins.elephant.data.Settings;
 import com.pinktwins.elephant.data.Settings.Keys;
 import com.pinktwins.elephant.eventbus.FontChangedEvent;
+import com.pinktwins.elephant.util.Factory;
 
 import io.github.dheid.fontchooser.FontDialog;
 
@@ -36,6 +40,8 @@ public class SettingsUI extends BackgroundPanel {
 
 	private JScrollPane scroll;
 	private JPanel main;
+
+	private Map<String, JLabel> labels = Factory.newHashMap();
 
 	public SettingsUI() {
 		createComponents();
@@ -206,6 +212,52 @@ public class SettingsUI extends BackgroundPanel {
 					}
 				}));
 
+				if (SystemUtils.IS_OS_MAC_OSX) {
+					final JButton resetAvenir = new JButton("Use theme 'Avenir'");
+					resetAvenir.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							ElephantWindow.fontEditorTitle = Font.decode("AvenirNext-Bold-PLAIN-16");
+							ElephantWindow.fontEditor = Font.decode("Avenir-Roman-PLAIN-14");
+							ElephantWindow.fontNoteListSnippetName = Font.decode("AvenirNext-Medium-BOLD-13");
+							ElephantWindow.fontSnippetPreview = Font.decode("AvenirNext-Medium-PLAIN-11");
+							ElephantWindow.fontNoteListCardName = Font.decode("AvenirNext-Bold-BOLD-12");
+							ElephantWindow.fontCardPreview = Font.decode("AvenirNext-Medium-PLAIN-10");
+
+							setFontLabel(ElephantWindow.fontEditorTitle);
+							setFontLabel(ElephantWindow.fontEditor);
+							setFontLabel(ElephantWindow.fontNoteListSnippetName);
+							setFontLabel(ElephantWindow.fontSnippetPreview);
+							setFontLabel(ElephantWindow.fontNoteListCardName);
+							setFontLabel(ElephantWindow.fontCardPreview);
+
+							Elephant.settings.set("fontEditorTitle", "AvenirNext-Bold-PLAIN-16");
+							Elephant.settings.set("fontEditor", "Avenir-Roman-PLAIN-14");
+							Elephant.settings.set("fontSnippetName", "AvenirNext-Medium-BOLD-13");
+							Elephant.settings.set("fontSnippetPreview", "AvenirNext-Medium-PLAIN-11");
+							Elephant.settings.set("fontCardName", "AvenirNext-Bold-BOLD-12");
+							Elephant.settings.set("fontCardPreview", "AvenirNext-Medium-PLAIN-10");
+							Elephant.settings.set("fontScale", "1.0");
+
+							new FontChangedEvent().post();
+						}
+
+						private void setFontLabel(Font f) {
+							String fontName = fullFontName(f);
+							JLabel l = labels.get(fontName);
+							if (l != null) {
+								l.setText(fontName);
+								l.setFont(f);
+							}
+						}
+					});
+					JPanel p = new JPanel(new BorderLayout());
+					p.setAlignmentX(0);
+					p.add(resetAvenir, BorderLayout.EAST);
+					p.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+					add(p);
+				}
+
 				break;
 
 			default:
@@ -256,6 +308,8 @@ public class SettingsUI extends BackgroundPanel {
 					}
 				}
 			});
+
+			labels.put(defaultFontName, label);
 
 			JPanel p = new JPanel(new BorderLayout());
 			p.setAlignmentX(0);
