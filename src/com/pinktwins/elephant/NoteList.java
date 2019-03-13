@@ -14,6 +14,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +50,25 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 
 	private Notebook notebook;
 	private List<NoteItem> noteItems = Factory.newArrayList();
-	private SortedSet<NoteItem> selectedNotes = Factory.newSortedSet();
+	private SortedSet<NoteItem> selectedNotes = new TreeSet<NoteItem>(new Comparator<NoteItem>() {
+		@Override
+		public int compare(NoteItem o1, NoteItem o2) {
+			// Sort selectedNotes using whatever order is used by noteItems, by using indexOf().
+			// This overcomes the problem of TreeSet only using compareTo() and not equals()
+			// to check if item should be added to set or not: compareTo() will report 'equal'
+			// items depending on note sorting order (matching title, matching creation time).
+			// Thus noteItems.indexOf() is both reliable sorting and duplication property.
+			int i1 = noteItems.indexOf(o1);
+			int i2 = noteItems.indexOf(o2);
+			if (i1 > i2) {
+				return 1;
+			}
+			if (i1 < i2) {
+				return -1;
+			}
+			return 0;
+		}
+	});
 
 	private ListController<NoteItem> lc = ListController.newInstance();
 
