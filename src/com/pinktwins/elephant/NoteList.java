@@ -205,9 +205,9 @@ public class NoteList extends BackgroundPanel implements NoteItemListener {
 			NoteItem item = NoteItem.itemOf(list.get(start), listMode);
 			ui.main.add(item);
 			noteItems.add(item);
-			
+
 			if (start % 100 == 0 && System.currentTimeMillis() - startTs > 200) {
-				uiStep = start+1;
+				uiStep = start + 1;
 				break;
 			}
 		}

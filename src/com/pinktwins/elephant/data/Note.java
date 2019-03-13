@@ -162,7 +162,7 @@ public class Note implements Comparable<Note> {
 		if (m1 < m2) {
 			return 1;
 		}
-
+		
 		return 0;
 	}
 
