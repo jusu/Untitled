@@ -3,6 +3,7 @@
 ##v56
 - Added Preferences / Fonts / Use theme 'Avenir' - button for macOS.
 - Fixed issue where selecting multiple notes with shift+arrow keys might not work
+- Fixed issue with loading first screenful of notes
 
 ##v55
 - Fixed copying styled text to clipboard on windows
