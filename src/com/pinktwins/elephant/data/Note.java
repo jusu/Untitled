@@ -535,7 +535,7 @@ public class Note implements Comparable<Note> {
 				source.refresh();
 			}
 
-			Notebook nb = Vault.getInstance().findNotebook(dest);
+			final Notebook nb = Vault.getInstance().findNotebook(dest);
 			if (nb != null) {
 				(new SwingWorker<Void, Void>() {
 					@Override
