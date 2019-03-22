@@ -3,6 +3,7 @@ package com.pinktwins.elephant.data;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -213,7 +214,7 @@ public class Vault implements WatchDirListener {
 	}
 
 	public String getLuceneIndexPath() {
-		return Elephant.settings.userHomePath() + File.separator + ".com.pinktwins.elephant.searchIndex";
+		return Paths.get(getHome().getAbsolutePath(), ".searchIndex").toString();
 	}
 
 	public void saveNewTag(final Tag tag) {
