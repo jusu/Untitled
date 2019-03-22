@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 
 import com.pinktwins.elephant.data.Note;
+import com.pinktwins.elephant.data.Search;
 import com.pinktwins.elephant.data.Vault;
 import com.pinktwins.elephant.util.IOUtil;
 
@@ -60,28 +61,40 @@ public class Start extends BackgroundPanel {
 			}
 		});
 
-		chooseFolderButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				JFileChooser baseDirectoryChooser = buildBaseDirectoryChooser();
-				int res = baseDirectoryChooser.showOpenDialog(Start.this);
-				if (res != JFileChooser.APPROVE_OPTION) {
-					return;
-				}
+		chooseFolderButton.addActionListener((event) -> {
 
-				File selectedFile = baseDirectoryChooser.getSelectedFile();
+			// Show the panel to select a new vault directory.
+			// Set the new vault directory in the settings.
+			// Restart the application.
 
-				String baseDirectoryPath = selectedFile.getAbsolutePath();
-				if (createElephantFolderCheckBox.isSelected()) {
-					baseDirectoryPath += File.separator + "Elephant";
-				}
-
-				boolean locationSet = createBaseDirectory(baseDirectoryPath);
-				if (locationSet) {
-					Vault.getInstance().populate();
-					runWhenLocationSet.run();
-				}
+			JFileChooser baseDirectoryChooser = buildBaseDirectoryChooser();
+			int res = baseDirectoryChooser.showOpenDialog(Start.this);
+			if (res != JFileChooser.APPROVE_OPTION) {
+				// User cancelled the location change.
+				return;
 			}
+
+			// The user selected  a new vault directory.
+			File selectedFile = baseDirectoryChooser.getSelectedFile();
+
+			String baseDirectoryPath = selectedFile.getAbsolutePath();
+			if (createElephantFolderCheckBox.isSelected()) {
+				baseDirectoryPath += File.separator + "Elephant";
+			}
+
+			boolean baseDirReady = createBaseDirIfNotExists(baseDirectoryPath);
+			if (baseDirReady) {
+				// Stop the indexer before changing the vault location.
+				// The indexer must not write to the new location.
+				Search.ssi.stop();
+
+				// Change the vault location.
+				Vault.getInstance().setLocation(baseDirectoryPath);
+
+				// Restart ...
+				runWhenLocationSet.run();
+			}
+
 		});
 	}
 
@@ -123,20 +136,20 @@ public class Start extends BackgroundPanel {
 		return baseDirectoryChooser;
 	}
 
-	private boolean createBaseDirectory(String baseDirectoryPath) {
+	private boolean createBaseDirIfNotExists(String baseDirectoryPath) {
 		File baseDirectory = new File(baseDirectoryPath);
 		if (!baseDirectory.exists() && !baseDirectory.mkdirs()) {
+			// Base dir does not exist and we cannot create it ...
+			// That means trouble.
 			return false;
 		}
 
-		Vault.getInstance().setLocation(baseDirectoryPath);
-
-		createInbox(baseDirectoryPath + File.separator + "Inbox", baseDirectory);
+		createInboxIfNotExists(baseDirectoryPath + File.separator + "Inbox", baseDirectory);
 
 		return true;
 	}
 
-	private void createInbox(String inboxPath, File baseDirectory) {
+	private void createInboxIfNotExists(String inboxPath, File baseDirectory) {
 		File inbox = new File(inboxPath);
 		if (!inbox.mkdirs()) {
 			return;

@@ -41,6 +41,15 @@ public class SearchIndexer {
 		}
 	}
 
+	public void stop() {
+		if(luceneIndex != null) {
+			// Stop lucene indexing.
+			luceneIndex.commit();
+			luceneIndex = null;
+			useLucene = false;
+		}
+	}
+
 	public boolean ready() {
 		return isReady;
 	}

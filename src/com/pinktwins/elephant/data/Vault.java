@@ -3,6 +3,7 @@ package com.pinktwins.elephant.data;
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -106,12 +107,21 @@ public class Vault implements WatchDirListener {
 		return trash;
 	}
 
+	/**
+	 * Prepare the vault directory, see that everything is present.
+	 * <ul>
+	 *     <li>Create the Trash notebook.</li>
+	 *     <li>Create a Notebook instance for all visible directories in the vault base directory.</li>
+	 * </ul>
+	 */
 	public void populate() {
 		home = new File(HOME);
 
+		// The trash directory should always be there.
 		trash = new File(home.getAbsolutePath() + File.separator + "Trash");
 		trash.mkdirs();
 
+		// Scan the vault directory for notebooks.
 		synchronized (Search.lockObject) {
 			for (File f : home.listFiles()) {
 				if (f.isDirectory() && f.getName().charAt(0) != '.') {
@@ -213,7 +223,7 @@ public class Vault implements WatchDirListener {
 	}
 
 	public String getLuceneIndexPath() {
-		return Elephant.settings.userHomePath() + File.separator + ".com.pinktwins.elephant.searchIndex";
+		return Paths.get(getHome().getAbsolutePath(), ".searchIndex").toString();
 	}
 
 	public void saveNewTag(final Tag tag) {

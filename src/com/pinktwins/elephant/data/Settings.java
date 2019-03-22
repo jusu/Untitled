@@ -1,17 +1,14 @@
 package com.pinktwins.elephant.data;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.logging.Logger;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.common.io.Files;
 import com.pinktwins.elephant.NoteList.ListModes;
 import com.pinktwins.elephant.Sidebar.RecentNotesModes;
 import com.pinktwins.elephant.util.IOUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
 
 public class Settings {
 
@@ -165,6 +162,10 @@ public class Settings {
 	private String homeDir;
 	private JSONObject map;
 
+	/**
+	 * Get the {@link File} containing the persisted Elephant settings.
+	 * @return File containing the Elephant settings.
+	 */
 	public File settingsFile() {
 		return new File(homeDir + File.separator + ".com.pinktwins.elephant.settings");
 	}
@@ -288,12 +289,14 @@ public class Settings {
 		return this;
 	}
 
+	/**
+	 * Persist the Elephant settings to the file system.
+	 */
 	private void save() {
-		try {
-			Files.write(map.toString(4), settingsFile(), Charset.forName("UTF-8"));
-		} catch (IOException e) {
-			LOG.severe("Fail: " + e);
-		} catch (JSONException e) {
+		final File settingsFile = settingsFile();
+		try (Writer settingsWriter = new OutputStreamWriter(new FileOutputStream(settingsFile), StandardCharsets.UTF_8)) {
+			settingsWriter.write(map.toString(4));
+		} catch (IOException | JSONException e) {
 			LOG.severe("Fail: " + e);
 		}
 	}
