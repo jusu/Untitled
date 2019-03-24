@@ -66,6 +66,7 @@ public class HtmlPaneMouseListener extends CustomMouseListener {
 						if (w != null) {
 							href = href.replace("search://",  "search:");
 							href = href.replace("%20", " ");
+							href = href.replace("%22", "\"");
 							href = href.replace("+", " ");
 							w.openShortcut(href);
 						}

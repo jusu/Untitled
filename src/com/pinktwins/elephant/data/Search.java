@@ -11,6 +11,7 @@ import java.util.Set;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.eventbus.IndexProgressEvent;
 import com.pinktwins.elephant.util.Factory;
+import com.pinktwins.elephant.util.StringParser;
 
 public class Search {
 
@@ -63,21 +64,37 @@ public class Search {
 		List<Set<Note>> sets = Factory.newArrayList();
 		List<Set<Note>> negativeSets = Factory.newArrayList();
 
-		/*
-		 * List<String> keys = new ArrayList<String>(); Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text);
-		 * while (m.find()) { keys.add(m.group(1).replace("\"", "")); }
-		 */
+		StringParser parser = new StringParser();
+		StringParser.Buffer buf = new StringParser.Buffer(text);
+		for (StringParser.Token token = parser.getNextNonWhitespaceToken(buf);
+			 token.isString(); token = parser.getNextNonWhitespaceToken(buf)) {
 
-		String[] a = text.split(" ");
-		for (String q : a) {
-			q = q.trim();
+			// At this point this can be:
+			// * "title:", "!title:" or any other prefix.
+			// * "some non-prefix text with spaces"
+			// * "textwithoutspaces", "!textwithoutspaces"
+			// * "!"
+			String searchTerm = token.getValue();
+			boolean negation = searchTerm.startsWith("!");
+			if(negation) {
+				searchTerm = searchTerm.substring(1);
+			}
+
+			// The searchTerm is a prefix eg. title: nb: tag:
+			// It is not complete without the suffix. We must read the
+			// suffix to complete the searchTerm.
+			if(SearchIndexer.ALL_PREFIXES.contains(searchTerm)) {
+				token = parser.getNextNonWhitespaceToken(buf);
+				if(token.isString()) searchTerm = searchTerm + token.getValue();
+			}
+
 			Set<Note> notes = Factory.newHashSet();
-			if (q.charAt(0) != '!') {
-				notes.addAll(ssi.search(q));
-				sets.add(notes);
-			} else {
-				notes.addAll(ssi.search(q.substring(1)));
+			if (negation) {
+				notes.addAll(ssi.search(searchTerm));
 				negativeSets.add(notes);
+			} else {
+				notes.addAll(ssi.search(searchTerm));
+				sets.add(notes);
 			}
 		}
 

@@ -2,13 +2,7 @@ package com.pinktwins.elephant.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,6 +48,10 @@ public class Note implements Comparable<Note> {
 		public long created();
 
 		public void setCreatedTime();
+
+		public void generateUUIDIfNotExists();
+
+		public String getUUID();
 
 		public int getAttachmentPosition(File attachment);
 
@@ -338,7 +336,11 @@ public class Note implements Comparable<Note> {
 	}
 
 	public Meta getMeta() {
-		return new Metadata(getMetaMap());
+		Meta metaData =  new Metadata(getMetaMap());
+		// Ensure that all documents get a UUID one time or another.
+		// Once a document receives an UUID, it will keep it.
+		metaData.generateUUIDIfNotExists();
+		return metaData;
 	}
 
 	private class Metadata implements Meta {
@@ -450,6 +452,25 @@ public class Note implements Comparable<Note> {
 		public void setAttachmentPreview(File attachment, boolean b) {
 			setMeta("attachment:" + attachment.getName() + ":preview", b ? "true" : "false");
 			reload();
+		}
+
+		@Override
+		public void generateUUIDIfNotExists() {
+			String existingUUID =  map.get("uuid");
+			if(existingUUID == null) {
+				UUID uuid = UUID.randomUUID();
+				String randomUUID = uuid.toString();
+				setMeta("uuid", randomUUID);
+			}
+		}
+
+		@Override
+		public String getUUID() {
+			String uuid =  map.get("uuid");
+			if(uuid == null) {
+				return "";
+			}
+			else return uuid;
 		}
 	}
 

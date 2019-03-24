@@ -27,6 +27,27 @@ public class MemorySearchIndex implements SearchIndexInterface {
 
 	Pattern splitter = Pattern.compile(StringUtils.join(splitChars, "|"));
 
+	/**
+	 * Do not split up the text in words, keep the complete text together.
+	 *
+	 * @param n The note that will be indexed.
+	 * @param text The text to find the note.
+	 */
+	public void digestEntirely(Note n, String text) {
+		addNoteToMap(n, text.toLowerCase());
+	}
+
+	private void addNoteToMap(Note note, String text) {
+		synchronized (wordMap) {
+			Set<Note> indexedNotes = wordMap.get(text);
+			if (indexedNotes == null) {
+				indexedNotes = Factory.newHashSet();
+				wordMap.put(text, indexedNotes);
+			}
+			indexedNotes.add(note);
+		}
+	}
+
 	@Override
 	public void digestText(Note n, String text) {
 		String[] a = splitter.split(text);
@@ -48,14 +69,7 @@ public class MemorySearchIndex implements SearchIndexInterface {
 				continue;
 			}
 
-			synchronized (wordMap) {
-				Set<Note> set = wordMap.get(s);
-				if (set == null) {
-					set = Factory.newHashSet();
-					wordMap.put(s, set);
-				}
-				set.add(n);
-			}
+			addNoteToMap(n, s);
 		}
 	}
 

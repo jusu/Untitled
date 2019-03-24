@@ -1,11 +1,6 @@
 package com.pinktwins.elephant.data;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import com.pinktwins.elephant.Elephant;
 import com.pinktwins.elephant.data.Note.Meta;
@@ -14,9 +9,26 @@ import com.pinktwins.elephant.eventbus.NotebookEvent;
 import com.pinktwins.elephant.eventbus.SearchIndexChangedEvent;
 import com.pinktwins.elephant.util.Factory;
 
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+
 public class SearchIndexer {
 
 	private static final Logger LOG = Logger.getLogger(SearchIndexer.class.getName());
+
+	public static final List<String> PREFIX_NOTEBOOK = ImmutableList.of("notebook:", "nb:", "@");
+    public static final List<String> PREFIX_TAG = ImmutableList.of("tag:", "t:", "#");
+    public static final List<String> PREFIX_TITLE = ImmutableList.of("title:");
+    public static final List<String> PREFIX_UUID = ImmutableList.of("uuid:");
+    public static final List<String> ALL_PREFIXES = new ImmutableList.Builder()
+			.addAll(PREFIX_NOTEBOOK)
+			.addAll(PREFIX_TAG)
+			.addAll(PREFIX_TITLE)
+			.addAll(PREFIX_UUID)
+			.build();
 
 	private boolean isReady = false;
 
@@ -26,7 +38,7 @@ public class SearchIndexer {
 	// note file -> lastModified() of notefile when note digested
 	private Map<File, Long> digestTimes = Factory.newHashMap();
 
-	private SearchIndexInterface memoryIndex = new MemorySearchIndex();
+	private MemorySearchIndex memoryIndex = new MemorySearchIndex();
 	private SearchIndexInterface luceneIndex;
 
 	static boolean useLucene = true;
@@ -65,10 +77,24 @@ public class SearchIndexer {
 
 	public List<Note> search(String text) {
 		List<Note> found = Factory.newArrayList();
-		found.addAll(memoryIndex.search(text));
-		if (useLucene) {
-			found.addAll(luceneIndex.search(text));
-		}
+
+		boolean prefixedSearchTerm = ALL_PREFIXES
+				.parallelStream()
+				.anyMatch((prefix)->text.startsWith(prefix));
+
+        // If the search term contains a prefix we only
+        // use the memory index. These are not indexed in lucene anyway.
+		if(prefixedSearchTerm){
+            found.addAll(memoryIndex.search(text));
+        }
+		else {
+			// Normal non-prefixes searches are performed in both
+			// memory index and lucene index.
+            found.addAll(memoryIndex.search(text));
+            if (useLucene) {
+                found.addAll(luceneIndex.search(text));
+            }
+        }
 		return found;
 	}
 
@@ -90,8 +116,12 @@ public class SearchIndexer {
 		}
 
 		Meta meta = note.getMeta();
+		// Digest the individual words in the title.
 		memoryIndex.digestText(note, meta.title());
-		memoryIndex.digestText(note, "title:" + meta.title());
+		// Digest the entire title as well.
+		for(String prefix: PREFIX_TITLE) {
+			memoryIndex.digestEntirely(note, prefix + meta.title());
+		}
 
 		if (useLucene) {
 			luceneIndex.digestText(note, null);
@@ -112,12 +142,23 @@ public class SearchIndexer {
 
 			List<String> tagNames = Vault.getInstance().resolveTagIds(tagIds);
 			for (String s : tagNames) {
-				memoryIndex.digestText(note, s + " tag:" + s + " t:" + s + " #" + s);
+				// Digest the tag label (the words in the label)
+				memoryIndex.digestText(note, s);
+				// Digest the entire labels, spaces and all.
+				for(String prefix :PREFIX_TAG) {
+					memoryIndex.digestEntirely(note, prefix + s);
+				}
 			}
 		}
 
 		if (nb != null) {
-			memoryIndex.digestText(note, "notebook:" + nb.name() + " nb:" + nb.name() + " @" + nb.name());
+			String nbName = nb.name();
+			// Digest the notebook name words, so the words in the notebook name can be found.
+			memoryIndex.digestText(note, nbName);
+			// Digest the entire notebook names, spaces and all.
+			for(String prefix: PREFIX_NOTEBOOK) {
+				memoryIndex.digestEntirely(note, prefix + nbName);
+			}
 		}
 
 		// date to sort by creation and last modified date
@@ -125,7 +166,11 @@ public class SearchIndexer {
 		
 		if (meta.created() < note.lastModified())
 			memoryIndex.digestDate(note, note.lastModified());
-				
+
+		// Add the UUID for the note
+		for(String prefix: PREFIX_UUID) {
+			memoryIndex.digestEntirely(note, prefix + meta.getUUID());
+		}
 		
 		addDigestTimestamp(note);
 	}

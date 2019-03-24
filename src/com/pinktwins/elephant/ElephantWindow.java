@@ -11,6 +11,8 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -396,6 +398,28 @@ public class ElephantWindow extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			noteEditor.focusTags();
 		}
+	};
+
+	ActionListener copyMarkdownLinkAction = (actionEvent) -> {
+		// We are going to construct a list of Markdown links of the form
+		// [TITLE](search://uuid:uuid)
+		StringBuilder bldr = new StringBuilder();
+		for (Note n : noteList.getSelection()) {
+			bldr
+                .append("[")
+                .append(n.getMeta().title())
+                .append("]")
+                .append("(search://uuid:")
+                .append(n.getMeta().getUUID())
+                .append(")")
+                .append("\n");
+
+		}
+		// Put the generated string on the clipboard so the user can
+		// paste it into another document.
+		StringSelection stringSelection = new StringSelection(bldr.toString());
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(stringSelection, null);
 	};
 
 	ActionListener moveNoteAction = new ActionListener() {
@@ -1613,6 +1637,7 @@ public class ElephantWindow extends JFrame {
 		note.addSeparator();
 		note.add(menuItem("Edit Note Title", KeyEvent.VK_L, menuMask, editTitleAction));
 		note.add(menuItem("Edit Note Tags", KeyEvent.VK_QUOTE, menuMask, editTagsAction));
+		note.add(menuItem("Copy Markdown Link", 0, 0, copyMarkdownLinkAction));
 		note.addSeparator();
 		note.add(menuItem("Move To Notebook", KeyEvent.VK_M, menuMask | KeyEvent.CTRL_DOWN_MASK, moveNoteAction));
 		note.add(menuItem("Add Note to Shortcuts", 0, 0, addToShortcutsAction));

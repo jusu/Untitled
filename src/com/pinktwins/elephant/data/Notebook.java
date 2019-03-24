@@ -259,6 +259,7 @@ public class Notebook implements Comparable<Notebook> {
 		Meta m = n.getMeta();
 		m.title("Untitled");
 		m.setCreatedTime();
+		m.generateUUIDIfNotExists();
 
 		notes.add(0, n);
 

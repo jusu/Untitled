@@ -180,6 +180,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 	BackgroundPanel topShadow;
 	JButton currNotebook, trash;
 	JLabel noteCreated, noteUpdated;
+	JTextPane noteUuid;
 	BorderLayout areaHolderLayout;
 
 	private class DividedPanel extends BackgroundPanel {
@@ -320,12 +321,20 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 		noteCreated.setFont(ElephantWindow.fontMedium);
 
 		noteUpdated = new JLabel("Updated: xxxxxx");
-		noteUpdated.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 20));
+		noteUpdated.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 10));
 		noteUpdated.setForeground(ElephantWindow.colorTitleButton);
 		noteUpdated.setFont(ElephantWindow.fontMedium);
 
+		noteUuid = new JTextPane();
+        noteUuid.setEditable(false);
+        noteUuid.setOpaque(false);
+		noteUuid.setBorder(BorderFactory.createEmptyBorder(0, 4, 4, 10));
+		noteUuid.setForeground(ElephantWindow.colorTitleButton);
+		noteUuid.setFont(ElephantWindow.fontMedium);
+
 		toolsBot.add(noteCreated);
 		toolsBot.add(noteUpdated);
+		toolsBot.add(noteUuid);
 
 		tools.add(toolsTop, BorderLayout.NORTH);
 		tools.add(toolsBot, BorderLayout.SOUTH);
@@ -680,6 +689,7 @@ public class NoteEditor extends BackgroundPanel implements EditorEventListener {
 
 		noteCreated.setText("Created: " + note.createdStr());
 		noteUpdated.setText("Updated: " + note.updatedStr());
+		noteUuid.setText("Uuid: " + note.getMeta().getUUID());
 
 		caretChanged(editor.getTextPane());
 

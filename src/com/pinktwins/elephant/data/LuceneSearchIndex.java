@@ -228,7 +228,7 @@ public class LuceneSearchIndex implements SearchIndexInterface {
 				try {
 					openReader();
 				} catch (IndexNotFoundException e) {
-					// Index not creatd yet
+					// Index not created yet
 				}
 			}
 
